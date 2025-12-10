@@ -1,26 +1,126 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Updated theme colors to match Encontros Com Proposito brand */
+  --background: #fcfcfa;
+  --foreground: #1f4c47;
+  --card: #fcfcfa;
+  --card-foreground: #1f4c47;
+  --popover: #fcfcfa;
+  --popover-foreground: #1f4c47;
+  --primary: #8a0204;
+  --primary-foreground: #fcfcfa;
+  --secondary: #1f4c47;
+  --secondary-foreground: #fcfcfa;
+  --muted: #e8e8e6;
+  --muted-foreground: #6b6b68;
+  --accent: #f18d42;
+  --accent-foreground: #fcfcfa;
+  --destructive: #8a0204;
+  --destructive-foreground: #fcfcfa;
+  --border: #e0e0dd;
+  --input: #e0e0dd;
+  --ring: #f18d42;
+  --chart-1: #f18d42;
+  --chart-2: #1f4c47;
+  --chart-3: #8a0204;
+  --chart-4: #fcfcfa;
+  --chart-5: #e8e8e6;
+  --radius: 0.75rem;
+  --sidebar: #fcfcfa;
+  --sidebar-foreground: #1f4c47;
+  --sidebar-primary: #8a0204;
+  --sidebar-primary-foreground: #fcfcfa;
+  --sidebar-accent: #f18d42;
+  --sidebar-accent-foreground: #fcfcfa;
+  --sidebar-border: #e0e0dd;
+  --sidebar-ring: #f18d42;
+}
+
+.dark {
+  --background: #1f4c47;
+  --foreground: #fcfcfa;
+  --card: #1f4c47;
+  --card-foreground: #fcfcfa;
+  --popover: #1f4c47;
+  --popover-foreground: #fcfcfa;
+  --primary: #f18d42;
+  --primary-foreground: #1f4c47;
+  --secondary: #8a0204;
+  --secondary-foreground: #fcfcfa;
+  --muted: #2d5c56;
+  --muted-foreground: #b8b8b5;
+  --accent: #f18d42;
+  --accent-foreground: #1f4c47;
+  --destructive: #8a0204;
+  --destructive-foreground: #fcfcfa;
+  --border: #2d5c56;
+  --input: #2d5c56;
+  --ring: #f18d42;
+  --chart-1: #f18d42;
+  --chart-2: #fcfcfa;
+  --chart-3: #8a0204;
+  --chart-4: #e8e8e6;
+  --chart-5: #b8b8b5;
+  --sidebar: #1f4c47;
+  --sidebar-foreground: #fcfcfa;
+  --sidebar-primary: #f18d42;
+  --sidebar-primary-foreground: #1f4c47;
+  --sidebar-accent: #8a0204;
+  --sidebar-accent-foreground: #fcfcfa;
+  --sidebar-border: #2d5c56;
+  --sidebar-ring: #f18d42;
 }
 
 @theme inline {
+  --font-sans: "Geist", "Geist Fallback";
+  --font-mono: "Geist Mono", "Geist Mono Fallback";
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-background text-foreground;
+  }
 }
