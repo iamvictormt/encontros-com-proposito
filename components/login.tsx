@@ -6,16 +6,22 @@ import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Logo } from './logo';
+import { useAuth } from '@/hooks/use-auth';
 
 export function Login() {
   const [inviteCode, setInviteCode] = useState('');
   const router = useRouter();
   const [year, setYear] = useState('');
+  const { isLoggedIn, isLoading: authLoading } = useAuth();
 
   useEffect(() => {
     const currentYear = new Date().getFullYear().toString();
     setYear(currentYear);
-  }, []);
+
+    if (!authLoading && isLoggedIn) {
+      router.push('/events');
+    }
+  }, [authLoading, isLoggedIn, router]);
 
   const handleLogin = () => {
     router.push('/login');

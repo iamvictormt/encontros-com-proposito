@@ -3,24 +3,12 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Search,
-  SlidersHorizontal,
-  MapPin,
-  Share2,
-  ChevronLeft,
-  ChevronRight,
-  Copy,
-  Instagram,
-  Facebook,
-  ArrowLeft,
-  ArrowRight,
-  Link2,
-  Filter,
-} from 'lucide-react';
+import { Search, MapPin, Share2, Instagram, Facebook, ArrowLeft, ArrowRight, Link2, Filter } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Logo } from './logo';
+import { useAuth } from '@/hooks/use-auth';
+import { useRouter } from 'next/navigation';
 
 const heroSlides = [
   {
@@ -103,6 +91,8 @@ const events = [
 export function EventsPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [year, setYear] = useState('');
+  const { isLoggedIn, logout } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     const currentYear = new Date().getFullYear().toString();
@@ -117,12 +107,16 @@ export function EventsPage() {
     setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
   };
 
+  const handleLogout = () => {
+    logout();
+  };
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
       <header className="bg-white px-4 py-4 lg:px-20 mb-4">
         <div className="mx-auto flex items-center justify-between">
-          <Logo />
+          <Logo href='/events' />
 
           <nav className="hidden items-center gap-6 lg:flex">
             <Link href="/" className="font-medium text-black hover:text-black/80">
@@ -140,16 +134,37 @@ export function EventsPage() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              asChild
-              className="hidden sm:inline-flex bg-transparent text-black hover:bg-gray-50 hover:text-black"
-            >
-              <Link href="/login">Entrar</Link>
-            </Button>
-            <Button asChild className="bg-secondary hover:bg-secondary/90">
-              <Link href="/signup">Cadastrar</Link>
-            </Button>
+            {isLoggedIn ? (
+              <>
+                <Button
+                  variant="ghost"
+                  asChild
+                  className="hidden sm:inline-flex bg-transparent text-black hover:bg-gray-50 hover:text-black"
+                >
+                  <Link href="/account">Minha Conta</Link>
+                </Button>
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  className="bg-transparent hover:bg-gray-50 text-black hover:bg-gray-50 hover:text-black/80"
+                >
+                  Sair
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  asChild
+                  className="hidden sm:inline-flex bg-transparent text-black hover:bg-gray-50 hover:text-black"
+                >
+                  <Link href="/login">Entrar</Link>
+                </Button>
+                <Button asChild className="bg-secondary hover:bg-secondary/90">
+                  <Link href="/signup">Cadastrar</Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </header>

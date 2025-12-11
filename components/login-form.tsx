@@ -1,86 +1,116 @@
-'use client';
+"use client"
 
-import type React from 'react';
+import type React from "react"
 
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import Image from 'next/image';
-import Link from 'next/link';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { authService } from '@/lib/services/auth.service';
-import { APIError } from '@/lib/services/api-client';
-import { Logo } from './logo';
+import { useEffect, useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Checkbox } from "@/components/ui/checkbox"
+import Image from "next/image"
+import Link from "next/link"
+import { ArrowLeft, ArrowRight } from "lucide-react"
+import { useRouter } from "next/navigation"
+ import { APIError } from "@/lib/services/api-client"
+import { Logo } from "./logo"
+import { useAuth } from "@/hooks/use-auth"
+import { useToast } from "@/hooks/use-toast"
+import { authService } from "@/lib/services/auth.service"
 
 const carouselSlides = [
   {
-    image: '/images/pessoas-na-mesa.jpg',
-    title: 'Grandes Experiências começam aqui',
+    image: "/images/pessoas-na-mesa.jpg",
+    title: "Grandes Experiências começam aqui",
     description:
-      'Descubra eventos que unem pessoas, histórias e propósitos presenciais ou online, com experiências únicas que fazem sentido pra você.',
+      "Descubra eventos que unem pessoas, histórias e propósitos presenciais ou online, com experiências únicas que fazem sentido pra você.",
   },
   {
-    image: '/images/festa.jpg',
-    title: 'Conecte-se com pessoas reais',
-    description: 'Participe de encontros presenciais e online que transformam conexões em relacionamentos verdadeiros.',
+    image: "/images/festa.jpg",
+    title: "Conecte-se com pessoas reais",
+    description: "Participe de encontros presenciais e online que transformam conexões em relacionamentos verdadeiros.",
   },
   {
-    image: '/images/festa-2.jpg',
-    title: 'Experiências que fazem sentido',
-    description: 'Viva momentos autênticos através de retiros, terapias e eventos que unem tecnologia e emoção.',
+    image: "/images/festa-2.jpg",
+    title: "Experiências que fazem sentido",
+    description: "Viva momentos autênticos através de retiros, terapias e eventos que unem tecnologia e emoção.",
   },
-];
+]
 
 export function LoginForm() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
-  const [year, setYear] = useState('');
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const router = useRouter();
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [rememberMe, setRememberMe] = useState(false)
+  const [year, setYear] = useState("")
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [isLoading, setIsLoading] = useState(false)
+  const { isLoggedIn, isLoading: authLoading } = useAuth()
+  const router = useRouter()
+  const { toast } = useToast()
 
   useEffect(() => {
-    const currentYear = new Date().getFullYear().toString();
-    setYear(currentYear);
-  }, []);
+    const currentYear = new Date().getFullYear().toString()
+    setYear(currentYear)
+
+    if (!authLoading && isLoggedIn) {
+      router.push("/events")
+    }
+  }, [authLoading, isLoggedIn, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setIsLoading(true);
+    e.preventDefault()
+    setIsLoading(true)
 
     try {
       await authService.login({
         emailOrCpf: email,
         password,
-      });
+      })
 
-      router.push('/events');
+      toast({
+        title: "Login realizado com sucesso!",
+        description: "Você será redirecionado para a página de eventos.",
+      })
+
+      router.push("/events")
     } catch (err) {
       if (err instanceof APIError) {
-        setError(err.message);
+        toast({
+          variant: "destructive",
+          title: "Erro ao fazer login",
+          description: err.message,
+        })
       } else {
-        setError('Erro ao conectar com o servidor');
+        toast({
+          variant: "destructive",
+          title: "Erro ao conectar",
+          description: "Erro ao conectar com o servidor",
+        })
       }
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % carouselSlides.length);
-  };
+    setCurrentSlide((prev) => (prev + 1) % carouselSlides.length)
+  }
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + carouselSlides.length) % carouselSlides.length);
-  };
+    setCurrentSlide((prev) => (prev - 1 + carouselSlides.length) % carouselSlides.length)
+  }
 
   const goToSlide = (index: number) => {
-    setCurrentSlide(index);
-  };
+    setCurrentSlide(index)
+  }
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="text-center">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
+          <p className="mt-4 text-muted-foreground">Carregando...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-white">
@@ -94,18 +124,14 @@ export function LoginForm() {
           <div className="w-full max-w-md space-y-6 sm:space-y-10">
             <div className="space-y-5 sm:space-y-6">
               <div className="space-y-5 text-center mb-10">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black">{'Bem-vindo(a) de volta!'}</h2>
-                <p className="text-sm sm:text-base text-muted-foreground">{'Conecte-se para continuar sua jornada.'}</p>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black">{"Bem-vindo(a) de volta!"}</h2>
+                <p className="text-sm sm:text-base text-muted-foreground">{"Conecte-se para continuar sua jornada."}</p>
               </div>
-
-              {error && (
-                <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">{error}</div>
-              )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <label htmlFor="email" className="text-sm font-medium text-foreground">
-                    {'Email ou CPF'}
+                    {"Email ou CPF"}
                   </label>
                   <Input
                     id="email"
@@ -120,7 +146,7 @@ export function LoginForm() {
 
                 <div className="space-y-2">
                   <label htmlFor="password" className="text-sm font-medium text-foreground">
-                    {'Senha'}
+                    {"Senha"}
                   </label>
                   <Input
                     id="password"
@@ -128,7 +154,7 @@ export function LoginForm() {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className=""
+                    className="w-full rounded-md h-11 sm:h-12 text-sm sm:text-base"
                     required
                   />
                 </div>
@@ -140,7 +166,7 @@ export function LoginForm() {
                     onCheckedChange={(checked) => setRememberMe(checked as boolean)}
                   />
                   <label htmlFor="remember" className="text-sm font-medium text-foreground cursor-pointer">
-                    {'Lembrar de mim'}
+                    {"Lembrar de mim"}
                   </label>
                 </div>
 
@@ -149,14 +175,14 @@ export function LoginForm() {
                   disabled={isLoading}
                   className="w-full bg-[#8A0204] hover:bg-[#6a0103] text-white font-medium h-11 sm:h-12 text-sm sm:text-base rounded-md disabled:opacity-50"
                 >
-                  {isLoading ? 'Entrando...' : 'Iniciar Sessão'}
+                  {isLoading ? "Entrando..." : "Iniciar Sessão"}
                 </Button>
               </form>
 
               <div className="text-center text-sm">
-                <span className="text-muted-foreground">{'Não possui uma conta? '}</span>
+                <span className="text-muted-foreground">{"Não possui uma conta? "}</span>
                 <Link href="/signup" className="text-[#8A0204] hover:underline font-medium">
-                  {'Criar uma nova conta'}
+                  {"Criar uma nova conta"}
                 </Link>
               </div>
             </div>
@@ -167,7 +193,7 @@ export function LoginForm() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 text-sm">
             <span>{`©CheckLove, ${year}`}</span>
             <a href="#" className="hover:text-foreground underline">
-              {'Termos e Política de privacidade'}
+              {"Termos e Política de privacidade"}
             </a>
           </div>
         </div>
@@ -176,7 +202,7 @@ export function LoginForm() {
       {/* Right Column - Hero Carousel */}
       <div className="hidden lg:block lg:w-1/2 relative lg:min-h-screen rounded-l-4xl rounded-r-4xl">
         <Image
-          src={carouselSlides[currentSlide].image || '/placeholder.svg'}
+          src={carouselSlides[currentSlide].image || "/placeholder.svg"}
           alt="Pessoas conectadas em experiências"
           fill
           className="object-cover transition-opacity duration-500 rounded-l-4xl rounded-r-4xl"
@@ -200,8 +226,8 @@ export function LoginForm() {
                       onClick={() => goToSlide(index)}
                       className={`h-2 rounded-full transition-all ${
                         index === currentSlide
-                          ? 'w-10 bg-white h-[5px]'
-                          : 'w-2 h-[5px] bg-white/50 hover:bg-white/70 cursor-pointer'
+                          ? "w-10 bg-white h-[5px]"
+                          : "w-2 h-[5px] bg-white/50 hover:bg-white/70 cursor-pointer"
                       }`}
                       aria-label={`Go to slide ${index + 1}`}
                     />
@@ -231,5 +257,5 @@ export function LoginForm() {
         </div>
       </div>
     </div>
-  );
+  )
 }
