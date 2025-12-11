@@ -14,7 +14,7 @@ export function SiteHeader() {
 
   return (
     <header className="bg-white px-4 py-4 lg:px-20 mb-4">
-      <div className="mx-auto flex items-center justify-between">
+      <div className="mx-auto max-w-7xl flex items-center justify-between">
         <Logo href="/events" />
 
         <nav className="hidden items-center gap-6 lg:flex">

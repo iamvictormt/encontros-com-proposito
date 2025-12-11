@@ -135,7 +135,7 @@ export function ProductsPage() {
       <SiteHeader />
 
       <main className="flex-1 px-4 py-8 lg:px-20">
-        <div className="mx-auto flex gap-8">
+        <div className="mx-auto max-w-7xl flex gap-8">
           {/* Desktop Sidebar Filters */}
           <aside className="hidden lg:block w-64 flex-shrink-0">
             <FilterContent />
@@ -167,7 +167,7 @@ export function ProductsPage() {
             </div>
 
             {/* Products Grid */}
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
               {products.map((product, index) => (
                 <Link href={`/products/${product.id}`} key={index}>
                   <div className="group overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
@@ -185,9 +185,7 @@ export function ProductsPage() {
                       <h3 className="mb-3 text-base font-bold text-black">{product.title}</h3>
 
                       <div className="mb-4 flex items-baseline gap-2">
-                        <span className="text-xl font-bold text-black">
-                          {formatBRL(product.price)}
-                        </span>
+                        <span className="text-xl font-bold text-black">{formatBRL(product.price)}</span>
                         <span className="text-sm text-muted-foreground line-through">
                           {formatBRL(product.originalPrice)}
                         </span>

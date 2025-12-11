@@ -116,7 +116,7 @@ export function LoginForm() {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-white">
       {/* Left Column - Login Form */}
-      <div className="w-full lg:w-1/2 flex flex-col p-6 sm:p-8 md:p-12 lg:p-16 relative">
+      <div className="w-full lg:w-1/2 flex flex-col p-6 sm:p-8 md:p-12 lg:p-16 relative ">
         <div className="lg:absolute lg:top-6 lg:left-20 mb-8 lg:mb-0">
           <Logo className="text-center lg:text-left" />
         </div>

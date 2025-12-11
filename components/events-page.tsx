@@ -1,115 +1,115 @@
-"use client"
+'use client';
 
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Search, MapPin, Share2, ArrowLeft, ArrowRight, Link2, Filter } from "lucide-react"
-import Image from "next/image"
-import { useAuth } from "@/hooks/use-auth"
-import { useRouter } from "next/navigation"
-import { SiteHeader } from "./site-header"
-import { SiteFooter } from "./site-footer"
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Search, MapPin, Share2, ArrowLeft, ArrowRight, Link2, Filter } from 'lucide-react';
+import Image from 'next/image';
+import { useAuth } from '@/hooks/use-auth';
+import { useRouter } from 'next/navigation';
+import { SiteHeader } from './site-header';
+import { SiteFooter } from './site-footer';
 
 const heroSlides = [
   {
-    image: "/placeholder.svg?height=400&width=1200",
-    theme: "Tema: Espiritual",
-    location: "São Paulo/SP",
-    title: "ENCONTRO ESPIRITUAL EM SÃO PAULO",
+    image: '/placeholder.svg?height=400&width=1200',
+    theme: 'Tema: Espiritual',
+    location: 'São Paulo/SP',
+    title: 'ENCONTRO ESPIRITUAL EM SÃO PAULO',
   },
   {
-    image: "/placeholder.svg?height=400&width=1200",
-    theme: "Tema: Networking",
-    location: "Rio de Janeiro/RJ",
-    title: "GRANDES EXPERIÊNCIAS COMEÇAM AQUI",
+    image: '/placeholder.svg?height=400&width=1200',
+    theme: 'Tema: Networking',
+    location: 'Rio de Janeiro/RJ',
+    title: 'GRANDES EXPERIÊNCIAS COMEÇAM AQUI',
   },
   {
-    image: "/placeholder.svg?height=400&width=1200",
-    theme: "Tema: Negócios",
-    location: "Belo Horizonte/MG",
-    title: "CONEXÕES QUE TRANSFORMAM",
+    image: '/placeholder.svg?height=400&width=1200',
+    theme: 'Tema: Negócios',
+    location: 'Belo Horizonte/MG',
+    title: 'CONEXÕES QUE TRANSFORMAM',
   },
-]
+];
 
 const events = [
   {
     id: 1,
-    image: "/placeholder.svg?height=300&width=400",
+    image: '/placeholder.svg?height=300&width=400',
     price: 125.5,
-    date: { month: "AGO", day: 21 },
-    title: "Cinema ao ar Livre",
-    location: "Avenida Paulista",
-    time: "19:30",
+    date: { month: 'AGO', day: 21 },
+    title: 'Cinema ao ar Livre',
+    location: 'Avenida Paulista',
+    time: '19:30',
   },
   {
     id: 2,
-    image: "/placeholder.svg?height=300&width=400",
+    image: '/placeholder.svg?height=300&width=400',
     price: 125.5,
-    date: { month: "AGO", day: 20 },
-    title: "Encontro fé e vida",
-    location: "Avenida Paulista",
-    time: "19:30",
+    date: { month: 'AGO', day: 20 },
+    title: 'Encontro fé e vida',
+    location: 'Avenida Paulista',
+    time: '19:30',
   },
   {
     id: 3,
-    image: "/placeholder.svg?height=300&width=400",
+    image: '/placeholder.svg?height=300&width=400',
     price: 125.5,
-    date: { month: "AGO", day: 19 },
-    title: "EncontroBiz",
-    location: "Avenida Paulista",
-    time: "19:30",
+    date: { month: 'AGO', day: 19 },
+    title: 'EncontroBiz',
+    location: 'Avenida Paulista',
+    time: '19:30',
   },
   {
     id: 4,
-    image: "/placeholder.svg?height=300&width=400",
+    image: '/placeholder.svg?height=300&width=400',
     price: 125.5,
-    date: { month: "AGO", day: 18 },
-    title: "Pitch e Parcerias",
-    location: "Avenida Paulista",
-    time: "19:30",
+    date: { month: 'AGO', day: 18 },
+    title: 'Pitch e Parcerias',
+    location: 'Avenida Paulista',
+    time: '19:30',
   },
   {
     id: 5,
-    image: "/placeholder.svg?height=300&width=400",
+    image: '/placeholder.svg?height=300&width=400',
     price: 125.5,
-    date: { month: "AGO", day: 17 },
-    title: "Happy Hour",
-    location: "Avenida Paulista",
-    time: "19:30",
+    date: { month: 'AGO', day: 17 },
+    title: 'Happy Hour',
+    location: 'Avenida Paulista',
+    time: '19:30',
   },
   {
     id: 6,
-    image: "/placeholder.svg?height=300&width=400",
+    image: '/placeholder.svg?height=300&width=400',
     price: 125.5,
-    date: { month: "AGO", day: 16 },
-    title: "Encontro FindB",
-    location: "Avenida Paulista",
-    time: "19:30",
+    date: { month: 'AGO', day: 16 },
+    title: 'Encontro FindB',
+    location: 'Avenida Paulista',
+    time: '19:30',
   },
-]
+];
 
 export function EventsPage() {
-  const [currentSlide, setCurrentSlide] = useState(0)
-  const [year, setYear] = useState("")
-  const { isLoggedIn, logout } = useAuth()
-  const router = useRouter()
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [year, setYear] = useState('');
+  const { isLoggedIn, logout } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
-    const currentYear = new Date().getFullYear().toString()
-    setYear(currentYear)
-  }, [])
+    const currentYear = new Date().getFullYear().toString();
+    setYear(currentYear);
+  }, []);
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % heroSlides.length)
-  }
+    setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+  };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length)
-  }
+    setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+  };
 
   const handleLogout = () => {
-    logout()
-  }
+    logout();
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -117,7 +117,7 @@ export function EventsPage() {
 
       {/* Hero Banner with Carousel */}
       <section className="relative h-[600px] w-full overflow-hidden px-4 py-0 lg:px-20">
-        <div className="mx-auto">
+        <div className="mx-auto max-w-7xl">
           <div className="relative h-[600px] overflow-hidden rounded-xl">
             <div
               className="flex h-full transition-transform duration-500 ease-in-out"
@@ -126,7 +126,7 @@ export function EventsPage() {
               {heroSlides.map((slide, index) => (
                 <div key={index} className="relative min-w-full">
                   <Image
-                    src={slide.image || "/placeholder.svg"}
+                    src={slide.image || '/placeholder.svg'}
                     alt={slide.title}
                     fill
                     className="object-cover"
@@ -172,8 +172,8 @@ export function EventsPage() {
                   onClick={() => setCurrentSlide(index)}
                   className={`h-2 rounded-full transition-all ${
                     index === currentSlide
-                      ? "w-10 bg-white h-[5px]"
-                      : "w-2 h-[5px] bg-white/50 hover:bg-white/70 cursor-pointer"
+                      ? 'w-10 bg-white h-[5px]'
+                      : 'w-2 h-[5px] bg-white/50 hover:bg-white/70 cursor-pointer'
                   }`}
                   aria-label={`Go to slide ${index + 1}`}
                 />
@@ -202,7 +202,7 @@ export function EventsPage() {
 
       {/* Events Section */}
       <section className="px-4 py-8 lg:px-20">
-        <div className="mx-auto">
+        <div className="mx-auto max-w-7xl">
           {/* Section Header */}
           <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
             <h2 className="text-2xl font-bold text-black lg:text-3xl">Eventos Populares</h2>
@@ -231,7 +231,7 @@ export function EventsPage() {
               >
                 <div className="relative h-80 overflow-hidden">
                   <Image
-                    src={event.image || "/placeholder.svg"}
+                    src={event.image || '/placeholder.svg'}
                     alt={event.title}
                     fill
                     className="object-cover transition-transform group-hover:scale-105"
@@ -247,7 +247,7 @@ export function EventsPage() {
                   </div>
 
                   <div className="absolute left-3 top-3 rounded-lg bg-white px-3 py-2.5 font-semibold text-black shadow-md">
-                    R$ {event.price.toFixed(2).replace(".", ",")}
+                    R$ {event.price.toFixed(2).replace('.', ',')}
                   </div>
                 </div>
 
@@ -299,5 +299,5 @@ export function EventsPage() {
 
       <SiteFooter />
     </div>
-  )
+  );
 }
