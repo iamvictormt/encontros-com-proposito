@@ -125,16 +125,16 @@ export function EventsPage() {
           <Logo />
 
           <nav className="hidden items-center gap-6 lg:flex">
-            <Link href="/" className="text-sm font-medium text-black hover:text-black/80">
+            <Link href="/" className="font-medium text-black hover:text-black/80">
               Home
             </Link>
-            <Link href="/products" className="text-sm font-medium text-black hover:text-black/80">
+            <Link href="/products" className="font-medium text-black hover:text-black/80">
               Produtos Autorais
             </Link>
-            <Link href="/portfolio" className="text-sm font-medium text-black hover:text-black/80">
+            <Link href="/portfolio" className="font-medium text-black hover:text-black/80">
               Portfólio
             </Link>
-            <Link href="/partners" className="text-sm font-medium text-black hover:text-black/80">
+            <Link href="/partners" className="font-medium text-black hover:text-black/80">
               Empresas e Parcerias
             </Link>
           </nav>

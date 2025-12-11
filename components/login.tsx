@@ -84,14 +84,16 @@ export function Login() {
               <div className="space-y-3">
                 <Button
                   onClick={handleLogin}
-                  className="w-full bg-[#8A0204] hover:bg-[#6a0103] text-white font-medium py-5 sm:py-6 text-sm sm:text-base rounded-md"
+                  variant="outline"
+                  className="w-full bg-[#8A0204] border-[#8A0204] hover:bg-[#6a0103] text-white font-medium py-5 sm:py-6 text-sm sm:text-base rounded-md"
                 >
                   {'Entrar'}
                 </Button>
 
                 <Button
                   onClick={handleCreateAccount}
-                  className="w-full bg-[#1F4C47] hover:bg-[#163a36] text-white font-medium py-5 sm:py-6 text-sm sm:text-base rounded-md"
+                  variant="outline"
+                  className="w-full bg-[#1F4C47] border-[#1F4C47] hover:bg-[#163a36] text-white font-medium py-5 sm:py-6 text-sm sm:text-base rounded-md"
                 >
                   {'Criar uma nova conta'}
                 </Button>
