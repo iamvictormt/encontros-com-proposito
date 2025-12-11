@@ -80,7 +80,7 @@ export function SignupForm() {
 
     if (emailCpfError) {
       toast({
-        variant: "destructive",
+        variant: "error",
         title: "Erro de validação",
         description: emailCpfError,
       })
@@ -89,7 +89,7 @@ export function SignupForm() {
 
     if (password !== confirmPassword) {
       toast({
-        variant: "destructive",
+        variant: "error",
         title: "Erro de validação",
         description: "As senhas não coincidem",
       })
@@ -116,13 +116,13 @@ export function SignupForm() {
     } catch (err) {
       if (err instanceof APIError) {
         toast({
-          variant: "destructive",
+          variant: "error",
           title: "Erro ao criar conta",
           description: err.message,
         })
       } else {
         toast({
-          variant: "destructive",
+          variant: "error",
           title: "Erro ao conectar",
           description: "Erro ao conectar com o servidor",
         })

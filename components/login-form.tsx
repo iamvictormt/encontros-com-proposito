@@ -68,19 +68,20 @@ export function LoginForm() {
       toast({
         title: "Login realizado com sucesso!",
         description: "Você será redirecionado para a página de eventos.",
+        variant: "success",
       })
 
       router.push("/events")
     } catch (err) {
       if (err instanceof APIError) {
         toast({
-          variant: "destructive",
+          variant: "error",
           title: "Erro ao fazer login",
           description: err.message,
         })
       } else {
         toast({
-          variant: "destructive",
+          variant: "error",
           title: "Erro ao conectar",
           description: "Erro ao conectar com o servidor",
         })
