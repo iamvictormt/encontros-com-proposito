@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { authService } from '@/lib/services/auth.service';
 import { APIError } from '@/lib/services/api-client';
 import { formatCPF, unformatCPF, validateCPF, validateEmail, detectInputType } from '@/lib/utils/validators';
+import { Logo } from './logo';
 
 export function SignupForm() {
   const [fullName, setFullName] = useState('');
@@ -109,14 +110,8 @@ export function SignupForm() {
     <div className="min-h-screen flex flex-col lg:flex-row bg-white">
       {/* Left Column - Signup Form */}
       <div className="w-full lg:w-1/2 flex flex-col p-6 sm:p-8 md:p-12 lg:p-16 lg:relative">
-        <div className="lg:absolute lg:top-16 lg:left-16 mb-8 lg:mb-0">
-          <Link href="/">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground text-center lg:text-left">
-              <span className="text-[#8A0204]">{'Encontros '}</span>
-              <span className="text-accent">{'Com'}</span>
-              {' Proposito'}
-            </h1>
-          </Link>
+        <div className="lg:absolute lg:top-6 lg:left-20 mb-8 lg:mb-0">
+          <Logo className="text-center lg:text-left" />
         </div>
 
         <div className="flex-1 flex items-center justify-center">
@@ -202,7 +197,7 @@ export function SignupForm() {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-[#1F4C47] hover:bg-[#163a36] text-white font-medium py-5 sm:py-6 text-sm sm:text-base rounded-md disabled:opacity-50"
+                  className="w-full bg-[#1F4C47] hover:bg-[#163a36] text-white"
                 >
                   {isLoading ? 'Criando conta...' : 'Criar uma nova conta'}
                 </Button>
@@ -218,7 +213,7 @@ export function SignupForm() {
           </div>
         </div>
 
-        <div className="lg:absolute lg:bottom-16 lg:left-16 lg:right-16 mt-8 lg:mt-0">
+        <div className="lg:absolute lg:bottom-16 lg:left-20 lg:right-16 mt-8 lg:mt-0">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 text-sm">
             <span>{`©CheckLove, ${year}`}</span>
             <a href="#" className="hover:text-foreground underline">
