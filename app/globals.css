@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Updated theme colors to match Encontros Com Proposito brand */
+  /* Updated theme colors to match MeetOff brand */
   --background: #fcfcfa;
   --foreground: #1f4c47;
   --card: #fcfcfa;

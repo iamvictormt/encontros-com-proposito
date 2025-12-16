@@ -45,40 +45,6 @@ export function Login() {
 
         <div className="flex-1 flex items-center justify-center">
           <div className="w-full max-w-md space-y-6 sm:space-y-10">
-            {/* Logo */}
-            <div className="flex items-center justify-center gap-2 sm:gap-6 flex-wrap">
-              <Image
-                src="images/meet-off.png"
-                alt="MeetOff"
-                width={100}
-                height={40}
-                className="h-10 sm:h-12 w-auto object-contain"
-              />
-
-              <Image
-                src="images/findb.png?height=40&width=80"
-                alt="FindB"
-                width={80}
-                height={40}
-                className="h-10 sm:h-12 w-auto object-contain"
-              />
-
-              <Image
-                src="images/checkin-love.png?height=40&width=120"
-                alt="Check-in Love"
-                width={120}
-                height={40}
-                className="h-10 sm:h-12 w-auto object-contain"
-              />
-
-              <Image
-                src="images/mimo-meu-e-seu.png?height=40&width=100"
-                alt="Mimo Meu e Seu"
-                width={100}
-                height={40}
-                className="h-10 sm:h-12 w-auto object-contain"
-              />
-            </div>
 
             {/* Main Content */}
             <div className="space-y-5 sm:space-y-6 pt-3 sm:pt-4">
@@ -130,7 +96,7 @@ export function Login() {
 
         <div className="lg:absolute lg:bottom-16 lg:left-20 lg:right-16 mt-8 lg:mt-0">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 text-sm">
-            <span className="text-muted-foreground">{`©CheckLove, ${year}`}</span>
+            <span className="text-muted-foreground">{`©MeetOff, ${year}`}</span>
             <a href="#" className="hover:text-foreground underline">
               {'Termos e Política de privacidade'}
             </a>

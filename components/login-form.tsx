@@ -18,18 +18,18 @@ import { authService } from "@/lib/services/auth.service"
 
 const carouselSlides = [
   {
-    image: "/images/pessoas-na-mesa.jpg",
+    image: "https://images.pexels.com/photos/9578709/pexels-photo-9578709.jpeg",
     title: "Grandes Experiências começam aqui",
     description:
       "Descubra eventos que unem pessoas, histórias e propósitos presenciais ou online, com experiências únicas que fazem sentido pra você.",
   },
   {
-    image: "/images/festa.jpg",
+    image: "https://images.unsplash.com/photo-1549342902-be005322599a?q=100&w=1920",
     title: "Conecte-se com pessoas reais",
     description: "Participe de encontros presenciais e online que transformam conexões em relacionamentos verdadeiros.",
   },
   {
-    image: "/images/festa-2.jpg",
+    image: "https://images.unsplash.com/photo-1613093335399-829e30811789?q=100&w=1920",
     title: "Experiências que fazem sentido",
     description: "Viva momentos autênticos através de retiros, terapias e eventos que unem tecnologia e emoção.",
   },
@@ -67,7 +67,7 @@ export function LoginForm() {
 
       toast({
         title: "Login realizado com sucesso!",
-        description: "Você será redirecionado para a página de eventos.",
+        description: "Você será redirecionado.",
         variant: "success",
       })
 
@@ -192,7 +192,7 @@ export function LoginForm() {
 
         <div className="lg:absolute lg:bottom-16 lg:left-20 lg:right-16 mt-8 lg:mt-0">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 text-sm">
-            <span>{`©CheckLove, ${year}`}</span>
+            <span>{`©MeetOff, ${year}`}</span>
             <a href="#" className="hover:text-foreground underline">
               {"Termos e Política de privacidade"}
             </a>

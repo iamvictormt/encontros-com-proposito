@@ -109,7 +109,7 @@ export function SignupForm() {
 
       toast({
         title: "Conta criada com sucesso!",
-        description: "Você será redirecionado para a página de eventos.",
+        description: "Você será redirecionado.",
       })
 
       router.push("/events")
@@ -245,7 +245,7 @@ export function SignupForm() {
 
         <div className="lg:absolute lg:bottom-16 lg:left-20 lg:right-16 mt-8 lg:mt-0">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 text-sm">
-            <span>{`©CheckLove, ${year}`}</span>
+            <span>{`©MeetOff, ${year}`}</span>
             <a href="#" className="hover:text-foreground underline">
               {"Termos e Política de privacidade"}
             </a>
@@ -255,7 +255,7 @@ export function SignupForm() {
 
       <div className="hidden lg:block lg:w-1/2 relative lg:min-h-screen rounded-l-4xl rounded-r-4xl">
         <Image
-          src="/images/segurando-celular.jpg"
+          src="https://images.unsplash.com/photo-1631287941887-7b5185ff4791?q=80&w=1920"
           alt="Celular mostrando a plataforma de conexões"
           fill
           className="object-cover rounded-l-4xl rounded-r-4xl"

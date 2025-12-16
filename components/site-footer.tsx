@@ -15,7 +15,7 @@ export function SiteFooter() {
     <footer className="border-t border-border bg-secondary px-4 py-6 lg:px-8">
       <div className="mx-auto flex max-w-7xl items-center justify-between">
         <p className="text-sm text-secondary-foreground">
-          <span className="text-accent">CheckLove</span> | Copyright © {year}
+          <span className="text-accent">MeetOff</span> | Copyright © {year}
         </p>
         <div className="flex gap-4">
           <a href="#" className="text-secondary-foreground hover:text-accent">

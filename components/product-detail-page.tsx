@@ -162,7 +162,7 @@ export function ProductDetailPage() {
                   <Button className="flex-1 bg-accent hover:bg-accent/90 text-white rounded-lg">Comprar</Button>
                   <Button
                     variant="outline"
-                    className="flex-1 bg-white text-black border-gray-300 hover:bg-gray-50 rounded-lg"
+                    className="flex-1 bg-white text-black border-gray-300 hover:bg-gray-50 rounded-lg hover:text-black"
                   >
                     <Share2 className="mr-2 h-4 w-4" />
                     Compartilhar
