@@ -131,6 +131,7 @@ export function LoginForm() {
             src="/videos/meet-off-animation-logo.mp4"
             autoPlay
             muted
+            playsInline
             onEnded={() => {
               sessionStorage.setItem('hasSeenAnimation', 'true');
               setShowIntro(false);
