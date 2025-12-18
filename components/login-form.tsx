@@ -45,6 +45,8 @@ export function LoginForm() {
   const { isLoggedIn, isLoading: authLoading } = useAuth()
   const router = useRouter()
   const { toast } = useToast()
+  const [showIntro, setShowIntro] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     const currentYear = new Date().getFullYear().toString()
@@ -54,6 +56,14 @@ export function LoginForm() {
       router.push("/events")
     }
   }, [authLoading, isLoggedIn, router])
+
+  useEffect(() => {
+    setMounted(true)
+    const hasSeenAnimation = sessionStorage.getItem('hasSeenAnimation')
+    if (!hasSeenAnimation) {
+      setShowIntro(true)
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -114,11 +124,26 @@ export function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-white">
+    <>
+      {mounted && showIntro && (
+        <div className="fixed inset-0 bg-white z-50 flex items-center justify-center transition-opacity duration-1000 opacity-100">
+          <video
+            src="/videos/meet-off-animation-logo.mp4"
+            autoPlay
+            muted
+            onEnded={() => {
+              sessionStorage.setItem('hasSeenAnimation', 'true');
+              setShowIntro(false);
+            }}
+            className="w-full h-full object-contain"
+          />
+        </div>
+      )}
+      <div className="min-h-screen flex flex-col lg:flex-row bg-white">
       {/* Left Column - Login Form */}
       <div className="w-full lg:w-1/2 flex flex-col p-6 sm:p-8 md:p-12 lg:p-16 relative ">
         <div className="lg:absolute lg:top-6 lg:left-20 mb-8 lg:mb-0">
-          <Logo className="text-center lg:text-left" />
+          <Logo className="justify-center flex md:block" />
         </div>
 
         <div className="flex-1 flex items-center justify-center py-4">
@@ -258,5 +283,6 @@ export function LoginForm() {
         </div>
       </div>
     </div>
+    </>
   )
 }
