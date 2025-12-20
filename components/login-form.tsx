@@ -123,7 +123,6 @@ export function LoginForm() {
             autoPlay
             playsInline
             onEnded={() => {
-              setShowSuccessVideo(false);
               router.push('/events');
             }}
             className="w-full h-full object-contain"
