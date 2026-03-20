@@ -1,26 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { isAuthenticated, getAuthToken, removeAuthToken } from '@/lib/auth';
+import { authClient } from '@/lib/auth/client';
 
 export function useAuth() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: session, isPending: isLoading } = authClient.useSession();
 
-  useEffect(() => {
-    setIsLoggedIn(isAuthenticated());
-    setIsLoading(false);
-  }, []);
-
-  const logout = () => {
-    removeAuthToken();
-    setIsLoggedIn(false);
+  const logout = async () => {
+    await authClient.signOut();
   };
 
   return {
-    isLoggedIn,
+    isLoggedIn: !!session,
     isLoading,
     logout,
-    token: getAuthToken(),
+    user: session?.user,
+    session: session?.session,
   };
 }

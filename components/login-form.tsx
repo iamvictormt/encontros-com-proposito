@@ -10,11 +10,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { APIError } from '@/lib/services/api-client';
 import { Logo } from './logo';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
-import { authService } from '@/lib/services/auth.service';
+import { authClient } from '@/lib/auth/client';
 
 const carouselSlides = [
   {
@@ -61,10 +60,14 @@ export function LoginForm() {
     setIsLoading(true);
 
     try {
-      await authService.login({
-        emailOrCpf: email,
+      const { error } = await authClient.signIn.password({
+        email: email,
         password,
       });
+
+      if (error) {
+        throw error;
+      }
 
       toast({
         title: 'Login realizado com sucesso!',
@@ -74,19 +77,11 @@ export function LoginForm() {
 
       setShowSuccessVideo(true);
     } catch (err) {
-      if (err instanceof APIError) {
-        toast({
-          variant: 'error',
-          title: 'Erro ao fazer login',
-          description: err.message,
-        });
-      } else {
-        toast({
-          variant: 'error',
-          title: 'Erro ao conectar',
-          description: 'Erro ao conectar com o servidor',
-        });
-      }
+      toast({
+        variant: 'error',
+        title: 'Erro ao fazer login',
+        description: err instanceof Error ? err.message : 'Erro ao conectar com o servidor',
+      });
       setIsLoading(false);
     }
   };
@@ -149,12 +144,12 @@ export function LoginForm() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-2">
                     <label htmlFor="email" className="text-sm font-medium text-foreground">
-                      {'Email ou CPF'}
+                      {'Email'}
                     </label>
                     <Input
                       id="email"
                       type="text"
-                      placeholder="Informe seu Email ou CPF"
+                      placeholder="Informe seu Email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="w-full rounded-md h-11 sm:h-12 text-sm sm:text-base"

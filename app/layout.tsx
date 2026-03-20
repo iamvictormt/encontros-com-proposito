@@ -4,6 +4,8 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
+import { NeonAuthUIProvider } from '@neondatabase/auth/react';
+import { authClient } from '@/lib/auth/client';
 
 const _geist = Geist({ subsets: ['latin'] });
 const _geistMono = Geist_Mono({ subsets: ['latin'] });
@@ -32,9 +34,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" suppressHydrationWarning>
       <body className={`font-sans antialiased`}>
-        {children}
+        <NeonAuthUIProvider authClient={authClient}>
+          {children}
+        </NeonAuthUIProvider>
         <Analytics />
         <Toaster />
       </body>

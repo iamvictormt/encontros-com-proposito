@@ -8,12 +8,11 @@ import { Input } from "@/components/ui/input"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
- import { APIError } from "@/lib/services/api-client"
-import { formatCPF, unformatCPF, validateCPF, validateEmail, detectInputType } from "@/lib/utils/validators"
+import { validateEmail } from "@/lib/utils/validators"
 import { Logo } from "./logo"
 import { useAuth } from "@/hooks/use-auth"
 import { useToast } from "@/hooks/use-toast"
-import { authService } from "@/lib/services/auth.service"
+import { authClient } from "@/lib/auth/client"
 
 export function SignupForm() {
   const [fullName, setFullName] = useState("")
@@ -35,45 +34,6 @@ export function SignupForm() {
       router.push("/events")
     }
   }, [authLoading, isLoggedIn, router])
-
-  const handleEmailCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    const inputType = detectInputType(value)
-
-    if (inputType === "cpf") {
-      const formatted = formatCPF(value)
-      setEmail(formatted)
-      setEmailCpfError("")
-    } else if (inputType === "email") {
-      setEmail(value)
-      setEmailCpfError("")
-    } else {
-      setEmail(value)
-    }
-  }
-
-  const handleEmailCpfBlur = () => {
-    if (!email) return
-
-    const inputType = detectInputType(email)
-
-    if (inputType === "cpf") {
-      const cpfNumbers = unformatCPF(email)
-      if (cpfNumbers.length === 11 && !validateCPF(email)) {
-        setEmailCpfError("CPF inválido")
-      } else if (cpfNumbers.length > 0 && cpfNumbers.length < 11) {
-        setEmailCpfError("CPF incompleto")
-      } else {
-        setEmailCpfError("")
-      }
-    } else if (inputType === "email") {
-      if (!validateEmail(email)) {
-        setEmailCpfError("Email inválido")
-      } else {
-        setEmailCpfError("")
-      }
-    }
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -99,13 +59,15 @@ export function SignupForm() {
     setIsLoading(true)
 
     try {
-      const isEmail = email.includes("@")
-
-      await authService.register({
-        fullName,
-        ...(isEmail ? { email } : { cpf: unformatCPF(email) }),
+      const { error } = await authClient.signUp.email({
+        email,
         password,
+        name: fullName,
       })
+
+      if (error) {
+        throw error
+      }
 
       toast({
         title: "Conta criada com sucesso!",
@@ -114,19 +76,11 @@ export function SignupForm() {
 
       router.push("/events")
     } catch (err) {
-      if (err instanceof APIError) {
-        toast({
-          variant: "error",
-          title: "Erro ao criar conta",
-          description: err.message,
-        })
-      } else {
-        toast({
-          variant: "error",
-          title: "Erro ao conectar",
-          description: "Erro ao conectar com o servidor",
-        })
-      }
+      toast({
+        variant: "error",
+        title: "Erro ao criar conta",
+        description: err instanceof Error ? err.message : 'Erro ao conectar com o servidor',
+      })
       setIsLoading(false)
     }
   }
@@ -177,15 +131,24 @@ export function SignupForm() {
 
                 <div className="space-y-2">
                   <label htmlFor="email" className="text-sm font-medium text-foreground">
-                    {"Email ou CPF"}
+                    {"Email"}
                   </label>
                   <Input
                     id="email"
-                    type="text"
-                    placeholder="Informe seu Email ou CPF"
+                    type="email"
+                    placeholder="Informe seu Email"
                     value={email}
-                    onChange={handleEmailCpfChange}
-                    onBlur={handleEmailCpfBlur}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setEmailCpfError("");
+                    }}
+                    onBlur={() => {
+                      if (email && !validateEmail(email)) {
+                        setEmailCpfError("Email inválido");
+                      } else {
+                        setEmailCpfError("");
+                      }
+                    }}
                     className={`w-full rounded-md h-11 sm:h-12 text-sm sm:text-base ${
                       emailCpfError ? "border-red-500 focus-visible:ring-red-500" : ""
                     }`}
