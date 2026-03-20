@@ -1,32 +1,37 @@
+export interface AuthUser {
+  id: string;
+  fullName: string;
+  email?: string;
+  cpf?: string;
+  isAdmin?: boolean;
+}
+
 export interface AuthResponse {
-  access_token: string;
-  user: {
-    id: string;
-    fullName: string;
-    email?: string;
-    cpf?: string;
-  };
+  message?: string;
+  user: AuthUser;
 }
 
 export const setAuthToken = (token: string) => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('auth_token', token);
-  }
+  // Now using Cookies from API, so this is just for manual/client overrides if needed,
+  // but let's keep it for compatibility if any other logic uses it.
+  // Although the new approach is cookie-based and handled by the browser.
 };
 
 export const getAuthToken = (): string | null => {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('auth_token');
-  }
+  // Since we're using HttpOnly cookies, we can't access them via JS.
+  // We'll need to check authentication status by calling /api/auth/me
   return null;
 };
 
 export const removeAuthToken = () => {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('auth_token');
-  }
+  // Logout is now handled by the /api/auth/logout endpoint
 };
 
-export const isAuthenticated = (): boolean => {
-  return !!getAuthToken();
+export const isAuthenticated = async (): Promise<boolean> => {
+  try {
+    const response = await fetch('/api/auth/me');
+    return response.ok;
+  } catch {
+    return false;
+  }
 };
