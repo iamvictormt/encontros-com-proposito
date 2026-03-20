@@ -24,12 +24,21 @@ export async function middleware(request: NextRequest) {
       // Verify token
       const { payload } = await jwtVerify(token, JWT_SECRET);
 
-      // If already logged in and trying to access login/signup, redirect to home
+      // If already logged in and trying to access login/signup
       if (isPublicPath && (pathname === '/login' || pathname === '/signup')) {
+        if (payload.isAdmin) {
+          return NextResponse.redirect(new URL('/admin', request.url));
+        }
         return NextResponse.redirect(new URL('/', request.url));
       }
 
-      // Optional: Check admin status for specific routes
+      // If an admin tries to access user pages, redirect to admin
+      const isUserPage = pathname === '/' || pathname.startsWith('/events') || pathname.startsWith('/products');
+      if (payload.isAdmin && isUserPage && !pathname.startsWith('/admin')) {
+        return NextResponse.redirect(new URL('/admin', request.url));
+      }
+
+      // Check admin status for specific routes
       if (pathname.startsWith('/admin') && !payload.isAdmin) {
         return NextResponse.redirect(new URL('/', request.url));
       }
