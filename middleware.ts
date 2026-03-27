@@ -32,9 +32,8 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/', request.url));
       }
 
-      // If an admin tries to access user pages, redirect to admin
-      const isUserPage = pathname === '/' || pathname.startsWith('/events') || pathname.startsWith('/products');
-      if (payload.isAdmin && isUserPage && !pathname.startsWith('/admin')) {
+      // If an admin tries to access user pages (anything not starting with /admin or auth), redirect to admin
+      if (payload.isAdmin && !pathname.startsWith('/admin') && !isPublicPath) {
         return NextResponse.redirect(new URL('/admin', request.url));
       }
 

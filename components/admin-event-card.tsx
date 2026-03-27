@@ -15,32 +15,32 @@ interface AdminEventCardProps {
 
 export function AdminEventCard({ image, status, tags, title, date, location }: AdminEventCardProps) {
   return (
-    <Card className="overflow-hidden border-none shadow-sm bg-white">
+    <Card className="overflow-hidden border border-gray-100 shadow-sm bg-white rounded-2xl">
       <div className="relative h-48">
         <Image src={image} alt={title} fill className="object-cover" />
         <Badge
-          className="absolute top-3 left-3 bg-white text-black hover:bg-white"
-          variant="secondary"
+          className="absolute top-3 left-3 bg-white text-secondary hover:bg-white font-bold border-none px-2 py-0.5 text-[10px]"
+          variant="outline"
         >
           {status}
         </Badge>
       </div>
-      <CardContent className="p-4">
-        <div className="flex gap-2 mb-3">
+      <CardContent className="p-5">
+        <div className="flex flex-wrap gap-2 mb-4">
           {tags.map((tag, i) => (
-            <Badge key={i} variant="destructive" className="rounded-full px-3 py-1 text-[10px] font-bold uppercase">
+            <Badge key={i} className="bg-primary hover:bg-primary text-white rounded-full px-3 py-1 text-[10px] font-bold uppercase border-none">
               {tag}
             </Badge>
           ))}
         </div>
-        <h3 className="text-lg font-bold mb-1 text-black">{title}</h3>
-        <p className="text-xs text-muted-foreground mb-1">
-          <span className="font-bold">Data:</span> {date}
+        <h3 className="text-xl font-bold mb-2 text-secondary">{title}</h3>
+        <p className="text-sm text-muted-foreground mb-1">
+          <span className="font-medium">Data:</span> <span className="font-bold text-gray-700">{date}</span>
         </p>
-        <p className="text-xs text-muted-foreground mb-4">
-          <span className="font-bold">Local:</span> <span className="underline">{location}</span>
+        <p className="text-sm text-muted-foreground mb-5">
+          <span className="font-medium">Local:</span> <span className="underline font-bold text-secondary cursor-pointer">{location}</span>
         </p>
-        <Button className="w-full bg-accent hover:bg-accent/90 text-white font-bold py-2">
+        <Button className="w-full bg-accent hover:bg-accent/90 text-white font-bold py-6 rounded-xl text-base">
           Editar
         </Button>
       </CardContent>

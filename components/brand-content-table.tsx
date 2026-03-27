@@ -11,9 +11,16 @@ interface BrandContentProps {
   status: string;
 }
 
-export function BrandContentTable({ brands }: { brands: BrandContentProps[] }) {
+const defaultBrands = [
+  { logo: "https://images.unsplash.com/photo-1599305090748-36639889a67c?w=80&auto=format&fit=crop&q=60", brand: "MeetOff", page: "Home", updatedAt: "08/08/2025 14:22", status: "Publicado" },
+  { logo: "https://images.unsplash.com/photo-1599305090748-36639889a67c?w=80&auto=format&fit=crop&q=60", brand: "FindB", page: "Home", updatedAt: "08/08/2025 14:22", status: "Publicado" },
+  { logo: "https://images.unsplash.com/photo-1599305090748-36639889a67c?w=80&auto=format&fit=crop&q=60", brand: "Mesa para Sete", page: "Home", updatedAt: "08/08/2025 14:22", status: "Publicado" },
+  { logo: "https://images.unsplash.com/photo-1599305090748-36639889a67c?w=80&auto=format&fit=crop&q=60", brand: "Check In Love", page: "Home", updatedAt: "08/08/2025 14:22", status: "Publicado" },
+];
+
+export function BrandContentTable({ brands = defaultBrands }: { brands?: BrandContentProps[] }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+    <div className="bg-white rounded-xl shadow-sm overflow-hidden border-none">
       <Table>
         <TableHeader className="bg-gray-50/50">
           <TableRow>
