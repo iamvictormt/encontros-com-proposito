@@ -8,8 +8,12 @@ export function useAuth() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setIsLoggedIn(isAuthenticated());
-    setIsLoading(false);
+    const checkAuth = async () => {
+      const authStatus = await isAuthenticated();
+      setIsLoggedIn(authStatus);
+      setIsLoading(false);
+    };
+    checkAuth();
   }, []);
 
   const logout = () => {
