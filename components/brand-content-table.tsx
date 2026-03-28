@@ -1,0 +1,68 @@
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import Image from "next/image"
+
+interface BrandContentProps {
+  logo: string;
+  brand: string;
+  page: string;
+  updatedAt: string;
+  status: string;
+}
+
+const defaultBrands = [
+  { logo: "https://images.unsplash.com/photo-1599305090748-36639889a67c?w=80&auto=format&fit=crop&q=60", brand: "MeetOff", page: "Home", updatedAt: "08/08/2025 14:22", status: "Publicado" },
+  { logo: "https://images.unsplash.com/photo-1599305090748-36639889a67c?w=80&auto=format&fit=crop&q=60", brand: "FindB", page: "Home", updatedAt: "08/08/2025 14:22", status: "Publicado" },
+  { logo: "https://images.unsplash.com/photo-1599305090748-36639889a67c?w=80&auto=format&fit=crop&q=60", brand: "Mesa para Sete", page: "Home", updatedAt: "08/08/2025 14:22", status: "Publicado" },
+  { logo: "https://images.unsplash.com/photo-1599305090748-36639889a67c?w=80&auto=format&fit=crop&q=60", brand: "Check In Love", page: "Home", updatedAt: "08/08/2025 14:22", status: "Publicado" },
+];
+
+export function BrandContentTable({ brands = defaultBrands }: { brands?: BrandContentProps[] }) {
+  return (
+    <div className="bg-white rounded-xl shadow-sm overflow-hidden border-none">
+      <Table>
+        <TableHeader className="bg-gray-50/50">
+          <TableRow>
+            <TableHead className="font-bold">Marca</TableHead>
+            <TableHead className="font-bold">Página/Seção</TableHead>
+            <TableHead className="font-bold">Atualização</TableHead>
+            <TableHead className="font-bold">Status</TableHead>
+            <TableHead className="text-right font-bold">Ações</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {brands.map((brand, i) => (
+            <TableRow key={i}>
+              <TableCell>
+                <div className="flex items-center gap-3">
+                  <Image src={brand.logo} alt={brand.brand} width={40} height={40} className="rounded" />
+                  <span className="font-bold hidden lg:inline">{brand.brand}</span>
+                </div>
+              </TableCell>
+              <TableCell>
+                <Select defaultValue={brand.page}>
+                  <SelectTrigger className="w-40 bg-transparent">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Home">Home</SelectItem>
+                    <SelectItem value="Eventos">Eventos</SelectItem>
+                  </SelectContent>
+                </Select>
+              </TableCell>
+              <TableCell className="text-sm text-muted-foreground">{brand.updatedAt}</TableCell>
+              <TableCell className="text-sm text-secondary font-medium">{brand.status}</TableCell>
+              <TableCell className="text-right">
+                <div className="flex justify-end gap-2">
+                  <Button size="sm" className="bg-accent hover:bg-accent/90 text-white">Editar</Button>
+                  <Button size="sm" variant="destructive" className="bg-[#8a0204] hover:bg-[#7a0204] text-white">Deletar</Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  )
+}
