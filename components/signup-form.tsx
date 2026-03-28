@@ -105,6 +105,8 @@ export function SignupForm() {
         fullName,
         ...(isEmail ? { email } : { cpf: unformatCPF(email) }),
         password,
+        email: "",
+        cpf: ""
       })
 
       toast({
