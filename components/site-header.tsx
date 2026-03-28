@@ -6,7 +6,7 @@ import { Logo } from './logo';
 import { useAuth } from '@/hooks/use-auth';
 
 export function SiteHeader() {
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, logout, isLoading } = useAuth();
 
   const handleLogout = () => {
     logout();
@@ -33,7 +33,11 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-3">
-          {isLoggedIn ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center">
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-solid border-primary border-r-transparent"></div>
+            </div>
+          ) : isLoggedIn ? (
             <>
               <Button
                 variant="ghost"

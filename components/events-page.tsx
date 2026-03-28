@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, MapPin, Share2, ArrowLeft, ArrowRight, Link2, Filter } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import { SiteHeader } from './site-header';
@@ -150,8 +151,8 @@ export function EventsPage() {
                       <h1 className="mb-6 text-4xl font-bold leading-tight text-white lg:text-5xl">{slide.title}</h1>
 
                       <div className="flex flex-wrap gap-4">
-                        <Button size="lg" className="bg-accent hover:bg-accent/90">
-                          Participar
+                        <Button size="lg" className="bg-accent hover:bg-accent/90" asChild>
+                          <Link href={`/events/1`}>Participar</Link>
                         </Button>
 
                         <Button size="lg" variant="ghost" className="bg-transparent text-white hover:bg-white/10">
@@ -271,7 +272,9 @@ export function EventsPage() {
                   </div>
 
                   <div className="flex flex-col gap-2">
-                    <Button className="w-full bg-accent hover:bg-accent/90">Participar</Button>
+                    <Button className="w-full bg-accent hover:bg-accent/90" asChild>
+                      <Link href={`/events/${event.id}`}>Participar</Link>
+                    </Button>
                     <Button
                       variant="outline"
                       className="w-full bg-transparent text-black hover:bg-gray-50 hover:text-black/80"
