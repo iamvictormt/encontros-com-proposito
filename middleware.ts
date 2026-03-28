@@ -12,7 +12,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Paths that are public (don't need auth)
-  const isPublicPath = pathname === '/login' || pathname === '/signup' || pathname.startsWith('/api/auth');
+  const isPublicPath = pathname === '/login' || pathname === '/signup' || pathname.startsWith('/api/auth') || pathname === '/';
 
   if (!token && !isPublicPath) {
     // If not authenticated and trying to access a protected route, redirect to login
