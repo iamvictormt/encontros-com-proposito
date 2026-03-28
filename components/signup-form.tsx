@@ -1,136 +1,135 @@
-"use client"
+'use client';
 
-import type React from "react"
+import type React from 'react';
 
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import Image from "next/image"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
- import { APIError } from "@/lib/services/api-client"
-import { formatCPF, unformatCPF, validateCPF, validateEmail, detectInputType } from "@/lib/utils/validators"
-import { Logo } from "./logo"
-import { useAuth } from "@/hooks/use-auth"
-import { useToast } from "@/hooks/use-toast"
-import { authService } from "@/lib/services/auth.service"
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { APIError } from '@/lib/services/api-client';
+import { formatCPF, unformatCPF, validateCPF, validateEmail, detectInputType } from '@/lib/utils/validators';
+import { Logo } from './logo';
+import { useAuth } from '@/hooks/use-auth';
+import { useToast } from '@/hooks/use-toast';
+import { authService } from '@/lib/services/auth.service';
 
 export function SignupForm() {
-  const [fullName, setFullName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [year, setYear] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [emailCpfError, setEmailCpfError] = useState("")
-  const { isLoggedIn, isLoading: authLoading } = useAuth()
-  const router = useRouter()
-  const { toast } = useToast()
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [year, setYear] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [emailCpfError, setEmailCpfError] = useState('');
+  const { isLoggedIn, isLoading: authLoading } = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
-    const currentYear = new Date().getFullYear().toString()
-    setYear(currentYear)
+    const currentYear = new Date().getFullYear().toString();
+    setYear(currentYear);
 
     // Only redirect if they are actually logged in
     // No automatic redirection on this page unless they successfully registered
-  }, [])
+  }, []);
 
   const handleEmailCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    const inputType = detectInputType(value)
+    const value = e.target.value;
+    const inputType = detectInputType(value);
 
-    if (inputType === "cpf") {
-      const formatted = formatCPF(value)
-      setEmail(formatted)
-      setEmailCpfError("")
-    } else if (inputType === "email") {
-      setEmail(value)
-      setEmailCpfError("")
+    if (inputType === 'cpf') {
+      const formatted = formatCPF(value);
+      setEmail(formatted);
+      setEmailCpfError('');
+    } else if (inputType === 'email') {
+      setEmail(value);
+      setEmailCpfError('');
     } else {
-      setEmail(value)
+      setEmail(value);
     }
-  }
+  };
 
   const handleEmailCpfBlur = () => {
-    if (!email) return
+    if (!email) return;
 
-    const inputType = detectInputType(email)
+    const inputType = detectInputType(email);
 
-    if (inputType === "cpf") {
-      const cpfNumbers = unformatCPF(email)
+    if (inputType === 'cpf') {
+      const cpfNumbers = unformatCPF(email);
       if (cpfNumbers.length === 11 && !validateCPF(email)) {
-        setEmailCpfError("CPF inválido")
+        setEmailCpfError('CPF inválido');
       } else if (cpfNumbers.length > 0 && cpfNumbers.length < 11) {
-        setEmailCpfError("CPF incompleto")
+        setEmailCpfError('CPF incompleto');
       } else {
-        setEmailCpfError("")
+        setEmailCpfError('');
       }
-    } else if (inputType === "email") {
+    } else if (inputType === 'email') {
       if (!validateEmail(email)) {
-        setEmailCpfError("Email inválido")
+        setEmailCpfError('Email inválido');
       } else {
-        setEmailCpfError("")
+        setEmailCpfError('');
       }
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (emailCpfError) {
       toast({
-        variant: "error",
-        title: "Erro de validação",
+        variant: 'error',
+        title: 'Erro de validação',
         description: emailCpfError,
-      })
-      return
+      });
+      return;
     }
 
     if (password !== confirmPassword) {
       toast({
-        variant: "error",
-        title: "Erro de validação",
-        description: "As senhas não coincidem",
-      })
-      return
+        variant: 'error',
+        title: 'Erro de validação',
+        description: 'As senhas não coincidem',
+      });
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
-      const isEmail = email.includes("@")
+      const isEmail = email.includes('@');
 
       await authService.register({
         fullName,
-        ...(isEmail ? { email } : { cpf: unformatCPF(email) }),
+        email: isEmail ? email : '',
+        cpf: isEmail ? '' : unformatCPF(email),
         password,
-        email: "",
-        cpf: ""
-      })
+      });
 
       toast({
-        title: "Conta criada com sucesso!",
-        description: "Você será redirecionado.",
-      })
+        title: 'Conta criada com sucesso!',
+        description: 'Você será redirecionado.',
+      });
 
-      router.push("/events")
+      router.push('/events');
     } catch (err) {
       if (err instanceof APIError) {
         toast({
-          variant: "error",
-          title: "Erro ao criar conta",
+          variant: 'error',
+          title: 'Erro ao criar conta',
           description: err.message,
-        })
+        });
       } else {
         toast({
-          variant: "error",
-          title: "Erro ao conectar",
-          description: "Erro ao conectar com o servidor",
-        })
+          variant: 'error',
+          title: 'Erro ao conectar',
+          description: 'Erro ao conectar com o servidor',
+        });
       }
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   if (authLoading) {
     return (
@@ -140,7 +139,7 @@ export function SignupForm() {
           <p className="mt-4 text-muted-foreground">Carregando...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -154,16 +153,16 @@ export function SignupForm() {
           <div className="w-full max-w-md space-y-6 sm:space-y-10">
             <div className="space-y-5 sm:space-y-6">
               <div className="space-y-5 text-center mb-10">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black">{"Criar uma nova conta"}</h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black">{'Criar uma nova conta'}</h2>
                 <p className="text-sm sm:text-base text-muted-foreground">
-                  {"Vamos começar com alguns fatos sobre você"}
+                  {'Vamos começar com alguns fatos sobre você'}
                 </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <label htmlFor="fullName" className="text-sm font-medium text-foreground">
-                    {"Nome completo"}
+                    {'Nome completo'}
                   </label>
                   <Input
                     id="fullName"
@@ -178,7 +177,7 @@ export function SignupForm() {
 
                 <div className="space-y-2">
                   <label htmlFor="email" className="text-sm font-medium text-foreground">
-                    {"Email ou CPF"}
+                    {'Email ou CPF'}
                   </label>
                   <Input
                     id="email"
@@ -188,7 +187,7 @@ export function SignupForm() {
                     onChange={handleEmailCpfChange}
                     onBlur={handleEmailCpfBlur}
                     className={`w-full rounded-md h-11 sm:h-12 text-sm sm:text-base ${
-                      emailCpfError ? "border-red-500 focus-visible:ring-red-500" : ""
+                      emailCpfError ? 'border-red-500 focus-visible:ring-red-500' : ''
                     }`}
                     required
                   />
@@ -197,7 +196,7 @@ export function SignupForm() {
 
                 <div className="space-y-2">
                   <label htmlFor="password" className="text-sm font-medium text-foreground">
-                    {"Senha"}
+                    {'Senha'}
                   </label>
                   <Input
                     id="password"
@@ -212,7 +211,7 @@ export function SignupForm() {
 
                 <div className="space-y-2">
                   <label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">
-                    {"Confirmar Senha"}
+                    {'Confirmar Senha'}
                   </label>
                   <Input
                     id="confirmPassword"
@@ -230,14 +229,14 @@ export function SignupForm() {
                   disabled={isLoading}
                   className="w-full bg-[#1F4C47] hover:bg-[#163a36] text-white"
                 >
-                  {isLoading ? "Criando conta..." : "Criar uma nova conta"}
+                  {isLoading ? 'Criando conta...' : 'Criar uma nova conta'}
                 </Button>
               </form>
 
               <div className="text-center text-sm">
-                <span className="text-muted-foreground">{"Já tem uma conta? "}</span>
+                <span className="text-muted-foreground">{'Já tem uma conta? '}</span>
                 <Link href="/login" className="text-[#1F4C47] hover:underline font-medium">
-                  {"Fazer Login"}
+                  {'Fazer Login'}
                 </Link>
               </div>
             </div>
@@ -248,7 +247,7 @@ export function SignupForm() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 text-sm">
             <span>{`©MeetOff, ${year}`}</span>
             <a href="#" className="hover:text-foreground underline">
-              {"Termos e Política de privacidade"}
+              {'Termos e Política de privacidade'}
             </a>
           </div>
         </div>
@@ -267,15 +266,15 @@ export function SignupForm() {
           <div className="backdrop-blur-md rounded-xl p-8 border border-white/20">
             <div className="text-white space-y-4">
               <h2 className="text-2xl sm:text-3xl md:text-4xl text-pretty">
-                {"Acesso único, experiências autênticas."}
+                {'Acesso único, experiências autênticas.'}
               </h2>
               <p className="text-sm sm:text-base md:text-lg leading-relaxed text-pretty">
-                {"Cada convite é um portal. Use seu token e viva algo que só você pode experienciar."}
+                {'Cada convite é um portal. Use seu token e viva algo que só você pode experienciar.'}
               </p>
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

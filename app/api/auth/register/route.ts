@@ -10,7 +10,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Todos os campos são obrigatórios' }, { status: 400 });
     }
 
-    if (!validateCPF(cpf)) {
+    if (cpf && !validateCPF(cpf)) {
       return NextResponse.json({ message: 'CPF inválido' }, { status: 400 });
     }
 
