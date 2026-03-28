@@ -20,15 +20,15 @@ const defaultBrands = [
 
 export function BrandContentTable({ brands = defaultBrands }: { brands?: BrandContentProps[] }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm overflow-hidden border-none">
+    <div className="bg-white rounded-xl shadow-sm overflow-hidden p-2">
       <Table>
         <TableHeader className="bg-gray-50/50">
           <TableRow>
-            <TableHead className="font-bold">Marca</TableHead>
-            <TableHead className="font-bold">Página/Seção</TableHead>
-            <TableHead className="font-bold">Atualização</TableHead>
-            <TableHead className="font-bold">Status</TableHead>
-            <TableHead className="text-right font-bold">Ações</TableHead>
+            <TableHead className="text-muted-foreground">Marca</TableHead>
+            <TableHead className="text-muted-foreground">Página/Seção</TableHead>
+            <TableHead className="text-muted-foreground">Atualização</TableHead>
+            <TableHead className="text-muted-foreground">Status</TableHead>
+            <TableHead className="text-center text-muted-foreground">Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -37,12 +37,11 @@ export function BrandContentTable({ brands = defaultBrands }: { brands?: BrandCo
               <TableCell>
                 <div className="flex items-center gap-3">
                   <Image src={brand.logo} alt={brand.brand} width={40} height={40} className="rounded" />
-                  <span className="font-bold hidden lg:inline">{brand.brand}</span>
                 </div>
               </TableCell>
               <TableCell>
                 <Select defaultValue={brand.page}>
-                  <SelectTrigger className="w-40 bg-transparent">
+                  <SelectTrigger className="bg-transparent w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -51,10 +50,10 @@ export function BrandContentTable({ brands = defaultBrands }: { brands?: BrandCo
                   </SelectContent>
                 </Select>
               </TableCell>
-              <TableCell className="text-sm text-muted-foreground">{brand.updatedAt}</TableCell>
+              <TableCell className="text-sm text-black">{brand.updatedAt}</TableCell>
               <TableCell className="text-sm text-secondary font-medium">{brand.status}</TableCell>
               <TableCell className="text-right">
-                <div className="flex justify-end gap-2">
+                <div className="flex justify-center gap-2">
                   <Button size="sm" className="bg-accent hover:bg-accent/90 text-white">Editar</Button>
                   <Button size="sm" variant="destructive" className="bg-[#8a0204] hover:bg-[#7a0204] text-white">Deletar</Button>
                 </div>

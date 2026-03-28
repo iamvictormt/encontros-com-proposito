@@ -10,7 +10,10 @@ import {
   ShoppingBag,
   PieChart,
   Users,
-  Settings
+  Settings,
+  Building2,
+  CalendarDays,
+  PackageOpen
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/logo';
@@ -19,9 +22,9 @@ const menuSections = [
   {
     items: [
       { icon: LayoutGrid, label: 'Visão Geral', href: '/admin' },
-      { icon: Calendar, label: 'Eventos', href: '/admin/events' },
-      { icon: MapPin, label: 'Locais & Empresas', href: '/admin/venues' },
-      { icon: Tag, label: 'Conteúdo das Marcas', href: '/admin/brands' },
+      { icon: CalendarDays, label: 'Eventos', href: '/admin/events' },
+      { icon: Building2, label: 'Locais & Empresas', href: '/admin/venues' },
+      { icon: PackageOpen, label: 'Conteúdo das Marcas', href: '/admin/brands' },
       { icon: ShoppingBag, label: 'Loja & Produtos', href: '/admin/products' },
       { icon: PieChart, label: 'Relatórios', href: '/admin/reports' },
       { icon: Users, label: 'Equipe & Cargos', href: '/admin/team' },
