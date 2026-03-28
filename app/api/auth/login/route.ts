@@ -4,7 +4,7 @@ import { comparePassword, signJWT } from '@/lib/auth-utils';
 
 export async function POST(request: Request) {
   try {
-    const { emailOrCpf, password } = await request.json();
+    const { emailOrCpf, password, rememberMe } = await request.json();
 
     if (!emailOrCpf || !password) {
       return NextResponse.json(
@@ -56,13 +56,18 @@ export async function POST(request: Request) {
       { status: 200 }
     );
 
-    response.cookies.set('auth_token', token, {
+    const cookieOptions: any = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24, // 24 hours
       path: '/',
-    });
+    };
+
+    if (rememberMe) {
+      cookieOptions.maxAge = 60 * 60 * 4; // 4 hours
+    }
+
+    response.cookies.set('auth_token', token, cookieOptions);
 
     return response;
   } catch (error) {

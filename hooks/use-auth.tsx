@@ -1,26 +1,54 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { isAuthenticated, getAuthToken, removeAuthToken } from '@/lib/auth';
+import { useState, useEffect, useCallback } from 'react';
+import { isAuthenticated } from '@/lib/auth';
+import { authService, AuthUser } from '@/lib/services/auth.service';
+import { useRouter } from 'next/navigation';
 
 export function useAuth() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
-  useEffect(() => {
-    setIsLoggedIn(isAuthenticated());
-    setIsLoading(false);
+  const checkAuth = useCallback(async () => {
+    try {
+      const isAuth = await isAuthenticated();
+      setIsLoggedIn(isAuth);
+      if (isAuth) {
+        const userData = await authService.getCurrentUser();
+        setUser(userData);
+      } else {
+        setUser(null);
+      }
+    } catch (error) {
+      setIsLoggedIn(false);
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  const logout = () => {
-    removeAuthToken();
-    setIsLoggedIn(false);
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  const logout = async () => {
+    try {
+      await authService.logout();
+      setIsLoggedIn(false);
+      setUser(null);
+      router.push('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   return {
     isLoggedIn,
+    user,
     isLoading,
     logout,
-    token: getAuthToken(),
+    refreshAuth: checkAuth,
   };
 }

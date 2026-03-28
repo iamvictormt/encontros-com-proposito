@@ -10,10 +10,23 @@ import {
   Building2,
   CalendarDays,
   PackageOpen,
-  ShoppingCart
+  ShoppingCart,
+  LogOut
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/logo';
+import { useAuth } from '@/hooks/use-auth';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const menuSections = [
   {
@@ -37,6 +50,7 @@ const menuSections = [
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const { logout } = useAuth();
 
   return (
     <aside className="w-72 border-r bg-white flex flex-col h-screen sticky top-0">
@@ -44,8 +58,9 @@ export function AdminSidebar() {
         <Logo href="/admin" />
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-6 pb-4">
+      <nav className="flex-1 overflow-y-auto px-6 pb-4 flex flex-col">
         <div className="h-px bg-gray-100 mb-6" />
+        <div className="flex-1">
         {menuSections.map((section, sectionIdx) => (
           <div key={sectionIdx} className={cn("py-2", section.borderTop && "border-t border-gray-100 mt-4")}>
             <div className="space-y-4 py-2">
@@ -70,6 +85,37 @@ export function AdminSidebar() {
             </div>
           </div>
         ))}
+        </div>
+
+        <div className="py-2 border-t border-gray-100 mt-auto">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button
+                className="flex items-center gap-4 px-3 py-2 rounded-lg text-sm font-bold transition-colors text-muted-foreground hover:text-red-600 w-full cursor-pointer"
+              >
+                <LogOut className="w-6 h-6" />
+                <span className="tracking-tight">Sair</span>
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Deseja realmente sair?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Sua sessão será encerrada e você precisará fazer login novamente para acessar o painel administrativo.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={logout}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  Sair
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
       </nav>
     </aside>
   );

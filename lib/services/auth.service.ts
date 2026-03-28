@@ -5,6 +5,7 @@ import { API_CONFIG } from "@/lib/config/api.config"
 export interface LoginCredentials {
   emailOrCpf: string
   password: string
+  rememberMe?: boolean
 }
 
 export interface RegisterData {
