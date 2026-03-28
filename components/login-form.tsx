@@ -42,29 +42,33 @@ export function LoginForm() {
   const [year, setYear] = useState('');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const { isLoggedIn, isLoading: authLoading } = useAuth();
+  const { isLoggedIn, user, isLoading: authLoading, refreshAuth } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [showSuccessVideo, setShowSuccessVideo] = useState(false);
+  const [userData, setUserData] = useState<any>(null);
 
   useEffect(() => {
     const currentYear = new Date().getFullYear().toString();
     setYear(currentYear);
 
-    if (!authLoading && isLoggedIn) {
-      router.push('/events');
+    if (!authLoading && isLoggedIn && user && !showSuccessVideo) {
+      router.push(user.isAdmin ? '/admin' : '/events');
     }
-  }, [authLoading, isLoggedIn, router]);
+  }, [authLoading, isLoggedIn, user, router, showSuccessVideo]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      await authService.login({
+      const response = await authService.login({
         emailOrCpf: email,
         password,
+        rememberMe,
       });
+
+      setUserData(response.user);
 
       toast({
         title: 'Login realizado com sucesso!',
@@ -73,6 +77,18 @@ export function LoginForm() {
       });
 
       setShowSuccessVideo(true);
+
+      // Update auth context
+      await refreshAuth();
+
+      // Fallback redirection after 5 seconds in case video doesn't end properly
+      setTimeout(() => {
+        if (response.user.isAdmin) {
+          router.push('/admin');
+        } else {
+          router.push('/events');
+        }
+      }, 5000);
     } catch (err) {
       if (err instanceof APIError) {
         toast({
@@ -121,9 +137,14 @@ export function LoginForm() {
           <video
             src="/videos/meet-off-animation-logo.mp4"
             autoPlay
+            muted
             playsInline
             onEnded={() => {
-              router.push('/events');
+              if (userData?.isAdmin) {
+                router.push('/admin');
+              } else {
+                router.push('/events');
+              }
             }}
             className="w-full h-full object-contain"
           />

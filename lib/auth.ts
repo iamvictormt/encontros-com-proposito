@@ -29,7 +29,12 @@ export const removeAuthToken = () => {
 
 export const isAuthenticated = async (): Promise<boolean> => {
   try {
-    const response = await fetch('/api/auth/me');
+    const response = await fetch('/api/auth/me', {
+      method: 'GET',
+      headers: {
+        'Cache-Control': 'no-cache',
+      },
+    });
     return response.ok;
   } catch {
     return false;

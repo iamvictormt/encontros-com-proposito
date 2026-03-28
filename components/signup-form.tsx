@@ -31,10 +31,9 @@ export function SignupForm() {
     const currentYear = new Date().getFullYear().toString()
     setYear(currentYear)
 
-    if (!authLoading && isLoggedIn) {
-      router.push("/events")
-    }
-  }, [authLoading, isLoggedIn, router])
+    // Only redirect if they are actually logged in
+    // No automatic redirection on this page unless they successfully registered
+  }, [])
 
   const handleEmailCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
