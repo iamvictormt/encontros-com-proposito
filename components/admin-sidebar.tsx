@@ -4,16 +4,13 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutGrid,
-  Calendar,
-  MapPin,
-  Tag,
-  ShoppingBag,
   PieChart,
   Users,
   Settings,
   Building2,
   CalendarDays,
-  PackageOpen
+  PackageOpen,
+  ShoppingCart
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/logo';
@@ -25,7 +22,7 @@ const menuSections = [
       { icon: CalendarDays, label: 'Eventos', href: '/admin/events' },
       { icon: Building2, label: 'Locais & Empresas', href: '/admin/venues' },
       { icon: PackageOpen, label: 'Conteúdo das Marcas', href: '/admin/brands' },
-      { icon: ShoppingBag, label: 'Loja & Produtos', href: '/admin/products' },
+      { icon: ShoppingCart, label: 'Loja & Produtos', href: '/admin/products' },
       { icon: PieChart, label: 'Relatórios', href: '/admin/reports' },
       { icon: Users, label: 'Equipe & Cargos', href: '/admin/team' },
     ]
