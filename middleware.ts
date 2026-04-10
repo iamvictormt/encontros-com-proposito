@@ -16,7 +16,11 @@ export async function middleware(request: NextRequest) {
     pathname === "/login" ||
     pathname === "/signup" ||
     pathname.startsWith("/api/auth") ||
-    pathname === "/";
+    pathname === "/" ||
+    pathname.startsWith("/events") ||
+    pathname.startsWith("/products") ||
+    pathname.startsWith("/portfolio") ||
+    pathname.startsWith("/partners");
 
   if (!token && !isPublicPath) {
     // If not authenticated and trying to access a protected route, redirect to login

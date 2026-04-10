@@ -289,11 +289,13 @@ export function LoginForm() {
                   </Button>
                 </form>
 
-                <div className="text-center text-sm">
-                  <span className="text-muted-foreground">{"Não possui uma conta? "}</span>
-                  <Link href="/signup" className="text-[#8A0204] hover:underline font-medium">
-                    {"Criar uma nova conta"}
-                  </Link>
+                <div className="text-center text-sm flex flex-col gap-3">
+                  <div>
+                    <span className="text-muted-foreground">{"Não possui uma conta? "}</span>
+                    <Link href="/signup" className="text-[#8A0204] hover:underline font-medium">
+                      {"Criar uma nova conta"}
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>

@@ -241,11 +241,13 @@ export function SignupForm() {
                 </Button>
               </form>
 
-              <div className="text-center text-sm">
-                <span className="text-muted-foreground">{"Já tem uma conta? "}</span>
-                <Link href="/login" className="text-[#1F4C47] hover:underline font-medium">
-                  {"Fazer Login"}
-                </Link>
+              <div className="text-center text-sm flex flex-col gap-3">
+                <div>
+                  <span className="text-muted-foreground">{"Já tem uma conta? "}</span>
+                  <Link href="/login" className="text-[#1F4C47] hover:underline font-medium">
+                    {"Fazer Login"}
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
