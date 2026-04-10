@@ -97,8 +97,8 @@ export function Login() {
 
         <div className="lg:absolute lg:bottom-16 lg:left-20 lg:right-16 mt-8 lg:mt-0">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 text-sm">
-            <span className="text-muted-foreground">{`©MeetOff, ${year}`}</span>
-            <a href="#" className="hover:text-foreground underline">
+            <span className="text-gray-500">{`©MeetOff, ${year}`}</span>
+            <a href="#" className="text-black hover:text-black underline">
               {"Termos e Política de privacidade"}
             </a>
           </div>
@@ -106,14 +106,16 @@ export function Login() {
       </div>
 
       {/* Right Column - Hero Image */}
-      <div className="hidden lg:block lg:w-1/2 relative lg:min-h-screen rounded-l-4xl rounded-r-4xl">
-        <Image
-          src="/images/homem-e-mulher.jpg"
-          alt="Casal feliz representando conexões com propósito"
-          fill
-          className="object-cover rounded-l-4xl rounded-r-4xl"
-          priority
-        />
+      <div className="hidden lg:block lg:w-1/2 relative lg:min-h-screen flex-1 order-last">
+        <div className="absolute inset-0 w-full h-full">
+          <Image
+            src="/images/homem-e-mulher.jpg"
+            alt="Casal feliz representando conexões com propósito"
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
 
         {/* Overlay Text */}
         <div className="absolute bottom-0 left-0 right-0 p-12 z-20">

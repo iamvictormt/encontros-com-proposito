@@ -15,6 +15,13 @@ import { Logo } from "./logo";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { authService } from "@/lib/services/auth.service";
+import {
+  formatCPF,
+  unformatCPF,
+  validateCPF,
+  validateEmail,
+  detectInputType,
+} from "@/lib/utils/validators";
 
 const carouselSlides = [
   {
@@ -44,6 +51,7 @@ export function LoginForm() {
   const [year, setYear] = useState("");
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [emailCpfError, setEmailCpfError] = useState("");
   const { isLoggedIn, user, isLoading: authLoading, refreshAuth } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
@@ -59,13 +67,65 @@ export function LoginForm() {
     }
   }, [authLoading, isLoggedIn, user, router, showSuccessVideo]);
 
+  const handleEmailCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const inputType = detectInputType(value);
+
+    if (inputType === "cpf") {
+      const formatted = formatCPF(value);
+      setEmail(formatted);
+      setEmailCpfError("");
+    } else if (inputType === "email") {
+      setEmail(value);
+      setEmailCpfError("");
+    } else {
+      setEmail(value);
+    }
+  };
+
+  const handleEmailCpfBlur = () => {
+    if (!email) return;
+
+    const inputType = detectInputType(email);
+
+    if (inputType === "cpf") {
+      const cpfNumbers = unformatCPF(email);
+      if (cpfNumbers.length === 11 && !validateCPF(email)) {
+        setEmailCpfError("CPF inválido");
+      } else if (cpfNumbers.length > 0 && cpfNumbers.length < 11) {
+        setEmailCpfError("CPF incompleto");
+      } else {
+        setEmailCpfError("");
+      }
+    } else if (inputType === "email") {
+      if (!validateEmail(email)) {
+        setEmailCpfError("Email inválido");
+      } else {
+        setEmailCpfError("");
+      }
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (emailCpfError) {
+      toast({
+        variant: "error",
+        title: "Erro de validação",
+        description: emailCpfError,
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
+      const inputType = detectInputType(email);
+      const loginIdentifier = inputType === "cpf" ? unformatCPF(email) : email;
+
       const response = await authService.login({
-        emailOrCpf: email,
+        emailOrCpf: loginIdentifier,
         password,
         rememberMe,
       });
@@ -181,10 +241,14 @@ export function LoginForm() {
                       type="text"
                       placeholder="Informe seu Email ou CPF"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full rounded-md h-11 sm:h-12 text-sm sm:text-base"
+                      onChange={handleEmailCpfChange}
+                      onBlur={handleEmailCpfBlur}
+                      className={`w-full rounded-md h-11 sm:h-12 text-sm sm:text-base ${
+                        emailCpfError ? "border-red-500 focus-visible:ring-red-500" : ""
+                      }`}
                       required
                     />
+                    {emailCpfError && <p className="text-xs text-red-600">{emailCpfError}</p>}
                   </div>
 
                   <div className="space-y-2">
@@ -210,7 +274,7 @@ export function LoginForm() {
                     />
                     <label
                       htmlFor="remember"
-                      className="text-sm font-medium text-foreground cursor-pointer"
+                      className="text-sm font-medium text-black cursor-pointer"
                     >
                       {"Lembrar de mim"}
                     </label>
@@ -237,8 +301,8 @@ export function LoginForm() {
 
           <div className="lg:absolute lg:bottom-16 lg:left-20 lg:right-16 mt-8 lg:mt-0">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 text-sm">
-              <span>{`©MeetOff, ${year}`}</span>
-              <a href="#" className="hover:text-foreground underline">
+              <span className="text-gray-500">{`©MeetOff, ${year}`}</span>
+              <a href="#" className="text-black hover:text-black underline">
                 {"Termos e Política de privacidade"}
               </a>
             </div>

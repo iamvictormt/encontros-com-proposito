@@ -253,8 +253,8 @@ export function SignupForm() {
 
         <div className="lg:absolute lg:bottom-16 lg:left-20 lg:right-16 mt-8 lg:mt-0">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 text-sm">
-            <span>{`©MeetOff, ${year}`}</span>
-            <a href="#" className="hover:text-foreground underline">
+            <span className="text-gray-500">{`©MeetOff, ${year}`}</span>
+            <a href="#" className="text-black hover:text-black underline">
               {"Termos e Política de privacidade"}
             </a>
           </div>
