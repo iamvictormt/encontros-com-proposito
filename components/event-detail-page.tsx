@@ -228,7 +228,7 @@ export function EventDetailPage() {
                       </div>
                     </div>
                     <Image
-                      src="/placeholder.svg?height=200&width=200"
+                      src="https://images.unsplash.com/photo-1566534335938-05f1f2949435?q=80&w=687&auto=format&fit=crop"
                       alt="Lenço de Pescoço"
                       fill
                       className="object-cover rounded-lg"
@@ -247,7 +247,7 @@ export function EventDetailPage() {
                       </div>
                     </div>
                     <Image
-                      src="/placeholder.svg?height=200&width=200"
+                      src="https://images.unsplash.com/photo-1669311266055-d13419bdc535?q=80&w=687&auto=format&fit=crop"
                       alt="Camiseteta Autoral"
                       fill
                       className="object-cover rounded-lg"
@@ -264,7 +264,7 @@ export function EventDetailPage() {
                       <div className="w-[14px] h-[14px] rounded-full border-2 border-[#F28D35]"></div>
                     </div>
                     <Image
-                      src="/placeholder.svg?height=200&width=200"
+                      src="https://images.unsplash.com/photo-1614330258898-86823c7e3de2?q=80&w=1470&auto=format&fit=crop"
                       alt="Pulseira de identificação"
                       fill
                       className="object-cover rounded-lg"

@@ -8,7 +8,8 @@ import { RoleAssignmentList } from "@/components/role-assignment-list";
 const mockEvents = [
   {
     id: 1,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1629709960734-e52c75717c21?q=80&w=686&auto=format&fit=crop",
     status: "Ativo" as const,
     tags: ["Casais", "Sem Crianças"],
     title: "Retiro de Casais",
@@ -17,7 +18,8 @@ const mockEvents = [
   },
   {
     id: 2,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=800&auto=format&fit=crop",
     status: "Offline" as const,
     tags: ["Terapeutas", "Apenas Profissionais"],
     title: "Networking Terapeutas",
@@ -26,7 +28,8 @@ const mockEvents = [
   },
   {
     id: 3,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1574096079513-d8259312b785?q=80&w=800&auto=format&fit=crop",
     status: "Ativo" as const,
     tags: ["LGBTQIA+", "Sem crianças"],
     title: "Happy Hour",
@@ -41,52 +44,55 @@ const mockVenues = [
     location: "São Paulo/SP",
     type: "Cafeteria",
     image:
-      "https://images.unsplash.com/photo-1629709960734-e52c75717c21?q=80&w=686&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://images.unsplash.com/photo-1629709960734-e52c75717c21?q=80&w=686&auto=format&fit=crop",
   },
   {
     name: "Café Central",
     location: "São Paulo/SP",
     type: "Cafeteria",
-    image: "/placeholder.svg?height=100&width=100",
+    image:
+      "https://images.unsplash.com/photo-1629709960734-e52c75717c21?q=80&w=686&auto=format&fit=crop",
   },
   {
     name: "Café Central",
     location: "São Paulo/SP",
     type: "Cafeteria",
-    image: "/placeholder.svg?height=100&width=100",
+    image:
+      "https://images.unsplash.com/photo-1629709960734-e52c75717c21?q=80&w=686&auto=format&fit=crop",
   },
   {
     name: "Café Central",
     location: "São Paulo/SP",
     type: "Cafeteria",
-    image: "/placeholder.svg?height=100&width=100",
+    image:
+      "https://images.unsplash.com/photo-1629709960734-e52c75717c21?q=80&w=686&auto=format&fit=crop",
   },
 ];
 
 const mockBrands = [
   {
-    logo: "/placeholder.svg?height=40&width=40",
+    logo: "https://images.unsplash.com/photo-1608541737042-87a12275d313?q=80&w=1461&auto=format&fit=crop",
     brand: "MeetOff",
     page: "Home",
     updatedAt: "08/08/2025 14:22",
     status: "Publicado",
   },
   {
-    logo: "/placeholder.svg?height=40&width=40",
+    logo: "https://images.unsplash.com/photo-1608541737042-87a12275d313?q=80&w=1461&auto=format&fit=crop",
     brand: "FindB",
     page: "Home",
     updatedAt: "08/08/2025 14:22",
     status: "Publicado",
   },
   {
-    logo: "/placeholder.svg?height=40&width=40",
+    logo: "https://images.unsplash.com/photo-1608541737042-87a12275d313?q=80&w=1461&auto=format&fit=crop",
     brand: "Mesa para Sete",
     page: "Home",
     updatedAt: "08/08/2025 14:22",
     status: "Publicado",
   },
   {
-    logo: "/placeholder.svg?height=40&width=40",
+    logo: "https://images.unsplash.com/photo-1608541737042-87a12275d313?q=80&w=1461&auto=format&fit=crop",
     brand: "Check In Love",
     page: "Home",
     updatedAt: "08/08/2025 14:22",

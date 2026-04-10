@@ -26,28 +26,28 @@ interface BrandContentProps {
 
 const defaultBrands = [
   {
-    logo: "https://images.unsplash.com/photo-1599305090748-36639889a67c?w=80&auto=format&fit=crop&q=60",
+    logo: "https://images.unsplash.com/photo-1608541737042-87a12275d313?q=80&w=1461&auto=format&fit=crop",
     brand: "MeetOff",
     page: "Home",
     updatedAt: "08/08/2025 14:22",
     status: "Publicado",
   },
   {
-    logo: "https://images.unsplash.com/photo-1599305090748-36639889a67c?w=80&auto=format&fit=crop&q=60",
+    logo: "https://images.unsplash.com/photo-1608541737042-87a12275d313?q=80&w=1461&auto=format&fit=crop",
     brand: "FindB",
     page: "Home",
     updatedAt: "08/08/2025 14:22",
     status: "Publicado",
   },
   {
-    logo: "https://images.unsplash.com/photo-1599305090748-36639889a67c?w=80&auto=format&fit=crop&q=60",
+    logo: "https://images.unsplash.com/photo-1608541737042-87a12275d313?q=80&w=1461&auto=format&fit=crop",
     brand: "Mesa para Sete",
     page: "Home",
     updatedAt: "08/08/2025 14:22",
     status: "Publicado",
   },
   {
-    logo: "https://images.unsplash.com/photo-1599305090748-36639889a67c?w=80&auto=format&fit=crop&q=60",
+    logo: "https://images.unsplash.com/photo-1608541737042-87a12275d313?q=80&w=1461&auto=format&fit=crop",
     brand: "Check In Love",
     page: "Home",
     updatedAt: "08/08/2025 14:22",

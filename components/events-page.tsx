@@ -13,19 +13,22 @@ import { SiteFooter } from "./site-footer";
 
 const heroSlides = [
   {
-    image: "/placeholder.svg?height=400&width=1200",
+    image:
+      "https://images.unsplash.com/photo-1528319725582-ddc096101511?q=80&w=1200&auto=format&fit=crop",
     theme: "Tema: Espiritual",
     location: "São Paulo/SP",
     title: "ENCONTRO ESPIRITUAL EM SÃO PAULO",
   },
   {
-    image: "/placeholder.svg?height=400&width=1200",
+    image:
+      "https://images.unsplash.com/photo-1515187029135-18ee286d815b?q=80&w=1200&auto=format&fit=crop",
     theme: "Tema: Networking",
     location: "Rio de Janeiro/RJ",
     title: "GRANDES EXPERIÊNCIAS COMEÇAM AQUI",
   },
   {
-    image: "/placeholder.svg?height=400&width=1200",
+    image:
+      "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=1200&auto=format&fit=crop",
     theme: "Tema: Negócios",
     location: "Belo Horizonte/MG",
     title: "CONEXÕES QUE TRANSFORMAM",
@@ -35,7 +38,8 @@ const heroSlides = [
 const events = [
   {
     id: 1,
-    image: "/placeholder.svg?height=300&width=400",
+    image:
+      "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=800&auto=format&fit=crop",
     price: 125.5,
     date: { month: "AGO", day: 21 },
     title: "Cinema ao ar Livre",
@@ -44,7 +48,8 @@ const events = [
   },
   {
     id: 2,
-    image: "/placeholder.svg?height=300&width=400",
+    image:
+      "https://images.unsplash.com/photo-1510076857177-7470076d4098?q=80&w=800&auto=format&fit=crop",
     price: 125.5,
     date: { month: "AGO", day: 20 },
     title: "Encontro fé e vida",
@@ -53,7 +58,8 @@ const events = [
   },
   {
     id: 3,
-    image: "/placeholder.svg?height=300&width=400",
+    image:
+      "https://images.unsplash.com/photo-1556761175-b413da4baf72?q=80&w=800&auto=format&fit=crop",
     price: 125.5,
     date: { month: "AGO", day: 19 },
     title: "EncontroBiz",
@@ -62,7 +68,8 @@ const events = [
   },
   {
     id: 4,
-    image: "/placeholder.svg?height=300&width=400",
+    image:
+      "https://images.unsplash.com/photo-1750378863838-601115720908?q=80&w=1470&auto=format&fit=crop",
     price: 125.5,
     date: { month: "AGO", day: 18 },
     title: "Pitch e Parcerias",
@@ -71,7 +78,8 @@ const events = [
   },
   {
     id: 5,
-    image: "/placeholder.svg?height=300&width=400",
+    image:
+      "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop",
     price: 125.5,
     date: { month: "AGO", day: 17 },
     title: "Happy Hour",
@@ -80,7 +88,8 @@ const events = [
   },
   {
     id: 6,
-    image: "/placeholder.svg?height=300&width=400",
+    image:
+      "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=800&auto=format&fit=crop",
     price: 125.5,
     date: { month: "AGO", day: 16 },
     title: "Encontro FindB",

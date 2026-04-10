@@ -21,7 +21,7 @@ export default function AdminProducts() {
       category: "Vestuário",
       price: "R$ 125,50",
       image:
-        "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=60",
+        "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?q=80&w=715&auto=format&fit=crop",
     },
     {
       name: 'Kit "Mimo Meu e Seu"',
@@ -30,7 +30,7 @@ export default function AdminProducts() {
       category: "Presentes",
       price: "R$ 125,50",
       image:
-        "https://images.unsplash.com/photo-1549465220-1d8c9d9c47db?w=800&auto=format&fit=crop&q=60",
+        "https://images.unsplash.com/photo-1600634999623-864991678406?q=80&w=1470&auto=format&fit=crop",
     },
     {
       name: "Lenço Simbólico Categoria Fé",
@@ -39,7 +39,7 @@ export default function AdminProducts() {
       category: "Acessórios",
       price: "R$ 125,50",
       image:
-        "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=800&auto=format&fit=crop&q=60",
+        "https://images.unsplash.com/photo-1773595033919-43d0376aa741?q=80&w=687&auto=format&fit=crop",
     },
   ];
 

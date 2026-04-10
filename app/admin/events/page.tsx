@@ -14,7 +14,7 @@ const events = [
   {
     id: 1,
     image:
-      "https://images.unsplash.com/photo-1629709960734-e52c75717c21?q=80&w=686&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://images.unsplash.com/photo-1629709960734-e52c75717c21?q=80&w=686&auto=format&fit=crop",
     status: "Ativo" as const,
     tags: ["Casais", "Sem Crianças"],
     title: "Retiro de Casais",
@@ -23,7 +23,8 @@ const events = [
   },
   {
     id: 2,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=800&auto=format&fit=crop",
     status: "Offline" as const,
     tags: ["Terapeutas", "Apenas Profissionais"],
     title: "Networking Terapeutas",
@@ -32,7 +33,8 @@ const events = [
   },
   {
     id: 3,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop",
     status: "Ativo" as const,
     tags: ["LGBTQIA+", "Sem crianças"],
     title: "Happy Hour",
@@ -41,55 +43,61 @@ const events = [
   },
   {
     id: 4,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1649205608141-3e898e8f209b?q=80&w=687&auto=format&fit=crop",
     status: "Ativo" as const,
     tags: ["Casais", "Sem Crianças"],
-    title: "Retiro de Casais",
+    title: "Retiro Natureza",
     date: "20/09/2025",
     location: "São Paulo/SP",
   },
   {
     id: 5,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=1470&auto=format&fit=crop",
     status: "Offline" as const,
     tags: ["Terapeutas", "Apenas Profissionais"],
-    title: "Networking Terapeutas",
+    title: "Encontro Profissional",
     date: "20/09/2025",
     location: "São Paulo/SP",
   },
   {
     id: 6,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1470337458703-46ad1756a187?q=80&w=800&auto=format&fit=crop",
     status: "Ativo" as const,
-    tags: ["LGBTQIA+", "Sem crianças"],
-    title: "Happy Hour",
+    tags: ["Música", "Sem crianças"],
+    title: "Lounge Night",
     date: "20/09/2025",
     location: "São Paulo/SP",
   },
   {
     id: 7,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1525206809752-65312b959c88?q=80&w=687&auto=format&fit=crop",
     status: "Ativo" as const,
     tags: ["Casais", "Sem Crianças"],
-    title: "Retiro de Casais",
+    title: "Vivência de Casais",
     date: "20/09/2025",
     location: "São Paulo/SP",
   },
   {
     id: 8,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1515187029135-18ee286d815b?q=80&w=800&auto=format&fit=crop",
     status: "Offline" as const,
-    tags: ["Terapeutas", "Apenas Profissionais"],
-    title: "Networking Terapeutas",
+    tags: ["Startup", "Investimento"],
+    title: "Networking Meetup",
     date: "20/09/2025",
     location: "São Paulo/SP",
   },
   {
     id: 9,
-    image: "/placeholder.svg?height=400&width=600",
+    image:
+      "https://images.unsplash.com/photo-1574096079513-d8259312b785?q=80&w=800&auto=format&fit=crop",
     status: "Ativo" as const,
     tags: ["LGBTQIA+", "Sem crianças"],
-    title: "Happy Hour",
+    title: "Social Encontro",
     date: "20/09/2025",
     location: "São Paulo/SP",
   },

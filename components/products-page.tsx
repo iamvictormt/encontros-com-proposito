@@ -37,14 +37,80 @@ const delivery = [
   { id: "online", label: "Acesso Online" },
 ];
 
-const products = Array(8).fill({
-  id: 1,
-  image: "/placeholder.svg?height=300&width=300",
-  category: "Camisetas",
-  title: "Camiseta Preta",
-  price: 125.5,
-  originalPrice: 250.0,
-});
+const products = [
+  {
+    id: 1,
+    image:
+      "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=800&auto=format&fit=crop",
+    category: "Camisetas",
+    title: "Camiseta Branca Autoral",
+    price: 125.5,
+    originalPrice: 250.0,
+  },
+  {
+    id: 2,
+    image:
+      "https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=800&auto=format&fit=crop",
+    category: "Lenços",
+    title: "Lenço de Seda Floral",
+    price: 85.0,
+    originalPrice: 120.0,
+  },
+  {
+    id: 3,
+    image:
+      "https://images.unsplash.com/photo-1571782742478-0816a4773a10?q=80&w=701&auto=format&fit=crop",
+    category: 'Kits "Mimo Meu e Seu"',
+    title: "Kit Conexão Casal",
+    price: 210.0,
+    originalPrice: 350.0,
+  },
+  {
+    id: 4,
+    image:
+      "https://images.unsplash.com/photo-1534073828943-f801091bb18c?q=80&w=800&auto=format&fit=crop",
+    category: "Cartões",
+    title: "Cartão de Mensagem Amor",
+    price: 25.0,
+    originalPrice: 45.0,
+  },
+  {
+    id: 5,
+    image:
+      "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=800&auto=format&fit=crop",
+    category: "Camisetas",
+    title: "Camiseta Preta Minimalista",
+    price: 135.0,
+    originalPrice: 200.0,
+  },
+  {
+    id: 6,
+    image:
+      "https://images.unsplash.com/photo-1517842645767-c639042777db?q=80&w=800&auto=format&fit=crop",
+    category: "Download Imediato",
+    title: "Planner de Desenvolvimento Pessoal",
+    price: 49.9,
+    originalPrice: 99.0,
+  },
+  {
+    id: 7,
+    image:
+      "https://images.unsplash.com/photo-1614330258898-86823c7e3de2?q=80&w=800&auto=format&fit=crop",
+    category: "Outros",
+    title: "Pulseira Identidade Evento",
+    price: 15.0,
+    originalPrice: 30.0,
+  },
+  {
+    id: 8,
+    image:
+      "https://images.unsplash.com/photo-1578606137970-de4c3d8a08a2?q=80&w=1474&auto=format&fit=crop",
+    category: "Kits",
+    title: "Ecobag com Propósito",
+    price: 65.0,
+    originalPrice: 120.0,
+  },
+];
 
 export function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
