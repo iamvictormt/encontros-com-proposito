@@ -57,6 +57,7 @@ export function LoginForm() {
   const { toast } = useToast();
   const [showSuccessVideo, setShowSuccessVideo] = useState(false);
   const [userData, setUserData] = useState<any>(null);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
 
   useEffect(() => {
     const currentYear = new Date().getFullYear().toString();
@@ -144,13 +145,14 @@ export function LoginForm() {
       await refreshAuth();
 
       // Fallback redirection after 5 seconds in case video doesn't end properly
+      // or if it takes too long to show up
       setTimeout(() => {
         if (response.user.isAdmin) {
           router.push("/admin");
         } else {
           router.push("/events");
         }
-      }, 5000);
+      }, 6000);
     } catch (err) {
       if (err instanceof APIError) {
         toast({
@@ -194,7 +196,17 @@ export function LoginForm() {
 
   return (
     <>
-      {showSuccessVideo && (
+      {/* Preload video - hidden from view but starts loading immediately */}
+      <video
+        src="/videos/meet-off-animation-logo.mp4"
+        preload="auto"
+        muted
+        playsInline
+        className="hidden"
+        onCanPlayThrough={() => setIsVideoLoaded(true)}
+      />
+
+      {showSuccessVideo && isVideoLoaded && (
         <div className="fixed inset-0 bg-white z-50 flex items-center justify-center transition-opacity duration-1000 opacity-100">
           <video
             src="/videos/meet-off-animation-logo.mp4"
@@ -210,6 +222,15 @@ export function LoginForm() {
             }}
             className="w-full h-full object-contain"
           />
+        </div>
+      )}
+
+      {showSuccessVideo && !isVideoLoaded && (
+        <div className="fixed inset-0 bg-white z-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
+            <p className="mt-4 text-muted-foreground">Preparando sua experiência...</p>
+          </div>
         </div>
       )}
       <div className="min-h-screen flex flex-col lg:flex-row bg-white">
