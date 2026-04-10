@@ -80,45 +80,45 @@ export function PortfolioPage() {
           </div>
 
           {/* Intro Text */}
-          <div className="flex flex-col md:flex-row justify-between items-start mb-12 gap-8 mt-22">
+          <div className="flex flex-col md:flex-row justify-between items-start mb-12 gap-8 mt-12 md:mt-22">
             <div className="w-full md:w-[95%] pr-0 md:pr-12">
-              <h1 className="text-3xl md:text-4xl font-bold mb-4 text-black">
+              <h1 className="text-3xl md:text-5xl font-bold mb-6 text-black tracking-tight leading-tight">
                 Olá, Nós somos <span className="text-primary">João Carlos</span> &{" "}
                 <span className="text-secondary">Labernarde</span>
                 <br />
                 Terapia especializada em atender mulheres que buscam reencontrar sua força
               </h1>
-              <p className="text-gray-500 mb-6 max-w-4xl">
+              <p className="text-gray-500 text-lg mb-8 max-w-4xl leading-relaxed">
                 Apoio psicológico acolhedor e direcionado para mulheres que passaram por abuso e
                 outras situações traumáticas, com foco no seu bem-estar e recuperação.
               </p>
-              <div className="flex flex-wrap items-center gap-4">
+              <div className="flex flex-col sm:flex-row items-center gap-4">
                 <Button
                   asChild
-                  className="bg-accent hover:bg-accent/90 text-white rounded-md px-6 py-6 button-base"
+                  className="bg-accent hover:bg-accent/90 text-white rounded-md px-8 py-7 button-base w-full sm:w-auto text-base"
                 >
                   <Link href="/schedule-session">Agendar Sessão com Fundadores</Link>
                 </Button>
-                <button className="text-sm font-medium flex items-center hover:underline text-black cursor-pointer">
-                  <span className="font-bold">Saiba mais sobre meu trabalho</span>
-                  <span className="ml-1">↓</span>
+                <button className="text-sm font-bold flex items-center justify-center hover:underline text-black cursor-pointer w-full sm:w-auto py-3">
+                  <span>Saiba mais sobre meu trabalho</span>
+                  <span className="ml-2 text-lg">↓</span>
                 </button>
               </div>
             </div>
 
-            <div className="w-full md:w-[5%] flex justify-end">
-              <div className="flex flex-col gap-3 text-gray-600 border border-gray-100 rounded-full py-4 px-2 shadow-sm items-center">
+            <div className="w-full md:w-auto flex justify-center md:justify-end">
+              <div className="flex flex-row md:flex-col gap-4 text-gray-600 border border-gray-100 rounded-2xl md:rounded-full py-3 px-6 md:py-6 md:px-3 shadow-sm items-center bg-white/50 backdrop-blur-sm">
                 <Link href="#" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                  <Linkedin size={20} />
+                  <Linkedin size={22} />
                 </Link>
                 <Link href="#" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                  <Instagram size={20} />
+                  <Instagram size={22} />
                 </Link>
                 <Link href="#" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                  <Phone size={20} />
+                  <Phone size={22} />
                 </Link>
                 <Link href="#" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                  <Facebook size={20} />
+                  <Facebook size={22} />
                 </Link>
               </div>
             </div>

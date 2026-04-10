@@ -4,11 +4,12 @@ import Link from "next/link";
 interface LogoProps {
   className?: string;
   href?: string;
+  onClick?: () => void;
 }
 
-export function Logo({ className = "", href = "/" }: LogoProps) {
+export function Logo({ className = "", href = "/", onClick }: LogoProps) {
   return (
-    <Link href={href} className={`text-xl font-bold lg:text-2xl ${className}`}>
+    <Link href={href} onClick={onClick} className={`text-xl font-bold lg:text-2xl ${className}`}>
       <Image
         src={"/meet-off.png"}
         className="w-60 h-auto"

@@ -67,7 +67,10 @@ export default function AdminProducts() {
               />
             </div>
 
-            <Button variant="outline" className="h-10 border-gray-200 bg-white text-gray-600 gap-2">
+            <Button
+              variant="outline"
+              className="h-10 border-gray-200 bg-white text-gray-600 gap-2 flex-1 md:flex-none"
+            >
               <Filter className="h-4 w-4 text-black" />
               <span>
                 Filtro: <span className="text-black font-medium">Mais recente</span>
@@ -76,53 +79,106 @@ export default function AdminProducts() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden border-none">
-          <table className="w-full text-left">
-            <thead className="bg-gray-50/50 text-sm text-muted-foreground">
-              <tr>
-                <th className="px-6 py-4 font-medium">Produto</th>
-                <th className="px-6 py-4 font-medium">Tipo</th>
-                <th className="px-6 py-4 font-medium">Categoria</th>
-                <th className="px-6 py-4 font-medium">Preço</th>
-                <th className="px-6 py-4 font-medium">Ação</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {products.map((product, i) => (
-                <tr key={i} className="group hover:bg-gray-50/50 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-4">
-                      <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
-                        <Image
-                          src={product.image}
-                          alt={product.name}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <div>
-                        <p className="font-bold text-black">{product.name}</p>
-                        <p className="text-sm text-muted-foreground">Estoque: {product.stock}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-black">{product.type}</td>
-                  <td className="px-6 py-4 text-sm text-black">{product.category}</td>
-                  <td className="px-6 py-4 text-sm text-black">{product.price}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex gap-2">
-                      <Button size="sm" className="bg-[#f18d42] hover:bg-[#e07d32] text-white">
-                        Editar
-                      </Button>
-                      <Button size="sm" className="bg-[#8a0204] hover:bg-[#7a0204] text-white">
-                        Deletar
-                      </Button>
-                    </div>
-                  </td>
+        <div className="space-y-4">
+          {/* View de Cards para Mobile */}
+          <div className="grid grid-cols-1 gap-4 lg:hidden">
+            {products.map((product, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 space-y-4"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                    <Image src={product.image} alt={product.name} fill className="object-cover" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-bold text-black">{product.name}</p>
+                    <p className="text-sm text-secondary font-bold">{product.price}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 py-3 border-t border-b border-gray-50">
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
+                      Tipo
+                    </p>
+                    <p className="text-xs font-medium text-black">{product.type}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
+                      Estoque
+                    </p>
+                    <p className="text-xs font-medium text-black">{product.stock}</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button size="sm" className="bg-[#f18d42] hover:bg-[#e07d32] text-white flex-1">
+                    Editar
+                  </Button>
+                  <Button size="sm" className="bg-[#8a0204] hover:bg-[#7a0204] text-white flex-1">
+                    Deletar
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* View de Tabela para Desktop */}
+          <div className="hidden lg:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <table className="w-full text-left">
+              <thead className="bg-gray-50/50 text-sm text-muted-foreground">
+                <tr>
+                  <th className="px-6 py-4 font-medium whitespace-nowrap">Produto</th>
+                  <th className="px-6 py-4 font-medium whitespace-nowrap">Tipo</th>
+                  <th className="px-6 py-4 font-medium whitespace-nowrap">Categoria</th>
+                  <th className="px-6 py-4 font-medium whitespace-nowrap">Preço</th>
+                  <th className="px-6 py-4 font-medium whitespace-nowrap">Ação</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {products.map((product, i) => (
+                  <tr key={i} className="group hover:bg-gray-50/50 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-4">
+                        <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                          <Image
+                            src={product.image}
+                            alt={product.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-bold text-black truncate">{product.name}</p>
+                          <p className="text-sm text-muted-foreground">Estoque: {product.stock}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-black whitespace-nowrap">
+                      {product.type}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-black whitespace-nowrap">
+                      {product.category}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-black whitespace-nowrap">
+                      {product.price}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex gap-2">
+                        <Button size="sm" className="bg-[#f18d42] hover:bg-[#e07d32] text-white">
+                          Editar
+                        </Button>
+                        <Button size="sm" className="bg-[#8a0204] hover:bg-[#7a0204] text-white">
+                          Deletar
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
     </div>

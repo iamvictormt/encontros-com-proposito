@@ -18,43 +18,47 @@ export function VenueApprovalCard({
   isPageLocalEmpresas,
 }: VenueApprovalCardProps) {
   return (
-    <Card className="relative flex flex-row items-center gap-4 p-4 border-none shadow-sm bg-white w-full">
+    <Card className="relative flex flex-col sm:flex-row items-stretch sm:items-center gap-4 p-4 border-none shadow-sm bg-white w-full overflow-hidden">
       {/* BOTÃO TOP RIGHT */}
       {isPageLocalEmpresas && (
         <Button
           size="sm"
           variant="ghost"
-          className="absolute top-3 right-3 text-xs hover:bg-white text-gray-600 hover:text-black"
+          className="absolute top-2 right-2 text-[10px] sm:text-xs hover:bg-gray-50 text-gray-500 hover:text-black h-8 px-2"
         >
           Ver detalhes
         </Button>
       )}
 
       {/* IMAGEM */}
-      <div className="relative w-42 h-32 min-w-[96px]">
+      <div className="relative w-full sm:w-40 h-40 sm:h-32 flex-shrink-0">
         <Image src={image} alt={name} fill className="object-cover rounded-lg" />
       </div>
 
       {/* TEXTO */}
-      <div className="flex flex-col justify-center flex-1 pr-20">
-        <h4 className="font-bold text-secondary">{name}</h4>
+      <div className="flex flex-col justify-center flex-1 min-w-0 pr-0 sm:pr-24">
+        <h4 className="font-bold text-secondary text-base sm:text-lg mb-1">{name}</h4>
 
-        <p className="text-sm text-muted-foreground">
-          Local: <span className="text-black">{location}</span>
-        </p>
+        <div className="space-y-0.5 mb-3">
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            Local: <span className="text-black font-medium">{location}</span>
+          </p>
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            Tipo: <span className="text-black font-medium">{type}</span>
+          </p>
+        </div>
 
-        <p className="text-sm text-muted-foreground">
-          Tipo: <span className="text-black">{type}</span>
-        </p>
-
-        <div className="flex gap-2 mt-2">
-          <Button size="sm" className="bg-[#1f4c47] hover:bg-[#1a3d39] text-white">
+        <div className="flex gap-2 w-full sm:w-auto">
+          <Button
+            size="sm"
+            className="bg-[#1f4c47] hover:bg-[#1a3d39] text-white flex-1 sm:flex-none"
+          >
             Aprovar
           </Button>
           <Button
             size="sm"
             variant="destructive"
-            className="bg-[#8a0204] hover:bg-[#7a0204] text-white"
+            className="bg-[#8a0204] hover:bg-[#7a0204] text-white flex-1 sm:flex-none"
           >
             Recusar
           </Button>

@@ -148,11 +148,16 @@ export default function AdminOverview() {
       </section>
 
       <section className="space-y-6">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           <h2 className="text-xl font-bold text-black">Criação e Moderação de eventos</h2>
-          <div className="flex gap-4">
-            <Button className="bg-accent hover:bg-accent/90 text-white">Criar Novo Evento</Button>
-            <Button variant="outline" className="bg-white text-black border-gray-200">
+          <div className="flex flex-wrap gap-4 w-full md:w-auto">
+            <Button className="bg-accent hover:bg-accent/90 text-white flex-1 md:flex-none">
+              Criar Novo Evento
+            </Button>
+            <Button
+              variant="outline"
+              className="bg-white text-black border-gray-200 flex-1 md:flex-none"
+            >
               Ver todos os eventos
             </Button>
           </div>
@@ -165,11 +170,14 @@ export default function AdminOverview() {
       </section>
 
       <section className="space-y-6">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           <h2 className="text-xl font-bold text-black">Aprovação de Locais & Empresas</h2>
-          <div className="flex gap-4 items-center">
-            <span className="text-sm text-muted-foreground">Mais recentes</span>
-            <Button variant="outline" className="bg-white text-black border-gray-200">
+          <div className="flex gap-4 items-center w-full md:w-auto">
+            <span className="text-sm text-muted-foreground hidden sm:inline">Mais recentes</span>
+            <Button
+              variant="outline"
+              className="bg-white text-black border-gray-200 w-full md:w-auto"
+            >
               Ver todos os locais
             </Button>
           </div>
@@ -182,9 +190,12 @@ export default function AdminOverview() {
       </section>
 
       <section className="space-y-6">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           <h2 className="text-xl font-bold text-black">Edição de Conteúdo de Marcas</h2>
-          <Button variant="outline" className="bg-white text-black border-gray-200">
+          <Button
+            variant="outline"
+            className="bg-white text-black border-gray-200 w-full md:w-auto"
+          >
             Ver todos
           </Button>
         </div>
@@ -192,11 +203,14 @@ export default function AdminOverview() {
       </section>
 
       <section className="space-y-6">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           <h2 className="text-xl font-bold text-black">Atribuição de Cargos</h2>
-          <div className="flex gap-4 items-center">
-            <span className="text-sm text-muted-foreground">Mais recentes</span>
-            <Button variant="outline" className="bg-white text-black border-gray-200">
+          <div className="flex gap-4 items-center w-full md:w-auto">
+            <span className="text-sm text-muted-foreground hidden sm:inline">Mais recentes</span>
+            <Button
+              variant="outline"
+              className="bg-white text-black border-gray-200 w-full md:w-auto"
+            >
               Ver todos
             </Button>
           </div>

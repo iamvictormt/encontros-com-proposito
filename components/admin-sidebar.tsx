@@ -28,7 +28,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-const menuSections = [
+export const menuSections = [
   {
     items: [
       { icon: LayoutGrid, label: "Visão Geral", href: "/admin" },
@@ -51,7 +51,7 @@ export function AdminSidebar() {
   const { logout } = useAuth();
 
   return (
-    <aside className="w-72 border-r bg-white flex flex-col h-screen sticky top-0">
+    <aside className="w-72 border-r bg-white flex-col h-screen sticky top-0 hidden lg:flex">
       <div className="p-8">
         <Logo href="/admin" />
       </div>
