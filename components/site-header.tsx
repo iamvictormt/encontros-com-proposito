@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { Logo } from './logo';
-import { useAuth } from '@/hooks/use-auth';
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Logo } from "./logo";
+import { useAuth } from "@/hooks/use-auth";
 
 export function SiteHeader() {
   const { isLoggedIn, logout, isLoading } = useAuth();

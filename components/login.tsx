@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { Logo } from './logo';
-import { useAuth } from '@/hooks/use-auth';
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { Logo } from "./logo";
+import { useAuth } from "@/hooks/use-auth";
 
 export function Login() {
-  const [inviteCode, setInviteCode] = useState('');
+  const [inviteCode, setInviteCode] = useState("");
   const router = useRouter();
-  const [year, setYear] = useState('');
+  const [year, setYear] = useState("");
   const { isLoggedIn, isLoading: authLoading } = useAuth();
 
   useEffect(() => {
@@ -19,20 +19,20 @@ export function Login() {
     setYear(currentYear);
 
     if (!authLoading && isLoggedIn) {
-      router.push('/events');
+      router.push("/events");
     }
   }, [authLoading, isLoggedIn, router]);
 
   const handleLogin = () => {
-    router.push('/login');
+    router.push("/login");
   };
 
   const handleCreateAccount = () => {
-    router.push('/signup');
+    router.push("/signup");
   };
 
   const handleGuestLogin = () => {
-    router.push('/events');
+    router.push("/events");
   };
 
   return (
@@ -45,11 +45,10 @@ export function Login() {
 
         <div className="flex-1 flex items-center justify-center">
           <div className="w-full max-w-md space-y-6 sm:space-y-10">
-
             {/* Main Content */}
             <div className="space-y-5 sm:space-y-6 pt-3 sm:pt-4">
               <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-black text-center">
-                {'Conecte-se com propósito.'}
+                {"Conecte-se com propósito."}
               </h2>
 
               {/* Action Buttons */}
@@ -57,17 +56,17 @@ export function Login() {
                 <Button
                   onClick={handleLogin}
                   variant="outline"
-                  className="w-full bg-[#8A0204] border-[#8A0204] hover:bg-[#6a0103] text-white font-medium py-5 sm:py-6 text-sm sm:text-base rounded-md"
+                  className="w-full bg-[#8A0204] border-[#8A0204] hover:bg-[#6a0103] text-white font-medium py-5 sm:py-6 text-sm sm:text-base rounded-md hover:text-white"
                 >
-                  {'Entrar'}
+                  {"Entrar"}
                 </Button>
 
                 <Button
                   onClick={handleCreateAccount}
                   variant="outline"
-                  className="w-full bg-[#1F4C47] border-[#1F4C47] hover:bg-[#163a36] text-white font-medium py-5 sm:py-6 text-sm sm:text-base rounded-md"
+                  className="w-full bg-[#1F4C47] border-[#1F4C47] hover:bg-[#163a36] text-white font-medium py-5 sm:py-6 text-sm sm:text-base rounded-md hover:text-white"
                 >
-                  {'Criar uma nova conta'}
+                  {"Criar uma nova conta"}
                 </Button>
 
                 <Button
@@ -75,13 +74,15 @@ export function Login() {
                   variant="outline"
                   className="w-full border-[#F18D42] text-[#F18D42] hover:bg-[#F18D42] hover:text-white font-medium py-5 sm:py-6 text-sm sm:text-base bg-transparent rounded-md"
                 >
-                  {'Entrar como convidado'}
+                  {"Entrar como convidado"}
                 </Button>
               </div>
 
               {/* Invite Code Section */}
               <div className="space-y-3 pt-2 sm:pt-4">
-                <p className="text-xs sm:text-sm font-medium text-foreground">{'Já tem um código de convite?'}</p>
+                <p className="text-xs sm:text-sm font-medium text-foreground">
+                  {"Já tem um código de convite?"}
+                </p>
                 <Input
                   type="text"
                   placeholder="Inserir"
@@ -98,7 +99,7 @@ export function Login() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 text-sm">
             <span className="text-muted-foreground">{`©MeetOff, ${year}`}</span>
             <a href="#" className="hover:text-foreground underline">
-              {'Termos e Política de privacidade'}
+              {"Termos e Política de privacidade"}
             </a>
           </div>
         </div>
@@ -118,17 +119,19 @@ export function Login() {
         <div className="absolute bottom-0 left-0 right-0 p-12 z-20">
           <div className="backdrop-blur-md bg-black/20 rounded-xl p-8 border border-white/20">
             <div className="text-white space-y-4">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl text-pretty">{'João Carlos & Labernarde'}</h2>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl text-pretty">
+                {"João Carlos & Labernarde"}
+              </h2>
               <p className="text-xs sm:text-sm md:text-base leading-relaxed text-pretty">
                 {
-                  'terapeuta, mentor e criador de experiências com propósito. Vivo para ajudar pessoas a se reconectarem de forma real, segura e afetiva por meio de encontros presenciais, retiros e projetos que unem tecnologia e emoção.'
+                  "terapeuta, mentor e criador de experiências com propósito. Vivo para ajudar pessoas a se reconectarem de forma real, segura e afetiva por meio de encontros presenciais, retiros e projetos que unem tecnologia e emoção."
                 }
                 <br />
                 <br />
 
-                {'Criei plataformas como'}
-                <span className="font-semibold">{' MeetOff, FindB, Check-in Love'}</span>
-                {' para transformar relacionamentos, terapias e presentes em conexões verdadeiras.'}
+                {"Criei plataformas como"}
+                <span className="font-semibold">{" MeetOff, FindB, Check-in Love"}</span>
+                {" para transformar relacionamentos, terapias e presentes em conexões verdadeiras."}
               </p>
             </div>
           </div>

@@ -1,40 +1,58 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { ChevronDown, Play, Share2, ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Quote, ShoppingCart } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { SiteHeader } from './site-header';
-import { SiteFooter } from './site-footer';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { cn } from '@/lib/utils';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  ChevronDown,
+  Play,
+  Share2,
+  ArrowLeft,
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  Quote,
+  ShoppingCart,
+  Share,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { SiteHeader } from "./site-header";
+import { SiteFooter } from "./site-footer";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { TestimonialCarousel } from "./testimonial-carousel";
+import { cn } from "@/lib/utils";
 
 const product = {
   id: 1,
-  category: 'Camisetas',
-  title: 'Camiseta Autoral',
-  availability: '150 Unidades Disponíveis',
+  category: "Camisetas",
+  title: "Camiseta Autoral",
+  availability: "150 Unidades Disponíveis",
   description:
-    'Essa camisa uma mensagem que toca corações. Essa peça foi criada para lembrar que hoje não é o fim, mas um novo começo. Traga conforto para todos que cruzam o seu caminho. Feita com amor, fé e propósito, ela carrega mais que palavras; carrega verdade, identidade e propósito. Para presentear e reinventar seu look com estilo, autenticidade e conforto. Com o que realmente importa.',
+    "Essa camisa uma mensagem que toca corações. Essa peça foi criada para lembrar que hoje não é o fim, mas um novo começo. Traga conforto para todos que cruzam o seu caminho. Feita com amor, fé e propósito, ela carrega mais que palavras; carrega verdade, identidade e propósito. Para presentear e reinventar seu look com estilo, autenticidade e conforto. Com o que realmente importa.",
   price: 125.5,
   originalPrice: 180.0,
   images: [
-    '/placeholder.svg?height=600&width=500&text=Image+1',
-    '/placeholder.svg?height=600&width=500&text=Image+2',
-    '/placeholder.svg?height=600&width=500&text=Image+3',
+    "/placeholder.svg?height=600&width=500&text=Image+1",
+    "/placeholder.svg?height=600&width=500&text=Image+2",
+    "/placeholder.svg?height=600&width=500&text=Image+3",
   ],
-  tags: ['FindB', 'Outros Eventos'],
-  sizes: ['PP', 'P', 'M', 'G', 'GG'],
-  video: '/placeholder.svg?height=300&width=400&text=Video',
+  tags: ["FindB", "Outros Eventos"],
+  sizes: ["PP", "P", "M", "G", "GG"],
+  video: "/placeholder.svg?height=300&width=400&text=Video",
 };
 
 const relatedProducts = Array(4).fill({
   id: 1,
-  image: '/placeholder.svg?height=300&width=300',
-  category: 'Camisetas',
-  title: 'Camiseta Preta',
+  image: "/placeholder.svg?height=300&width=300",
+  category: "Camisetas",
+  title: "Camiseta Preta",
   price: 125.5,
   originalPrice: 250.0,
 });
@@ -42,27 +60,26 @@ const relatedProducts = Array(4).fill({
 const reviews = [
   {
     id: 1,
-    text: 'Lorem ipsum dolor sit amet consectetur. Convallis mi molestie nibh urna urna habitant semper id. Ac non a id tellus auctor non. Diam in cras eget in. Elementum feugiat auis posuere erat lectus nisi.',
-    author: 'Luciana Cardoso',
+    text: "Lorem ipsum dolor sit amet consectetur. Convallis mi molestie nibh urna urna habitant semper id. Ac non a id tellus auctor non. Diam in cras eget in. Elementum feugiat auis posuere erat lectus nisi.",
+    author: "Luciana Cardoso",
   },
   {
     id: 2,
-    text: 'Produto de excelente qualidade! A entrega foi rápida e o atendimento impecável. Super recomendo para todos que procuram produtos autênticos.',
-    author: 'João Silva',
+    text: "Produto de excelente qualidade! A entrega foi rápida e o atendimento impecável. Super recomendo para todos que procuram produtos autênticos.",
+    author: "João Silva",
   },
   {
     id: 3,
-    text: 'Adorei a camiseta! O tecido é muito confortável e a estampa ficou perfeita. Já comprei várias vezes e sempre volto.',
-    author: 'Maria Santos',
+    text: "Adorei a camiseta! O tecido é muito confortável e a estampa ficou perfeita. Já comprei várias vezes e sempre volto.",
+    author: "Maria Santos",
   },
 ];
 
 export function ProductDetailPage() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [selectedSize, setSelectedSize] = useState('');
+  const [selectedSize, setSelectedSize] = useState("");
   const [fabricationOpen, setFabricationOpen] = useState(false);
   const [materialsOpen, setMaterialsOpen] = useState(false);
-  const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
 
   const handlePreviousImage = () => {
     setSelectedImageIndex((prev) => (prev === 0 ? product.images.length - 1 : prev - 1));
@@ -70,14 +87,6 @@ export function ProductDetailPage() {
 
   const handleNextImage = () => {
     setSelectedImageIndex((prev) => (prev === product.images.length - 1 ? 0 : prev + 1));
-  };
-
-  const handlePreviousReview = () => {
-    setCurrentReviewIndex((prev) => (prev === 0 ? reviews.length - 1 : prev - 1));
-  };
-
-  const handleNextReview = () => {
-    setCurrentReviewIndex((prev) => (prev === reviews.length - 1 ? 0 : prev + 1));
   };
 
   return (
@@ -90,7 +99,7 @@ export function ProductDetailPage() {
             <div>
               <div className="mb-4 relative h-[600px] rounded-xl overflow-hidden">
                 <Image
-                  src={product.images[selectedImageIndex] || '/placeholder.svg'}
+                  src={product.images[selectedImageIndex] || "/placeholder.svg"}
                   alt={product.title}
                   fill
                   className="object-contain"
@@ -120,11 +129,13 @@ export function ProductDetailPage() {
                     key={index}
                     onClick={() => setSelectedImageIndex(index)}
                     className={`relative h-20 w-20 sm:h-24 sm:w-24 rounded-lg overflow-hidden transition-all cursor-pointer ${
-                      selectedImageIndex === index ? 'ring-2 ring-accent' : 'opacity-70 hover:opacity-100'
+                      selectedImageIndex === index
+                        ? "ring-2 ring-accent"
+                        : "opacity-70 hover:opacity-100"
                     }`}
                   >
                     <Image
-                      src={image || '/placeholder.svg'}
+                      src={image || "/placeholder.svg"}
                       alt={`Thumbnail ${index + 1}`}
                       fill
                       className="object-cover"
@@ -152,26 +163,32 @@ export function ProductDetailPage() {
 
               <div className="mb-6">
                 <div className="flex items-baseline gap-3 mb-4">
-                  <span className="text-3xl font-bold text-black">R$ {product.price.toFixed(2).replace('.', ',')}</span>
+                  <span className="text-3xl font-bold text-black">
+                    R$ {product.price.toFixed(2).replace(".", ",")}
+                  </span>
                   <span className="text-lg text-gray-400 line-through">
-                    R$ {product.originalPrice.toFixed(2).replace('.', ',')}
+                    R$ {product.originalPrice.toFixed(2).replace(".", ",")}
                   </span>
                 </div>
 
                 <div className="flex gap-3 mb-6">
-                  <Button className="flex-1 bg-accent hover:bg-accent/90 text-white rounded-lg">Comprar</Button>
+                  <Button className="flex-1 bg-accent hover:bg-accent/90 text-white rounded-lg">
+                    Comprar
+                  </Button>
                   <Button
                     variant="outline"
-                    className="flex-1 bg-white text-black border-gray-300 hover:bg-gray-50 rounded-lg hover:text-black"
+                    className="flex-1 bg-white text-secondary border-secondary hover:bg-gray-50 rounded-lg hover:text-secondary/80"
                   >
-                    <Share2 className="mr-2 h-4 w-4" />
+                    <Share className="mr-2 h-4 w-4 text-secondary" />
                     Compartilhar
                   </Button>
                 </div>
               </div>
 
               <div className="mb-6">
-                <label className="text-sm text-gray-500 mb-2 block">Usar esse produto no Evento:</label>
+                <label className="text-sm text-gray-500 mb-2 block">
+                  Usar esse produto no Evento:
+                </label>
                 <Select>
                   <SelectTrigger className="w-full rounded-lg">
                     <SelectValue placeholder="Escolher evento" />
@@ -186,7 +203,10 @@ export function ProductDetailPage() {
 
               <div className="flex gap-2 mb-6">
                 {product.tags.map((tag, index) => (
-                  <span key={index} className="px-3 py-1 bg-primary text-white text-xs rounded-full font-semibold">
+                  <span
+                    key={index}
+                    className="px-3 py-1 bg-primary text-white text-xs rounded-full font-semibold"
+                  >
                     {tag}
                   </span>
                 ))}
@@ -201,8 +221,8 @@ export function ProductDetailPage() {
                       onClick={() => setSelectedSize(size)}
                       className={`px-6 py-2 border rounded-lg text-sm font-semibold transition-colors cursor-pointer ${
                         selectedSize === size
-                          ? 'border-accent bg-accent text-white'
-                          : 'border-gray-300 text-black hover:border-accent'
+                          ? "border-accent bg-accent text-white"
+                          : "border-gray-300 text-black hover:border-accent"
                       }`}
                     >
                       {size}
@@ -216,11 +236,12 @@ export function ProductDetailPage() {
                   <CollapsibleTrigger className="flex w-full items-center justify-between border-t border-gray-200 py-4 text-left">
                     <span className="text-base font-bold text-black">Detalhes de fabricação</span>
                     <ChevronDown
-                      className={`h-5 w-5 text-black transition-transform ${fabricationOpen ? 'rotate-180' : ''}`}
+                      className={`h-5 w-5 text-black transition-transform ${fabricationOpen ? "rotate-180" : ""}`}
                     />
                   </CollapsibleTrigger>
                   <CollapsibleContent className="pb-4 text-sm text-gray-600">
-                    Informações sobre o processo de fabricação, qualidade dos materiais e cuidados especiais.
+                    Informações sobre o processo de fabricação, qualidade dos materiais e cuidados
+                    especiais.
                   </CollapsibleContent>
                 </Collapsible>
 
@@ -228,11 +249,12 @@ export function ProductDetailPage() {
                   <CollapsibleTrigger className="flex w-full items-center justify-between border-t border-gray-200 py-4 text-left">
                     <span className="text-base font-bold text-black">Materiais</span>
                     <ChevronDown
-                      className={`h-5 w-5 text-black transition-transform ${materialsOpen ? 'rotate-180' : ''}`}
+                      className={`h-5 w-5 text-black transition-transform ${materialsOpen ? "rotate-180" : ""}`}
                     />
                   </CollapsibleTrigger>
                   <CollapsibleContent className="pb-4 text-sm text-gray-600">
-                    100% algodão de alta qualidade, tingimento sustentável, estampa em silk screen durável.
+                    100% algodão de alta qualidade, tingimento sustentável, estampa em silk screen
+                    durável.
                   </CollapsibleContent>
                 </Collapsible>
               </div>
@@ -246,7 +268,7 @@ export function ProductDetailPage() {
 
               <div className="relative h-80 bg-gray-100 rounded-lg overflow-hidden group cursor-pointer">
                 <Image
-                  src={product.video || '/placeholder.svg'}
+                  src={product.video || "/placeholder.svg"}
                   alt="Video presentation"
                   fill
                   className="object-cover"
@@ -263,55 +285,7 @@ export function ProductDetailPage() {
             <div className="md:ml-4">
               <h2 className="text-2xl font-bold text-black mb-4">Opiniões de compradores</h2>
 
-              <div className="relative h-90">
-                <div className="relative w-full">
-                  {reviews.map((review, index) => {
-                    const position = (index - currentReviewIndex + reviews.length) % reviews.length;
-
-                    return (
-                      <div
-                        key={review.id}
-                        className={cn(
-                          'relative absolute top-0 bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-500 ease-in-out p-8 h-80',
-                          // ↑ importante: "relative" antes de "absolute"
-
-                          position === 0 && 'z-30 left-0 w-[85%] opacity-100 scale-100 overflow-y-auto',
-                          position === 1 && 'z-20 left-[5%] w-[90%] opacity-60 scale-95 overflow-hidden',
-                          position === 2 && 'z-10 left-[10%] w-[95%] opacity-40 scale-90 overflow-hidden',
-                          position > 2 && 'opacity-0 pointer-events-none'
-                        )}
-                      >
-                        {/* QUOTE */}
-                        <Image src="/images/quote.svg" alt="Quote" className="mb-4 h-10 w-10" width={24} height={24} />
-
-                        {/* TEXTO */}
-                        <p className="text-base text-gray-500 leading-relaxed mb-12 pr-4">{review.text}</p>
-
-                        {/* NOME NO CANTO INFERIOR ESQUERDO */}
-                        <p className="text-sm font-bold text-black absolute bottom-4 left-8">{review.author}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* BOTÕES */}
-              <div className="flex justify-end gap-4 mt-1">
-                <button
-                  onClick={handlePreviousReview}
-                  className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
-                  aria-label="Previous review"
-                >
-                  <ArrowLeft className="h-5 w-5" />
-                </button>
-                <button
-                  onClick={handleNextReview}
-                  className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
-                  aria-label="Next review"
-                >
-                  <ArrowRight className="h-5 w-5" />
-                </button>
-              </div>
+              <TestimonialCarousel reviews={reviews} />
             </div>
           </div>
 
@@ -331,7 +305,7 @@ export function ProductDetailPage() {
                 >
                   <div className="relative h-64 overflow-hidden bg-gray-100">
                     <Image
-                      src={relatedProduct.image || '/placeholder.svg'}
+                      src={relatedProduct.image || "/placeholder.svg"}
                       alt={relatedProduct.title}
                       fill
                       className="object-cover transition-transform group-hover:scale-105"
@@ -339,19 +313,23 @@ export function ProductDetailPage() {
                   </div>
 
                   <div className="p-4">
-                    <p className="mb-1 text-xs font-semibold text-primary uppercase">{relatedProduct.category}</p>
+                    <p className="mb-1 text-xs font-semibold text-primary uppercase">
+                      {relatedProduct.category}
+                    </p>
                     <h3 className="mb-3 text-base font-bold text-black">{relatedProduct.title}</h3>
 
                     <div className="mb-4 flex items-baseline gap-2">
                       <span className="text-xl font-bold text-black">
-                        R$ {relatedProduct.price.toFixed(2).replace('.', ',')}
+                        R$ {relatedProduct.price.toFixed(2).replace(".", ",")}
                       </span>
                       <span className="text-sm text-gray-400 line-through">
-                        R$ {relatedProduct.originalPrice.toFixed(2).replace('.', ',')}
+                        R$ {relatedProduct.originalPrice.toFixed(2).replace(".", ",")}
                       </span>
                     </div>
 
-                    <Button className="w-full bg-accent hover:bg-accent/90 rounded-lg">Comprar</Button>
+                    <Button className="w-full bg-accent hover:bg-accent/90 rounded-lg">
+                      Comprar
+                    </Button>
                   </div>
                 </div>
               ))}

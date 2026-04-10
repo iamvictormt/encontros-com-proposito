@@ -1,41 +1,45 @@
-import { RoleAssignmentList } from '@/components/role-assignment-list';
-import { Search, Filter } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { RoleAssignmentList } from "@/components/role-assignment-list";
+import { Search, Filter } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function AdminTeam() {
   const team = [
     {
       user: {
-        name: 'Ana Maria',
-        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&auto=format&fit=crop&q=60',
+        name: "Ana Maria",
+        avatar:
+          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&auto=format&fit=crop&q=60",
       },
-      role: 'Gerente de Eventos',
-      updatedAt: '25/06/2024 14:22',
+      role: "Gerente de Eventos",
+      updatedAt: "25/06/2024 14:22",
     },
     {
       user: {
-        name: 'João Silva',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800&auto=format&fit=crop&q=60',
+        name: "João Silva",
+        avatar:
+          "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800&auto=format&fit=crop&q=60",
       },
-      role: 'Suporte',
-      updatedAt: '24/06/2024 14:22',
+      role: "Suporte",
+      updatedAt: "24/06/2024 14:22",
     },
     {
       user: {
-        name: 'Ricardo Santos',
-        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&auto=format&fit=crop&q=60',
+        name: "Ricardo Santos",
+        avatar:
+          "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&auto=format&fit=crop&q=60",
       },
-      role: 'Administrador',
-      updatedAt: '20/06/2024 14:22',
+      role: "Administrador",
+      updatedAt: "20/06/2024 14:22",
     },
     {
       user: {
-        name: 'Maria Oliveira',
-        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800&auto=format&fit=crop&q=60',
+        name: "Maria Oliveira",
+        avatar:
+          "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800&auto=format&fit=crop&q=60",
       },
-      role: 'Editor de Conteúdo',
-      updatedAt: '18/06/2024 14:22',
+      role: "Editor de Conteúdo",
+      updatedAt: "18/06/2024 14:22",
     },
   ];
 
@@ -47,7 +51,10 @@ export default function AdminTeam() {
         <div className="flex flex-wrap items-center gap-4 w-full md:w-auto">
           <div className="relative flex-1 md:w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
-            <Input placeholder="Procurar" className="pl-10 h-10 bg-white border-gray-200 rounded-lg" />
+            <Input
+              placeholder="Procurar"
+              className="pl-10 h-10 bg-white border-gray-200 rounded-lg"
+            />
           </div>
 
           <Button variant="outline" className="h-10 border-gray-200 bg-white text-gray-600 gap-2">

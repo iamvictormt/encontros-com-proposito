@@ -1,6 +1,6 @@
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import Image from 'next/image';
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 interface VenueApprovalCardProps {
   name: string;
@@ -10,7 +10,13 @@ interface VenueApprovalCardProps {
   isPageLocalEmpresas?: boolean;
 }
 
-export function VenueApprovalCard({ name, location, type, image, isPageLocalEmpresas }: VenueApprovalCardProps) {
+export function VenueApprovalCard({
+  name,
+  location,
+  type,
+  image,
+  isPageLocalEmpresas,
+}: VenueApprovalCardProps) {
   return (
     <Card className="relative flex flex-row items-center gap-4 p-4 border-none shadow-sm bg-white w-full">
       {/* BOTÃO TOP RIGHT */}
@@ -45,7 +51,11 @@ export function VenueApprovalCard({ name, location, type, image, isPageLocalEmpr
           <Button size="sm" className="bg-[#1f4c47] hover:bg-[#1a3d39] text-white">
             Aprovar
           </Button>
-          <Button size="sm" variant="destructive" className="bg-[#8a0204] hover:bg-[#7a0204] text-white">
+          <Button
+            size="sm"
+            variant="destructive"
+            className="bg-[#8a0204] hover:bg-[#7a0204] text-white"
+          >
             Recusar
           </Button>
         </div>

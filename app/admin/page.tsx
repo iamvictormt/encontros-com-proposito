@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button"
-import { AdminStats } from "@/components/admin-stats"
-import { AdminEventCard } from "@/components/admin-event-card"
-import { VenueApprovalCard } from "@/components/venue-approval-card"
-import { BrandContentTable } from "@/components/brand-content-table"
-import { RoleAssignmentList } from "@/components/role-assignment-list"
+import { Button } from "@/components/ui/button";
+import { AdminStats } from "@/components/admin-stats";
+import { AdminEventCard } from "@/components/admin-event-card";
+import { VenueApprovalCard } from "@/components/venue-approval-card";
+import { BrandContentTable } from "@/components/brand-content-table";
+import { RoleAssignmentList } from "@/components/role-assignment-list";
 
 const mockEvents = [
   {
@@ -36,53 +36,102 @@ const mockEvents = [
 ];
 
 const mockVenues = [
-  { name: "Café Central", location: "São Paulo/SP", type: "Cafeteria", image: "https://images.unsplash.com/photo-1629709960734-e52c75717c21?q=80&w=686&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
-  { name: "Café Central", location: "São Paulo/SP", type: "Cafeteria", image: "/placeholder.svg?height=100&width=100" },
-  { name: "Café Central", location: "São Paulo/SP", type: "Cafeteria", image: "/placeholder.svg?height=100&width=100" },
-  { name: "Café Central", location: "São Paulo/SP", type: "Cafeteria", image: "/placeholder.svg?height=100&width=100" },
+  {
+    name: "Café Central",
+    location: "São Paulo/SP",
+    type: "Cafeteria",
+    image:
+      "https://images.unsplash.com/photo-1629709960734-e52c75717c21?q=80&w=686&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  },
+  {
+    name: "Café Central",
+    location: "São Paulo/SP",
+    type: "Cafeteria",
+    image: "/placeholder.svg?height=100&width=100",
+  },
+  {
+    name: "Café Central",
+    location: "São Paulo/SP",
+    type: "Cafeteria",
+    image: "/placeholder.svg?height=100&width=100",
+  },
+  {
+    name: "Café Central",
+    location: "São Paulo/SP",
+    type: "Cafeteria",
+    image: "/placeholder.svg?height=100&width=100",
+  },
 ];
 
 const mockBrands = [
-  { logo: "/placeholder.svg?height=40&width=40", brand: "MeetOff", page: "Home", updatedAt: "08/08/2025 14:22", status: "Publicado" },
-  { logo: "/placeholder.svg?height=40&width=40", brand: "FindB", page: "Home", updatedAt: "08/08/2025 14:22", status: "Publicado" },
-  { logo: "/placeholder.svg?height=40&width=40", brand: "Mesa para Sete", page: "Home", updatedAt: "08/08/2025 14:22", status: "Publicado" },
-  { logo: "/placeholder.svg?height=40&width=40", brand: "Check In Love", page: "Home", updatedAt: "08/08/2025 14:22", status: "Publicado" },
+  {
+    logo: "/placeholder.svg?height=40&width=40",
+    brand: "MeetOff",
+    page: "Home",
+    updatedAt: "08/08/2025 14:22",
+    status: "Publicado",
+  },
+  {
+    logo: "/placeholder.svg?height=40&width=40",
+    brand: "FindB",
+    page: "Home",
+    updatedAt: "08/08/2025 14:22",
+    status: "Publicado",
+  },
+  {
+    logo: "/placeholder.svg?height=40&width=40",
+    brand: "Mesa para Sete",
+    page: "Home",
+    updatedAt: "08/08/2025 14:22",
+    status: "Publicado",
+  },
+  {
+    logo: "/placeholder.svg?height=40&width=40",
+    brand: "Check In Love",
+    page: "Home",
+    updatedAt: "08/08/2025 14:22",
+    status: "Publicado",
+  },
 ];
 
-  const mockTeam = [
-    {
-      user: {
-        name: 'Ana Maria',
-        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&auto=format&fit=crop&q=60',
-      },
-      role: 'Gerente de Eventos',
-      updatedAt: '25/06/2024 14:22',
+const mockTeam = [
+  {
+    user: {
+      name: "Ana Maria",
+      avatar:
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&auto=format&fit=crop&q=60",
     },
-    {
-      user: {
-        name: 'João Silva',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800&auto=format&fit=crop&q=60',
-      },
-      role: 'Suporte',
-      updatedAt: '24/06/2024 14:22',
+    role: "Gerente de Eventos",
+    updatedAt: "25/06/2024 14:22",
+  },
+  {
+    user: {
+      name: "João Silva",
+      avatar:
+        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800&auto=format&fit=crop&q=60",
     },
-    {
-      user: {
-        name: 'Ricardo Santos',
-        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&auto=format&fit=crop&q=60',
-      },
-      role: 'Administrador',
-      updatedAt: '20/06/2024 14:22',
+    role: "Suporte",
+    updatedAt: "24/06/2024 14:22",
+  },
+  {
+    user: {
+      name: "Ricardo Santos",
+      avatar:
+        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&auto=format&fit=crop&q=60",
     },
-    {
-      user: {
-        name: 'Maria Oliveira',
-        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800&auto=format&fit=crop&q=60',
-      },
-      role: 'Editor de Conteúdo',
-      updatedAt: '18/06/2024 14:22',
+    role: "Administrador",
+    updatedAt: "20/06/2024 14:22",
+  },
+  {
+    user: {
+      name: "Maria Oliveira",
+      avatar:
+        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800&auto=format&fit=crop&q=60",
     },
-  ];
+    role: "Editor de Conteúdo",
+    updatedAt: "18/06/2024 14:22",
+  },
+];
 
 export default function AdminOverview() {
   return (
@@ -97,7 +146,9 @@ export default function AdminOverview() {
           <h2 className="text-xl font-bold text-black">Criação e Moderação de eventos</h2>
           <div className="flex gap-4">
             <Button className="bg-accent hover:bg-accent/90 text-white">Criar Novo Evento</Button>
-            <Button variant="outline" className="bg-white text-black border-gray-200">Ver todos os eventos</Button>
+            <Button variant="outline" className="bg-white text-black border-gray-200">
+              Ver todos os eventos
+            </Button>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -111,8 +162,10 @@ export default function AdminOverview() {
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-black">Aprovação de Locais & Empresas</h2>
           <div className="flex gap-4 items-center">
-             <span className="text-sm text-muted-foreground">Mais recentes</span>
-             <Button variant="outline" className="bg-white text-black border-gray-200">Ver todos os locais</Button>
+            <span className="text-sm text-muted-foreground">Mais recentes</span>
+            <Button variant="outline" className="bg-white text-black border-gray-200">
+              Ver todos os locais
+            </Button>
           </div>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -125,7 +178,9 @@ export default function AdminOverview() {
       <section className="space-y-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-black">Edição de Conteúdo de Marcas</h2>
-          <Button variant="outline" className="bg-white text-black border-gray-200">Ver todos</Button>
+          <Button variant="outline" className="bg-white text-black border-gray-200">
+            Ver todos
+          </Button>
         </div>
         <BrandContentTable brands={mockBrands} />
       </section>
@@ -134,12 +189,14 @@ export default function AdminOverview() {
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-black">Atribuição de Cargos</h2>
           <div className="flex gap-4 items-center">
-             <span className="text-sm text-muted-foreground">Mais recentes</span>
-             <Button variant="outline" className="bg-white text-black border-gray-200">Ver todos</Button>
+            <span className="text-sm text-muted-foreground">Mais recentes</span>
+            <Button variant="outline" className="bg-white text-black border-gray-200">
+              Ver todos
+            </Button>
           </div>
         </div>
         <RoleAssignmentList team={mockTeam} />
       </section>
     </div>
-  )
+  );
 }

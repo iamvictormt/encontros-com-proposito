@@ -1,40 +1,44 @@
-import { VenueApprovalCard } from '@/components/venue-approval-card';
-import { Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { StatCard } from '@/components/admin-stats';
+import { VenueApprovalCard } from "@/components/venue-approval-card";
+import { Search, Filter, ChevronLeft, ChevronRight } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { StatCard } from "@/components/admin-stats";
 
 export default function AdminVenues() {
   const stats = [
-    { label: 'Locais/empresas ativas', value: '12' },
-    { label: 'Pendentes de aprovação', value: '5' },
-    { label: 'Total cadastrados', value: '37' },
+    { label: "Locais/empresas ativas", value: "12" },
+    { label: "Pendentes de aprovação", value: "5" },
+    { label: "Total cadastrados", value: "37" },
   ];
 
   const venues = [
     {
-      name: 'Espaço Ar Livre',
-      location: 'São Paulo, SP',
-      type: 'Externo',
-      image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800&auto=format&fit=crop&q=60',
+      name: "Espaço Ar Livre",
+      location: "São Paulo, SP",
+      type: "Externo",
+      image:
+        "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800&auto=format&fit=crop&q=60",
     },
     {
-      name: 'Centro de Convenções',
-      location: 'Curitiba, PR',
-      type: 'Interno',
-      image: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=800&auto=format&fit=crop&q=60',
+      name: "Centro de Convenções",
+      location: "Curitiba, PR",
+      type: "Interno",
+      image:
+        "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=800&auto=format&fit=crop&q=60",
     },
     {
-      name: 'Hotel fazenda',
-      location: 'Indaiatuba, SP',
-      type: 'Misto',
-      image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&auto=format&fit=crop&q=60',
+      name: "Hotel fazenda",
+      location: "Indaiatuba, SP",
+      type: "Misto",
+      image:
+        "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&auto=format&fit=crop&q=60",
     },
     {
-      name: 'Auditório Principal',
-      location: 'Florianópolis, SC',
-      type: 'Interno',
-      image: 'https://images.unsplash.com/photo-1431540015161-0bf868a2d407?w=800&auto=format&fit=crop&q=60',
+      name: "Auditório Principal",
+      location: "Florianópolis, SC",
+      type: "Interno",
+      image:
+        "https://images.unsplash.com/photo-1431540015161-0bf868a2d407?w=800&auto=format&fit=crop&q=60",
     },
   ];
 
@@ -55,7 +59,10 @@ export default function AdminVenues() {
           <div className="flex gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
-              <Input className="pl-10 w-64 bg-white border-none shadow-sm" placeholder="Procurar locais e empresas" />
+              <Input
+                className="pl-10 w-64 bg-white border-none shadow-sm"
+                placeholder="Procurar locais e empresas"
+              />
             </div>
             <Button variant="outline" className="h-10 border-gray-200 bg-white text-gray-600 gap-2">
               <Filter className="h-4 w-4 text-black" />

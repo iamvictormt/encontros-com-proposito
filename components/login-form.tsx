@@ -1,45 +1,47 @@
-'use client';
+"use client";
 
-import type React from 'react';
+import type React from "react";
 
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import Image from 'next/image';
-import Link from 'next/link';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { APIError } from '@/lib/services/api-client';
-import { Logo } from './logo';
-import { useAuth } from '@/hooks/use-auth';
-import { useToast } from '@/hooks/use-toast';
-import { authService } from '@/lib/services/auth.service';
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { APIError } from "@/lib/services/api-client";
+import { Logo } from "./logo";
+import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
+import { authService } from "@/lib/services/auth.service";
 
 const carouselSlides = [
   {
-    image: 'https://images.pexels.com/photos/9578709/pexels-photo-9578709.jpeg',
-    title: 'Grandes Experiências começam aqui',
+    image: "https://images.pexels.com/photos/9578709/pexels-photo-9578709.jpeg",
+    title: "Grandes Experiências começam aqui",
     description:
-      'Descubra eventos que unem pessoas, histórias e propósitos presenciais ou online, com experiências únicas que fazem sentido pra você.',
+      "Descubra eventos que unem pessoas, histórias e propósitos presenciais ou online, com experiências únicas que fazem sentido pra você.",
   },
   {
-    image: 'https://images.unsplash.com/photo-1549342902-be005322599a?q=100&w=1920',
-    title: 'Conecte-se com pessoas reais',
-    description: 'Participe de encontros presenciais e online que transformam conexões em relacionamentos verdadeiros.',
+    image: "https://images.unsplash.com/photo-1549342902-be005322599a?q=100&w=1920",
+    title: "Conecte-se com pessoas reais",
+    description:
+      "Participe de encontros presenciais e online que transformam conexões em relacionamentos verdadeiros.",
   },
   {
-    image: 'https://images.unsplash.com/photo-1613093335399-829e30811789?q=100&w=1920',
-    title: 'Experiências que fazem sentido',
-    description: 'Viva momentos autênticos através de retiros, terapias e eventos que unem tecnologia e emoção.',
+    image: "https://images.unsplash.com/photo-1613093335399-829e30811789?q=100&w=1920",
+    title: "Experiências que fazem sentido",
+    description:
+      "Viva momentos autênticos através de retiros, terapias e eventos que unem tecnologia e emoção.",
   },
 ];
 
 export function LoginForm() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [year, setYear] = useState('');
+  const [year, setYear] = useState("");
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const { isLoggedIn, user, isLoading: authLoading, refreshAuth } = useAuth();
@@ -53,7 +55,7 @@ export function LoginForm() {
     setYear(currentYear);
 
     if (!authLoading && isLoggedIn && user && !showSuccessVideo) {
-      router.push(user.isAdmin ? '/admin' : '/events');
+      router.push(user.isAdmin ? "/admin" : "/events");
     }
   }, [authLoading, isLoggedIn, user, router, showSuccessVideo]);
 
@@ -71,9 +73,9 @@ export function LoginForm() {
       setUserData(response.user);
 
       toast({
-        title: 'Login realizado com sucesso!',
-        description: 'Você será redirecionado.',
-        variant: 'success',
+        title: "Login realizado com sucesso!",
+        description: "Você será redirecionado.",
+        variant: "success",
       });
 
       setShowSuccessVideo(true);
@@ -84,23 +86,23 @@ export function LoginForm() {
       // Fallback redirection after 5 seconds in case video doesn't end properly
       setTimeout(() => {
         if (response.user.isAdmin) {
-          router.push('/admin');
+          router.push("/admin");
         } else {
-          router.push('/events');
+          router.push("/events");
         }
       }, 5000);
     } catch (err) {
       if (err instanceof APIError) {
         toast({
-          variant: 'error',
-          title: 'Erro ao fazer login',
+          variant: "error",
+          title: "Erro ao fazer login",
           description: err.message,
         });
       } else {
         toast({
-          variant: 'error',
-          title: 'Erro ao conectar',
-          description: 'Erro ao conectar com o servidor',
+          variant: "error",
+          title: "Erro ao conectar",
+          description: "Erro ao conectar com o servidor",
         });
       }
       setIsLoading(false);
@@ -141,9 +143,9 @@ export function LoginForm() {
             playsInline
             onEnded={() => {
               if (userData?.isAdmin) {
-                router.push('/admin');
+                router.push("/admin");
               } else {
-                router.push('/events');
+                router.push("/events");
               }
             }}
             className="w-full h-full object-contain"
@@ -161,16 +163,18 @@ export function LoginForm() {
             <div className="w-full max-w-md space-y-6 sm:space-y-10">
               <div className="space-y-5 sm:space-y-6">
                 <div className="space-y-5 text-center mb-10">
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black">{'Bem-vindo(a) de volta!'}</h2>
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black">
+                    {"Bem-vindo(a) de volta!"}
+                  </h2>
                   <p className="text-sm sm:text-base text-muted-foreground">
-                    {'Conecte-se para continuar sua jornada.'}
+                    {"Conecte-se para continuar sua jornada."}
                   </p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-2">
                     <label htmlFor="email" className="text-sm font-medium text-foreground">
-                      {'Email ou CPF'}
+                      {"Email ou CPF"}
                     </label>
                     <Input
                       id="email"
@@ -185,7 +189,7 @@ export function LoginForm() {
 
                   <div className="space-y-2">
                     <label htmlFor="password" className="text-sm font-medium text-foreground">
-                      {'Senha'}
+                      {"Senha"}
                     </label>
                     <Input
                       id="password"
@@ -204,8 +208,11 @@ export function LoginForm() {
                       checked={rememberMe}
                       onCheckedChange={(checked) => setRememberMe(checked as boolean)}
                     />
-                    <label htmlFor="remember" className="text-sm font-medium text-foreground cursor-pointer">
-                      {'Lembrar de mim'}
+                    <label
+                      htmlFor="remember"
+                      className="text-sm font-medium text-foreground cursor-pointer"
+                    >
+                      {"Lembrar de mim"}
                     </label>
                   </div>
 
@@ -214,14 +221,14 @@ export function LoginForm() {
                     disabled={isLoading}
                     className="w-full bg-[#8A0204] hover:bg-[#6a0103] text-white font-medium h-11 sm:h-12 text-sm sm:text-base rounded-md disabled:opacity-50"
                   >
-                    {isLoading ? 'Entrando...' : 'Iniciar Sessão'}
+                    {isLoading ? "Entrando..." : "Iniciar Sessão"}
                   </Button>
                 </form>
 
                 <div className="text-center text-sm">
-                  <span className="text-muted-foreground">{'Não possui uma conta? '}</span>
+                  <span className="text-muted-foreground">{"Não possui uma conta? "}</span>
                   <Link href="/signup" className="text-[#8A0204] hover:underline font-medium">
-                    {'Criar uma nova conta'}
+                    {"Criar uma nova conta"}
                   </Link>
                 </div>
               </div>
@@ -232,7 +239,7 @@ export function LoginForm() {
             <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 text-sm">
               <span>{`©MeetOff, ${year}`}</span>
               <a href="#" className="hover:text-foreground underline">
-                {'Termos e Política de privacidade'}
+                {"Termos e Política de privacidade"}
               </a>
             </div>
           </div>
@@ -241,7 +248,7 @@ export function LoginForm() {
         {/* Right Column - Hero Carousel */}
         <div className="hidden lg:block lg:w-1/2 relative lg:min-h-screen rounded-l-4xl rounded-r-4xl">
           <Image
-            src={carouselSlides[currentSlide].image || '/placeholder.svg'}
+            src={carouselSlides[currentSlide].image || "/placeholder.svg"}
             alt="Pessoas conectadas em experiências"
             fill
             className="object-cover transition-opacity duration-500 rounded-l-4xl rounded-r-4xl"
@@ -251,7 +258,9 @@ export function LoginForm() {
           <div className="absolute bottom-0 left-0 right-0 p-12 z-20">
             <div className="backdrop-blur-md rounded-xl p-8 border border-white/20">
               <div className="text-white space-y-4">
-                <h2 className="text-3xl md:text-4xl text-pretty">{carouselSlides[currentSlide].title}</h2>
+                <h2 className="text-3xl md:text-4xl text-pretty">
+                  {carouselSlides[currentSlide].title}
+                </h2>
                 <p className="text-base md:text-lg leading-relaxed text-pretty">
                   {carouselSlides[currentSlide].description}
                 </p>
@@ -265,8 +274,8 @@ export function LoginForm() {
                         onClick={() => goToSlide(index)}
                         className={`h-2 rounded-full transition-all ${
                           index === currentSlide
-                            ? 'w-10 bg-white h-[5px]'
-                            : 'w-2 h-[5px] bg-white/50 hover:bg-white/70 cursor-pointer'
+                            ? "w-10 bg-white h-[5px]"
+                            : "w-2 h-[5px] bg-white/50 hover:bg-white/70 cursor-pointer"
                         }`}
                         aria-label={`Go to slide ${index + 1}`}
                       />

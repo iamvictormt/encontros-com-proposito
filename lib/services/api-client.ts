@@ -1,9 +1,13 @@
-import { API_CONFIG } from '@/lib/config/api.config';
+import { API_CONFIG } from "@/lib/config/api.config";
 
 export class APIError extends Error {
-  constructor(message: string, public status: number, public data?: any) {
+  constructor(
+    message: string,
+    public status: number,
+    public data?: any,
+  ) {
     super(message);
-    this.name = 'APIError';
+    this.name = "APIError";
   }
 }
 
@@ -29,7 +33,7 @@ class APIClient {
         ...fetchOptions,
         signal: controller.signal,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...fetchOptions.headers,
         },
       });
@@ -39,7 +43,7 @@ class APIClient {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new APIError(data.message || 'Erro na requisição', response.status, data);
+        throw new APIError(data.message || "Erro na requisição", response.status, data);
       }
 
       return data;
@@ -51,24 +55,24 @@ class APIClient {
       }
 
       if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          throw new APIError('Tempo de requisição excedido', 408);
+        if (error.name === "AbortError") {
+          throw new APIError("Tempo de requisição excedido", 408);
         }
         throw new APIError(error.message, 0);
       }
 
-      throw new APIError('Erro desconhecido', 0);
+      throw new APIError("Erro desconhecido", 0);
     }
   }
 
   async get<T>(endpoint: string, options?: RequestOptions): Promise<T> {
-    return this.request<T>(endpoint, { ...options, method: 'GET' });
+    return this.request<T>(endpoint, { ...options, method: "GET" });
   }
 
   async post<T>(endpoint: string, body?: any, options?: RequestOptions): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify(body),
     });
   }
@@ -76,13 +80,13 @@ class APIClient {
   async put<T>(endpoint: string, body?: any, options?: RequestOptions): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify(body),
     });
   }
 
   async delete<T>(endpoint: string, options?: RequestOptions): Promise<T> {
-    return this.request<T>(endpoint, { ...options, method: 'DELETE' });
+    return this.request<T>(endpoint, { ...options, method: "DELETE" });
   }
 }
 

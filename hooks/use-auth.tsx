@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { isAuthenticated } from '@/lib/auth';
-import { authService, AuthUser } from '@/lib/services/auth.service';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback } from "react";
+import { isAuthenticated } from "@/lib/auth";
+import { authService, AuthUser } from "@/lib/services/auth.service";
+import { useRouter } from "next/navigation";
 
 export function useAuth() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -38,9 +38,9 @@ export function useAuth() {
       await authService.logout();
       setIsLoggedIn(false);
       setUser(null);
-      router.push('/login');
+      router.push("/login");
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     }
   };
 

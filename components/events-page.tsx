@@ -1,97 +1,97 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Search, MapPin, Share2, ArrowLeft, ArrowRight, Link2, Filter } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useAuth } from '@/hooks/use-auth';
-import { useRouter } from 'next/navigation';
-import { SiteHeader } from './site-header';
-import { SiteFooter } from './site-footer';
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search, MapPin, Share2, ArrowLeft, ArrowRight, Link2, Filter } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useAuth } from "@/hooks/use-auth";
+import { useRouter } from "next/navigation";
+import { SiteHeader } from "./site-header";
+import { SiteFooter } from "./site-footer";
 
 const heroSlides = [
   {
-    image: '/placeholder.svg?height=400&width=1200',
-    theme: 'Tema: Espiritual',
-    location: 'São Paulo/SP',
-    title: 'ENCONTRO ESPIRITUAL EM SÃO PAULO',
+    image: "/placeholder.svg?height=400&width=1200",
+    theme: "Tema: Espiritual",
+    location: "São Paulo/SP",
+    title: "ENCONTRO ESPIRITUAL EM SÃO PAULO",
   },
   {
-    image: '/placeholder.svg?height=400&width=1200',
-    theme: 'Tema: Networking',
-    location: 'Rio de Janeiro/RJ',
-    title: 'GRANDES EXPERIÊNCIAS COMEÇAM AQUI',
+    image: "/placeholder.svg?height=400&width=1200",
+    theme: "Tema: Networking",
+    location: "Rio de Janeiro/RJ",
+    title: "GRANDES EXPERIÊNCIAS COMEÇAM AQUI",
   },
   {
-    image: '/placeholder.svg?height=400&width=1200',
-    theme: 'Tema: Negócios',
-    location: 'Belo Horizonte/MG',
-    title: 'CONEXÕES QUE TRANSFORMAM',
+    image: "/placeholder.svg?height=400&width=1200",
+    theme: "Tema: Negócios",
+    location: "Belo Horizonte/MG",
+    title: "CONEXÕES QUE TRANSFORMAM",
   },
 ];
 
 const events = [
   {
     id: 1,
-    image: '/placeholder.svg?height=300&width=400',
+    image: "/placeholder.svg?height=300&width=400",
     price: 125.5,
-    date: { month: 'AGO', day: 21 },
-    title: 'Cinema ao ar Livre',
-    location: 'Avenida Paulista',
-    time: '19:30',
+    date: { month: "AGO", day: 21 },
+    title: "Cinema ao ar Livre",
+    location: "Avenida Paulista",
+    time: "19:30",
   },
   {
     id: 2,
-    image: '/placeholder.svg?height=300&width=400',
+    image: "/placeholder.svg?height=300&width=400",
     price: 125.5,
-    date: { month: 'AGO', day: 20 },
-    title: 'Encontro fé e vida',
-    location: 'Avenida Paulista',
-    time: '19:30',
+    date: { month: "AGO", day: 20 },
+    title: "Encontro fé e vida",
+    location: "Avenida Paulista",
+    time: "19:30",
   },
   {
     id: 3,
-    image: '/placeholder.svg?height=300&width=400',
+    image: "/placeholder.svg?height=300&width=400",
     price: 125.5,
-    date: { month: 'AGO', day: 19 },
-    title: 'EncontroBiz',
-    location: 'Avenida Paulista',
-    time: '19:30',
+    date: { month: "AGO", day: 19 },
+    title: "EncontroBiz",
+    location: "Avenida Paulista",
+    time: "19:30",
   },
   {
     id: 4,
-    image: '/placeholder.svg?height=300&width=400',
+    image: "/placeholder.svg?height=300&width=400",
     price: 125.5,
-    date: { month: 'AGO', day: 18 },
-    title: 'Pitch e Parcerias',
-    location: 'Avenida Paulista',
-    time: '19:30',
+    date: { month: "AGO", day: 18 },
+    title: "Pitch e Parcerias",
+    location: "Avenida Paulista",
+    time: "19:30",
   },
   {
     id: 5,
-    image: '/placeholder.svg?height=300&width=400',
+    image: "/placeholder.svg?height=300&width=400",
     price: 125.5,
-    date: { month: 'AGO', day: 17 },
-    title: 'Happy Hour',
-    location: 'Avenida Paulista',
-    time: '19:30',
+    date: { month: "AGO", day: 17 },
+    title: "Happy Hour",
+    location: "Avenida Paulista",
+    time: "19:30",
   },
   {
     id: 6,
-    image: '/placeholder.svg?height=300&width=400',
+    image: "/placeholder.svg?height=300&width=400",
     price: 125.5,
-    date: { month: 'AGO', day: 16 },
-    title: 'Encontro FindB',
-    location: 'Avenida Paulista',
-    time: '19:30',
+    date: { month: "AGO", day: 16 },
+    title: "Encontro FindB",
+    location: "Avenida Paulista",
+    time: "19:30",
   },
 ];
 
 export function EventsPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [year, setYear] = useState('');
+  const [year, setYear] = useState("");
   const { isLoggedIn, logout } = useAuth();
   const router = useRouter();
 
@@ -127,7 +127,7 @@ export function EventsPage() {
               {heroSlides.map((slide, index) => (
                 <div key={index} className="relative min-w-full">
                   <Image
-                    src={slide.image || '/placeholder.svg'}
+                    src={slide.image || "/placeholder.svg"}
                     alt={slide.title}
                     fill
                     className="object-cover"
@@ -148,14 +148,20 @@ export function EventsPage() {
                         </span>
                       </div>
 
-                      <h1 className="mb-6 text-4xl font-bold leading-tight text-white lg:text-5xl">{slide.title}</h1>
+                      <h1 className="mb-6 text-4xl font-bold leading-tight text-white lg:text-5xl">
+                        {slide.title}
+                      </h1>
 
                       <div className="flex flex-wrap gap-4">
                         <Button size="lg" className="bg-accent hover:bg-accent/90" asChild>
                           <Link href={`/events/1`}>Participar</Link>
                         </Button>
 
-                        <Button size="lg" variant="ghost" className="bg-transparent text-white hover:bg-white/10">
+                        <Button
+                          size="lg"
+                          variant="ghost"
+                          className="bg-transparent text-white hover:bg-white/10"
+                        >
                           <Link2 className="h-6 w-6 rotate-[140deg]" />
                           Copiar Token de convite
                         </Button>
@@ -173,8 +179,8 @@ export function EventsPage() {
                   onClick={() => setCurrentSlide(index)}
                   className={`h-2 rounded-full transition-all ${
                     index === currentSlide
-                      ? 'w-10 bg-white h-[5px]'
-                      : 'w-2 h-[5px] bg-white/50 hover:bg-white/70 cursor-pointer'
+                      ? "w-10 bg-white h-[5px]"
+                      : "w-2 h-[5px] bg-white/50 hover:bg-white/70 cursor-pointer"
                   }`}
                   aria-label={`Go to slide ${index + 1}`}
                 />
@@ -232,7 +238,7 @@ export function EventsPage() {
               >
                 <div className="relative h-80 overflow-hidden">
                   <Image
-                    src={event.image || '/placeholder.svg'}
+                    src={event.image || "/placeholder.svg"}
                     alt={event.title}
                     fill
                     className="object-cover transition-transform group-hover:scale-105"
@@ -248,7 +254,7 @@ export function EventsPage() {
                   </div>
 
                   <div className="absolute left-3 top-3 rounded-lg bg-white px-3 py-2.5 font-semibold text-black shadow-md">
-                    R$ {event.price.toFixed(2).replace('.', ',')}
+                    R$ {event.price.toFixed(2).replace(".", ",")}
                   </div>
                 </div>
 
@@ -258,7 +264,9 @@ export function EventsPage() {
                       <span className="text-xs font-semibold text-black uppercase tracking-wide">
                         {event.date.month}
                       </span>
-                      <span className="text-3xl font-bold text-secondary leading-none">{event.date.day}</span>
+                      <span className="text-3xl font-bold text-secondary leading-none">
+                        {event.date.day}
+                      </span>
                     </div>
                     <div className="flex-1 pl-4 relative">
                       <div className="absolute left-0 top-1/4 h-1/2 border-l border-1"></div>
@@ -289,11 +297,17 @@ export function EventsPage() {
 
           {/* Pagination */}
           <div className="mt-8 flex items-center justify-center gap-8">
-            <Button size="icon" className="bg-transparent text-black hover:bg-gray-50 hover:text-black/80">
+            <Button
+              size="icon"
+              className="bg-transparent text-black hover:bg-gray-50 hover:text-black/80"
+            >
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <span className="text-sm text-foreground">Página 1 de 10</span>
-            <Button size="icon" className="bg-transparent text-black hover:bg-gray-50 hover:text-black/80">
+            <Button
+              size="icon"
+              className="bg-transparent text-black hover:bg-gray-50 hover:text-black/80"
+            >
               <ArrowRight className="h-4 w-4" />
             </Button>
           </div>

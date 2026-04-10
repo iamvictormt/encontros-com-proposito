@@ -3,7 +3,7 @@
  */
 export function formatCPF(value: string): string {
   // Remove tudo que não é dígito
-  const numbers = value.replace(/\D/g, '');
+  const numbers = value.replace(/\D/g, "");
 
   // Limita a 11 dígitos
   const limited = numbers.slice(0, 11);
@@ -11,7 +11,8 @@ export function formatCPF(value: string): string {
   // Aplica a máscara
   if (limited.length <= 3) return limited;
   if (limited.length <= 6) return `${limited.slice(0, 3)}.${limited.slice(3)}`;
-  if (limited.length <= 9) return `${limited.slice(0, 3)}.${limited.slice(3, 6)}.${limited.slice(6)}`;
+  if (limited.length <= 9)
+    return `${limited.slice(0, 3)}.${limited.slice(3, 6)}.${limited.slice(6)}`;
   return `${limited.slice(0, 3)}.${limited.slice(3, 6)}.${limited.slice(6, 9)}-${limited.slice(9)}`;
 }
 
@@ -19,14 +20,14 @@ export function formatCPF(value: string): string {
  * Remove a máscara do CPF
  */
 export function unformatCPF(value: string): string {
-  return value.replace(/\D/g, '');
+  return value.replace(/\D/g, "");
 }
 
 /**
  * Valida se o CPF é válido
  */
 export function validateCPF(cpf: string): boolean {
-  const numbers = cpf.replace(/\D/g, '');
+  const numbers = cpf.replace(/\D/g, "");
 
   if (numbers.length !== 11) return false;
 
@@ -67,8 +68,8 @@ export function validateEmail(email: string): boolean {
 /**
  * Detecta se o input é um CPF (apenas números) ou email (contém @)
  */
-export function detectInputType(value: string): 'cpf' | 'email' | 'unknown' {
-  if (value.includes('@')) return 'email';
-  if (/^\d/.test(value) || /^\d{3}\./.test(value)) return 'cpf';
-  return 'email';
+export function detectInputType(value: string): "cpf" | "email" | "unknown" {
+  if (value.includes("@")) return "email";
+  if (/^\d/.test(value) || /^\d{3}\./.test(value)) return "cpf";
+  return "email";
 }

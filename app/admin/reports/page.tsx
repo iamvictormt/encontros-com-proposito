@@ -1,39 +1,50 @@
-import { Card, CardContent } from '@/components/ui/card';
-import { Search, Filter, TrendingUp, TrendingDown, MoreHorizontal, Info, Calendar } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import Image from 'next/image';
-import { StatCard } from '@/components/admin-stats';
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Search,
+  Filter,
+  TrendingUp,
+  TrendingDown,
+  MoreHorizontal,
+  Info,
+  Calendar,
+} from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import { StatCard } from "@/components/admin-stats";
 
 export default function AdminReports() {
   const stats = [
-    { label: 'Total de Vendas', value: '45.058', trend: '+12%', up: true, isValue: true },
-    { label: 'Eventos Criados', value: '28', trend: '+5%', up: true },
-    { label: 'Convites Aceitos', value: '342', trend: '-2%', up: false },
-    { label: 'Agendamentos', value: '120', trend: '+18%', up: true },
+    { label: "Total de Vendas", value: "45.058", trend: "+12%", up: true, isValue: true },
+    { label: "Eventos Criados", value: "28", trend: "+5%", up: true },
+    { label: "Convites Aceitos", value: "342", trend: "-2%", up: false },
+    { label: "Agendamentos", value: "120", trend: "+18%", up: true },
   ];
 
   const topProducts = [
     {
       name: 'Camiseta "Desligue o App"',
-      stock: '15 Disponíveis',
-      profit: '289,00',
-      units: '120 unidades',
-      image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=60',
+      stock: "15 Disponíveis",
+      profit: "289,00",
+      units: "120 unidades",
+      image:
+        "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=60",
     },
     {
       name: 'Camiseta "Desligue o App"',
-      stock: '15 Disponíveis',
-      profit: '289,00',
-      units: '120 unidades',
-      image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=60',
+      stock: "15 Disponíveis",
+      profit: "289,00",
+      units: "120 unidades",
+      image:
+        "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=60",
     },
     {
       name: 'Camiseta "Desligue o App"',
-      stock: '15 Disponíveis',
-      profit: '289,00',
-      units: '120 unidades',
-      image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=60',
+      stock: "15 Disponíveis",
+      profit: "289,00",
+      units: "120 unidades",
+      image:
+        "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=60",
     },
   ];
 
@@ -56,7 +67,10 @@ export default function AdminReports() {
               <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-2">
                   <h3 className="font-bold text-secondary">Lucro de vendas</h3>
-                    <Button   variant="default" className="bg-transparent text-gray-400 hover:bg-transparent hover:text-gray-600 !size-6 !p-0">
+                  <Button
+                    variant="default"
+                    className="bg-transparent text-gray-400 hover:bg-transparent hover:text-gray-600 !size-6 !p-0"
+                  >
                     <Info className="h-5 w-5" />
                   </Button>
                 </div>
@@ -65,7 +79,11 @@ export default function AdminReports() {
                     <div className="w-8 h-0.5 bg-gray-400"></div>
                     Meses anteriores
                   </div>
-                  <Button variant="outline" size="sm" className="bg-white border text-xs flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-white border text-xs flex gap-2"
+                  >
                     <Calendar className="h-5 w-5" />
                     Junho 2024
                   </Button>
@@ -112,14 +130,15 @@ export default function AdminReports() {
                   <div className="absolute top-0 left-0 w-48 h-48 border-[16px] border-[#f18d42]/20 rounded-full"></div>
                   <div
                     className="absolute top-0 left-0 w-48 h-48 border-[16px] border-[#f18d42] rounded-full"
-                    style={{ clipPath: 'polygon(0 0, 100% 0, 100% 50%, 0 50%)' }}
+                    style={{ clipPath: "polygon(0 0, 100% 0, 100% 50%, 0 50%)" }}
                   ></div>
-                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md">
-                   </div>
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md"></div>
                 </div>
                 <div className="text-center mt-6">
                   <h4 className="text-3xl font-bold text-black">95%</h4>
-                  <p className="text-[10px] text-muted-foreground mt-1">Baseado em avaliações positivas</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">
+                    Baseado em avaliações positivas
+                  </p>
                 </div>
               </div>
 
@@ -178,9 +197,9 @@ export default function AdminReports() {
 
             <div className="space-y-6">
               {[
-                { label: 'Anfitriões', total: '150 Convites', value: '80 Convites Aceitos' },
-                { label: 'Cupidos', total: '150 Convites', value: '80 Convites Aceitos' },
-                { label: 'Outros', total: '150 Convites', value: '80 Convites Aceitos' },
+                { label: "Anfitriões", total: "150 Convites", value: "80 Convites Aceitos" },
+                { label: "Cupidos", total: "150 Convites", value: "80 Convites Aceitos" },
+                { label: "Outros", total: "150 Convites", value: "80 Convites Aceitos" },
               ].map((item, i) => (
                 <div key={i} className="grid grid-cols-3 items-center gap-6">
                   {/* LABEL */}

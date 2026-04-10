@@ -1,17 +1,17 @@
-import { NextResponse } from 'next/server';
-import { sql } from '@/lib/db';
-import { hashPassword, signJWT, validateCPF } from '@/lib/auth-utils';
+import { NextResponse } from "next/server";
+import { sql } from "@/lib/db";
+import { hashPassword, signJWT, validateCPF } from "@/lib/auth-utils";
 
 export async function POST(request: Request) {
   try {
     const { fullName, email, cpf, password } = await request.json();
 
     if (!fullName || (!email && !cpf) || !password) {
-      return NextResponse.json({ message: 'Todos os campos são obrigatórios' }, { status: 400 });
+      return NextResponse.json({ message: "Todos os campos são obrigatórios" }, { status: 400 });
     }
 
     if (cpf && !validateCPF(cpf)) {
-      return NextResponse.json({ message: 'CPF inválido' }, { status: 400 });
+      return NextResponse.json({ message: "CPF inválido" }, { status: 400 });
     }
 
     // Check if email or cpf already exists
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     `;
 
     if (existingUser.length > 0) {
-      return NextResponse.json({ message: 'E-mail ou CPF já cadastrado' }, { status: 409 });
+      return NextResponse.json({ message: "E-mail ou CPF já cadastrado" }, { status: 409 });
     }
 
     const hashedPassword = await hashPassword(password);
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
 
     const response = NextResponse.json(
       {
-        message: 'Usuário criado com sucesso',
+        message: "Usuário criado com sucesso",
         user: {
           id: user.id,
           fullName: user.full_name,
@@ -52,17 +52,17 @@ export async function POST(request: Request) {
       { status: 201 },
     );
 
-    response.cookies.set('auth_token', token, {
+    response.cookies.set("auth_token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: 60 * 60 * 24, // 24 hours
-      path: '/',
+      path: "/",
     });
 
     return response;
   } catch (error) {
-    console.error('Registration error:', error);
-    return NextResponse.json({ message: 'Erro interno do servidor' }, { status: 500 });
+    console.error("Registration error:", error);
+    return NextResponse.json({ message: "Erro interno do servidor" }, { status: 500 });
   }
 }

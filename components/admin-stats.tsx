@@ -1,4 +1,4 @@
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from "@/components/ui/card";
 
 interface StatCardProps {
   label: string;
@@ -22,10 +22,10 @@ export function StatCard({ label, value, isValue }: StatCardProps) {
 
 export function AdminStats() {
   const stats = [
-    { label: 'Total Eventos Ativos', value: '12' },
-    { label: 'Empresas Pendentes', value: '5' },
-    { label: 'Produtos na Loja', value: '37' },
-    { label: 'Vendas no Mês', value: '14.250', isValue: true },
+    { label: "Total Eventos Ativos", value: "12" },
+    { label: "Empresas Pendentes", value: "5" },
+    { label: "Produtos na Loja", value: "37" },
+    { label: "Vendas no Mês", value: "14.250", isValue: true },
   ];
 
   return (

@@ -1,22 +1,26 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { jwtVerify } from 'jose';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { jwtVerify } from "jose";
 
 const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'fallback-secret-for-development-only'
+  process.env.JWT_SECRET || "fallback-secret-for-development-only",
 );
 
 export async function middleware(request: NextRequest) {
-  const token = request.cookies.get('auth_token')?.value;
+  const token = request.cookies.get("auth_token")?.value;
 
   const { pathname } = request.nextUrl;
 
   // Paths that are public (don't need auth)
-  const isPublicPath = pathname === '/login' || pathname === '/signup' || pathname.startsWith('/api/auth') || pathname === '/';
+  const isPublicPath =
+    pathname === "/login" ||
+    pathname === "/signup" ||
+    pathname.startsWith("/api/auth") ||
+    pathname === "/";
 
   if (!token && !isPublicPath) {
     // If not authenticated and trying to access a protected route, redirect to login
-    return NextResponse.redirect(new URL('/login', request.url));
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   if (token) {
@@ -25,27 +29,27 @@ export async function middleware(request: NextRequest) {
       const { payload } = await jwtVerify(token, JWT_SECRET);
 
       // If already logged in and trying to access login/signup
-      if (isPublicPath && (pathname === '/login' || pathname === '/signup')) {
+      if (isPublicPath && (pathname === "/login" || pathname === "/signup")) {
         if (payload.isAdmin) {
-          return NextResponse.redirect(new URL('/admin', request.url));
+          return NextResponse.redirect(new URL("/admin", request.url));
         }
-        return NextResponse.redirect(new URL('/', request.url));
+        return NextResponse.redirect(new URL("/", request.url));
       }
 
       // If an admin tries to access user pages (anything not starting with /admin or auth), redirect to admin
-      if (payload.isAdmin && !pathname.startsWith('/admin') && !isPublicPath) {
-        return NextResponse.redirect(new URL('/admin', request.url));
+      if (payload.isAdmin && !pathname.startsWith("/admin") && !isPublicPath) {
+        return NextResponse.redirect(new URL("/admin", request.url));
       }
 
       // Check admin status for specific routes
-      if (pathname.startsWith('/admin') && !payload.isAdmin) {
-        return NextResponse.redirect(new URL('/', request.url));
+      if (pathname.startsWith("/admin") && !payload.isAdmin) {
+        return NextResponse.redirect(new URL("/", request.url));
       }
     } catch (error) {
       // Token is invalid, remove it and redirect to login if it's not a public path
       if (!isPublicPath) {
-        const response = NextResponse.redirect(new URL('/login', request.url));
-        response.cookies.delete('auth_token');
+        const response = NextResponse.redirect(new URL("/login", request.url));
+        response.cookies.delete("auth_token");
         return response;
       }
     }
@@ -63,6 +67,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public (public assets)
      */
-    '/((?!_next/static|_next/image|favicon.ico|manifest.json|public).*)',
+    "/((?!_next/static|_next/image|favicon.ico|manifest.json|public).*)",
   ],
 };
