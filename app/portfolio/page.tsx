@@ -2,7 +2,7 @@ import { PortfolioPage } from "@/components/portfolio-page";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Portfólio | Encontros com Propósito",
+  title: "Portfólio | Meet Off",
   description: "Conheça nossos profissionais e as áreas de atendimento",
 };
 

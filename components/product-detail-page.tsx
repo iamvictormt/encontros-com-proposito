@@ -105,17 +105,17 @@ export function ProductDetailPage() {
                   className="object-contain"
                 />
 
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-0">
                   <button
                     onClick={handlePreviousImage}
-                    className="w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center transition-colors cursor-pointer"
+                    className="w-8 h-8 rounded-l-md bg-black/80 hover:bg-black/90 flex items-center justify-center transition-colors cursor-pointer"
                     aria-label="Previous image"
                   >
                     <ChevronLeft className="h-5 w-5 text-white" />
                   </button>
                   <button
                     onClick={handleNextImage}
-                    className="w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center transition-colors cursor-pointer"
+                    className="w-8 h-8 rounded-r-md bg-black/80 hover:bg-black/90 flex items-center justify-center transition-colors cursor-pointer"
                     aria-label="Next image"
                   >
                     <ChevronRight className="h-5 w-5 text-white" />

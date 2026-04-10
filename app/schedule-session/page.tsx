@@ -2,7 +2,7 @@ import { ScheduleSessionPage } from "@/components/schedule-session-page";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Agendar Sessão | Encontros com Propósito",
+  title: "Agendar Sessão | Meet Off",
   description: "Agende sua sessão agora",
 };
 

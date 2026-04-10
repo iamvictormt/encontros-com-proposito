@@ -2,7 +2,7 @@ import { InvitePage } from "@/components/invite-page";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Convite - Encontros com Propósito",
+  title: "Convite | Meet Off",
   description: "Gere seu token exclusivo para convidar amigos.",
 };
 
