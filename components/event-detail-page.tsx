@@ -177,9 +177,9 @@ export function EventDetailPage() {
             </div>
 
             {/* Sobre o Evento */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 flex flex-col justify-center">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 flex flex-col justify-start">
               <h2 className="text-[22px] font-bold text-gray-900 mb-4">Sobre o Evento</h2>
-              <div className="space-y-4">
+              <div className="space-y-2">
                 <p className="text-gray-500 leading-relaxed text-[15px]">
                   O "Ritual do Amor Interior" é uma jornada espiritual e afetiva voltada à reconexão
                   pessoal e relacional.
@@ -278,11 +278,11 @@ export function EventDetailPage() {
             </div>
 
             {/* Grupos disponíveis */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 flex flex-col">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 flex flex-col justify-start">
               <h2 className="text-[22px] font-bold text-gray-900 mb-1">
                 Grupos disponíveis para participação
               </h2>
-              <p className="text-[15px] text-gray-400 mb-6">
+              <p className="text-[15px] text-gray-400 mb-2">
                 Quer companhia? Escolha um grupo para ir ao evento junto com você!
               </p>
 

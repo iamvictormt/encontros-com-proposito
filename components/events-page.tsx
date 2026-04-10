@@ -161,15 +161,17 @@ export function EventsPage() {
                         {slide.title}
                       </h1>
 
-                      <div className="flex flex-wrap gap-4">
+                      <div className="flex flex-wrap items-center gap-4">
                         <Button size="lg" className="bg-accent hover:bg-accent/90" asChild>
                           <Link href={`/events/1`}>Participar</Link>
                         </Button>
 
+                        <div className="hidden sm:block w-px h-4 bg-white/40 mx-2" />
+
                         <Button
                           size="lg"
                           variant="ghost"
-                          className="bg-transparent text-white hover:bg-white/10"
+                          className="bg-transparent text-white hover:bg-white/10 px-0"
                         >
                           <Link2 className="h-6 w-6 rotate-[140deg]" />
                           Copiar Token de convite

@@ -64,7 +64,7 @@ export function EventHeroCarousel({ images, interval = 5000 }: EventHeroCarousel
       ))}
 
       {/* Progress Bars */}
-      <div className="absolute top-4 left-4 right-4 z-30 flex gap-2 h-1">
+      <div className="absolute top-4 left-4 right-4 z-30 flex gap-2 h-1 mx-auto max-w-7xl px-4 md:px-0">
         {images.map((_, idx) => (
           <div key={idx} className="flex-1 bg-white/30 rounded-full overflow-hidden">
             <div
@@ -81,21 +81,21 @@ export function EventHeroCarousel({ images, interval = 5000 }: EventHeroCarousel
       </div>
 
       {/* Navigation Arrows */}
-      <div className="absolute top-1/2 left-4 md:left-12 -translate-y-1/2 z-30">
-        <button
-          onClick={prevSlide}
-          className="bg-white/80 backdrop-blur-sm rounded-full p-2 md:p-3 shadow-md hover:bg-white transition-all transform hover:scale-110 text-gray-700 cursor-pointer"
-        >
-          <MoveLeft className="w-5 h-5 md:w-6 md:h-6" />
-        </button>
-      </div>
-      <div className="absolute top-1/2 right-4 md:right-12 -translate-y-1/2 z-30">
-        <button
-          onClick={nextSlide}
-          className="bg-white/80 backdrop-blur-sm rounded-full p-2 md:p-3 shadow-md hover:bg-white transition-all transform hover:scale-110 text-gray-700 cursor-pointer"
-        >
-          <MoveRight className="w-5 h-5 md:w-6 md:h-6" />
-        </button>
+      <div className="absolute top-1/2 inset-x-4 md:inset-x-0 -translate-y-1/2 z-30">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <button
+            onClick={prevSlide}
+            className="bg-white/80 backdrop-blur-sm rounded-full p-2 md:p-3 shadow-md hover:bg-white transition-all transform hover:scale-110 text-gray-700 cursor-pointer"
+          >
+            <MoveLeft className="w-5 h-5 md:w-6 md:h-6" />
+          </button>
+          <button
+            onClick={nextSlide}
+            className="bg-white/80 backdrop-blur-sm rounded-full p-2 md:p-3 shadow-md hover:bg-white transition-all transform hover:scale-110 text-gray-700 cursor-pointer"
+          >
+            <MoveRight className="w-5 h-5 md:w-6 md:h-6" />
+          </button>
+        </div>
       </div>
     </div>
   );
