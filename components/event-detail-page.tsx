@@ -23,6 +23,7 @@ import {
   Share,
 } from "lucide-react";
 import Image from "next/image";
+import { EventHeroCarousel } from "./event-hero-carousel";
 
 // Mock event data
 const event = {
@@ -34,7 +35,11 @@ const event = {
   city: "São Paulo/SP",
   description:
     'O "Ritual do Amor Interior" é uma jornada espiritual e afetiva voltada à reconexão pessoal e relacional.\n\nNeste encontro, você irá vivenciar dinâmicas coletivas e práticas de autocuidado com outros buscadores.',
-  image: "/placeholder.svg?height=800&width=1600",
+  images: [
+    "https://images.unsplash.com/photo-1513279922550-250c2129b13a?q=80&w=1470&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=1600&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=1600&auto=format&fit=crop",
+  ],
 };
 
 const groups = [
@@ -50,39 +55,24 @@ export function EventDetailPage() {
 
       <main className="flex-1 pb-16">
         {/* Hero Section */}
-        <div className="relative w-full h-[350px] md:h-[450px]">
-          <Image src={event.image} alt={event.title} fill className="object-cover" priority />
-          {/* Overlay gradient if needed */}
-          <div className="absolute inset-0 bg-black/10" />
+        <EventHeroCarousel images={event.images} />
 
-          <div className="absolute top-1/2 left-4 md:left-12 -translate-y-1/2">
-            <button className="bg-white rounded-full p-2 md:p-3 shadow-md hover:scale-105 transition-transform text-gray-700">
-              <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
-            </button>
-          </div>
-          <div className="absolute top-1/2 right-4 md:right-12 -translate-y-1/2">
-            <button className="bg-white rounded-full p-2 md:p-3 shadow-md hover:scale-105 transition-transform text-gray-700">
-              <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
-            </button>
-          </div>
-        </div>
-
-        <div className="mx-auto max-w-7xl">
-          {/* 3 Top Cards (Overlapping Hero slightly) */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 -mt-16 md:-mt-24 relative z-10 mb-10">
+        <div className="mx-auto max-w-7xl px-4 md:px-0">
+          {/* 3 Top Cards (Overlapping Hero significantly) */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 md:gap-14 -mt-24 md:-mt-48 relative z-10 mb-12">
             {/* Card 1: Event Info */}
-            <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col justify-between h-full">
-              <h1 className="text-2xl md:text-[28px] leading-tight font-bold text-gray-900 mb-6">
+            <div className="bg-white rounded-[2rem] shadow-xl p-8 md:p-10 flex flex-col justify-start h-full">
+              <h1 className="text-2xl md:text-[28px] leading-tight font-bold text-gray-900 mb-12">
                 {event.title}
               </h1>
-              <div className="space-y-5">
+              <div className="space-y-10">
                 <div className="flex items-start gap-4">
                   <div className="mt-1">
                     <MapPin className="w-8 h-8 text-secondary" />
                   </div>
                   <div>
                     <p className="text-sm text-gray-400 mb-1">Local</p>
-                    <p className="text-[#F28D35] font-medium text-sm md:text-[15px] border-b border-[#F28D35] inline-block pb-0.5">
+                    <p className="text-accent font-medium text-sm md:text-[15px] border-b border-accent inline-block pb-0.5">
                       {event.location} <span className="text-gray-300">•</span> {event.city}
                     </p>
                   </div>
@@ -102,7 +92,7 @@ export function EventDetailPage() {
             </div>
 
             {/* Card 2: Ingresso */}
-            <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col justify-between h-full space-y-4 border-l border-dashed border-gray-200">
+            <div className="bg-white rounded-[2rem] shadow-xl p-8 md:p-10 flex flex-col justify-start h-full space-y-6 border-l border-dashed border-gray-100">
               <div>
                 <h2 className="text-[22px] font-bold text-gray-900 mb-1">Ingresso</h2>
                 <p className="text-[15px] text-gray-400">Comprar pelo nosso sistema</p>
@@ -132,7 +122,7 @@ export function EventDetailPage() {
             </div>
 
             {/* Card 3: Token */}
-            <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col justify-between h-full space-y-4 border-l border-dashed border-gray-200">
+            <div className="bg-white rounded-[2rem] shadow-xl p-8 md:p-10 flex flex-col justify-start h-full space-y-6 border-l border-dashed border-gray-100">
               <div>
                 <h2 className="text-[22px] font-bold text-gray-900 mb-4">Seu token exclusivo</h2>
                 <div className="flex border border-gray-200 rounded-lg p-1 bg-white">
@@ -170,7 +160,7 @@ export function EventDetailPage() {
               <h2 className="text-[22px] font-bold text-gray-900">Apresentação</h2>
               <div className="relative rounded-2xl overflow-hidden aspect-video bg-gray-200 group cursor-pointer shadow-sm">
                 <Image
-                  src={event.image}
+                  src={event.images[0]}
                   alt="Apresentação do evento"
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
