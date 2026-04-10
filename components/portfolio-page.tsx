@@ -37,7 +37,7 @@ export function PortfolioPage() {
             <div className="flex-1">
               <div className="relative aspect-[4/3] rounded-2xl overflow-hidden mb-4">
                 <img
-                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=800"
+                  src="./images/joao-carlos.png"
                   alt="João Carlos"
                   className="object-cover w-full h-full"
                 />
@@ -58,7 +58,7 @@ export function PortfolioPage() {
             <div className="flex-1">
               <div className="relative aspect-[4/3] rounded-2xl overflow-hidden mb-4">
                 <img
-                  src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=800"
+                  src="./images/alesca-de-labernarde.png"
                   alt="Aiesca de Labernarde"
                   className="object-cover w-full h-full"
                 />
