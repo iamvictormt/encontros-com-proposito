@@ -261,31 +261,37 @@ export function ProductDetailPage() {
             </div>
           </div>
 
-          <div className="grid gap-8 lg:gap-0 lg:grid-cols-[60%_40%] mt-12">
+          <div className="grid gap-8 lg:gap-8 lg:grid-cols-2 mt-12 items-start">
             {/* APRESENTAÇÃO */}
-            <div className="lg:mr-4">
+            <div className="flex flex-col">
               <h2 className="text-2xl font-bold text-black mb-4">Apresentação</h2>
 
-              <div className="relative h-80 bg-gray-100 rounded-lg overflow-hidden group cursor-pointer">
-                <Image
-                  src={product.video || "/placeholder.svg"}
-                  alt="Video presentation"
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
-                  <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center">
-                    <Play className="h-6 w-6 text-black ml-1" />
-                  </div>
-                </div>
+              <div className="relative w-full h-[320px] md:h-[380px] bg-black rounded-[2rem] overflow-hidden">
+                {product.video.includes("youtube.com") || product.video.includes("placeholder") ? (
+                  <iframe
+                    className="absolute inset-0 w-full h-full"
+                    src="https://www.youtube.com/embed/Bz_bYH3v6A8"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : (
+                  <video
+                    src={product.video}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    controls
+                    playsInline
+                    preload="metadata"
+                  />
+                )}
               </div>
             </div>
 
             {/* OPINIÕES */}
-            <div className="md:ml-4">
+            <div className="flex flex-col lg:pl-4">
               <h2 className="text-2xl font-bold text-black mb-4">Opiniões de compradores</h2>
-
-              <TestimonialCarousel reviews={reviews} />
+              <div className="flex-grow">
+                <TestimonialCarousel reviews={reviews} variant="stacked" arrowsPosition="right" />
+              </div>
             </div>
           </div>
 

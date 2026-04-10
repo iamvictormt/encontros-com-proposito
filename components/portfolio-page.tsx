@@ -48,7 +48,7 @@ export function PortfolioPage() {
                 Email:{" "}
                 <a
                   href="mailto:FigmaDesignUXUI@email.com"
-                  className="text-secondary underline decoration-secondary"
+                  className="text-secondary underline decoration-secondary font-bold"
                 >
                   FigmaDesignUXUI@email.com
                 </a>
@@ -71,7 +71,7 @@ export function PortfolioPage() {
                 Email:{" "}
                 <a
                   href="mailto:FigmaDesignUXUI@email.com"
-                  className="text-secondary underline decoration-secondary"
+                  className="text-secondary underline decoration-secondary font-bold"
                 >
                   FigmaDesignUXUI@email.com
                 </a>
@@ -100,7 +100,7 @@ export function PortfolioPage() {
                   <Link href="/schedule-session">Agendar Sessão com Fundadores</Link>
                 </Button>
                 <button className="text-sm font-medium flex items-center hover:underline text-black cursor-pointer">
-                  Saiba mais sobre meu trabalho
+                  <span className="font-bold">Saiba mais sobre meu trabalho</span>
                   <span className="ml-1">↓</span>
                 </button>
               </div>
@@ -231,7 +231,7 @@ export function PortfolioPage() {
           {/* O que minhas pacientes dizem */}
           <div>
             <h2 className="text-xl font-bold mb-6 text-black">O que minhas pacientes dizem</h2>
-            <div className="max-w-2xl mx-auto">
+            <div className="max-w-5xl mx-auto">
               <TestimonialCarousel reviews={reviews} />
             </div>
           </div>
