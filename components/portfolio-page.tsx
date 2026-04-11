@@ -27,7 +27,7 @@ const reviews: Review[] = [
 
 export function PortfolioPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-[#F3F4F6]">
+    <div className="flex min-h-screen flex-col">
       <SiteHeader />
 
       <main className="px-4 py-8 lg:px-20">
