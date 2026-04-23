@@ -17,45 +17,23 @@ import {
 import Image from "next/image";
 
 interface BrandContentProps {
+  id?: string;
   logo: string;
-  brand: string;
+  name: string;
   page: string;
   updatedAt: string;
   status: string;
 }
 
-const defaultBrands = [
-  {
-    logo: "https://images.unsplash.com/photo-1608541737042-87a12275d313?q=80&w=1461&auto=format&fit=crop",
-    brand: "MeetOff",
-    page: "Home",
-    updatedAt: "08/08/2025 14:22",
-    status: "Publicado",
-  },
-  {
-    logo: "https://images.unsplash.com/photo-1608541737042-87a12275d313?q=80&w=1461&auto=format&fit=crop",
-    brand: "FindB",
-    page: "Home",
-    updatedAt: "08/08/2025 14:22",
-    status: "Publicado",
-  },
-  {
-    logo: "https://images.unsplash.com/photo-1608541737042-87a12275d313?q=80&w=1461&auto=format&fit=crop",
-    brand: "Mesa para Sete",
-    page: "Home",
-    updatedAt: "08/08/2025 14:22",
-    status: "Publicado",
-  },
-  {
-    logo: "https://images.unsplash.com/photo-1608541737042-87a12275d313?q=80&w=1461&auto=format&fit=crop",
-    brand: "Check In Love",
-    page: "Home",
-    updatedAt: "08/08/2025 14:22",
-    status: "Publicado",
-  },
-];
-
-export function BrandContentTable({ brands = defaultBrands }: { brands?: BrandContentProps[] }) {
+export function BrandContentTable({
+  brands = [],
+  onEdit,
+  onDelete
+}: {
+  brands?: BrandContentProps[],
+  onEdit?: (brand: any) => void,
+  onDelete?: (id: string) => void
+}) {
   return (
     <div className="space-y-4">
       {/* View de Cards para Mobile */}
@@ -99,12 +77,13 @@ export function BrandContentTable({ brands = defaultBrands }: { brands?: BrandCo
             </div>
 
             <div className="flex gap-2">
-              <Button size="sm" className="bg-accent hover:bg-accent/90 text-white flex-1">
+              <Button onClick={() => onEdit?.(brand)} size="sm" className="bg-accent hover:bg-accent/90 text-white flex-1">
                 Editar
               </Button>
               <Button
                 size="sm"
                 variant="destructive"
+                onClick={() => brand.id && onDelete?.(brand.id)}
                 className="bg-[#8a0204] hover:bg-[#7a0204] text-white flex-1"
               >
                 Deletar
@@ -159,12 +138,13 @@ export function BrandContentTable({ brands = defaultBrands }: { brands?: BrandCo
                 <TableCell className="text-sm text-secondary font-medium">{brand.status}</TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-center gap-2">
-                    <Button size="sm" className="bg-accent hover:bg-accent/90 text-white">
+                    <Button onClick={() => onEdit?.(brand)} size="sm" className="bg-accent hover:bg-accent/90 text-white">
                       Editar
                     </Button>
                     <Button
                       size="sm"
                       variant="destructive"
+                      onClick={() => brand.id && onDelete?.(brand.id)}
                       className="bg-[#8a0204] hover:bg-[#7a0204] text-white"
                     >
                       Deletar

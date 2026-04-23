@@ -3,11 +3,14 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 interface VenueApprovalCardProps {
+  id?: string;
   name: string;
   location: string;
   type: string;
   image: string;
   isPageLocalEmpresas?: boolean;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export function VenueApprovalCard({
@@ -16,6 +19,8 @@ export function VenueApprovalCard({
   type,
   image,
   isPageLocalEmpresas,
+  onEdit,
+  onDelete,
 }: VenueApprovalCardProps) {
   return (
     <Card className="relative flex flex-col sm:flex-row items-stretch sm:items-center gap-4 p-4 border-none shadow-sm bg-white w-full overflow-hidden">
@@ -51,16 +56,18 @@ export function VenueApprovalCard({
         <div className="flex gap-2 w-full sm:w-auto">
           <Button
             size="sm"
+            onClick={onEdit}
             className="bg-[#1f4c47] hover:bg-[#1a3d39] text-white flex-1 sm:flex-none"
           >
-            Aprovar
+            {isPageLocalEmpresas ? "Editar" : "Aprovar"}
           </Button>
           <Button
             size="sm"
             variant="destructive"
+            onClick={onDelete}
             className="bg-[#8a0204] hover:bg-[#7a0204] text-white flex-1 sm:flex-none"
           >
-            Recusar
+            {isPageLocalEmpresas ? "Excluir" : "Recusar"}
           </Button>
         </div>
       </div>
