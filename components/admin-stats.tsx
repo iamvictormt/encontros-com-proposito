@@ -20,17 +20,19 @@ export function StatCard({ label, value, isValue }: StatCardProps) {
   );
 }
 
-export function AdminStats() {
-  const stats = [
+export function AdminStats({ stats }: { stats?: StatCardProps[] }) {
+  const defaultStats = [
     { label: "Total Eventos Ativos", value: "12" },
     { label: "Empresas Pendentes", value: "5" },
     { label: "Produtos na Loja", value: "37" },
     { label: "Vendas no Mês", value: "14.250", isValue: true },
   ];
 
+  const displayStats = stats || defaultStats;
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {stats.map((stat, i) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      {displayStats.map((stat, i) => (
         <StatCard key={i} {...stat} />
       ))}
     </div>
