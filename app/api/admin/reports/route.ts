@@ -21,11 +21,11 @@ export async function GET() {
     // Monthly participation data for charts
     const monthlyData = await sql`
       SELECT
-        TO_CHAR(created_at, 'Mon') as month,
+        TO_CHAR(joined_at, 'Mon') as month,
         COUNT(*) as participants
       FROM participations
-      GROUP BY month, TO_CHAR(created_at, 'MM')
-      ORDER BY TO_CHAR(created_at, 'MM')
+      GROUP BY month, TO_CHAR(joined_at, 'MM')
+      ORDER BY TO_CHAR(joined_at, 'MM')
     `;
 
     return NextResponse.json({

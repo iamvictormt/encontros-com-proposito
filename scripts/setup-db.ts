@@ -81,6 +81,10 @@ async function setupDatabase() {
       );
     `;
 
+    await sql`ALTER TABLE brands ADD COLUMN IF NOT EXISTS logo TEXT`;
+    await sql`ALTER TABLE brands ADD COLUMN IF NOT EXISTS description TEXT`;
+    await sql`ALTER TABLE brands ADD COLUMN IF NOT EXISTS website TEXT`;
+
     // Products table
     await sql`
       CREATE TABLE IF NOT EXISTS products (
@@ -94,6 +98,12 @@ async function setupDatabase() {
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `;
+
+    await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS description TEXT`;
+    await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS price DECIMAL(10, 2)`;
+    await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS image TEXT`;
+    await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS brand_id UUID REFERENCES brands(id)`;
+    await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS stock INTEGER DEFAULT 0`;
 
     // Participations table (Event joining)
     await sql`

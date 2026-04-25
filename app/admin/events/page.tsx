@@ -8,13 +8,14 @@ import { AdminEventCard } from "@/components/admin-event-card";
 import { StatCard } from "@/components/admin-stats";
 import { EventModal } from "@/components/modals/event-modal";
 import { toast } from "sonner";
+import { Event, Stat } from "@/types";
 
 export default function AdminEvents() {
-  const [events, setEvents] = useState<any[]>([]);
-  const [stats, setStats] = useState<any[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [stats, setStats] = useState<Stat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   const fetchData = async () => {
@@ -41,7 +42,7 @@ export default function AdminEvents() {
     fetchData();
   }, []);
 
-  const handleEdit = (event: any) => {
+  const handleEdit = (event: Event) => {
     setSelectedEvent(event);
     setIsModalOpen(true);
   };
