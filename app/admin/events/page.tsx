@@ -1,109 +1,68 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Filter, Plus, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { AdminEventCard } from "@/components/admin-event-card";
 import { StatCard } from "@/components/admin-stats";
-
-const stats = [
-  { label: "Total Eventos Ativos", value: "12" },
-  { label: "Eventos concluídos", value: "5" },
-  { label: "Participantes totais", value: "37" },
-];
-
-const events = [
-  {
-    id: 1,
-    image:
-      "https://images.unsplash.com/photo-1629709960734-e52c75717c21?q=80&w=686&auto=format&fit=crop",
-    status: "Ativo" as const,
-    tags: ["Casais", "Sem Crianças"],
-    title: "Retiro de Casais",
-    date: "20/09/2025",
-    location: "São Paulo/SP",
-  },
-  {
-    id: 2,
-    image:
-      "https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=800&auto=format&fit=crop",
-    status: "Offline" as const,
-    tags: ["Terapeutas", "Apenas Profissionais"],
-    title: "Networking Terapeutas",
-    date: "20/09/2025",
-    location: "São Paulo/SP",
-  },
-  {
-    id: 3,
-    image:
-      "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800&auto=format&fit=crop",
-    status: "Ativo" as const,
-    tags: ["LGBTQIA+", "Sem crianças"],
-    title: "Happy Hour",
-    date: "20/09/2025",
-    location: "São Paulo/SP",
-  },
-  {
-    id: 4,
-    image:
-      "https://images.unsplash.com/photo-1649205608141-3e898e8f209b?q=80&w=687&auto=format&fit=crop",
-    status: "Ativo" as const,
-    tags: ["Casais", "Sem Crianças"],
-    title: "Retiro Natureza",
-    date: "20/09/2025",
-    location: "São Paulo/SP",
-  },
-  {
-    id: 5,
-    image:
-      "https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=1470&auto=format&fit=crop",
-    status: "Offline" as const,
-    tags: ["Terapeutas", "Apenas Profissionais"],
-    title: "Encontro Profissional",
-    date: "20/09/2025",
-    location: "São Paulo/SP",
-  },
-  {
-    id: 6,
-    image:
-      "https://images.unsplash.com/photo-1470337458703-46ad1756a187?q=80&w=800&auto=format&fit=crop",
-    status: "Ativo" as const,
-    tags: ["Música", "Sem crianças"],
-    title: "Lounge Night",
-    date: "20/09/2025",
-    location: "São Paulo/SP",
-  },
-  {
-    id: 7,
-    image:
-      "https://images.unsplash.com/photo-1525206809752-65312b959c88?q=80&w=687&auto=format&fit=crop",
-    status: "Ativo" as const,
-    tags: ["Casais", "Sem Crianças"],
-    title: "Vivência de Casais",
-    date: "20/09/2025",
-    location: "São Paulo/SP",
-  },
-  {
-    id: 8,
-    image:
-      "https://images.unsplash.com/photo-1515187029135-18ee286d815b?q=80&w=800&auto=format&fit=crop",
-    status: "Offline" as const,
-    tags: ["Startup", "Investimento"],
-    title: "Networking Meetup",
-    date: "20/09/2025",
-    location: "São Paulo/SP",
-  },
-  {
-    id: 9,
-    image:
-      "https://images.unsplash.com/photo-1574096079513-d8259312b785?q=80&w=800&auto=format&fit=crop",
-    status: "Ativo" as const,
-    tags: ["LGBTQIA+", "Sem crianças"],
-    title: "Social Encontro",
-    date: "20/09/2025",
-    location: "São Paulo/SP",
-  },
-];
+import { EventModal } from "@/components/modals/event-modal";
+import { toast } from "sonner";
 
 export default function AdminEvents() {
+  const [events, setEvents] = useState<any[]>([]);
+  const [stats, setStats] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const [eventsRes, reportsRes] = await Promise.all([
+        fetch("/api/events"),
+        fetch("/api/admin/reports")
+      ]);
+      
+      const eventsData = eventsRes.ok ? await eventsRes.json() : [];
+      const reportsData = reportsRes.ok ? await reportsRes.json() : { stats: [] };
+      
+      setEvents(Array.isArray(eventsData) ? eventsData : []);
+      setStats(reportsData.stats?.slice(0, 3) || []);
+    } catch (error) {
+      toast.error("Erro ao carregar dados");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleEdit = (event: any) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Tem certeza que deseja excluir este evento?")) return;
+
+    try {
+      const res = await fetch(`/api/events?id=${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      toast.success("Evento excluído");
+      fetchData();
+    } catch (error) {
+      toast.error("Erro ao excluir evento");
+    }
+  };
+
+  const filteredEvents = events.filter(e => 
+    e.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="space-y-8">
       <section>
@@ -125,6 +84,8 @@ export default function AdminEvents() {
               <Input
                 placeholder="Procurar Eventos"
                 className="pl-10 h-10 bg-white border-gray-200 rounded-lg w-full"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
 
@@ -140,7 +101,10 @@ export default function AdminEvents() {
                 <span className="sm:hidden font-medium text-black">Filtro</span>
               </Button>
 
-              <Button className="h-10 bg-[#1f4c47] hover:bg-[#1f4c47]/90 text-white gap-2 px-4 rounded-lg flex-1 sm:flex-none">
+              <Button 
+                onClick={() => { setSelectedEvent(null); setIsModalOpen(true); }}
+                className="h-10 bg-[#1f4c47] hover:bg-[#1f4c47]/90 text-white gap-2 px-4 rounded-lg flex-1 sm:flex-none"
+              >
                 <Plus className="h-4 w-4" />
                 <span className="whitespace-nowrap">Novo Evento</span>
               </Button>
@@ -148,24 +112,42 @@ export default function AdminEvents() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
-          {events.map((event) => (
-            <AdminEventCard key={event.id} {...event} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex justify-center py-12"><Loader2 className="animate-spin text-primary w-8 h-8" /></div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+            {filteredEvents.map((event) => (
+              <AdminEventCard 
+                key={event.id} 
+                {...event} 
+                onEdit={() => handleEdit(event)}
+                onDelete={() => handleDelete(event.id)}
+              />
+            ))}
+          </div>
+        )}
 
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8 py-8 border-t border-gray-100">
           <div className="flex items-center gap-4">
             <Button variant="ghost" className="text-gray-400 hover:bg-gray-100 h-10 w-10 p-0">
               <ChevronLeft className="h-5 w-5" />
             </Button>
-            <span className="text-sm font-medium text-black">Página 1 de 10</span>
+            <span className="text-sm font-medium text-black">Página 1 de 1</span>
             <Button variant="ghost" className="text-destructive hover:bg-red-50 h-10 w-10 p-0">
               <ChevronRight className="h-5 w-5" />
             </Button>
           </div>
         </div>
       </section>
+
+      {isModalOpen && (
+        <EventModal 
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={fetchData}
+          event={selectedEvent}
+        />
+      )}
     </div>
   );
 }

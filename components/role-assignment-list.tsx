@@ -24,7 +24,7 @@ export function RoleAssignmentList({ team }: { team: RoleAssignmentProps[] }) {
     <div className="space-y-4">
       {/* View de Cards para Mobile */}
       <div className="grid grid-cols-1 gap-4 lg:hidden">
-        {team.map((member, i) => (
+        {team?.map((member, i) => (
           <div
             key={i}
             className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 space-y-4"
@@ -79,7 +79,7 @@ export function RoleAssignmentList({ team }: { team: RoleAssignmentProps[] }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {team.map((member, i) => (
+            {team?.map((member, i) => (
               <TableRow key={i}>
                 <TableCell>
                   <div className="flex flex-row items-center gap-3">

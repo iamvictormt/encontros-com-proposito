@@ -4,13 +4,15 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 interface AdminEventCardProps {
-  id: number;
+  id: string;
   image: string;
   status: "Ativo" | "Offline";
   tags: string[];
   title: string;
   date: string;
   location: string;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export function AdminEventCard({
@@ -20,6 +22,8 @@ export function AdminEventCard({
   title,
   date,
   location,
+  onEdit,
+  onDelete,
 }: AdminEventCardProps) {
   return (
     <Card className="overflow-hidden border border-gray-100 shadow-sm bg-white rounded-2xl py-0 gap-4">
@@ -51,9 +55,21 @@ export function AdminEventCard({
           <span>Local:</span>{" "}
           <span className="underline font-bold text-secondary cursor-pointer">{location}</span>
         </p>
-        <Button className="w-full bg-accent hover:bg-accent/90 text-white font-bold py-6 rounded-xl text-base">
-          Editar
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={onEdit}
+            className="flex-1 bg-accent hover:bg-accent/90 text-white font-bold py-6 rounded-xl text-base"
+          >
+            Editar
+          </Button>
+          <Button
+            onClick={onDelete}
+            variant="destructive"
+            className="bg-[#8a0204] hover:bg-[#7a0204] text-white font-bold py-6 rounded-xl text-base"
+          >
+            Excluir
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
