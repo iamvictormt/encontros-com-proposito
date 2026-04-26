@@ -30,7 +30,7 @@ export default function AdminReports() {
   if (isLoading) return <div className="flex justify-center py-12"><Loader2 className="animate-spin text-primary w-8 h-8" /></div>;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 bg-white p-4 rounded-md">
       <section>
         <h2 className="text-xl font-bold text-black mb-6">Visão Geral</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">

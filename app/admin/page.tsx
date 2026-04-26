@@ -63,12 +63,12 @@ export default function AdminOverview() {
 
   return (
     <div className="space-y-8">
-      <section>
+      <section className="bg-white p-4 rounded-md">
         <h2 className="text-xl font-bold text-black mb-6">Relatórios</h2>
         <AdminStats stats={data?.stats} />
       </section>
 
-      <section className="space-y-6">
+      <section className="space-y-6 bg-white p-4 rounded-md">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           <h2 className="text-xl font-bold text-black">Criação e Moderação de eventos</h2>
           <div className="flex flex-wrap gap-4 w-full md:w-auto">
@@ -91,7 +91,7 @@ export default function AdminOverview() {
         </div>
       </section>
 
-      <section className="space-y-6">
+      <section className="space-y-6 bg-white p-4 rounded-md">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           <h2 className="text-xl font-bold text-black">Aprovação de Locais & Empresas</h2>
           <div className="flex gap-4 items-center w-full md:w-auto">
@@ -111,7 +111,7 @@ export default function AdminOverview() {
         </div>
       </section>
 
-      <section className="space-y-6">
+      <section className="space-y-6 bg-white p-4 rounded-md">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           <h2 className="text-xl font-bold text-black">Edição de Conteúdo de Marcas</h2>
           <Button
@@ -125,7 +125,7 @@ export default function AdminOverview() {
         <BrandContentTable brands={data?.brands} />
       </section>
 
-      <section className="space-y-6">
+      <section className="space-y-6 bg-white p-4 rounded-md">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           <h2 className="text-xl font-bold text-black">Atribuição de Cargos</h2>
           <div className="flex gap-4 items-center w-full md:w-auto">

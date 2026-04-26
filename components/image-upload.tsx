@@ -5,14 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Upload, X, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface ImageUploadProps {
   value: string;
   onChange: (url: string) => void;
   onRemove: () => void;
+  disabled?: boolean;
 }
 
-export function ImageUpload({ value, onChange, onRemove }: ImageUploadProps) {
+export function ImageUpload({ value, onChange, onRemove, disabled }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,12 +48,14 @@ export function ImageUpload({ value, onChange, onRemove }: ImageUploadProps) {
     return (
       <div className="relative w-full aspect-video rounded-lg overflow-hidden group">
         <Image src={value} alt="Upload" fill className="object-cover" />
-        <button
-          onClick={onRemove}
-          className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition"
-        >
-          <X className="w-4 h-4" />
-        </button>
+        {!disabled && (
+          <button
+            onClick={onRemove}
+            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
       </div>
     );
   }
@@ -75,8 +79,11 @@ export function ImageUpload({ value, onChange, onRemove }: ImageUploadProps) {
         type="file"
         accept="image/*"
         onChange={handleUpload}
-        className="absolute inset-0 opacity-0 cursor-pointer"
-        disabled={isUploading}
+        className={cn(
+          "absolute inset-0 opacity-0",
+          !disabled && !isUploading ? "cursor-pointer" : "cursor-default"
+        )}
+        disabled={isUploading || disabled}
       />
     </div>
   );

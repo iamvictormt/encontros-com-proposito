@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { ArrowLeft, ArrowRight, SlidersHorizontal } from "lucide-react";
@@ -12,16 +12,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import Link from "next/link";
 import { format } from "path";
 
-const categories = [
-  { id: "all", label: "Tudo" },
-  { id: "tshirts", label: "Camisetas" },
-  { id: "cards", label: "Cartões personalizados" },
-  { id: "kits", label: 'Kits "Mimo Meu e Seu"' },
-  { id: "scarves", label: "Lenços" },
-  { id: "postcards", label: "Cartões" },
-];
-
-const themes = [
+const staticThemes = [
   { id: "all", label: "Tudo" },
   { id: "relationships", label: "Amor & Relacionamentos" },
   { id: "spirituality", label: "Espiritualidade" },
@@ -30,181 +21,221 @@ const themes = [
   { id: "therapy", label: "Terapias" },
 ];
 
-const delivery = [
+const deliveryOptions = [
   { id: "all", label: "Tudo" },
   { id: "physical", label: "Entrega Física" },
   { id: "download", label: "Download Imediato" },
   { id: "online", label: "Acesso Online" },
 ];
 
-const products = [
-  {
-    id: 1,
-    image:
-      "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=800&auto=format&fit=crop",
-    category: "Camisetas",
-    title: "Camiseta Branca Autoral",
-    price: 125.5,
-    originalPrice: 250.0,
-  },
-  {
-    id: 2,
-    image:
-      "https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=800&auto=format&fit=crop",
-    category: "Lenços",
-    title: "Lenço de Seda Floral",
-    price: 85.0,
-    originalPrice: 120.0,
-  },
-  {
-    id: 3,
-    image:
-      "https://images.unsplash.com/photo-1571782742478-0816a4773a10?q=80&w=701&auto=format&fit=crop",
-    category: 'Kits "Mimo Meu e Seu"',
-    title: "Kit Conexão Casal",
-    price: 210.0,
-    originalPrice: 350.0,
-  },
-  {
-    id: 4,
-    image:
-      "https://images.unsplash.com/photo-1534073828943-f801091bb18c?q=80&w=800&auto=format&fit=crop",
-    category: "Cartões",
-    title: "Cartão de Mensagem Amor",
-    price: 25.0,
-    originalPrice: 45.0,
-  },
-  {
-    id: 5,
-    image:
-      "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=800&auto=format&fit=crop",
-    category: "Camisetas",
-    title: "Camiseta Preta Minimalista",
-    price: 135.0,
-    originalPrice: 200.0,
-  },
-  {
-    id: 6,
-    image:
-      "https://images.unsplash.com/photo-1517842645767-c639042777db?q=80&w=800&auto=format&fit=crop",
-    category: "Download Imediato",
-    title: "Planner de Desenvolvimento Pessoal",
-    price: 49.9,
-    originalPrice: 99.0,
-  },
-  {
-    id: 7,
-    image:
-      "https://images.unsplash.com/photo-1614330258898-86823c7e3de2?q=80&w=800&auto=format&fit=crop",
-    category: "Outros",
-    title: "Pulseira Identidade Evento",
-    price: 15.0,
-    originalPrice: 30.0,
-  },
-  {
-    id: 8,
-    image:
-      "https://images.unsplash.com/photo-1578606137970-de4c3d8a08a2?q=80&w=1474&auto=format&fit=crop",
-    category: "Kits",
-    title: "Ecobag com Propósito",
-    price: 65.0,
-    originalPrice: 120.0,
-  },
-];
+// Products will be fetched from API
+const API_PRODUCTS_URL = "/api/products";
+
+
+
+interface FilterContentProps {
+  categories: any[];
+  selectedCategory: string;
+  setSelectedCategory: (id: string) => void;
+  priceRange: number[];
+  setPriceRange: (value: number[]) => void;
+  themes: any[];
+  selectedTheme: string;
+  setSelectedTheme: (id: string) => void;
+  delivery: any[];
+  selectedDelivery: string;
+  setSelectedDelivery: (id: string) => void;
+}
+
+const FilterContent = ({
+  categories,
+  selectedCategory,
+  setSelectedCategory,
+  priceRange,
+  setPriceRange,
+  themes,
+  selectedTheme,
+  setSelectedTheme,
+  delivery,
+  selectedDelivery,
+  setSelectedDelivery
+}: FilterContentProps) => (
+  <>
+    {/* Categorias */}
+    <div className="mb-8">
+      <h3 className="text-lg font-bold text-primary mb-4">Categorias</h3>
+      <div className="space-y-2">
+        {categories.map((cat) => (
+          <button
+            key={cat.id}
+            onClick={() => setSelectedCategory(cat.id)}
+            className={`flex items-center justify-between w-full text-left text-sm py-1 transition-colors ${
+              selectedCategory === cat.id
+                ? "text-black font-bold"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <span>{cat.label}</span>
+            {selectedCategory === cat.id && (
+              <span className="w-2 h-2 rounded-full bg-secondary" />
+            )}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {/* Preço */}
+    <div className="mb-8">
+      <h3 className="text-lg font-bold text-primary mb-4">Preço</h3>
+      <div className="space-y-2">
+        <Slider
+          min={0}
+          max={5000}
+          step={10}
+          value={priceRange}
+          onValueChange={setPriceRange}
+          className="w-full"
+        />
+        <p className="text-sm text-muted-foreground">{formatBRL(priceRange[0])}</p>
+      </div>
+    </div>
+
+    {/* Tema */}
+    <div className="mb-8">
+      <h3 className="text-lg font-bold text-primary mb-4">Tema</h3>
+      <div className="space-y-2">
+        {themes.map((theme) => (
+          <button
+            key={theme.id}
+            onClick={() => setSelectedTheme(theme.id)}
+            className={`flex items-center justify-between w-full text-left text-sm py-1 transition-colors ${
+              selectedTheme === theme.id
+                ? "text-black font-bold"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <span>{theme.label}</span>
+            {selectedTheme === theme.id && <span className="w-2 h-2 rounded-full bg-secondary" />}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {/* Entrega */}
+    <div className="mb-8">
+      <h3 className="text-lg font-bold text-primary mb-4">Entrega</h3>
+      <div className="space-y-2">
+        {delivery.map((del) => (
+          <button
+            key={del.id}
+            onClick={() => setSelectedDelivery(del.id)}
+            className={`flex items-center justify-between w-full text-left text-sm py-1 transition-colors ${
+              selectedDelivery === del.id
+                ? "text-black font-bold"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <span>{del.label}</span>
+            {selectedDelivery === del.id && (
+              <span className="w-2 h-2 rounded-full bg-secondary" />
+            )}
+          </button>
+        ))}
+      </div>
+    </div>
+  </>
+);
 
 export function ProductsPage() {
+  const [products, setProducts] = useState<any[]>([]);
+  const [dynamicCategories, setDynamicCategories] = useState<{ id: string; label: string }[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedTheme, setSelectedTheme] = useState("all");
   const [selectedDelivery, setSelectedDelivery] = useState("all");
-  const [priceRange, setPriceRange] = useState([1500]);
+  const [priceRange, setPriceRange] = useState([5000]);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
 
-  const FilterContent = () => (
-    <>
-      {/* Categorias */}
-      <div className="mb-8">
-        <h3 className="text-lg font-bold text-primary mb-4">Categorias</h3>
-        <div className="space-y-2">
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`flex items-center justify-between w-full text-left text-sm py-1 transition-colors ${
-                selectedCategory === cat.id
-                  ? "text-black font-bold"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <span>{cat.label}</span>
-              {selectedCategory === cat.id && (
-                <span className="w-2 h-2 rounded-full bg-secondary" />
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
+  useEffect(() => {
+    // Fetch categories
+    fetch("/api/categories")
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setDynamicCategories([
+            { id: "all", label: "Tudo" },
+            ...data.map(cat => ({ id: cat.name, label: cat.name }))
+          ]);
+        }
+      });
+  }, []);
 
-      {/* Preço */}
-      <div className="mb-8">
-        <h3 className="text-lg font-bold text-primary mb-4">Preço</h3>
-        <div className="space-y-2">
-          <Slider
-            min={0}
-            max={5000}
-            step={10}
-            value={priceRange}
-            onValueChange={setPriceRange}
-            className="w-full [&_[data-slot=slider-track]]:h-1.5 [&_[data-slot=slider-track]]:bg-gray-200 [&_[data-slot=slider-range]]:bg-secondary [&_[data-slot=slider-thumb]]:size-5 [&_[data-slot=slider-thumb]]:border-secondary [&_[data-slot=slider-thumb]]:bg-white"
-          />
-          <p className="text-sm text-muted-foreground">{formatBRL(priceRange[0])}</p>
-        </div>
-      </div>
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, selectedTheme, selectedDelivery, priceRange]);
 
-      {/* Tema */}
-      <div className="mb-8">
-        <h3 className="text-lg font-bold text-primary mb-4">Tema</h3>
-        <div className="space-y-2">
-          {themes.map((theme) => (
-            <button
-              key={theme.id}
-              onClick={() => setSelectedTheme(theme.id)}
-              className={`flex items-center justify-between w-full text-left text-sm py-1 transition-colors ${
-                selectedTheme === theme.id
-                  ? "text-black font-bold"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <span>{theme.label}</span>
-              {selectedTheme === theme.id && <span className="w-2 h-2 rounded-full bg-secondary" />}
-            </button>
-          ))}
-        </div>
-      </div>
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch(API_PRODUCTS_URL);
+        const data = await response.json();
+        setProducts(data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-      {/* Entrega */}
-      <div className="mb-8">
-        <h3 className="text-lg font-bold text-primary mb-4">Entrega</h3>
-        <div className="space-y-2">
-          {delivery.map((del) => (
-            <button
-              key={del.id}
-              onClick={() => setSelectedDelivery(del.id)}
-              className={`flex items-center justify-between w-full text-left text-sm py-1 transition-colors ${
-                selectedDelivery === del.id
-                  ? "text-black font-bold"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <span>{del.label}</span>
-              {selectedDelivery === del.id && (
-                <span className="w-2 h-2 rounded-full bg-secondary" />
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
-    </>
+    fetchProducts();
+  }, []);
+
+  const filteredProducts = products.filter((product) => {
+    // Category filter
+    if (selectedCategory !== "all") {
+      if (product.category !== selectedCategory) return false;
+    }
+
+    // Delivery/Type filter
+    if (selectedDelivery !== "all") {
+      if (selectedDelivery === "physical" && product.type !== "Físico") return false;
+      if ((selectedDelivery === "download" || selectedDelivery === "online") && product.type !== "Digital") return false;
+    }
+
+    // Price filter
+    if (product.price > priceRange[0]) return false;
+
+    // Theme filter
+    if (selectedTheme !== "all") {
+      const themeLabel = staticThemes.find((t) => t.id === selectedTheme)?.label;
+      if (product.theme !== themeLabel) return false;
+    }
+
+    return true;
+  });
+
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / itemsPerPage));
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   );
+
+  const filterProps = {
+    categories: dynamicCategories,
+    selectedCategory,
+    setSelectedCategory,
+    priceRange,
+    setPriceRange,
+    themes: staticThemes,
+    selectedTheme,
+    setSelectedTheme,
+    delivery: deliveryOptions,
+    selectedDelivery,
+    setSelectedDelivery,
+  };
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -214,7 +245,7 @@ export function ProductsPage() {
         <div className="mx-auto max-w-7xl flex gap-8">
           {/* Desktop Sidebar Filters */}
           <aside className="hidden lg:block w-64 flex-shrink-0">
-            <FilterContent />
+            <FilterContent {...filterProps} />
           </aside>
 
           {/* Main Content */}
@@ -238,66 +269,86 @@ export function ProductsPage() {
                     <SheetHeader className="mb-6">
                       <SheetTitle>Filtros</SheetTitle>
                     </SheetHeader>
-                    <FilterContent />
+                    <FilterContent {...filterProps} />
                   </SheetContent>
                 </Sheet>
               </div>
             </div>
 
             {/* Products Grid */}
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
-              {products.map((product, index) => (
-                <Link href={`/products/${product.id}`} key={index}>
-                  <div className="group overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
-                    <div className="relative h-64 overflow-hidden bg-gray-100">
-                      <Image
-                        src={product.image || "/placeholder.svg"}
-                        alt={product.title}
-                        fill
-                        className="object-cover transition-transform group-hover:scale-105"
-                      />
-                    </div>
-
-                    <div className="p-4">
-                      <p className="mb-1 text-xs font-semibold text-primary uppercase">
-                        {product.category}
-                      </p>
-                      <h3 className="mb-3 text-base font-bold text-black">{product.title}</h3>
-
-                      <div className="mb-4 flex items-baseline gap-2">
-                        <span className="text-xl font-bold text-black">
-                          {formatBRL(product.price)}
-                        </span>
-                        <span className="text-sm text-muted-foreground line-through">
-                          {formatBRL(product.originalPrice)}
-                        </span>
+            {isLoading ? (
+              <div className="flex justify-center items-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              </div>
+            ) : paginatedProducts.length === 0 ? (
+              <div className="text-center py-20">
+                <p className="text-lg text-muted-foreground">Nenhum produto encontrado com os filtros selecionados.</p>
+              </div>
+            ) : (
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+                {paginatedProducts.map((product, index) => (
+                  <Link href={`/products/${product.id}`} key={index}>
+                    <div className="group overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
+                      <div className="relative h-64 overflow-hidden bg-gray-100">
+                        <Image
+                          src={product.image || "/placeholder.svg"}
+                          alt={product.name}
+                          fill
+                          className="object-cover transition-transform group-hover:scale-105"
+                        />
                       </div>
 
-                      <Button className="w-full bg-accent hover:bg-accent/90">Comprar</Button>
+                      <div className="p-4">
+                        <p className="mb-1 text-xs font-semibold text-primary uppercase">
+                          {product.category}
+                        </p>
+                        <h3 className="mb-3 text-base font-bold text-black">{product.name}</h3>
+
+                        <div className="mb-4 flex items-baseline gap-2">
+                          <span className="text-xl font-bold text-black">
+                            {formatBRL(product.price)}
+                          </span>
+                          {product.originalPrice && (
+                            <span className="text-sm text-muted-foreground line-through">
+                              {formatBRL(product.originalPrice)}
+                            </span>
+                          )}
+                        </div>
+
+                        <Button className="w-full bg-accent hover:bg-accent/90">Comprar</Button>
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+                  </Link>
+                ))}
+              </div>
+            )}
 
             {/* Pagination */}
-            <div className="mt-8 flex items-center justify-center gap-8">
-              <Button
-                size="icon"
-                variant="ghost"
-                className="bg-transparent text-black hover:bg-gray-50 hover:text-black/80"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-              <span className="text-sm text-foreground">Página 1 de 10</span>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="bg-transparent text-black hover:bg-gray-50 hover:text-black/80"
-              >
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </div>
+            {totalPages > 1 && (
+              <div className="mt-8 flex items-center justify-center gap-8">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="bg-transparent text-black hover:bg-gray-50 hover:text-black/80 disabled:opacity-30"
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-sm text-foreground font-medium">
+                  Página {currentPage} de {totalPages}
+                </span>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="bg-transparent text-black hover:bg-gray-50 hover:text-black/80 disabled:opacity-30"
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </main>

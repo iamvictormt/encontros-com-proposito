@@ -8,15 +8,23 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "@/components/image-upload";
 import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface EventModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
   event?: any;
+  isReadOnly?: boolean;
 }
 
-export function EventModal({ isOpen, onClose, onSuccess, event }: EventModalProps) {
+export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: EventModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: event?.title || "",
@@ -67,7 +75,7 @@ export function EventModal({ isOpen, onClose, onSuccess, event }: EventModalProp
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{event ? "Editar Evento" : "Novo Evento"}</DialogTitle>
+          <DialogTitle>{isReadOnly ? "Detalhes do Evento" : event ? "Editar Evento" : "Novo Evento"}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -80,19 +88,24 @@ export function EventModal({ isOpen, onClose, onSuccess, event }: EventModalProp
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })} 
                 required 
                 autoFocus
+                disabled={isReadOnly}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
-              <select 
-                id="status"
-                className="w-full h-10 px-3 py-2 bg-white border rounded-md text-sm"
+              <Select 
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                onValueChange={(value) => setFormData({ ...formData, status: value })}
+                disabled={isReadOnly}
               >
-                <option value="Ativo">Ativo</option>
-                <option value="Offline">Offline</option>
-              </select>
+                <SelectTrigger id="status" className="bg-white">
+                  <SelectValue placeholder="Selecione o status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Ativo">Ativo</SelectItem>
+                  <SelectItem value="Offline">Offline</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
@@ -102,6 +115,7 @@ export function EventModal({ isOpen, onClose, onSuccess, event }: EventModalProp
               value={formData.image} 
               onChange={(url) => setFormData({ ...formData, image: url })}
               onRemove={() => setFormData({ ...formData, image: "" })}
+              disabled={isReadOnly}
             />
           </div>
 
@@ -115,6 +129,7 @@ export function EventModal({ isOpen, onClose, onSuccess, event }: EventModalProp
                 value={formData.date} 
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })} 
                 required 
+                disabled={isReadOnly}
               />
             </div>
             <div className="space-y-2">
@@ -124,6 +139,7 @@ export function EventModal({ isOpen, onClose, onSuccess, event }: EventModalProp
                 placeholder="Ex: 19:30" 
                 value={formData.time} 
                 onChange={(e) => setFormData({ ...formData, time: e.target.value })} 
+                disabled={isReadOnly}
               />
             </div>
           </div>
@@ -136,6 +152,7 @@ export function EventModal({ isOpen, onClose, onSuccess, event }: EventModalProp
                 placeholder="Ex: São Paulo/SP" 
                 value={formData.location} 
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })} 
+                disabled={isReadOnly}
               />
             </div>
             <div className="space-y-2">
@@ -144,6 +161,7 @@ export function EventModal({ isOpen, onClose, onSuccess, event }: EventModalProp
                 id="address" 
                 value={formData.address} 
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })} 
+                disabled={isReadOnly}
               />
             </div>
           </div>
@@ -157,6 +175,7 @@ export function EventModal({ isOpen, onClose, onSuccess, event }: EventModalProp
                 step="0.01" 
                 value={formData.price} 
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })} 
+                disabled={isReadOnly}
               />
             </div>
             <div className="space-y-2">
@@ -166,6 +185,7 @@ export function EventModal({ isOpen, onClose, onSuccess, event }: EventModalProp
                 type="number" 
                 value={formData.capacity} 
                 onChange={(e) => setFormData({ ...formData, capacity: e.target.value })} 
+                disabled={isReadOnly}
               />
             </div>
           </div>
@@ -177,6 +197,7 @@ export function EventModal({ isOpen, onClose, onSuccess, event }: EventModalProp
               placeholder="Ex: Casais, Sem Crianças" 
               value={formData.tags} 
               onChange={(e) => setFormData({ ...formData, tags: e.target.value })} 
+              disabled={isReadOnly}
             />
           </div>
 
@@ -187,14 +208,21 @@ export function EventModal({ isOpen, onClose, onSuccess, event }: EventModalProp
               rows={4} 
               value={formData.description} 
               onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
+              disabled={isReadOnly}
             />
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
-            <Button type="submit" className="bg-[#1f4c47]" disabled={isLoading}>
-              {isLoading ? "Salvando..." : "Salvar Evento"}
-            </Button>
+            {isReadOnly ? (
+              <Button type="button" className="bg-secondary hover:bg-secondary/90 text-white" onClick={onClose}>Fechar</Button>
+            ) : (
+              <>
+                <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
+                <Button type="submit" className="bg-secondary hover:bg-secondary/90 text-white" disabled={isLoading}>
+                  {isLoading ? "Salvando..." : "Salvar Evento"}
+                </Button>
+              </>
+            )}
           </DialogFooter>
         </form>
       </DialogContent>

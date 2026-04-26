@@ -1,3 +1,9 @@
+button, 
+[role="button"],
+.cursor-pointer {
+  cursor: pointer !important;
+}
+
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -122,5 +128,10 @@
   }
   body {
     @apply bg-white text-foreground;
+  }
+  button, 
+  [role="button"],
+  .cursor-pointer {
+    cursor: pointer !important;
   }
 }

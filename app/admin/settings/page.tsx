@@ -51,7 +51,7 @@ export default function AdminSettings() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <h2 className="text-2xl font-bold text-black">Configurações do Perfil</h2>
+      {/* <h2 className="text-2xl font-bold text-black">Configurações do Perfil</h2>
       
       <Card>
         <CardHeader>
@@ -102,7 +102,7 @@ export default function AdminSettings() {
             </Button>
           </form>
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   );
 }

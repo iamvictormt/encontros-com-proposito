@@ -7,15 +7,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ImageUpload } from "@/components/image-upload";
 import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface VenueModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
   venue?: any;
+  isReadOnly?: boolean;
 }
 
-export function VenueModal({ isOpen, onClose, onSuccess, venue }: VenueModalProps) {
+export function VenueModal({ isOpen, onClose, onSuccess, venue, isReadOnly }: VenueModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: venue?.name || "",
@@ -52,7 +60,7 @@ export function VenueModal({ isOpen, onClose, onSuccess, venue }: VenueModalProp
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{venue ? "Editar Local" : "Novo Local"}</DialogTitle>
+          <DialogTitle>{isReadOnly ? "Detalhes do Local" : venue ? "Editar Local" : "Novo Local"}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -60,6 +68,7 @@ export function VenueModal({ isOpen, onClose, onSuccess, venue }: VenueModalProp
             value={formData.image} 
             onChange={(url) => setFormData({ ...formData, image: url })}
             onRemove={() => setFormData({ ...formData, image: "" })}
+            disabled={isReadOnly}
           />
 
           <div className="space-y-2">
@@ -69,6 +78,7 @@ export function VenueModal({ isOpen, onClose, onSuccess, venue }: VenueModalProp
               value={formData.name} 
               onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
               required 
+              disabled={isReadOnly}
             />
           </div>
 
@@ -79,6 +89,7 @@ export function VenueModal({ isOpen, onClose, onSuccess, venue }: VenueModalProp
               value={formData.location} 
               onChange={(e) => setFormData({ ...formData, location: e.target.value })} 
               required 
+              disabled={isReadOnly}
             />
           </div>
 
@@ -90,27 +101,39 @@ export function VenueModal({ isOpen, onClose, onSuccess, venue }: VenueModalProp
                 placeholder="Ex: Externo, Interno" 
                 value={formData.type} 
                 onChange={(e) => setFormData({ ...formData, type: e.target.value })} 
+                disabled={isReadOnly}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
-              <select 
-                className="w-full h-10 px-3 py-2 bg-white border rounded-md text-sm"
+              <Select 
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                onValueChange={(value) => setFormData({ ...formData, status: value })}
+                disabled={isReadOnly}
               >
-                <option value="Ativo">Ativo</option>
-                <option value="Pendente">Pendente</option>
-                <option value="Desativado">Desativado</option>
-              </select>
+                <SelectTrigger id="status" className="bg-white">
+                  <SelectValue placeholder="Selecione o status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Aprovado">Aprovado</SelectItem>
+                  <SelectItem value="Pendente">Pendente</SelectItem>
+                  <SelectItem value="Recusado">Recusado</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
-            <Button type="submit" className="bg-[#1f4c47]" disabled={isLoading}>
-              {isLoading ? "Salvando..." : "Salvar Local"}
-            </Button>
+            {isReadOnly ? (
+              <Button type="button" className="bg-secondary hover:bg-secondary/90 text-white" onClick={onClose}>Fechar</Button>
+            ) : (
+              <>
+                <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
+                <Button type="submit" className="bg-secondary hover:bg-secondary/90 text-white" disabled={isLoading}>
+                  {isLoading ? "Salvando..." : "Salvar Local"}
+                </Button>
+              </>
+            )}
           </DialogFooter>
         </form>
       </DialogContent>

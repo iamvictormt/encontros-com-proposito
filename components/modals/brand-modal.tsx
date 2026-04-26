@@ -7,15 +7,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ImageUpload } from "@/components/image-upload";
 import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface BrandModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
   brand?: any;
+  isReadOnly?: boolean;
 }
 
-export function BrandModal({ isOpen, onClose, onSuccess, brand }: BrandModalProps) {
+export function BrandModal({ isOpen, onClose, onSuccess, brand, isReadOnly }: BrandModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: brand?.name || "",
@@ -51,7 +59,7 @@ export function BrandModal({ isOpen, onClose, onSuccess, brand }: BrandModalProp
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{brand ? "Editar Marca" : "Nova Marca"}</DialogTitle>
+          <DialogTitle>{isReadOnly ? "Detalhes da Marca" : brand ? "Editar Marca" : "Nova Marca"}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -59,6 +67,7 @@ export function BrandModal({ isOpen, onClose, onSuccess, brand }: BrandModalProp
             value={formData.logo} 
             onChange={(url) => setFormData({ ...formData, logo: url })}
             onRemove={() => setFormData({ ...formData, logo: "" })}
+            disabled={isReadOnly}
           />
 
           <div className="space-y-2">
@@ -68,6 +77,7 @@ export function BrandModal({ isOpen, onClose, onSuccess, brand }: BrandModalProp
               value={formData.name} 
               onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
               required 
+              disabled={isReadOnly}
             />
           </div>
 
@@ -77,26 +87,38 @@ export function BrandModal({ isOpen, onClose, onSuccess, brand }: BrandModalProp
               id="page" 
               value={formData.page} 
               onChange={(e) => setFormData({ ...formData, page: e.target.value })} 
+              disabled={isReadOnly}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="status">Status</Label>
-            <select 
-              className="w-full h-10 px-3 py-2 bg-white border rounded-md text-sm"
+            <Select 
               value={formData.status}
-              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+              onValueChange={(value) => setFormData({ ...formData, status: value })}
+              disabled={isReadOnly}
             >
-              <option value="Publicado">Publicado</option>
-              <option value="Rascunho">Rascunho</option>
-            </select>
+              <SelectTrigger id="status" className="bg-white">
+                <SelectValue placeholder="Selecione o status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Publicado">Publicado</SelectItem>
+                <SelectItem value="Rascunho">Rascunho</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
-            <Button type="submit" className="bg-[#1f4c47]" disabled={isLoading}>
-              {isLoading ? "Salvando..." : "Salvar Marca"}
-            </Button>
+            {isReadOnly ? (
+              <Button type="button" className="bg-secondary hover:bg-secondary/90 text-white" onClick={onClose}>Fechar</Button>
+            ) : (
+              <>
+                <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
+                <Button type="submit" className="bg-secondary hover:bg-secondary/90 text-white" disabled={isLoading}>
+                  {isLoading ? "Salvando..." : "Salvar Marca"}
+                </Button>
+              </>
+            )}
           </DialogFooter>
         </form>
       </DialogContent>

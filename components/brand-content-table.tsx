@@ -15,22 +15,25 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Image from "next/image";
+import { formatBRL, formatDate, formatDateHour } from "@/lib/utils/format";
 
 interface BrandContentProps {
   id?: string;
   logo: string;
   name: string;
   page: string;
-  updatedAt: string;
+  updated_at: string;
   status: string;
 }
 
 export function BrandContentTable({ 
   brands = [], 
+  onView,
   onEdit, 
   onDelete 
 }: { 
   brands?: BrandContentProps[],
+  onView?: (brand: any) => void,
   onEdit?: (brand: any) => void,
   onDelete?: (id: string) => void
 }) {
@@ -47,13 +50,13 @@ export function BrandContentTable({
               <div className="relative w-12 h-12 flex-shrink-0">
                 <Image
                   src={brand.logo}
-                  alt={brand.brand}
+                  alt={brand.name}
                   fill
                   className="object-cover rounded-lg"
                 />
               </div>
               <div className="min-w-0">
-                <p className="font-bold text-black">{brand.brand}</p>
+                <p className="font-bold text-black">{brand.name}</p>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-xs text-muted-foreground">Página:</span>
                   <span className="text-xs font-medium text-black">{brand.page}</span>
@@ -72,7 +75,7 @@ export function BrandContentTable({
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
                   Última Atualização
                 </p>
-                <p className="text-xs font-medium text-black">{brand.updatedAt}</p>
+                <p className="text-xs font-medium text-black">{formatDate(brand.updated_at)}</p>
               </div>
             </div>
 
@@ -116,25 +119,19 @@ export function BrandContentTable({
                   <div className="flex items-center gap-3">
                     <Image
                       src={brand.logo}
-                      alt={brand.brand}
+                      alt={brand.name}
                       width={40}
                       height={40}
                       className="rounded"
                     />
                   </div>
                 </TableCell>
-                <TableCell>
-                  <Select defaultValue={brand.page}>
-                    <SelectTrigger className="bg-transparent w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Home">Home</SelectItem>
-                      <SelectItem value="Eventos">Eventos</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <TableCell className="text-sm text-black">
+                  {brand.page || "N/A"}
                 </TableCell>
-                <TableCell className="text-sm text-black">{brand.updatedAt}</TableCell>
+                <TableCell className="text-sm text-black">
+                  {formatDateHour(brand.updated_at)}
+                </TableCell>
                 <TableCell className="text-sm text-secondary font-medium">{brand.status}</TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-center gap-2">

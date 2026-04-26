@@ -13,8 +13,8 @@ export function Logo({ className = "", href = "/", onClick }: LogoProps) {
       <Image
         src={"/meet-off.png"}
         className="w-60 h-auto"
-        width={10}
-        height={10}
+        width={240}
+        height={80}
         alt="Logo meetoff"
       />
     </Link>

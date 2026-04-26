@@ -12,7 +12,7 @@ export async function GET() {
   }
 
   try {
-    const team = await sql`SELECT id, full_name, role, avatar, updated_at FROM users WHERE is_admin = TRUE OR role != 'Usuário' ORDER BY updated_at DESC`;
+    const team = await sql`SELECT id, full_name, role, avatar, updated_at, is_admin FROM users WHERE is_admin = TRUE OR role != 'Usuário' ORDER BY updated_at DESC`;
     return NextResponse.json(team);
   } catch (error) {
     return NextResponse.json({ message: "Error fetching team" }, { status: 500 });

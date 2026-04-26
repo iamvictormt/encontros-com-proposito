@@ -10,13 +10,22 @@ import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { SiteHeader } from "./site-header";
 import { SiteFooter } from "./site-footer";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { formatBRL } from "@/lib/utils/format";
 
 export function EventsPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [events, setEvents] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const { isLoggedIn } = useAuth();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState<"newest" | "oldest">("newest");
+  const itemsPerPage = 6;
 
   useEffect(() => {
     fetch("/api/events")
@@ -34,7 +43,7 @@ export function EventsPage() {
   const heroSlides = events.filter(e => e.status === 'Ativo').slice(0, 3).map(e => ({
     id: e.id,
     image: e.image,
-    theme: `Tema: ${e.tags[0] || 'Geral'}`,
+    theme: `Tema: ${e.tags?.[0] || 'Geral'}`,
     location: e.location,
     title: e.title.toUpperCase(),
   }));
@@ -51,10 +60,28 @@ export function EventsPage() {
     }
   };
 
-  const filteredEvents = events.filter(e => 
-    e.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    e.location.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredEvents = events
+    .filter(e => 
+      e.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      e.location.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => {
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+      return sortBy === "newest" ? dateB - dateA : dateA - dateB;
+    });
+
+  // Pagination logic
+  const totalPages = Math.max(1, Math.ceil(filteredEvents.length / itemsPerPage));
+  const paginatedEvents = filteredEvents.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   );
+
+  // Reset to page 1 when search or sort changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, sortBy]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -168,13 +195,33 @@ export function EventsPage() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              <Button
-                variant="outline"
-                className="bg-transparent hover:bg-gray-50 text-black"
-              >
-                <Filter className="mr-2 h-4 w-4 text-primary" />
-                Filtros
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="bg-transparent hover:bg-gray-50 text-black min-w-[160px] justify-between"
+                  >
+                    <div className="flex items-center">
+                      <Filter className="mr-2 h-4 w-4 text-primary" />
+                      {sortBy === "newest" ? "Mais Recentes" : "Mais Antigos"}
+                    </div>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-[160px] bg-white border-gray-100">
+                  <DropdownMenuItem 
+                    onClick={() => setSortBy("newest")}
+                    className={`cursor-pointer ${sortBy === "newest" ? "font-bold text-black bg-gray-50" : "text-gray-600"}`}
+                  >
+                    Mais Recentes
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => setSortBy("oldest")}
+                    className={`cursor-pointer ${sortBy === "oldest" ? "font-bold text-black bg-gray-50" : "text-gray-600"}`}
+                  >
+                    Mais Antigos
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
 
@@ -182,7 +229,7 @@ export function EventsPage() {
             <div className="flex justify-center py-20"><Loader2 className="animate-spin text-primary w-12 h-12" /></div>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredEvents.map((event) => {
+              {paginatedEvents.map((event) => {
                 const date = new Date(event.date);
                 const month = date.toLocaleString('pt-BR', { month: 'short' }).toUpperCase();
                 const day = date.getDate();
@@ -253,15 +300,29 @@ export function EventsPage() {
             </div>
           )}
 
-          <div className="mt-8 flex items-center justify-center gap-8">
-            <Button size="icon" className="bg-transparent text-black hover:bg-gray-50">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <span className="text-sm text-foreground">Página 1 de 1</span>
-            <Button size="icon" className="bg-transparent text-black hover:bg-gray-50">
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </div>
+          {totalPages > 1 && (
+            <div className="mt-8 flex items-center justify-center gap-8">
+              <Button 
+                size="icon" 
+                className="bg-transparent text-black hover:bg-gray-50"
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <span className="text-sm text-foreground">
+                Página {currentPage} de {totalPages}
+              </span>
+              <Button 
+                size="icon" 
+                className="bg-transparent text-black hover:bg-gray-50"
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+              >
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </div>
       </section>
 

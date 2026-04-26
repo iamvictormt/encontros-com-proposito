@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { formatDate } from "@/lib/utils/format";
 
 interface AdminEventCardProps {
   id: string;
@@ -13,6 +14,7 @@ interface AdminEventCardProps {
   location: string;
   onEdit?: () => void;
   onDelete?: () => void;
+  onViewDetails?: () => void;
 }
 
 export function AdminEventCard({
@@ -24,6 +26,7 @@ export function AdminEventCard({
   location,
   onEdit,
   onDelete,
+  onViewDetails,
 }: AdminEventCardProps) {
   return (
     <Card className="overflow-hidden border border-gray-100 shadow-sm bg-white rounded-2xl py-0 gap-4">
@@ -49,26 +52,28 @@ export function AdminEventCard({
         </div>
         <h3 className="text-xl font-bold mb-2 text-black">{title}</h3>
         <p className="text-sm text-muted-foreground mb-1">
-          <span>Data:</span> <span className="font-bold text-black">{date}</span>
+          <span>Data:</span> <span className="font-bold text-black">{formatDate(date)}</span>
         </p>
         <p className="text-sm text-muted-foreground mb-5">
           <span>Local:</span>{" "}
           <span className="underline font-bold text-secondary cursor-pointer">{location}</span>
         </p>
-        <div className="flex gap-2">
-          <Button
-            onClick={onEdit}
-            className="flex-1 bg-accent hover:bg-accent/90 text-white font-bold py-6 rounded-xl text-base"
-          >
-            Editar
-          </Button>
-          <Button
-            onClick={onDelete}
-            variant="destructive"
-            className="bg-[#8a0204] hover:bg-[#7a0204] text-white font-bold py-6 rounded-xl text-base"
-          >
-            Excluir
-          </Button>
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2">
+            <Button
+              onClick={onEdit}
+              className="flex-1 bg-accent hover:bg-accent/90 text-white font-bold py-6 rounded-xl text-base"
+            >
+              Editar
+            </Button>
+            {/* <Button
+              onClick={onDelete}
+              variant="destructive"
+              className="bg-[#8a0204] hover:bg-[#7a0204] text-white font-bold py-6 rounded-xl text-base"
+            >
+              Excluir
+            </Button> */}
+          </div>
         </div>
       </CardContent>
     </Card>

@@ -8,9 +8,14 @@ interface VenueApprovalCardProps {
   location: string;
   type: string;
   image: string;
+  status?: string;
   isPageLocalEmpresas?: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
+  onViewDetails?: () => void;
+  onApprove?: () => void;
+  onReject?: () => void;
+  onSetPending?: () => void;
 }
 
 export function VenueApprovalCard({
@@ -18,9 +23,14 @@ export function VenueApprovalCard({
   location,
   type,
   image,
+  status,
   isPageLocalEmpresas,
   onEdit,
   onDelete,
+  onViewDetails,
+  onApprove,
+  onReject,
+  onSetPending,
 }: VenueApprovalCardProps) {
   return (
     <Card className="relative flex flex-col sm:flex-row items-stretch sm:items-center gap-4 p-4 border-none shadow-sm bg-white w-full overflow-hidden">
@@ -29,6 +39,7 @@ export function VenueApprovalCard({
         <Button
           size="sm"
           variant="ghost"
+          onClick={onViewDetails}
           className="absolute top-2 right-2 text-[10px] sm:text-xs hover:bg-gray-50 text-gray-500 hover:text-black h-8 px-2"
         >
           Ver detalhes
@@ -53,22 +64,34 @@ export function VenueApprovalCard({
           </p>
         </div>
 
-        <div className="flex gap-2 w-full sm:w-auto">
-          <Button
-            size="sm"
-            onClick={onEdit}
-            className="bg-[#1f4c47] hover:bg-[#1a3d39] text-white flex-1 sm:flex-none"
-          >
-            {isPageLocalEmpresas ? "Editar" : "Aprovar"}
-          </Button>
-          <Button
-            size="sm"
-            variant="destructive"
-            onClick={onDelete}
-            className="bg-[#8a0204] hover:bg-[#7a0204] text-white flex-1 sm:flex-none"
-          >
-            {isPageLocalEmpresas ? "Excluir" : "Recusar"}
-          </Button>
+        <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+          {(!status || status === "Pendente") && (
+            <>
+              <Button
+                size="sm"
+                onClick={onApprove}
+                className="bg-secondary hover:bg-secondary/90 text-white flex-1 sm:flex-none font-bold min-w-[100px]"
+              >
+                Aprovar
+              </Button>
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={onReject}
+                className="bg-primary hover:bg-primary/90 text-white flex-1 sm:flex-none font-bold min-w-[100px]"
+              >
+                Recusar
+              </Button>
+            </>
+          )}
+
+          {status && status !== "Pendente" && (
+            <div className="py-2">
+              <span className={`text-sm font-bold ${status === "Aprovado" ? "text-secondary" : "text-primary"}`}>
+                Item {status.toLowerCase()}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </Card>
