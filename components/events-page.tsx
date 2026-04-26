@@ -265,7 +265,7 @@ export function EventsPage() {
                       <div className="mb-4 flex items-start gap-6">
                         <div className="flex flex-col items-center gap-1 min-w-[50px]">
                           <span className="text-xs font-semibold text-black uppercase tracking-wide">
-                            {month}
+                            {month.substring(0, 3)}
                           </span>
                           <span className="text-3xl font-bold text-secondary leading-none">
                             {day}
@@ -274,9 +274,9 @@ export function EventsPage() {
                         <div className="flex-1 pl-4 relative">
                           <div className="absolute left-0 top-1/4 h-1/2 border-l border-1"></div>
                           <div className="ml-4">
-                            <h3 className="mb-1 text-lg font-bold text-black">{event.title}</h3>
+                            <h3 className="mb-1 text-lg font-bold text-black line-clamp-1">{event.title}</h3>
                             <p className="text-sm text-muted-foreground">
-                              {event.location} · {event.time}
+                              {event.location} <span className="text-gray-300 font-normal mx-1">•</span>  {event.time}
                             </p>
                           </div>
                         </div>

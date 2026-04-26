@@ -68,6 +68,8 @@ async function setupDatabase() {
     `;
     
     await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS capacity INTEGER DEFAULT 0`;
+    await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS images TEXT`;
+    await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS cep TEXT`;
 
     // Brands table
     await sql`
@@ -89,11 +91,14 @@ async function setupDatabase() {
         description TEXT,
         price DECIMAL(10, 2) NOT NULL,
         image TEXT,
+        images TEXT,
         brand_id UUID REFERENCES brands(id),
         stock INTEGER DEFAULT 0,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `;
+    
+    await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS images TEXT`;
 
     // Participations table (Event joining)
     await sql`

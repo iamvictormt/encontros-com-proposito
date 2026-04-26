@@ -30,11 +30,11 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { title, image, status, tags, date, time, location, address, price, description, capacity } = await request.json();
+    const { title, image, images, status, tags, date, time, location, address, price, description, capacity, cep } = await request.json();
 
     const result = await sql`
-      INSERT INTO events (title, image, status, tags, date, time, location, address, price, description, capacity)
-      VALUES (${title}, ${image}, ${status}, ${tags}, ${date}, ${time}, ${location}, ${address}, ${price}, ${description}, ${capacity})
+      INSERT INTO events (title, image, images, status, tags, date, time, location, address, price, description, capacity, cep)
+      VALUES (${title}, ${image}, ${images}, ${status}, ${tags}, ${date}, ${time}, ${location}, ${address}, ${price}, ${description}, ${capacity}, ${cep})
       RETURNING *
     `;
 
@@ -54,13 +54,13 @@ export async function PUT(request: Request) {
   }
 
   try {
-    const { id, title, image, status, tags, date, time, location, address, price, description, capacity } = await request.json();
+    const { id, title, image, images, status, tags, date, time, location, address, price, description, capacity, cep } = await request.json();
 
     const result = await sql`
       UPDATE events 
-      SET title = ${title}, image = ${image}, status = ${status}, tags = ${tags}, 
+      SET title = ${title}, image = ${image}, images = ${images}, status = ${status}, tags = ${tags}, 
           date = ${date}, time = ${time}, location = ${location}, address = ${address}, 
-          price = ${price}, description = ${description}, capacity = ${capacity}
+          price = ${price}, description = ${description}, capacity = ${capacity}, cep = ${cep}
       WHERE id = ${id}
       RETURNING *
     `;

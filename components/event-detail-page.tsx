@@ -112,7 +112,7 @@ export function EventDetailPage() {
 
       <main className="flex-1 pb-16">
         {/* Hero Section */}
-        <EventHeroCarousel images={[event.image]} />
+        <EventHeroCarousel images={event.images ? JSON.parse(event.images) : [event.image]} />
 
         <div className="mx-auto max-w-7xl px-4 md:px-0">
           <div className="grid grid-cols-1 lg:grid-cols-3 -mt-24 md:-mt-48 relative z-10 mb-12 bg-white rounded-[2rem] shadow-xl overflow-hidden">
