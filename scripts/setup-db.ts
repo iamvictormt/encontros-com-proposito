@@ -1,7 +1,7 @@
 import { neon } from '@neondatabase/serverless';
 import * as dotenv from 'dotenv';
 
-dotenv.config({ path: '.env.local' });
+dotenv.config({ path: '.env' });
 
 async function setupDatabase() {
   if (!process.env.DATABASE_URL) {
@@ -70,6 +70,11 @@ async function setupDatabase() {
     await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS capacity INTEGER DEFAULT 0`;
     await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS images TEXT`;
     await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS cep TEXT`;
+    await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS target_audience TEXT`;
+    await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS conductor TEXT`;
+    await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS has_certificate BOOLEAN DEFAULT true`;
+    await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS mandatory_products JSONB DEFAULT '[]'`;
+    await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS groups JSONB DEFAULT '[]'`;
 
     // Brands table
     await sql`

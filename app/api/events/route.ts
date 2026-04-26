@@ -30,11 +30,25 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { title, image, images, status, tags, date, time, location, address, price, description, capacity, cep } = await request.json();
-
+    const body = await request.json();
+    const { 
+      title, image, date, time, location, price, status, tags, 
+      description, capacity, mandatory_products, groups,
+      target_audience, conductor, has_certificate 
+    } = body;
+    
     const result = await sql`
-      INSERT INTO events (title, image, images, status, tags, date, time, location, address, price, description, capacity, cep)
-      VALUES (${title}, ${image}, ${images}, ${status}, ${tags}, ${date}, ${time}, ${location}, ${address}, ${price}, ${description}, ${capacity}, ${cep})
+      INSERT INTO events (
+        title, image, date, time, location, price, status, tags, 
+        description, capacity, mandatory_products, groups,
+        target_audience, conductor, has_certificate
+      )
+      VALUES (
+        ${title}, ${image}, ${date}, ${time}, ${location}, ${price}, ${status}, ${tags}, 
+        ${description}, ${capacity}, ${JSON.stringify(mandatory_products || [])}, 
+        ${JSON.stringify(groups || [])},
+        ${target_audience}, ${conductor}, ${has_certificate}
+      )
       RETURNING *
     `;
 
@@ -54,13 +68,30 @@ export async function PUT(request: Request) {
   }
 
   try {
-    const { id, title, image, images, status, tags, date, time, location, address, price, description, capacity, cep } = await request.json();
-
+    const body = await request.json();
+    const { 
+      id, title, image, date, time, location, price, status, tags, 
+      description, capacity, mandatory_products, groups,
+      target_audience, conductor, has_certificate 
+    } = body;
+    
     const result = await sql`
       UPDATE events 
-      SET title = ${title}, image = ${image}, images = ${images}, status = ${status}, tags = ${tags}, 
-          date = ${date}, time = ${time}, location = ${location}, address = ${address}, 
-          price = ${price}, description = ${description}, capacity = ${capacity}, cep = ${cep}
+      SET title = ${title}, 
+          image = ${image}, 
+          date = ${date}, 
+          time = ${time}, 
+          location = ${location}, 
+          price = ${price}, 
+          status = ${status}, 
+          tags = ${tags}, 
+          description = ${description}, 
+          capacity = ${capacity},
+          mandatory_products = ${JSON.stringify(mandatory_products || [])},
+          groups = ${JSON.stringify(groups || [])},
+          target_audience = ${target_audience},
+          conductor = ${conductor},
+          has_certificate = ${has_certificate}
       WHERE id = ${id}
       RETURNING *
     `;

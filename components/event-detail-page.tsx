@@ -23,7 +23,7 @@ import {
   Play,
   Check,
   Share,
-  Loader2
+  Loader2,
 } from "lucide-react";
 import Image from "next/image";
 import { EventHeroCarousel } from "./event-hero-carousel";
@@ -41,6 +41,8 @@ export function EventDetailPage() {
   const { user, isLoggedIn } = useAuth();
   const router = useRouter();
 
+  const [mandatoryProductsData, setMandatoryProductsData] = useState<any[]>([]);
+
   useEffect(() => {
     if (!id) return;
 
@@ -49,7 +51,22 @@ export function EventDetailPage() {
         const res = await fetch(`/api/events?id=${id}`);
         const data = await res.json();
         setEvent(data);
-        
+
+        // Fetch product details for mandatory products
+        if (data.mandatory_products) {
+          const productIds =
+            typeof data.mandatory_products === "string"
+              ? JSON.parse(data.mandatory_products)
+              : data.mandatory_products;
+
+          if (productIds.length > 0) {
+            const prodRes = await fetch("/api/products");
+            const allProducts = await prodRes.json();
+            const filtered = allProducts.filter((p: any) => productIds.includes(p.id));
+            setMandatoryProductsData(filtered);
+          }
+        }
+
         if (isLoggedIn && user) {
           const partRes = await fetch(`/api/participate?eventId=${id}&userId=${user.id}`);
           const partData = await partRes.json();
@@ -104,12 +121,15 @@ export function EventDetailPage() {
   };
 
   if (isLoading) return null;
-  if (!event) return <div className="flex justify-center py-20 min-h-screen bg-white">Evento não encontrado</div>;
+  if (!event)
+    return (
+      <div className="flex justify-center py-20 min-h-screen bg-white">Evento não encontrado</div>
+    );
 
-  const eventDate = new Date(event.date).toLocaleDateString('pt-BR', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
+  const eventDate = new Date(event.date).toLocaleDateString("pt-BR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
   });
 
   return (
@@ -128,7 +148,7 @@ export function EventDetailPage() {
                 <h1 className="text-3xl md:text-[36px] leading-tight font-bold text-black mb-12">
                   {event.title}
                 </h1>
-                
+
                 <div className="space-y-10">
                   <div className="flex flex-col">
                     <div className="flex items-center gap-2 mb-2">
@@ -146,7 +166,8 @@ export function EventDetailPage() {
                       <p className="text-[15px] text-gray-400">Data e Hora</p>
                     </div>
                     <p className="font-bold text-gray-900 text-[16px]">
-                      {eventDate} <span className="text-gray-300 font-normal mx-1">•</span> {event.time}
+                      {eventDate} <span className="text-gray-300 font-normal mx-1">•</span>{" "}
+                      {event.time}
                     </p>
                   </div>
                 </div>
@@ -154,30 +175,34 @@ export function EventDetailPage() {
             </div>
 
             {/* Card 2: Ingresso */}
-            <div 
+            <div
               className="p-10 flex flex-col justify-start h-full border-gray-200"
               style={{
                 backgroundImage: `linear-gradient(to bottom, #E5E7EB 60%, transparent 60%)`,
-                backgroundSize: '1px 15px',
-                backgroundRepeat: 'repeat-y',
-                backgroundPosition: 'left'
+                backgroundSize: "1px 15px",
+                backgroundRepeat: "repeat-y",
+                backgroundPosition: "left",
               }}
             >
               <div className="mb-6 text-center lg:text-left">
                 <h2 className="text-[24px] font-bold text-gray-900 mb-1">Ingresso</h2>
-                <p className="text-[15px] text-gray-400">
-                  Comprar pelo nosso sistema
-                </p>
+                <p className="text-[15px] text-gray-400">Comprar pelo nosso sistema</p>
               </div>
 
-              <Button 
+              <Button
                 onClick={handleParticipate}
                 disabled={isParticipating || isActionLoading}
                 className={`w-full font-bold text-[16px] py-7 rounded-xl ${
-                  isParticipating ? 'bg-green-600 hover:bg-green-700' : 'bg-[#F28D35] hover:bg-[#e17c2a]'
+                  isParticipating
+                    ? "bg-green-600 hover:bg-green-700"
+                    : "bg-[#F28D35] hover:bg-[#e17c2a]"
                 } text-white shadow-md transition-all active:scale-[0.98]`}
               >
-                {isActionLoading ? "Processando..." : isParticipating ? "Inscrição Confirmada" : "Pagar e participar"}
+                {isActionLoading
+                  ? "Processando..."
+                  : isParticipating
+                    ? "Inscrição Confirmada"
+                    : "Pagar e participar"}
               </Button>
 
               <div className="relative flex items-center py-8">
@@ -200,13 +225,13 @@ export function EventDetailPage() {
             </div>
 
             {/* Card 3: Token */}
-            <div 
+            <div
               className="p-10 flex flex-col justify-start h-full border-gray-200"
               style={{
                 backgroundImage: `linear-gradient(to bottom, #E5E7EB 60%, transparent 60%)`,
-                backgroundSize: '1px 15px',
-                backgroundRepeat: 'repeat-y',
-                backgroundPosition: 'left'
+                backgroundSize: "1px 15px",
+                backgroundRepeat: "repeat-y",
+                backgroundPosition: "left",
               }}
             >
               <div className="mb-6">
@@ -218,13 +243,13 @@ export function EventDetailPage() {
                     readOnly
                     className="border-none focus-visible:ring-0 shadow-none bg-transparent flex-1 text-[13px] font-medium text-gray-900 truncate px-4"
                   />
-                  <Button 
+                  <Button
                     onClick={() => {
                       navigator.clipboard.writeText(`checklove.com/invite/${id}`);
                       toast.success("Link copiado!");
                     }}
                     className="bg-[#F28D35] hover:bg-[#e17c2a] text-white rounded-lg px-3 text-[14px] font-bold transition-all"
-                    style={{padding: `15px`}}
+                    style={{ padding: `15px` }}
                   >
                     Copiar
                   </Button>
@@ -232,7 +257,7 @@ export function EventDetailPage() {
               </div>
 
               <div className="relative flex items-center pt-2 mb-6">
-                 <div className="grow border-t border-gray-100"></div>
+                <div className="grow border-t border-gray-100"></div>
               </div>
 
               <div className="mt-auto">
@@ -271,21 +296,129 @@ export function EventDetailPage() {
                 </p>
 
                 <ul className="space-y-2 mt-4 pt-4">
-                  {event.tags.map((tag: string, i: number) => (
-                    <li key={i} className="flex items-center gap-2">
-                      <Check className="w-[18px] h-[18px] text-gray-800" strokeWidth={3} />
-                      <span className="font-bold text-[#355E53] text-[15px]">
-                        {tag}
-                      </span>
-                    </li>
-                  ))}
                   <li className="flex items-center gap-2">
                     <Check className="w-[18px] h-[18px] text-gray-800" strokeWidth={3} />
                     <span className="font-bold text-[#355E53] text-[15px]">
-                      Vagas totais: {event.capacity}
+                      Aberto para{" "}
+                      {!event.target_audience ||
+                      event.target_audience.trim() === "" ||
+                      event.target_audience === "all" ||
+                      event.target_audience === "Todos os públicos"
+                        ? "todos os públicos"
+                        : /^\d+$/.test(event.target_audience)
+                          ? `${event.target_audience}+`
+                          : event.target_audience.toLowerCase()}
                     </span>
                   </li>
+                  {event.conductor && (
+                    <li className="flex items-center gap-2">
+                      <Check className="w-[18px] h-[18px] text-gray-800" strokeWidth={3} />
+                      <span className="font-bold text-[#355E53] text-[15px]">
+                        Condutor: {event.conductor}
+                      </span>
+                    </li>
+                  )}
+                  <li className="flex items-center gap-2">
+                    <Check className="w-[18px] h-[18px] text-gray-800" strokeWidth={3} />
+                    <span className="font-bold text-[#355E53] text-[15px]">
+                      Evento certificado com selo MeetOff
+                    </span>
+                  </li>
+                  {event.has_certificate && (
+                    <li className="flex items-center gap-2 mt-2">
+                      <div className="flex items-center gap-2 bg-[#355E53]/10 px-3 py-1.5 rounded-full border border-[#355E53]/20">
+                        <Check className="w-[16px] h-[16px] text-[#355E53]" strokeWidth={3} />
+                        <span className="font-bold text-[#355E53] text-[13px]">
+                          Com certificado (Selo Meetoff)
+                        </span>
+                      </div>
+                    </li>
+                  )}
                 </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* New Sections: Products & Groups */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+            {/* Products Section */}
+            <div>
+              <h2 className="text-[22px] font-bold text-gray-900 mb-6">Produtos obrigatórios</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {mandatoryProductsData.map((product) => (
+                  <div key={product.id} className="space-y-3">
+                    <div className="relative aspect-square rounded-2xl overflow-hidden bg-white shadow-sm border border-gray-100 p-2">
+                      <div className="absolute top-3 left-3 z-10 bg-white rounded-full p-1 shadow-md border border-gray-100">
+                        <div className="w-5 h-5 rounded-full bg-[#F28D35] flex items-center justify-center">
+                          <Check className="w-3 h-3 text-white" strokeWidth={4} />
+                        </div>
+                      </div>
+                      <div className="relative w-full h-full rounded-xl overflow-hidden">
+                        <Image
+                          src={product.image}
+                          alt={product.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    </div>
+                    <h3 className="text-sm font-bold text-black text-center">{product.name}</h3>
+                  </div>
+                ))}
+                {mandatoryProductsData.length === 0 && (
+                  <p className="text-gray-400 text-sm italic">
+                    Nenhum produto obrigatório para este evento.
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Groups Section */}
+            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
+              <h2 className="text-[22px] font-bold text-gray-900 mb-2">
+                Grupos disponíveis para participação
+              </h2>
+              <p className="text-sm text-gray-400 mb-8">
+                Quer companhia? Escolha um grupo para ir ao evento junto com você!
+              </p>
+
+              <div className="space-y-6">
+                {(typeof event.groups === "string"
+                  ? JSON.parse(event.groups)
+                  : event.groups || []
+                ).map((group: any, i: number) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between py-4 border-t border-gray-50 first:border-t-0"
+                  >
+                    <div className="flex-1">
+                      <h3 className="font-bold text-[#1A4B40] text-[16px]">
+                        {group.name} -{" "}
+                        <span className="text-gray-400 font-normal">
+                          {group.capacity} Vagas Disponíveis
+                        </span>
+                      </h3>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                      <div className="flex -space-x-2">
+                        {[1, 2, 3, 4].map((j) => (
+                          <Avatar key={j} className="border-2 border-white w-8 h-8">
+                            <AvatarImage src={`https://i.pravatar.cc/100?u=${i}-${j}`} />
+                            <AvatarFallback>U</AvatarFallback>
+                          </Avatar>
+                        ))}
+                      </div>
+                      <Button className="bg-[#1A4B40] hover:bg-[#1A4B40]/90 text-white rounded-xl px-6 h-11 font-bold">
+                        Entrar
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+                {(typeof event.groups === "string" ? JSON.parse(event.groups) : event.groups || [])
+                  .length === 0 && (
+                  <p className="text-gray-400 text-sm italic py-4">Nenhum grupo disponível.</p>
+                )}
               </div>
             </div>
           </div>
