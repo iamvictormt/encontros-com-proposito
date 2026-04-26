@@ -6,6 +6,8 @@ import "./globals.css";
 import { Toaster as SonnerToaster } from "sonner";
 import { Toaster } from "@/components/ui/toaster";
 
+import { LoadingProvider } from "@/providers/loading-provider";
+
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
@@ -35,10 +37,12 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={`font-sans antialiased`}>
-        {children}
-        <Analytics />
-        <Toaster />
-        <SonnerToaster position="top-center" richColors />
+        <LoadingProvider>
+          {children}
+          <Analytics />
+          <Toaster />
+          <SonnerToaster position="top-center" richColors />
+        </LoadingProvider>
       </body>
     </html>
   );

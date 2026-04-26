@@ -32,6 +32,7 @@ import { cn } from "@/lib/utils";
 import { useParams } from "next/navigation";
 import { formatBRL } from "@/lib/utils/format";
 import { toast } from "sonner";
+import { useLoading } from "@/providers/loading-provider";
 
 const reviews = [
   {
@@ -58,6 +59,7 @@ export function ProductDetailPage() {
   const [product, setProduct] = useState<any>(null);
   const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { setIsLoading: setGlobalLoading } = useLoading();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState("");
   const [fabricationOpen, setFabricationOpen] = useState(false);
@@ -91,16 +93,12 @@ export function ProductDetailPage() {
     fetchData();
   }, [id]);
 
+  useEffect(() => {
+    setGlobalLoading(isLoading);
+  }, [isLoading, setGlobalLoading]);
+
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-white flex flex-col">
-        <SiteHeader />
-        <main className="flex-1 flex items-center justify-center">
-          <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        </main>
-        <SiteFooter />
-      </div>
-    );
+    return null;
   }
 
   if (!product) {

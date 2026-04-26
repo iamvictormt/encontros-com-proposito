@@ -14,6 +14,7 @@ import { APIError } from "@/lib/services/api-client";
 import { Logo } from "./logo";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import { useLoading } from "@/providers/loading-provider";
 import { authService } from "@/lib/services/auth.service";
 import {
   formatCPF,
@@ -53,6 +54,7 @@ export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [emailCpfError, setEmailCpfError] = useState("");
   const { isLoggedIn, user, isLoading: authLoading, refreshAuth } = useAuth();
+  const { setIsLoading: setGlobalLoading } = useLoading();
   const router = useRouter();
   const { toast } = useToast();
   const [showSuccessVideo, setShowSuccessVideo] = useState(false);
@@ -63,10 +65,13 @@ export function LoginForm() {
     const currentYear = new Date().getFullYear().toString();
     setYear(currentYear);
 
+    // Sync auth loading with global loading
+    setGlobalLoading(authLoading);
+
     if (!authLoading && isLoggedIn && user && !showSuccessVideo) {
       router.push(user.isAdmin ? "/admin" : "/events");
     }
-  }, [authLoading, isLoggedIn, user, router, showSuccessVideo]);
+  }, [authLoading, isLoggedIn, user, router, showSuccessVideo, setGlobalLoading]);
 
   const handleEmailCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -120,6 +125,7 @@ export function LoginForm() {
     }
 
     setIsLoading(true);
+    setGlobalLoading(true);
 
     try {
       const inputType = detectInputType(email);
@@ -168,6 +174,7 @@ export function LoginForm() {
         });
       }
       setIsLoading(false);
+      setGlobalLoading(false);
     }
   };
 
@@ -184,14 +191,7 @@ export function LoginForm() {
   };
 
   if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
-          <p className="mt-4 text-muted-foreground">Carregando...</p>
-        </div>
-      </div>
-    );
+    return null; // Global loader is handled by LoadingProvider
   }
 
   return (
@@ -225,14 +225,7 @@ export function LoginForm() {
         </div>
       )}
 
-      {showSuccessVideo && !isVideoLoaded && (
-        <div className="fixed inset-0 bg-white z-50 flex items-center justify-center">
-          <div className="text-center">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
-            <p className="mt-4 text-muted-foreground">Preparando sua experiência...</p>
-          </div>
-        </div>
-      )}
+      {showSuccessVideo && !isVideoLoaded && null}
       <div className="min-h-screen flex flex-col lg:flex-row bg-white">
         {/* Left Column - Login Form */}
         <div className="w-full lg:w-1/2 flex flex-col p-6 sm:p-8 md:p-12 lg:p-16 relative ">

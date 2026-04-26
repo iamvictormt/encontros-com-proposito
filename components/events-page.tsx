@@ -3,50 +3,69 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, MapPin, Share2, ArrowLeft, ArrowRight, Link2, Filter, Loader2 } from "lucide-react";
+import {
+  Search,
+  MapPin,
+  Share2,
+  ArrowLeft,
+  ArrowRight,
+  Link2,
+  Filter,
+  Loader2,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { SiteHeader } from "./site-header";
 import { SiteFooter } from "./site-footer";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatBRL } from "@/lib/utils/format";
+import { useLoading } from "@/providers/loading-provider";
 
 export function EventsPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [events, setEvents] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { setIsLoading: setGlobalLoading } = useLoading();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState<"newest" | "oldest">("newest");
   const itemsPerPage = 6;
 
   useEffect(() => {
+    setGlobalLoading(isLoading);
+  }, [isLoading, setGlobalLoading]);
+
+  useEffect(() => {
     fetch("/api/events")
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setEvents(data);
         setIsLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         setIsLoading(false);
       });
   }, []);
 
-  const heroSlides = events.filter(e => e.status === 'Ativo').slice(0, 3).map(e => ({
-    id: e.id,
-    image: e.image,
-    theme: `Tema: ${e.tags?.[0] || 'Geral'}`,
-    location: e.location,
-    title: e.title.toUpperCase(),
-  }));
+  const heroSlides = events
+    .filter((e) => e.status === "Ativo")
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 3)
+    .map((e) => ({
+      id: e.id,
+      image: e.image,
+      theme: `Tema: ${e.tags?.[0] || "Geral"}`,
+      location: e.location,
+      title: e.title.toUpperCase(),
+    }));
 
   const nextSlide = () => {
     if (heroSlides.length > 0) {
@@ -61,9 +80,10 @@ export function EventsPage() {
   };
 
   const filteredEvents = events
-    .filter(e => 
-      e.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      e.location.toLowerCase().includes(searchTerm.toLowerCase())
+    .filter(
+      (e) =>
+        e.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        e.location.toLowerCase().includes(searchTerm.toLowerCase()),
     )
     .sort((a, b) => {
       const dateA = new Date(a.date).getTime();
@@ -75,7 +95,7 @@ export function EventsPage() {
   const totalPages = Math.max(1, Math.ceil(filteredEvents.length / itemsPerPage));
   const paginatedEvents = filteredEvents.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
 
   // Reset to page 1 when search or sort changes
@@ -188,9 +208,9 @@ export function EventsPage() {
             <div className="flex w-full gap-3 sm:w-auto">
               <div className="relative flex-1 sm:w-64">
                 <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-primary" />
-                <Input 
-                  placeholder="Buscar Eventos" 
-                  className="pl-9" 
+                <Input
+                  placeholder="Buscar Eventos"
+                  className="pl-9"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -208,13 +228,13 @@ export function EventsPage() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-[160px] bg-white border-gray-100">
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={() => setSortBy("newest")}
                     className={`cursor-pointer ${sortBy === "newest" ? "font-bold text-black bg-gray-50" : "text-gray-600"}`}
                   >
                     Mais Recentes
                   </DropdownMenuItem>
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={() => setSortBy("oldest")}
                     className={`cursor-pointer ${sortBy === "oldest" ? "font-bold text-black bg-gray-50" : "text-gray-600"}`}
                   >
@@ -225,13 +245,11 @@ export function EventsPage() {
             </div>
           </div>
 
-          {isLoading ? (
-            <div className="flex justify-center py-20"><Loader2 className="animate-spin text-primary w-12 h-12" /></div>
-          ) : (
+          {isLoading ? null : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {paginatedEvents.map((event) => {
                 const date = new Date(event.date);
-                const month = date.toLocaleString('pt-BR', { month: 'short' }).toUpperCase();
+                const month = date.toLocaleString("pt-BR", { month: "short" }).toUpperCase();
                 const day = date.getDate();
 
                 return (
@@ -257,7 +275,7 @@ export function EventsPage() {
                       </div>
 
                       <div className="absolute left-3 top-3 rounded-lg bg-white px-3 py-2.5 font-semibold text-black shadow-md">
-                        R$ {parseFloat(event.price).toFixed(2).replace(".", ",")}
+                        {formatBRL(event.price)}
                       </div>
                     </div>
 
@@ -274,9 +292,12 @@ export function EventsPage() {
                         <div className="flex-1 pl-4 relative">
                           <div className="absolute left-0 top-1/4 h-1/2 border-l border-1"></div>
                           <div className="ml-4">
-                            <h3 className="mb-1 text-lg font-bold text-black line-clamp-1">{event.title}</h3>
+                            <h3 className="mb-1 text-lg font-bold text-black line-clamp-1">
+                              {event.title}
+                            </h3>
                             <p className="text-sm text-muted-foreground">
-                              {event.location} <span className="text-gray-300 font-normal mx-1">•</span>  {event.time}
+                              {event.location}{" "}
+                              <span className="text-gray-300 font-normal mx-1">•</span> {event.time}
                             </p>
                           </div>
                         </div>
@@ -302,10 +323,10 @@ export function EventsPage() {
 
           {totalPages > 1 && (
             <div className="mt-8 flex items-center justify-center gap-8">
-              <Button 
-                size="icon" 
+              <Button
+                size="icon"
                 className="bg-transparent text-black hover:bg-gray-50"
-                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
               >
                 <ArrowLeft className="h-4 w-4" />
@@ -313,10 +334,10 @@ export function EventsPage() {
               <span className="text-sm text-foreground">
                 Página {currentPage} de {totalPages}
               </span>
-              <Button 
-                size="icon" 
+              <Button
+                size="icon"
                 className="bg-transparent text-black hover:bg-gray-50"
-                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                 disabled={currentPage === totalPages}
               >
                 <ArrowRight className="h-4 w-4" />

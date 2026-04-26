@@ -29,11 +29,13 @@ import Image from "next/image";
 import { EventHeroCarousel } from "./event-hero-carousel";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
+import { useLoading } from "@/providers/loading-provider";
 
 export function EventDetailPage() {
   const { id } = useParams();
   const [event, setEvent] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { setIsLoading: setGlobalLoading } = useLoading();
   const [isParticipating, setIsParticipating] = useState(false);
   const [isActionLoading, setIsActionLoading] = useState(false);
   const { user, isLoggedIn } = useAuth();
@@ -62,6 +64,10 @@ export function EventDetailPage() {
 
     fetchEvent();
   }, [id, isLoggedIn, user]);
+
+  useEffect(() => {
+    setGlobalLoading(isLoading);
+  }, [isLoading, setGlobalLoading]);
 
   const handleParticipate = async () => {
     if (!isLoggedIn) {
@@ -97,7 +103,7 @@ export function EventDetailPage() {
     }
   };
 
-  if (isLoading) return <div className="flex justify-center py-20 min-h-screen bg-white"><Loader2 className="animate-spin text-primary w-12 h-12" /></div>;
+  if (isLoading) return null;
   if (!event) return <div className="flex justify-center py-20 min-h-screen bg-white">Evento não encontrado</div>;
 
   const eventDate = new Date(event.date).toLocaleDateString('pt-BR', {
