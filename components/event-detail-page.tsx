@@ -115,32 +115,32 @@ export function EventDetailPage() {
         <EventHeroCarousel images={[event.image]} />
 
         <div className="mx-auto max-w-7xl px-4 md:px-0">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 md:gap-14 -mt-24 md:-mt-48 relative z-10 mb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-3 -mt-24 md:-mt-48 relative z-10 mb-12 bg-white rounded-[2rem] shadow-xl overflow-hidden">
             {/* Card 1: Event Info */}
-            <div className="bg-white rounded-[2rem] shadow-xl p-8 md:p-10 flex flex-col justify-start h-full">
-              <h1 className="text-2xl md:text-[28px] leading-tight font-bold text-gray-900 mb-12">
-                {event.title}
-              </h1>
-              <div className="space-y-10">
-                <div className="flex items-start gap-4">
-                  <div className="mt-1">
-                    <MapPin className="w-8 h-8 text-secondary" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-400 mb-1">Local</p>
-                    <p className="text-accent font-medium text-sm md:text-[15px] border-b border-accent inline-block pb-0.5">
+            <div className="p-10 flex flex-col justify-between h-full">
+              <div>
+                <h1 className="text-3xl md:text-[36px] leading-tight font-bold text-black mb-12">
+                  {event.title}
+                </h1>
+                
+                <div className="space-y-10">
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-2 mb-2">
+                      <MapPin className="w-5 h-5 text-[#1A4B40]" strokeWidth={2.5} />
+                      <p className="text-[15px] text-gray-400">Local</p>
+                    </div>
+                    <p className="text-[#F28D35] font-semibold text-[16px] underline decoration-1 underline-offset-4 cursor-pointer">
                       {event.location}
                     </p>
                   </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="mt-1">
-                    <Calendar className="w-8 h-8 text-secondary" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-400 mb-1">Data e Hora</p>
-                    <p className="font-semibold text-gray-900 text-sm md:text-[15px]">
-                      {eventDate} <span className="text-gray-300 font-normal">•</span> {event.time}
+
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Calendar className="w-5 h-5 text-[#1A4B40]" strokeWidth={2.5} />
+                      <p className="text-[15px] text-gray-400">Data e Hora</p>
+                    </div>
+                    <p className="font-bold text-gray-900 text-[16px]">
+                      {eventDate} <span className="text-gray-300 font-normal mx-1">•</span> {event.time}
                     </p>
                   </div>
                 </div>
@@ -148,34 +148,42 @@ export function EventDetailPage() {
             </div>
 
             {/* Card 2: Ingresso */}
-            <div className="bg-white rounded-[2rem] shadow-xl p-8 md:p-10 flex flex-col justify-start h-full space-y-6 border-l border-dashed border-gray-100">
-              <div>
-                <h2 className="text-[22px] font-bold text-gray-900 mb-1">Participação</h2>
+            <div 
+              className="p-10 flex flex-col justify-start h-full border-gray-200"
+              style={{
+                backgroundImage: `linear-gradient(to bottom, #E5E7EB 60%, transparent 60%)`,
+                backgroundSize: '1px 15px',
+                backgroundRepeat: 'repeat-y',
+                backgroundPosition: 'left'
+              }}
+            >
+              <div className="mb-6 text-center lg:text-left">
+                <h2 className="text-[24px] font-bold text-gray-900 mb-1">Ingresso</h2>
                 <p className="text-[15px] text-gray-400">
-                  {event.price > 0 ? `Valor: R$ ${parseFloat(event.price).toFixed(2).replace('.', ',')}` : 'Evento gratuito'}
+                  Comprar pelo nosso sistema
                 </p>
               </div>
 
               <Button 
                 onClick={handleParticipate}
                 disabled={isParticipating || isActionLoading}
-                className={`w-full font-semibold text-[15px] py-6 rounded-lg mt-2 ${
-                  isParticipating ? 'bg-green-600 hover:bg-green-700' : 'bg-[#F28D35] hover:bg-[#de7c2c]'
-                } text-white`}
+                className={`w-full font-bold text-[16px] py-7 rounded-xl ${
+                  isParticipating ? 'bg-green-600 hover:bg-green-700' : 'bg-[#F28D35] hover:bg-[#e17c2a]'
+                } text-white shadow-md transition-all active:scale-[0.98]`}
               >
-                {isActionLoading ? "Processando..." : isParticipating ? "Inscrição Confirmada" : "Quero participar"}
+                {isActionLoading ? "Processando..." : isParticipating ? "Inscrição Confirmada" : "Pagar e participar"}
               </Button>
 
-              <div className="relative flex items-center py-2">
+              <div className="relative flex items-center py-8">
                 <div className="grow border-t border-gray-100"></div>
-                <span className="shrink-0 px-4 text-xs text-gray-400 bg-white">ou</span>
+                <span className="shrink-0 px-4 text-[13px] text-gray-400 bg-white">ou</span>
                 <div className="grow border-t border-gray-100"></div>
               </div>
 
-              <div>
-                <p className="text-xs text-gray-400 mb-2">Integrar com:</p>
+              <div className="mt-auto">
+                <p className="text-[13px] text-gray-400 mb-2">Integrar com:</p>
                 <Select defaultValue="mounter">
-                  <SelectTrigger className="w-full bg-white text-gray-900 font-medium h-12 rounded-lg border-gray-200">
+                  <SelectTrigger className="w-full bg-white text-gray-900 font-semibold h-14 rounded-xl border-gray-200 focus:ring-1 focus:ring-[#F28D35]">
                     <SelectValue placeholder="Selecione..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -186,37 +194,50 @@ export function EventDetailPage() {
             </div>
 
             {/* Card 3: Token */}
-            <div className="bg-white rounded-[2rem] shadow-xl p-8 md:p-10 flex flex-col justify-start h-full space-y-6 border-l border-dashed border-gray-100">
-              <div>
-                <h2 className="text-[22px] font-bold text-gray-900 mb-4">Seu token exclusivo</h2>
-                <div className="flex border border-gray-200 rounded-lg p-1 bg-white">
+            <div 
+              className="p-10 flex flex-col justify-start h-full border-gray-200"
+              style={{
+                backgroundImage: `linear-gradient(to bottom, #E5E7EB 60%, transparent 60%)`,
+                backgroundSize: '1px 15px',
+                backgroundRepeat: 'repeat-y',
+                backgroundPosition: 'left'
+              }}
+            >
+              <div className="mb-6">
+                <h2 className="text-[24px] font-bold text-gray-900 mb-6">Seu token exclusivo</h2>
+                <div className="flex items-center border border-gray-100 rounded-xl p-1 bg-white shadow-sm ring-1 ring-gray-50">
                   <Input
                     type="text"
-                    value={`meetoff.com/invite/${id}`}
+                    value={`checklove.com/invite/${id?.toString().substring(0, 4)}...`}
                     readOnly
-                    className="border-none focus-visible:ring-0 shadow-none bg-transparent flex-1 text-sm font-medium text-gray-900 truncate px-3"
+                    className="border-none focus-visible:ring-0 shadow-none bg-transparent flex-1 text-[13px] font-medium text-gray-900 truncate px-4"
                   />
                   <Button 
                     onClick={() => {
-                      navigator.clipboard.writeText(`meetoff.com/invite/${id}`);
+                      navigator.clipboard.writeText(`checklove.com/invite/${id}`);
                       toast.success("Link copiado!");
                     }}
-                    className="bg-[#F28D35] hover:bg-[#de7c2c] text-white rounded-md px-5 text-sm font-semibold h-[38px]"
+                    className="bg-[#F28D35] hover:bg-[#e17c2a] text-white rounded-lg px-3 text-[14px] font-bold transition-all"
+                    style={{padding: `15px`}}
                   >
                     Copiar
                   </Button>
                 </div>
               </div>
 
-              <div className="pt-2">
-                <p className="text-[15px] text-gray-900 mb-3">
+              <div className="relative flex items-center pt-2 mb-6">
+                 <div className="grow border-t border-gray-100"></div>
+              </div>
+
+              <div className="mt-auto">
+                <p className="text-[15px] font-medium text-gray-800 mb-4 text-center lg:text-left">
                   Convide amigos para vivenciarem com você!
                 </p>
                 <Button
                   variant="outline"
-                  className="w-full h-12 border-secondary text-secondary hover:text-secondary/80 bg-white hover:bg-gray-50 font-medium rounded-lg"
+                  className="w-full h-14 border-[#1A4B40] text-[#1A4B40] hover:text-[#1A4B40]/75 bg-white font-bold rounded-xl transition-all flex items-center justify-center gap-2"
                 >
-                  <Share className="w-[18px] h-[18px] mr-2 text-secondary" />
+                  <Share2 className="w-5 h-5" />
                   Compartilhar
                 </Button>
               </div>

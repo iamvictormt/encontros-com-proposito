@@ -8,8 +8,27 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Mail, Users, ShieldCheck, Share2, CheckCircle2, Share } from "lucide-react";
+import { toast } from "sonner";
 
 export function InvitePage() {
+  const handleCopyToken = () => {
+    navigator.clipboard.writeText("ABCD-1234-EFGH-5678");
+    toast.success("Token copiado!");
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText("meetoff.com/invite/123");
+    toast.success("Link copiado!");
+  };
+
+  const handleRedeem = () => {
+    toast.success("Recompensas resgatadas com sucesso!");
+  };
+
+  const handleGenerateLink = () => {
+    toast.success("Novo link gerado com sucesso!");
+  };
+
   return (
     <div className="min-h-screen flex flex-col font-sans">
       <SiteHeader />
@@ -34,10 +53,17 @@ export function InvitePage() {
               className="flex-1 font-mono text-center sm:text-left bg-gray-50"
             />
             <div className="flex gap-2">
-              <Button className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-white">
+              <Button 
+                onClick={handleCopyToken}
+                className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-white"
+              >
                 Copiar Token
               </Button>
-              <Button variant="outline" className="w-full sm:w-auto text-black">
+              <Button 
+                variant="outline" 
+                onClick={handleCopyLink}
+                className="w-full sm:w-auto text-black"
+              >
                 Copiar Link
               </Button>
             </div>
@@ -59,7 +85,10 @@ export function InvitePage() {
               <span className="text-gray-500 text-sm font-medium">Camiseta exclusiva</span>
             </div>
           </div>
-          <Button className="bg-secondary hover:bg-secondary/90 text-white rounded-lg">
+          <Button 
+            onClick={handleRedeem}
+            className="bg-secondary hover:bg-secondary/90 text-white rounded-lg"
+          >
             Resgatar Recompensas
           </Button>
         </div>
@@ -129,11 +158,23 @@ export function InvitePage() {
 
         {/* Bottom Actions */}
         <div className="flex flex-col sm:flex-row gap-4 mt-8 pb-8">
-          <Button className="flex-1 bg-accent hover:bg-accent/90 text-white py-6 text-lg rounded-xl">
+          <Button 
+            onClick={handleGenerateLink}
+            className="flex-1 bg-accent hover:bg-accent/90 text-white py-6 text-lg rounded-xl"
+          >
             Gerar Novo Link
           </Button>
           <Button
             variant="outline"
+            onClick={() => {
+              navigator.share?.({
+                title: "Convite MeetOff",
+                text: "Venha participar do MeetOff!",
+                url: window.location.href,
+              }).catch(() => {
+                handleCopyLink();
+              });
+            }}
             className="flex-1 py-6 text-lg rounded-xl border-secondary text-secondary hover:text-secondary"
           >
             <Share className="w-5 h-5 mr-2" />

@@ -238,7 +238,12 @@ export function ProductDetailPage() {
                 </div>
 
                 <div className="flex gap-3 mb-6">
-                  <Button className="flex-1 bg-accent hover:bg-accent/90 text-white rounded-lg">
+                  <Button 
+                    className="flex-1 bg-accent hover:bg-accent/90 text-white rounded-lg"
+                    onClick={() => {
+                      toast.info("A funcionalidade de compra será implementada em breve!");
+                    }}
+                  >
                     Comprar
                   </Button>
                   <Button

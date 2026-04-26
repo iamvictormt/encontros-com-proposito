@@ -4,8 +4,18 @@ import { SiteHeader } from "./site-header";
 import { SiteFooter } from "./site-footer";
 import { Button } from "@/components/ui/button";
 import { Download, Printer, QrCode, QrCodeIcon, Rss } from "lucide-react";
+import { toast } from "sonner";
 
 export function MemberCardPage() {
+  const handleDownload = () => {
+    toast.success("Iniciando download da versão digital...");
+  };
+
+  const handlePrint = () => {
+    toast.success("Preparando cartão para impressão...");
+    window.print();
+  };
+
   return (
     <div className="min-h-screen bg-[#F0F2F5] flex flex-col font-sans">
       <SiteHeader />
@@ -124,6 +134,7 @@ export function MemberCardPage() {
             <div className="flex flex-col gap-3">
               <Button
                 variant="outline"
+                onClick={handleDownload}
                 className="w-full justify-center text-gray-800 bg-white border-gray-200 hover:bg-gray-50 h-[52px] rounded-xl font-semibold shadow-sm transition-all hover:shadow-md"
               >
                 <Download className="mr-3 h-5 w-5 text-gray-800" />
@@ -131,6 +142,7 @@ export function MemberCardPage() {
               </Button>
               <Button
                 variant="outline"
+                onClick={handlePrint}
                 className="w-full justify-center text-gray-800 bg-white border-gray-200 hover:bg-gray-50 h-[52px] rounded-xl font-semibold shadow-sm transition-all hover:shadow-md"
               >
                 <Printer className="mr-3 h-5 w-5 text-gray-800" />

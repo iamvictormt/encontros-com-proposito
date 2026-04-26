@@ -14,8 +14,38 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
+import { useState } from "react";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 export function ScheduleSessionPage() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    token: "",
+    email: "",
+    phone: "",
+    date: "",
+    time: "",
+    type: "presencial",
+    reason: "",
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      toast.success("Sessão agendada com sucesso! Entraremos em contato.");
+      // Reset form or redirect
+    } catch (error) {
+      toast.error("Erro ao agendar sessão. Tente novamente.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-[#F3F4F6]">
       <SiteHeader />
@@ -29,7 +59,7 @@ export function ScheduleSessionPage() {
             </p>
           </div>
 
-          <form className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="token" className="text-sm font-medium">
                 Seu Token
@@ -38,6 +68,9 @@ export function ScheduleSessionPage() {
                 id="token"
                 placeholder="ABCD-1234-EFGH-5678"
                 className="bg-white border-gray-200"
+                value={formData.token}
+                onChange={(e) => setFormData({ ...formData, token: e.target.value })}
+                required
               />
             </div>
 
@@ -51,6 +84,9 @@ export function ScheduleSessionPage() {
                   type="email"
                   placeholder="Informe seu Email"
                   className="bg-white border-gray-200"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  required
                 />
               </div>
               <div className="space-y-2">
@@ -62,6 +98,9 @@ export function ScheduleSessionPage() {
                   type="tel"
                   placeholder="Informe Telefone / WhatsApp"
                   className="bg-white border-gray-200"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  required
                 />
               </div>
             </div>
@@ -72,16 +111,26 @@ export function ScheduleSessionPage() {
                   Data da sessão
                 </Label>
                 <div className="relative">
-                  <Input id="date" type="date" className="bg-white border-gray-200 w-full" />
+                  <Input 
+                    id="date" 
+                    type="date" 
+                    className="bg-white border-gray-200 w-full" 
+                    value={formData.date}
+                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                    required
+                  />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="time" className="text-sm font-medium">
                   Horário Preferencial
                 </Label>
-                <Select>
+                <Select 
+                  value={formData.time} 
+                  onValueChange={(value) => setFormData({ ...formData, time: value })}
+                >
                   <SelectTrigger className="bg-white border-gray-200 w-full text-left">
-                    <SelectValue placeholder="00:00 PM" />
+                    <SelectValue placeholder="Escolha um horário" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="08:00 AM">08:00 AM</SelectItem>
@@ -98,7 +147,10 @@ export function ScheduleSessionPage() {
               <Label htmlFor="type" className="text-sm font-medium">
                 Forma de Atendimento
               </Label>
-              <Select defaultValue="presencial">
+              <Select 
+                value={formData.type} 
+                onValueChange={(value) => setFormData({ ...formData, type: value })}
+              >
                 <SelectTrigger className="bg-white border-gray-200 w-full text-left">
                   <SelectValue placeholder="Presencial" />
                 </SelectTrigger>
@@ -117,15 +169,26 @@ export function ScheduleSessionPage() {
                 id="reason"
                 placeholder="Descreva brevemente o motivo da consulta"
                 className="min-h-[120px] bg-white border-gray-200 resize-y"
+                value={formData.reason}
+                onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
+                required
               />
             </div>
 
             <div className="flex items-center justify-center gap-4 pt-4">
               <Button
-                type="button"
+                type="submit"
+                disabled={isLoading}
                 className="bg-accent hover:bg-accent/90 text-white rounded-md px-10 py-6 button-base w-1/2 md:w-auto"
               >
-                Agendar Sessão
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Agendando...
+                  </>
+                ) : (
+                  "Agendar Sessão"
+                )}
               </Button>
               <Button
                 type="button"
