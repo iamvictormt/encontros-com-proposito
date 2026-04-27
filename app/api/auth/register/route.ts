@@ -15,9 +15,12 @@ export async function POST(request: Request) {
     }
 
     // Check if email or cpf already exists
-    const existingUser = await sql`
-      SELECT id FROM users WHERE email = ${email} OR cpf = ${cpf}
-    `;
+    let existingUser = [];
+    if (email) {
+      existingUser = await sql`SELECT id FROM users WHERE email = ${email}`;
+    } else if (cpf) {
+      existingUser = await sql`SELECT id FROM users WHERE cpf = ${cpf}`;
+    }
 
     if (existingUser.length > 0) {
       return NextResponse.json({ message: "E-mail ou CPF já cadastrado" }, { status: 409 });
