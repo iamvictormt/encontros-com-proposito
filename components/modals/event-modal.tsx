@@ -193,7 +193,7 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6 py-4">
-          <div className="space-y-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
               <Label className="text-base font-bold">Fotos do Evento (Até 4)</Label>
               <span className="text-xs text-muted-foreground italic">
@@ -223,7 +223,7 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
             </div>
           </div>
 
-          <div className="space-y-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Video className="w-4 h-4 text-primary" />

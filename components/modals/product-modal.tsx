@@ -171,7 +171,7 @@ export function ProductModal({ isOpen, onClose, onSuccess, product, isReadOnly }
 
         <form onSubmit={handleSubmit} className="space-y-8 py-4">
           {/* Section: Images */}
-          <div className="space-y-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
               <Label className="text-base font-bold">Fotos do Produto (Até 4)</Label>
               <span className="text-xs text-muted-foreground italic">A primeira será a principal</span>

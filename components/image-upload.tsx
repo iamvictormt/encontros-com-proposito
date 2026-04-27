@@ -64,19 +64,19 @@ export function ImageUpload({ value, onChange, onRemove, disabled }: ImageUpload
   }
 
   return (
-    <div className="relative border-2 border-dashed border-gray-200 rounded-lg p-8 flex flex-col items-center justify-center gap-4 bg-gray-50/50">
-      <div className="p-4 bg-white rounded-full shadow-sm">
+    <div className="relative w-full aspect-video border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center bg-gray-50/50">
+      <div className="p-3 bg-white rounded-full shadow-sm mb-2">
         {isUploading ? (
-          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          <Loader2 className="w-6 h-6 text-primary animate-spin" />
         ) : (
-          <Upload className="w-8 h-8 text-primary" />
+          <Upload className="w-6 h-6 text-primary" />
         )}
       </div>
-      <div className="text-center">
-        <p className="text-sm font-medium text-black">
+      <div className="text-center px-4">
+        <p className="text-[13px] font-medium text-black">
           {isUploading ? "Enviando..." : "Clique para enviar imagem"}
         </p>
-        <p className="text-xs text-muted-foreground mt-1">PNG, JPG ou WEBP (Max. 5MB)</p>
+        <p className="text-[10px] text-muted-foreground mt-0.5">PNG, JPG ou WEBP (Max. 5MB)</p>
       </div>
       <input
         type="file"
