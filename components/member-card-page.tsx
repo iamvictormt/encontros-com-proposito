@@ -2,6 +2,7 @@
 
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { useState, useEffect } from "react";
 
 interface MemberCardProps {
   cardType?: "GREEN" | "PINK";
@@ -18,9 +19,14 @@ export function MemberCardPage({
   qrCodeToken,
   cvv = "000"
 }: MemberCardProps) {
-  const shareUrl = typeof window !== 'undefined' 
-    ? `${window.location.origin}/profile/${qrCodeToken || 'MeetOff'}`
-    : `https://meetoff.com.br/profile/${qrCodeToken || 'MeetOff'}`;
+  const [shareUrl, setShareUrl] = useState(`https://meetoff.com.br/profile/${qrCodeToken || 'MeetOff'}`);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setShareUrl(`${window.location.origin}/profile/${qrCodeToken || 'MeetOff'}`);
+    }
+  }, [qrCodeToken]);
+
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(shareUrl)}&color=ffffff&bgcolor=000000&qzone=1`;
 
   const isPink = cardType === "PINK";
