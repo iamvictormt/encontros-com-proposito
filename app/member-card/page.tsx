@@ -40,13 +40,19 @@ export default async function MemberCard() {
   }
 
   const card = cards[0];
+  let qrCodeToken = card.qr_code_token;
+
+  if (!qrCodeToken) {
+    qrCodeToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    await sql`UPDATE cards SET qr_code_token = ${qrCodeToken} WHERE id = ${card.id}`;
+  }
 
   return (
     <MemberCardPage 
       cardType={card.type as "GREEN" | "PINK"}
       name={card.name}
       birthDate={card.birth_date ? new Date(card.birth_date).toLocaleDateString('pt-BR') : undefined}
-      qrCodeToken={card.qr_code_token}
+      qrCodeToken={qrCodeToken}
       cvv={card.cvv}
     />
   );

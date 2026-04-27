@@ -3,8 +3,8 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CheckCircle2, MapPin, Calendar, Award, Users } from "lucide-react";
 
-export default async function PublicProfilePage({ params }: { params: { token: string } }) {
-  const { token } = params;
+export default async function PublicProfilePage({ params }: { params: Promise<{ token: string }> }) {
+  const { token } = await params;
   const sql = neon(process.env.DATABASE_URL!);
 
   // Fetch the card and its owner details
@@ -46,16 +46,16 @@ export default async function PublicProfilePage({ params }: { params: { token: s
   const isPink = card.type === "PINK";
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] flex flex-col font-sans">
+    <div className="min-h-screen flex flex-col font-sans">
       <SiteHeader />
 
       <main className="flex-1 max-w-4xl mx-auto w-full p-4 py-8 sm:px-6 lg:px-8">
         {/* Profile Card Header */}
         <div className="bg-white rounded-[32px] shadow-xl border border-gray-100 overflow-hidden mb-8 transition-all duration-500">
-          <div className={`h-40 ${isPink ? 'bg-gradient-to-r from-[#8A0204] to-[#c9184a]' : 'bg-gradient-to-r from-[#1B4B42] to-[#2D6A4F]'} relative`}>
+          <div className={`h-60 ${isPink ? 'bg-gradient-to-r from-[#8A0204] to-[#c9184a]' : 'bg-gradient-to-r from-[#1B4B42] to-[#2D6A4F]'} relative`}>
             {/* Pattern Overlay */}
-            <div className="absolute inset-0 opacity-10 flex items-center justify-center">
-              <span className="text-[8rem] font-black tracking-tighter text-white select-none">MeetOff</span>
+            <div className="absolute inset-0 flex items-center justify-center p-8">
+              <img src="/meet-off-nome.svg" alt="MeetOff" className="h-32 object-contain invert brightness-0" />
             </div>
           </div>
 
@@ -108,7 +108,10 @@ export default async function PublicProfilePage({ params }: { params: { token: s
             </span>
             <span className="text-lg font-bold text-gray-900 mt-3 block">
               {card.user_joined 
-                ? new Date(card.user_joined).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })
+                ? (() => {
+                    const str = new Date(card.user_joined).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
+                    return str.charAt(0).toUpperCase() + str.slice(1);
+                  })()
                 : "Recentemente"}
             </span>
           </div>

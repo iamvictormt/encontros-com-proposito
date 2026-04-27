@@ -20,6 +20,8 @@ export async function activateCard(cardId: string, userId: string, name: string,
   const sql = neon(process.env.DATABASE_URL!);
   const cvv = generateCVV();
 
+  const qrToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
   await sql`
     UPDATE cards 
     SET 
@@ -28,6 +30,7 @@ export async function activateCard(cardId: string, userId: string, name: string,
       name = ${name}, 
       birth_date = ${birthDate},
       cvv = ${cvv},
+      qr_code_token = ${qrToken},
       updated_at = CURRENT_TIMESTAMP
     WHERE id = ${cardId}
   `;
