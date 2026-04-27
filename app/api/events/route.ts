@@ -34,20 +34,20 @@ export async function POST(request: Request) {
     const { 
       title, image, date, time, location, price, status, tags, 
       description, capacity, mandatory_products, groups,
-      target_audience, conductor, has_certificate 
+      target_audience, conductor, has_certificate, video_url, age_range
     } = body;
     
     const result = await sql`
       INSERT INTO events (
         title, image, date, time, location, price, status, tags, 
         description, capacity, mandatory_products, groups,
-        target_audience, conductor, has_certificate
+        target_audience, conductor, has_certificate, video_url, age_range
       )
       VALUES (
         ${title}, ${image}, ${date}, ${time}, ${location}, ${price}, ${status}, ${tags}, 
         ${description}, ${capacity}, ${JSON.stringify(mandatory_products || [])}, 
         ${JSON.stringify(groups || [])},
-        ${target_audience}, ${conductor}, ${has_certificate}
+        ${target_audience}, ${conductor}, ${has_certificate}, ${video_url}, ${age_range}
       )
       RETURNING *
     `;
@@ -72,7 +72,7 @@ export async function PUT(request: Request) {
     const { 
       id, title, image, date, time, location, price, status, tags, 
       description, capacity, mandatory_products, groups,
-      target_audience, conductor, has_certificate 
+      target_audience, conductor, has_certificate, video_url, age_range
     } = body;
     
     const result = await sql`
@@ -91,7 +91,9 @@ export async function PUT(request: Request) {
           groups = ${JSON.stringify(groups || [])},
           target_audience = ${target_audience},
           conductor = ${conductor},
-          has_certificate = ${has_certificate}
+          has_certificate = ${has_certificate},
+          video_url = ${video_url},
+          age_range = ${age_range}
       WHERE id = ${id}
       RETURNING *
     `;

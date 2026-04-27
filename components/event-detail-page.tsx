@@ -279,11 +279,12 @@ export function EventDetailPage() {
             <div className="space-y-4">
               <h2 className="text-[22px] font-bold text-gray-900">Apresentação</h2>
               <div className="relative rounded-2xl overflow-hidden aspect-video bg-gray-200 group cursor-pointer shadow-sm">
-                <Image
-                  src={event.image}
-                  alt={event.title}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                <video
+                  src={event.video_url}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  controls
+                  playsInline
+                  preload="metadata"
                 />
               </div>
             </div>

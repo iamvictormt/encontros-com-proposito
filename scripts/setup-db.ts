@@ -75,6 +75,8 @@ async function setupDatabase() {
     await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS has_certificate BOOLEAN DEFAULT true`;
     await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS mandatory_products JSONB DEFAULT '[]'`;
     await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS groups JSONB DEFAULT '[]'`;
+    await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS video_url TEXT`;
+    await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS age_range TEXT`;
 
     // Brands table
     await sql`

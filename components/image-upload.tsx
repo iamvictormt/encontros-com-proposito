@@ -26,9 +26,12 @@ export function ImageUpload({ value, onChange, onRemove, disabled }: ImageUpload
     formData.append("file", file);
 
     try {
-      const res = await fetch("/api/upload", {
+      const res = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
         method: "POST",
-        body: formData,
+        body: file,
+        headers: {
+          "Content-Type": file.type,
+        },
       });
 
       if (!res.ok) throw new Error("Upload failed");

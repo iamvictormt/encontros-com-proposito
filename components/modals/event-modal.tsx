@@ -25,7 +25,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Trash2, Users, ChevronDown, ShoppingBag, Settings2 } from "lucide-react";
+import { Plus, Trash2, Users, ChevronDown, ShoppingBag, Settings2, Video } from "lucide-react";
+import { VideoUpload } from "@/components/video-upload";
 import { useEffect } from "react";
 
 interface EventModalProps {
@@ -43,7 +44,7 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
     image: event?.image || "",
     images: event?.images ? JSON.parse(event.images) : [event?.image || ""],
     status: event?.status || "Ativo",
-    tags: event?.tags?.join(", ") || "",
+    tags: Array.isArray(event?.tags) ? event.tags : [],
     date: event?.date ? new Date(event.date).toISOString().split("T")[0] : "",
     time: event?.time || "",
     cep: event?.cep || "",
@@ -65,7 +66,10 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
     target_audience: event?.target_audience || "Todos os públicos",
     conductor: event?.conductor || "",
     has_certificate: event ? event.has_certificate : true,
+    video_url: event?.video_url || "",
+    age_range: event?.age_range || "Todas as idades",
   });
+  const [tagInput, setTagInput] = useState("");
 
   const [availableProducts, setAvailableProducts] = useState<any[]>([]);
 
@@ -154,10 +158,7 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
         id: event?.id,
         image: finalImages[0] || "",
         images: JSON.stringify(finalImages),
-        tags: formData.tags
-          .split(",")
-          .map((t: string) => t.trim())
-          .filter(Boolean),
+        tags: formData.tags,
         price: parseFloat(formData.price.toString()),
         capacity: parseInt(formData.capacity.toString()),
         mandatory_products: JSON.stringify(formData.mandatory_products),
@@ -222,59 +223,37 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-            {/* Row 1: Headers */}
-            <h3 className="text-sm font-bold uppercase tracking-wider text-primary/70 pb-2">
-              Informações Básicas
-            </h3>
-            <h3 className="text-sm font-bold uppercase tracking-wider text-primary/70 pb-2 hidden md:block">
-              Localização & Detalhes
-            </h3>
-
-            {/* Row 2: Title (Full width in Col 1) vs CEP/Location (Half in Col 2) */}
-            <div className="space-y-2">
-              <Label htmlFor="title">Título do Evento</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder="Ex: Ritual do Amor Interior"
-                required
-                autoFocus
-                disabled={isReadOnly}
-              />
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-primary/70 border-b pb-2 md:hidden">
-                Localização & Detalhes
-              </h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="cep">CEP</Label>
-                  <Input
-                    id="cep"
-                    placeholder="00000-000"
-                    value={formData.cep}
-                    onChange={onCepChange}
-                    disabled={isReadOnly}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="location">Cidade/UF</Label>
-                  <Input
-                    id="location"
-                    placeholder="Ex: São Paulo/SP"
-                    value={formData.location}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    disabled={isReadOnly}
-                  />
-                </div>
+          <div className="space-y-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Video className="w-4 h-4 text-primary" />
+                <Label className="text-base font-bold">Vídeo de Apresentação (Até 90s)</Label>
               </div>
             </div>
+            <VideoUpload
+              value={formData.video_url}
+              onChange={(url) => setFormData({ ...formData, video_url: url })}
+              onRemove={() => setFormData({ ...formData, video_url: "" })}
+              disabled={isReadOnly}
+            />
+          </div>
 
-            {/* Row 3: Status/Price vs Address/Capacity */}
-            <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-6">
+            {/* Top Row: Title and Status */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="md:col-span-3 space-y-2">
+                <Label htmlFor="title">Título do Evento</Label>
+                <Input
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  placeholder="Ex: Ritual do Amor Interior"
+                  className="text-lg font-medium"
+                  required
+                  autoFocus
+                  disabled={isReadOnly}
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="status">Status</Label>
                 <Select
@@ -294,128 +273,232 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="price">Preço (R$)</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  step="0.01"
-                  value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                  className="text-lg font-bold text-primary"
-                  disabled={isReadOnly}
-                />
-              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="address">Endereço Completo</Label>
-                <Input
-                  id="address"
-                  placeholder="Rua, Número, Bairro"
-                  value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  disabled={isReadOnly}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="capacity">Vagas Totais</Label>
-                <Input
-                  id="capacity"
-                  type="number"
-                  value={formData.capacity}
-                  onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
-                  disabled={isReadOnly}
-                />
-              </div>
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
+              {/* Left Column: Logística e Investimento */}
+              <div className="space-y-6">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-primary/70 pb-2 border-b flex items-center gap-2">
+                  <Settings2 className="w-4 h-4" />
+                  Logística & Investimento
+                </h3>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="date">Data</Label>
+                    <Input
+                      id="date"
+                      type="date"
+                      value={formData.date}
+                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                      required
+                      disabled={isReadOnly}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="time">Horário</Label>
+                    <Input
+                      id="time"
+                      placeholder="00:00"
+                      value={formData.time}
+                      onChange={onTimeChange}
+                      disabled={isReadOnly}
+                    />
+                  </div>
+                </div>
 
-            {/* Row 4: Date/Time vs Tags */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="date">Data</Label>
-                <Input
-                  id="date"
-                  type="date"
-                  value={formData.date}
-                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                  required
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="price">Preço (R$)</Label>
+                    <Input
+                      id="price"
+                      type="number"
+                      step="0.01"
+                      value={formData.price}
+                      onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                      className="text-lg font-bold text-secondary"
+                      disabled={isReadOnly}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="capacity">Vagas Totais</Label>
+                    <Input
+                      id="capacity"
+                      type="number"
+                      value={formData.capacity}
+                      onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
+                      disabled={isReadOnly}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2 pt-2">
+                  <Label>Tags</Label>
+                  <div className="flex flex-wrap gap-2 p-2 bg-white border rounded-md min-h-[42px] focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                    {formData.tags.map((tag: string, index: number) => (
+                      <Badge 
+                        key={index} 
+                        variant="secondary"
+                        className="flex items-center gap-1 py-1 px-2 text-xs font-medium"
+                      >
+                        {tag}
+                        {!isReadOnly && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newTags = formData.tags.filter((_, i) => i !== index);
+                              setFormData({ ...formData, tags: newTags });
+                            }}
+                            className="hover:text-red-500 transition-colors"
+                          >
+                            <Plus className="w-3 h-3 rotate-45" />
+                          </button>
+                        )}
+                      </Badge>
+                    ))}
+                    {!isReadOnly && (
+                      <input
+                        className="flex-1 bg-transparent outline-none text-sm min-w-[120px]"
+                        placeholder={formData.tags.length === 0 ? "Ex: Casais, Noite..." : ""}
+                        value={tagInput}
+                        onChange={(e) => setTagInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === " " || e.key === "Enter" || e.key === ",") {
+                            e.preventDefault();
+                            const newTag = tagInput.trim().replace(",", "");
+                            if (newTag && !formData.tags.includes(newTag)) {
+                              setFormData({ ...formData, tags: [...formData.tags, newTag] });
+                              setTagInput("");
+                            }
+                          } else if (e.key === "Backspace" && !tagInput && formData.tags.length > 0) {
+                            const newTags = [...formData.tags];
+                            newTags.pop();
+                            setFormData({ ...formData, tags: newTags });
+                          }
+                        }}
+                      />
+                    )}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground">Pressione Espaço, vírgula (,) ou Enter para adicionar tags</p>
+                </div>
+              </div>
+
+              {/* Right Column: Localização e Público */}
+              <div className="space-y-6">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-primary/70 pb-2 border-b flex items-center gap-2">
+                  <Users className="w-4 h-4" />
+                  Público & Localização
+                </h3>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="target_audience">Aberto para</Label>
+                    <Select
+                      value={formData.target_audience}
+                      onValueChange={(value) => setFormData({ ...formData, target_audience: value })}
+                      disabled={isReadOnly}
+                    >
+                      <SelectTrigger id="target_audience">
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Todos os públicos">Todos os públicos</SelectItem>
+                        <SelectItem value="Apenas casais">Apenas casais</SelectItem>
+                        <SelectItem value="Solteiros">Solteiros</SelectItem>
+                        <SelectItem value="Apenas homens">Apenas homens</SelectItem>
+                        <SelectItem value="Apenas mulheres">Apenas mulheres</SelectItem>
+                        <SelectItem value="LGBTQIA+">LGBTQIA+</SelectItem>
+                        <SelectItem value="Famílias">Famílias</SelectItem>
+                        <SelectItem value="Melhor Idade">Melhor Idade</SelectItem>
+                        <SelectItem value="Jovens">Jovens</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="age_range">Faixa Etária</Label>
+                    <Select
+                      value={formData.age_range}
+                      onValueChange={(value) => setFormData({ ...formData, age_range: value })}
+                      disabled={isReadOnly}
+                    >
+                      <SelectTrigger id="age_range">
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Todas as idades">Todas as idades</SelectItem>
+                        <SelectItem value="18-25 anos">18-25 anos</SelectItem>
+                        <SelectItem value="26-35 anos">26-35 anos</SelectItem>
+                        <SelectItem value="36-45 anos">36-45 anos</SelectItem>
+                        <SelectItem value="46-55 anos">46-55 anos</SelectItem>
+                        <SelectItem value="55+ anos">55+ anos</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="cep">CEP</Label>
+                    <Input
+                      id="cep"
+                      placeholder="00000-000"
+                      value={formData.cep}
+                      onChange={onCepChange}
+                      disabled={isReadOnly}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="location">Cidade/UF</Label>
+                    <Input
+                      id="location"
+                      placeholder="Ex: São Paulo/SP"
+                      value={formData.location}
+                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      disabled={isReadOnly}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="address">Endereço Completo</Label>
+                  <Input
+                    id="address"
+                    placeholder="Rua, Número, Bairro..."
+                    value={formData.address}
+                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    disabled={isReadOnly}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="conductor">Condutor(a)</Label>
+                  <Input
+                    id="conductor"
+                    placeholder="Quem conduzirá o evento?"
+                    value={formData.conductor}
+                    onChange={(e) => setFormData({ ...formData, conductor: e.target.value })}
+                    disabled={isReadOnly}
+                  />
+                </div>
+              </div>
+
+              {/* Description spans full width */}
+              <div className="md:col-span-2 space-y-2 pt-4">
+                <Label htmlFor="description">Descrição Detalhada</Label>
+                <textarea
+                  id="description"
+                  className="w-full min-h-[150px] px-3 py-2 bg-white border rounded-md text-sm border-input focus:ring-2 focus:ring-primary/20 outline-none resize-none"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  placeholder="Conte mais sobre o evento, cronograma, o que levar..."
                   disabled={isReadOnly}
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="time">Horário</Label>
-                <Input
-                  id="time"
-                  placeholder="00:00"
-                  value={formData.time}
-                  onChange={onTimeChange}
-                  disabled={isReadOnly}
-                />
-              </div>
-            </div>
-
-            {/* Row 4: Target Audience and Conductor */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="target_audience">Aberto para</Label>
-                <Select
-                  value={formData.target_audience}
-                  onValueChange={(value) => setFormData({ ...formData, target_audience: value })}
-                  disabled={isReadOnly}
-                >
-                  <SelectTrigger id="target_audience">
-                    <SelectValue placeholder="Selecione o público" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Todos os públicos">Todos os públicos</SelectItem>
-                    <SelectItem value="Apenas casais">Apenas casais</SelectItem>
-                    <SelectItem value="Apenas homens">Apenas homens</SelectItem>
-                    <SelectItem value="Apenas mulheres">Apenas mulheres</SelectItem>
-                    <SelectItem value="18+">18+</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="conductor">Condutor</Label>
-                <Input
-                  id="conductor"
-                  placeholder="Nome do condutor"
-                  value={formData.conductor}
-                  onChange={(e) => setFormData({ ...formData, conductor: e.target.value })}
-                  disabled={isReadOnly}
-                />
-              </div>
-            </div>
-
-            {/* Row 5: Tags only */}
-            <div className="space-y-2">
-              <Label htmlFor="tags">Tags (separadas por vírgula)</Label>
-              <Input
-                id="tags"
-                placeholder="Ex: Casais, Sem Crianças"
-                value={formData.tags}
-                onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                disabled={isReadOnly}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">Descrição Completa</Label>
-              <textarea
-                id="description"
-                className="w-full min-h-[120px] px-3 py-2 bg-white border rounded-md text-sm border-input focus:ring-2 focus:ring-primary/20 outline-none resize-none"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Descreva o evento em detalhes..."
-                disabled={isReadOnly}
-              />
             </div>
           </div>
 
           {/* Unified Attachments Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t pt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
             {/* Products Attachment using Collapsible */}
             <div className="space-y-3">
               <Collapsible className="border rounded-lg bg-gray-50/50 overflow-hidden">

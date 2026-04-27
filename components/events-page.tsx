@@ -36,6 +36,9 @@ export function EventsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState<"newest" | "oldest">("newest");
+  const [ageFilter, setAgeFilter] = useState<string>("all");
+  const [priceFilter, setPriceFilter] = useState<string>("all"); // all, free, paid
+  const [audienceFilter, setAudienceFilter] = useState<string>("all");
   const itemsPerPage = 6;
 
   useEffect(() => {
@@ -81,9 +84,17 @@ export function EventsPage() {
 
   const filteredEvents = events
     .filter(
-      (e) =>
-        e.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        e.location.toLowerCase().includes(searchTerm.toLowerCase()),
+      (e) => {
+        const matchesSearch = e.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          e.location.toLowerCase().includes(searchTerm.toLowerCase());
+        
+        const matchesAge = ageFilter === "all" || e.age_range === ageFilter;
+        const matchesPrice = priceFilter === "all" || 
+          (priceFilter === "free" ? parseFloat(e.price) === 0 : parseFloat(e.price) > 0);
+        const matchesAudience = audienceFilter === "all" || e.target_audience === audienceFilter;
+
+        return matchesSearch && matchesAge && matchesPrice && matchesAudience;
+      }
     )
     .sort((a, b) => {
       const dateA = new Date(a.date).getTime();
@@ -98,10 +109,10 @@ export function EventsPage() {
     currentPage * itemsPerPage,
   );
 
-  // Reset to page 1 when search or sort changes
+  // Reset to page 1 when search or filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, sortBy]);
+  }, [searchTerm, sortBy, ageFilter, priceFilter, audienceFilter]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -240,6 +251,67 @@ export function EventsPage() {
                   >
                     Mais Antigos
                   </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Age Filter */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="bg-transparent text-black min-w-[140px] justify-between">
+                    <div className="flex items-center">
+                      <Filter className="mr-2 h-4 w-4 text-primary" />
+                      {ageFilter === "all" ? "Idade: Todas" : ageFilter}
+                    </div>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-[180px] bg-white border-gray-100">
+                  <DropdownMenuItem onClick={() => setAgeFilter("all")}>Todas as idades</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setAgeFilter("18-25 anos")}>18-25 anos</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setAgeFilter("26-35 anos")}>26-35 anos</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setAgeFilter("36-45 anos")}>36-45 anos</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setAgeFilter("46-55 anos")}>46-55 anos</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setAgeFilter("55+ anos")}>55+ anos</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Price Filter */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="bg-transparent text-black min-w-[130px] justify-between">
+                    <div className="flex items-center">
+                      <Filter className="mr-2 h-4 w-4 text-primary" />
+                      {priceFilter === "all" ? "Preço: Todos" : priceFilter === "free" ? "Gratuito" : "Pago"}
+                    </div>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-[140px] bg-white border-gray-100">
+                  <DropdownMenuItem onClick={() => setPriceFilter("all")}>Todos</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setPriceFilter("free")}>Gratuito</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setPriceFilter("paid")}>Pago</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Audience Filter */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="bg-transparent text-black min-w-[150px] justify-between">
+                    <div className="flex items-center">
+                      <Filter className="mr-2 h-4 w-4 text-primary" />
+                      {audienceFilter === "all" ? "Público: Todos" : audienceFilter}
+                    </div>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-[180px] bg-white border-gray-100">
+                  <DropdownMenuItem onClick={() => setAudienceFilter("all")}>Todos os públicos</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setAudienceFilter("Apenas casais")}>Apenas casais</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setAudienceFilter("Solteiros")}>Solteiros</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setAudienceFilter("Apenas homens")}>Apenas homens</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setAudienceFilter("Apenas mulheres")}>Apenas mulheres</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setAudienceFilter("LGBTQIA+")}>LGBTQIA+</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setAudienceFilter("Famílias")}>Famílias</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setAudienceFilter("Melhor Idade")}>Melhor Idade</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setAudienceFilter("Jovens")}>Jovens</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setAudienceFilter("18+")}>18+</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
