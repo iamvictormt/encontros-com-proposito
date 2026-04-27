@@ -14,12 +14,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "CPF inválido" }, { status: 400 });
     }
 
+    // Ensure DB allows NULL for CPF
+    await sql`ALTER TABLE users ALTER COLUMN cpf DROP NOT NULL`;
+
+    const userEmail = email && email.trim() !== "" ? email.trim() : null;
+    const userCpf = cpf && cpf.trim() !== "" ? cpf.trim() : null;
+
     // Check if email or cpf already exists
     let existingUser = [];
-    if (email) {
-      existingUser = await sql`SELECT id FROM users WHERE email = ${email}`;
-    } else if (cpf) {
-      existingUser = await sql`SELECT id FROM users WHERE cpf = ${cpf}`;
+    if (userEmail && userCpf) {
+      existingUser = await sql`SELECT id FROM users WHERE email = ${userEmail} OR cpf = ${userCpf}`;
+    } else if (userEmail) {
+      existingUser = await sql`SELECT id FROM users WHERE email = ${userEmail}`;
+    } else if (userCpf) {
+      existingUser = await sql`SELECT id FROM users WHERE cpf = ${userCpf}`;
     }
 
     if (existingUser.length > 0) {
@@ -30,7 +38,7 @@ export async function POST(request: Request) {
 
     const newUser = await sql`
       INSERT INTO users (full_name, email, cpf, password_hash)
-      VALUES (${fullName}, ${email}, ${cpf}, ${hashedPassword})
+      VALUES (${fullName}, ${userEmail}, ${userCpf}, ${hashedPassword})
       RETURNING id, full_name, email, cpf, is_admin
     `;
 
