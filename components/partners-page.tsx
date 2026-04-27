@@ -31,10 +31,13 @@ export function PartnersPage() {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [formData, setFormData] = useState({
     name: "",
+    responsible_name: "",
+    contact_phone: "",
     businessType: "",
     category: "",
     cep: "",
     location: "",
+    address: "",
     image: "",
     selectedProduct: "",
   });
@@ -51,7 +54,8 @@ export function PartnersPage() {
         if (!data.erro) {
           setFormData(prev => ({
             ...prev,
-            location: `${data.localidade}/${data.uf}`
+            location: `${data.localidade}/${data.uf}`,
+            address: data.logradouro || ""
           }));
         } else {
           toast.error("CEP não encontrado");
@@ -81,13 +85,29 @@ export function PartnersPage() {
     }
   };
 
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, "");
+    if (value.length > 11) value = value.slice(0, 11);
+    
+    // Apply mask (00) 00000-0000
+    let maskedValue = value;
+    if (value.length > 7) {
+      maskedValue = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7)}`;
+    } else if (value.length > 2) {
+      maskedValue = `(${value.slice(0, 2)}) ${value.slice(2)}`;
+    } else if (value.length > 0) {
+      maskedValue = `(${value}`;
+    }
+    setFormData({ ...formData, contact_phone: maskedValue });
+  };
+
   useEffect(() => {
     const fetchPartners = async () => {
       try {
         const res = await fetch("/api/venues");
         const data = await res.json();
         const approved = data
-          .filter((v: any) => v.status === "Aprovado")
+          .filter((v: any) => v.status === "Aprovado" || v.status === "Ativo")
           .slice(0, 3);
           
         if (approved.length > 0) {
@@ -124,7 +144,7 @@ export function PartnersPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.location || !formData.businessType) {
+    if (!formData.name || !formData.location || !formData.businessType || !formData.responsible_name || !formData.contact_phone) {
       toast.error("Por favor, preencha todos os campos obrigatórios");
       return;
     }
@@ -136,22 +156,29 @@ export function PartnersPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: formData.name,
+          responsible_name: formData.responsible_name,
+          contact_phone: formData.contact_phone,
           location: formData.location,
+          address: formData.address,
+          category: formData.category,
           type: `${formData.businessType}${formData.category ? ` - ${formData.category}` : ""}`,
-          description: tags.join(", "), // Storing tags in description if we add it, or we'll use a fallback
+          description: tags.join(", "),
           image: formData.image,
           status: "Pendente"
         })
       });
 
       if (res.ok) {
-        toast.success("Cadastro enviado com sucesso! Aguarde a aprovação do administrador.");
+        toast.success("Cadastro enviado com sucesso! Aguarde a aprovação e o envio da sua placa oficial.");
         setFormData({
           name: "",
+          responsible_name: "",
+          contact_phone: "",
           businessType: "",
           category: "",
           cep: "",
           location: "",
+          address: "",
           image: "",
           selectedProduct: "",
         });
@@ -191,6 +218,33 @@ export function PartnersPage() {
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
                 />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nome do Responsável
+                  </label>
+                  <Input 
+                    placeholder="Nome completo do responsável" 
+                    className="bg-white" 
+                    value={formData.responsible_name}
+                    onChange={(e) => setFormData({ ...formData, responsible_name: e.target.value })}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Contato (WhatsApp)
+                  </label>
+                  <Input 
+                    placeholder="(00) 00000-0000" 
+                    className="bg-white" 
+                    value={formData.contact_phone}
+                    onChange={handlePhoneChange}
+                    required
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -252,6 +306,17 @@ export function PartnersPage() {
                     required
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Endereço Completo</label>
+                <Input
+                  placeholder="Logradouro, Número, Bairro"
+                  className="bg-gray-50 font-medium text-black"
+                  value={formData.address}
+                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  readOnly
+                />
               </div>
 
               <div>

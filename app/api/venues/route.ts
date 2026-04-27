@@ -14,14 +14,26 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { name, location, type, image, status, description } = await request.json();
+    const { name, location, type, image, status, description, responsible_name, address, category, contact_phone } = await request.json();
     
     // For public submissions, status is always Pending
     const finalStatus = status || "Pendente";
+    const qrToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
     const result = await sql`
-      INSERT INTO venues (name, location, type, image, status, description)
-      VALUES (${name}, ${location}, ${type}, ${image || "https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=800&auto=format&fit=crop"}, ${finalStatus}, ${description || ""})
+      INSERT INTO venues (
+        name, location, type, image, status, description, 
+        responsible_name, address, category, contact_phone, 
+        plate_status, qr_code_token
+      )
+      VALUES (
+        ${name}, ${location}, ${type}, 
+        ${image || "https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=800&auto=format&fit=crop"}, 
+        ${finalStatus}, ${description || ""},
+        ${responsible_name || null}, ${address || null}, 
+        ${category || null}, ${contact_phone || null},
+        'PENDING', ${qrToken}
+      )
       RETURNING *
     `;
     return NextResponse.json(result[0], { status: 201 });

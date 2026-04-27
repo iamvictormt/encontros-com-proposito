@@ -35,6 +35,30 @@ async function setupDatabase() {
     await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar TEXT`;
     await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP`;
 
+    // Cards table
+    await sql`
+      CREATE TABLE IF NOT EXISTS cards (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        type TEXT NOT NULL, -- 'GREEN', 'PINK'
+        status TEXT NOT NULL DEFAULT 'INATIVO', -- 'INATIVO', 'ATIVO', 'BLOQUEADO', 'PENDENTE'
+        owner_id UUID REFERENCES users(id) ON DELETE SET NULL,
+        qr_code_token TEXT UNIQUE NOT NULL,
+        activation_code TEXT UNIQUE, -- Manual code for pink cards
+        name TEXT, -- Name printed/linked
+        birth_date DATE,
+        nfc_id TEXT,
+        card_number TEXT UNIQUE,
+        expiry_date TEXT,
+        cvv TEXT,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
+    await sql`ALTER TABLE cards ADD COLUMN IF NOT EXISTS card_number TEXT UNIQUE`;
+    await sql`ALTER TABLE cards ADD COLUMN IF NOT EXISTS expiry_date TEXT`;
+    await sql`ALTER TABLE cards ADD COLUMN IF NOT EXISTS cvv TEXT`;
+
     // Venues table
     await sql`
       CREATE TABLE IF NOT EXISTS venues (
@@ -47,6 +71,14 @@ async function setupDatabase() {
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `;
+
+    // Venues table updates for Partners
+    await sql`ALTER TABLE venues ADD COLUMN IF NOT EXISTS responsible_name TEXT`;
+    await sql`ALTER TABLE venues ADD COLUMN IF NOT EXISTS address TEXT`;
+    await sql`ALTER TABLE venues ADD COLUMN IF NOT EXISTS category TEXT`;
+    await sql`ALTER TABLE venues ADD COLUMN IF NOT EXISTS contact_phone TEXT`;
+    await sql`ALTER TABLE venues ADD COLUMN IF NOT EXISTS plate_status TEXT DEFAULT 'PENDING'`; // 'PENDING', 'SENT', 'ACTIVE'
+    await sql`ALTER TABLE venues ADD COLUMN IF NOT EXISTS qr_code_token TEXT UNIQUE`;
 
     // Events table
     await sql`
@@ -115,6 +147,18 @@ async function setupDatabase() {
         user_id UUID REFERENCES users(id) ON DELETE CASCADE,
         joined_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         UNIQUE(event_id, user_id)
+      );
+    `;
+
+    // Interactions table
+    await sql`
+      CREATE TABLE IF NOT EXISTS interactions (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+        venue_id UUID REFERENCES venues(id) ON DELETE CASCADE,
+        interaction_type TEXT DEFAULT 'CHECK_IN',
+        metadata JSONB DEFAULT '{}',
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `;
 

@@ -1,158 +1,107 @@
 "use client";
 
-import { SiteHeader } from "./site-header";
-import { SiteFooter } from "./site-footer";
-import { Button } from "@/components/ui/button";
-import { Download, Printer, QrCode, QrCodeIcon, Rss } from "lucide-react";
-import { toast } from "sonner";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 
-export function MemberCardPage() {
-  const handleDownload = () => {
-    toast.success("Iniciando download da versão digital...");
-  };
+interface MemberCardProps {
+  cardType?: "GREEN" | "PINK";
+  name?: string;
+  birthDate?: string;
+  qrCodeToken?: string;
+  cvv?: string;
+  cardNumber?: string;
+  expiryDate?: string;
+}
 
-  const handlePrint = () => {
-    toast.success("Preparando cartão para impressão...");
-    window.print();
-  };
+export function MemberCardPage({ 
+  cardType = "GREEN", 
+  name, 
+  birthDate, 
+  qrCodeToken,
+  cvv = "000",
+  cardNumber,
+  expiryDate
+}: MemberCardProps) {
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrCodeToken || 'MeetOff'}&color=ffffff&bgcolor=000000&qzone=1`;
+
+  const isPink = cardType === "PINK";
+  const frontBg = isPink ? '/cartao-rosa-frente.svg' : '/cartao-verde-frente.svg';
+  const backBg = isPink ? '/cartao-rosa-verso.svg' : '/cartao-verde-verso.svg';
 
   return (
-    <div className="min-h-screen bg-[#F0F2F5] flex flex-col font-sans">
+    <div className="min-h-screen flex flex-col font-sans">
       <SiteHeader />
-
-      <main className="flex-1 px-4 py-8 flex flex-col items-center">
-        <div className="w-full max-w-2xl bg-white rounded-[24px] p-4 sm:p-8 shadow-sm">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 px-2">
-            Seu Cartão de Membro
+      
+      <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8">
+        <div className="w-full max-w-[440px]">
+          <h1 className="text-2xl font-bold text-gray-900 mb-8 text-center">
+            Seu Cartão MeetOff
           </h1>
 
           {/* Front Card */}
-          <div className="relative w-full aspect-[1.58] rounded-[24px] overflow-hidden bg-[#26262E] p-6 sm:p-8 shadow-lg isolate flex flex-col justify-between border border-white/10">
-            {/* Background Lines */}
-            <div className="absolute inset-0 opacity-[0.06] pointer-events-none overflow-hidden select-none">
-              <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                <g fill="none" stroke="white" strokeWidth="3.2">
-                  {Array.from({ length: 80 }).map((_, i) => (
-                    <path
-                      key={i}
-                      d={`M ${i * 16 - 100} -100 Q ${i * 15} 100 ${i * 15 - 150} 300 T ${i * 18 - 50} 800 T ${i * 15 - 100} 900`}
-                    />
-                  ))}
-                </g>
-              </svg>
-            </div>
-
-            {/* Top Section */}
-            <div className="relative flex justify-end w-full mt-2">
-              <div className="flex flex-col items-end">
-                <div className="text-5xl font-bold text-[#D8B06A] tracking-tighter flex items-center pr-1">
-                  <span className="font-black text-[#D8B06A]">FindB</span>
-                </div>
-                <div className="text-[10px] sm:text-xm text-[#D8B06A] font-light mt-1 tracking-wide">
-                  Construindo relacionamentos saudáveis
-                </div>
-              </div>
-            </div>
-
-            {/* Middle text */}
-            <div className="relative w-full mt-8 mb-6 flex items-center">
-              <div className="mr-3 w-0 h-0 border-t-[5px] border-t-transparent border-l-[8px] border-l-[#D8B06A] border-b-[5px] border-b-transparent"></div>
-              <div className="text-xl sm:text-2xl tracking-[0.16em] font-light text-[#D8B06A] uppercase leading-none">
-                CUPIDO/ANFITRIÃO/AFILIADO
-              </div>
-            </div>
-
-            {/* Bottom Section */}
-            <div className="relative w-full mt-auto flex flex-col gap-5">
-              <div className="flex justify-between items-start">
-                <div className="font-mono text-[#D8B06A] tracking-widest text-[13px] sm:text-[15px] font-bold mt-1">
-                  1.6180339887 11235813
-                </div>
-                <div className="flex flex-col items-end gap-2 pr-1">
-                  <div className="font-mono text-[#D8B06A] tracking-widest text-[13px] sm:text-[15px] font-bold">
-                    66 73 3 7 12 40 24 06 88
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="flex flex-col items-start leading-[1.1] text-[8px] sm:text-[9px] text-[#D8B06A] font-bold">
-                      <span>DATA</span>
-                      <span>NASCIMENTO</span>
-                    </div>
-                    <div className="flex items-center text-[#D8B06A] font-mono text-[13px] sm:text-[15px] font-bold">
-                      <span className="text-[10px] mr-1.5">▶</span> 21/11/1993
+          <div 
+            className={`relative w-full aspect-[1.58] rounded-[32px] overflow-hidden transition-all duration-500 bg-cover bg-center`}
+            style={{ backgroundImage: `url('${frontBg}')` }}
+          >
+            {/* Dynamic Data Overlay */}
+            <div className="absolute inset-0 p-8 flex flex-col justify-end">
+              <div className="flex justify-between items-end w-full">
+                {/* Name for PINK card */}
+                {isPink ? (
+                  <div className="flex flex-col mb-2">
+                    <div className="text-white text-sm sm:text-sm font-bold tracking-wide uppercase drop-shadow-sm">
+                      {name || "Visitante"}
                     </div>
                   </div>
+                ) : (
+                  <div className="flex-1" />
+                )}
+
+                {/* White QR Code with Transparency effect */}
+                <div className="w-16 h-16 sm:w-16 sm:h-16 mr-3.5 mb-2 overflow-hidden">
+                  <img 
+                    src={qrUrl} 
+                    alt="QR Code" 
+                    className="w-full h-full object-contain mix-blend-screen"
+                    style={{ filter: 'brightness(1.5)' }}
+                  />
                 </div>
-              </div>
-              <div className="text-[#D8B06A] text-lg sm:text-xl font-normal relative -bottom-2">
-                Thiago S. Santos / Mas.
               </div>
             </div>
           </div>
 
           {/* Back Card */}
-          <div className="relative w-full aspect-[1.58] rounded-[24px] overflow-hidden bg-[#26262E] mt-6 shadow-lg isolate flex items-center justify-center p-5 sm:p-7 border border-white/10">
-            {/* Background Lines */}
-            <div className="absolute inset-0 opacity-[0.06] pointer-events-none overflow-hidden select-none">
-              <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                <g fill="none" stroke="white" strokeWidth="3.2">
-                  {Array.from({ length: 80 }).map((_, i) => (
-                    <path
-                      key={i}
-                      d={`M ${i * 16 - 100} -100 Q ${i * 15} 100 ${i * 15 - 150} 300 T ${i * 18 - 50} 600 T ${i * 15 - 100} 900`}
-                    />
-                  ))}
-                </g>
-              </svg>
-            </div>
+          <div 
+            className={`relative w-full aspect-[1.58] rounded-[32px] overflow-hidden mt-8 transition-all duration-500 bg-cover bg-center`}
+            style={{ backgroundImage: `url('${backBg}')` }}
+          >
+            {/* Dynamic Data Overlay */}
+            <div className="absolute inset-0 p-8 flex flex-col justify-end pb-12">
+              <div className="grid grid-cols-2 gap-8 items-end">
+                {/* Left Column - Numbers */}
+                <div className="flex flex-col gap-1 font-mono text-white/90 text-[11px] sm:text-[12px] font-bold leading-tight drop-shadow-sm">
+                  <div>1.6180339887</div>
+                  <div>11235813</div>
+                  <div className="mt-1 tracking-wider">{cardNumber || "66 73 37 12 40 24 06 88"}</div>
+                  <div className="mt-1">Exp: {expiryDate || "12/29"}</div>
+                </div>
 
-            {/* Content Box */}
-            <div className="relative z-10 w-[85%] max-w-[340px] rounded-[16px] border-[1.5px] border-[#D8B06A] p-4 flex gap-4 sm:gap-5 items-center">
-              <div className="w-[84px] h-[84px] flex-shrink-0 flex items-center justify-center">
-                {/* SVG representing a detailed QR code block */}
-                <QrCodeIcon className="w-full h-full text-[#D8B06A]" />
+                {/* Right Column - CVV and DOB */}
+                <div className="flex flex-col justify-start items-start gap-4 text-white/80 drop-shadow-sm">
+                  <div className="flex flex-col">
+                    <span className="text-[9px] font-bold uppercase tracking-wider opacity-70">Código de segurança</span>
+                    <span className="font-mono text-sm font-bold text-white">{cvv}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[9px] font-bold uppercase tracking-wider opacity-70">Data nascimento</span>
+                    <span className="font-mono text-sm font-bold text-white">{birthDate || "--/--/----"}</span>
+                  </div>
+                </div>
               </div>
-              <p className="text-[10px] sm:text-[11px] text-[#D8B06A]/90 leading-tight font-light text-left pr-2 py-2">
-                Obrigado por fazer parte do nosso universo! Aqui na FindB, acreditamos que cada
-                relação é uma conquista e cada desafio nos torna mais fortes. Queremos estar sempre
-                ao seu lado nessa jornada!
-              </p>
-            </div>
-
-            {/* Bottom Right Logo */}
-            <div className="absolute bottom-6 right-6 z-10">
-              <div className="text-2xl sm:text-3xl font-bold text-[#D8B06A] tracking-tighter flex items-center">
-                <span className="font-black text-[#D8B06A]">FindB</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="w-full h-px bg-gray-100 my-8"></div>
-
-          {/* Ações Rápidas */}
-          <div className="px-2">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Ações Rápidas</h2>
-            <div className="flex flex-col gap-3">
-              <Button
-                variant="outline"
-                onClick={handleDownload}
-                className="w-full justify-center text-gray-800 bg-white border-gray-200 hover:bg-gray-50 h-[52px] rounded-xl font-semibold shadow-sm transition-all hover:shadow-md"
-              >
-                <Download className="mr-3 h-5 w-5 text-gray-800" />
-                Baixar versão digital
-              </Button>
-              <Button
-                variant="outline"
-                onClick={handlePrint}
-                className="w-full justify-center text-gray-800 bg-white border-gray-200 hover:bg-gray-50 h-[52px] rounded-xl font-semibold shadow-sm transition-all hover:shadow-md"
-              >
-                <Printer className="mr-3 h-5 w-5 text-gray-800" />
-                Imprimir Cartão
-              </Button>
             </div>
           </div>
         </div>
       </main>
-
       <SiteFooter />
     </div>
   );

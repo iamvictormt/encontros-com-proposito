@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="191.98 531.85 1279.12 850.96" width="1279.12px" height="850.96px"><defs><linearGradient id="Gold1" data-name="Gold" x1="191.98" y1="753.36" x2="1471.1" y2="753.36" gradientTransform="matrix(1,0,0,1,0,0)" href="#Gold"/><linearGradient id="Gold" x1="674.24" y1="1862.73" x2="1541.66" y2="2651.71" gradientTransform="translate(-419.06 -117.61)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#e5be50"/><stop offset="0.25" stop-color="#faf7c8"/><stop offset="0.32" stop-color="#eee7b6"/><stop offset="0.44" stop-color="#d1bf8a"/><stop offset="0.6" stop-color="#a8874a"/><stop offset="0.87" stop-color="#ddca84"/><stop offset="1" stop-color="#faf7c8"/></linearGradient><style>
+      .st0 {
+        fill: #efe32d;
+      }
+
+      .st1 {
+        opacity: .11;
+      }
+
+      .st2 {
+        opacity: .09;
+      }
+
+      .st3 {
+        fill: #fff;
+      }
+
+      .st4 {
+        fill: url(#Gold3);
+      }
+
+      .st5 {
+        fill: none;
+      }
+
+      .st6 {
+        fill: #ddd;
+      }
+
+      .st7 {
+        fill: #8f521e;
+      }
+
+      .st8 {
+        fill: #282828;
+      }
+
+      .st9 {
+        fill: #e0cb26;
+      }
+
+      .st10 {
+        fill: #a2631c;
+      }
+
+      .st11 {
+        fill: #90371d;
+      }
+
+      .st12 {
+        fill: url(#Gold);
+      }
+
+      .st13 {
+        fill: #c2395b;
+      }
+
+      .st14 {
+        fill: #eae43a;
+      }
+
+      .st15 {
+        fill: #c79a1c;
+      }
+
+      .st16 {
+        fill: #f3f2f2;
+      }
+
+      .st17 {
+        fill: url(#Gold1);
+      }
+
+      .st18 {
+        fill: url(#Gold2);
+      }
+
+      .st19 {
+        fill: #22655b;
+      }
+
+      .st20 {
+        fill: #d0b322;
+      }
+    </style></defs><g id="object-2"><rect class="st19" x="191.98" y="531.85" width="1279.12" height="850.96" rx="114.7" ry="114.7" id="object-0"/><rect class="st17" x="191.98" y="683.09" width="1279.12" height="140.55" id="object-1"/></g></svg>

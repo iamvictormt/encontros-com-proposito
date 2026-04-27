@@ -84,6 +84,16 @@ export function SiteHeader() {
                       <User className="h-5 w-5 text-black" />
                       <span className="font-medium text-black">Minha Conta</span>
                     </Link>
+                    <Link
+                      href="/member-card"
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center gap-3 w-full p-3 rounded-lg border border-secondary/20 bg-secondary/5 text-secondary hover:bg-secondary/10 transition-colors font-bold"
+                    >
+                      <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
+                        <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+                      </svg>
+                      <span>Meu Cartão MeetOff</span>
+                    </Link>
                     <button
                       onClick={handleLogout}
                       className="flex items-center gap-3 w-full p-3 rounded-lg border border-red-100 bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
