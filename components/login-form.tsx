@@ -199,6 +199,11 @@ export function LoginForm() {
       {showSuccessVideo && (
         <div className="fixed inset-0 bg-white z-50 flex items-center justify-center transition-opacity duration-1000 opacity-100">
           <video
+            ref={(el) => {
+              if (el) {
+                el.play().catch(err => console.error("Video play failed:", err));
+              }
+            }}
             src="/videos/meet-off-animation-logo.mp4"
             autoPlay
             muted
