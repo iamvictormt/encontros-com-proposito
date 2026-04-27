@@ -206,7 +206,6 @@ export function LoginForm() {
             }}
             src="/videos/meet-off-animation-logo.mp4"
             autoPlay
-            muted
             playsInline
             onEnded={() => {
               if (userData?.isAdmin) {
