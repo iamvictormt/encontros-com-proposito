@@ -196,17 +196,7 @@ export function LoginForm() {
 
   return (
     <>
-      {/* Preload video - hidden from view but starts loading immediately */}
-      <video
-        src="/videos/meet-off-animation-logo.mp4"
-        preload="auto"
-        muted
-        playsInline
-        className="hidden"
-        onCanPlayThrough={() => setIsVideoLoaded(true)}
-      />
-
-      {showSuccessVideo && isVideoLoaded && (
+      {showSuccessVideo && (
         <div className="fixed inset-0 bg-white z-50 flex items-center justify-center transition-opacity duration-1000 opacity-100">
           <video
             src="/videos/meet-off-animation-logo.mp4"
@@ -224,8 +214,6 @@ export function LoginForm() {
           />
         </div>
       )}
-
-      {showSuccessVideo && !isVideoLoaded && null}
       <div className="min-h-screen flex flex-col lg:flex-row bg-white">
         {/* Left Column - Login Form */}
         <div className="w-full lg:w-1/2 flex flex-col p-6 sm:p-8 md:p-12 lg:p-16 relative ">
