@@ -18,11 +18,19 @@ export async function POST(request: Request) {
   const card = (await getCardByToken(code)) || (await getCardByActivationCode(code));
 
   if (!card) {
-    return NextResponse.json({ error: "Cartão não encontrado" }, { status: 404 });
+    return NextResponse.json({ error: "Código não encontrado" }, { status: 404 });
   }
 
-  if (card.status !== "INATIVO") {
-    return NextResponse.json({ error: "Este cartão já está ativo" }, { status: 400 });
+  if (card.status === "ATIVO") {
+    return NextResponse.json({ error: "Este cartão já foi ativado" }, { status: 400 });
+  }
+
+  if (card.status === "BLOQUEADO") {
+    return NextResponse.json({ error: "Cartão inválido. Procure o parceiro" }, { status: 400 });
+  }
+
+  if (card.status === "EXPIRADO") {
+    return NextResponse.json({ error: "Este cartão já expirou" }, { status: 400 });
   }
 
   try {

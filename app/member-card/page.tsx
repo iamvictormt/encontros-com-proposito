@@ -48,8 +48,6 @@ export default async function MemberCard() {
       birthDate={card.birth_date ? new Date(card.birth_date).toLocaleDateString('pt-BR') : undefined}
       qrCodeToken={card.qr_code_token}
       cvv={card.cvv}
-      cardNumber={card.card_number}
-      expiryDate={card.expiry_date}
     />
   );
 }

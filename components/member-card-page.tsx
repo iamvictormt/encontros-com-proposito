@@ -9,8 +9,6 @@ interface MemberCardProps {
   birthDate?: string;
   qrCodeToken?: string;
   cvv?: string;
-  cardNumber?: string;
-  expiryDate?: string;
 }
 
 export function MemberCardPage({ 
@@ -18,11 +16,12 @@ export function MemberCardPage({
   name, 
   birthDate, 
   qrCodeToken,
-  cvv = "000",
-  cardNumber,
-  expiryDate
+  cvv = "000"
 }: MemberCardProps) {
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrCodeToken || 'MeetOff'}&color=ffffff&bgcolor=000000&qzone=1`;
+  const shareUrl = typeof window !== 'undefined' 
+    ? `${window.location.origin}/profile/${qrCodeToken || 'MeetOff'}`
+    : `https://meetoff.com.br/profile/${qrCodeToken || 'MeetOff'}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(shareUrl)}&color=ffffff&bgcolor=000000&qzone=1`;
 
   const isPink = cardType === "PINK";
   const frontBg = isPink ? '/cartao-rosa-frente.svg' : '/cartao-verde-frente.svg';
@@ -33,7 +32,7 @@ export function MemberCardPage({
       <SiteHeader />
       
       <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8">
-        <div className="w-full max-w-[440px]">
+        <div className="w-full max-w-[540px]">
           <h1 className="text-2xl font-bold text-gray-900 mb-8 text-center">
             Seu Cartão MeetOff
           </h1>
@@ -58,7 +57,7 @@ export function MemberCardPage({
                 )}
 
                 {/* White QR Code with Transparency effect */}
-                <div className="w-16 h-16 sm:w-16 sm:h-16 mr-3.5 mb-2 overflow-hidden">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 mr-8.5 mb-2 overflow-hidden">
                   <img 
                     src={qrUrl} 
                     alt="QR Code" 
@@ -79,11 +78,11 @@ export function MemberCardPage({
             <div className="absolute inset-0 p-8 flex flex-col justify-end pb-12">
               <div className="grid grid-cols-2 gap-8 items-end">
                 {/* Left Column - Numbers */}
-                <div className="flex flex-col gap-1 font-mono text-white/90 text-[11px] sm:text-[12px] font-bold leading-tight drop-shadow-sm">
+                <div className="flex flex-col gap-1 font-mono text-white/90 text-sm font-bold leading-tight drop-shadow-sm">
                   <div>1.6180339887</div>
                   <div>11235813</div>
-                  <div className="mt-1 tracking-wider">{cardNumber || "66 73 37 12 40 24 06 88"}</div>
-                  <div className="mt-1">Exp: {expiryDate || "12/29"}</div>
+                  <div className="mt-1 tracking-wider">66 73 37 12 40 24 06 88</div>
+                  <div className="mt-1">1234</div>
                 </div>
 
                 {/* Right Column - CVV and DOB */}
