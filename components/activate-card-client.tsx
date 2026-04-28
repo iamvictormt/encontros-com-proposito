@@ -92,12 +92,16 @@ export function ActivateCardClient() {
                   id="code"
                   placeholder="Ex: ABC-123-XYZ"
                   value={token}
-                  onChange={(e) => setToken(e.target.value)}
+                  onChange={(e) => {
+                    const cleaned = e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+                    const chunks = cleaned.match(/.{1,3}/g);
+                    setToken(chunks ? chunks.slice(0, 3).join('-') : '');
+                  }}
                   className="h-12 text-center text-lg font-mono tracking-widest"
                   required
                 />
               </div>
-              <Button type="submit" className="w-full h-12 bg-secondary hover:bg-secondary/90" disabled={loading}>
+              <Button type="submit" className="w-full h-12 bg-[#c2395b] hover:bg-[#a12a48]" disabled={loading}>
                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Verificar"}
               </Button>
             </form>

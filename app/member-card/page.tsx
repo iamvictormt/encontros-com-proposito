@@ -3,6 +3,8 @@ import { getUserSession } from "@/lib/auth-utils";
 import { neon } from '@neondatabase/serverless';
 import { redirect } from "next/navigation";
 import { RequestCardModal } from "@/components/request-card-modal";
+import Link from "next/link";
+ import { Button } from "@/components/ui/button";
 
 export default async function MemberCard() {
   const session = await getUserSession();
@@ -29,11 +31,11 @@ export default async function MemberCard() {
             Solicite seu cartão verde ou ative seu cartão rosa para acessar esta área.
           </p>
           <div className="flex flex-col gap-3">
-            <a href="/activate" className="bg-secondary text-white py-4 rounded-xl font-bold text-center">
-              Ativar Cartão Rosa
-            </a>
             <RequestCardModal />
-          </div>
+            <Button asChild className="bg-[#c2395b] hover:bg-[#a12a48] w-full py-6 rounded-xl font-bold">
+              <Link href="/activate">Ativar Cartão Rosa</Link>
+            </Button>
+          </div>  
         </div>
       </div>
     );

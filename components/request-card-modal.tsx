@@ -49,7 +49,7 @@ export function RequestCardModal() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="w-full py-6 rounded-xl font-bold bg-[#E58043] hover:bg-[#E58043]/90">
+        <Button className="w-full py-6 rounded-xl font-bold bg-secondary hover:bg-secondary/90">
           Solicitar Cartão Verde
         </Button>
       </DialogTrigger>
@@ -77,6 +77,8 @@ export function RequestCardModal() {
               id="birthDate"
               type="date"
               value={formData.birthDate}
+              max={new Date().toISOString().split('T')[0]}
+              min="1900-01-01"
               onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
               required
             />
