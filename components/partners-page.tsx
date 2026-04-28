@@ -42,6 +42,7 @@ export function PartnersPage() {
     selectedProduct: "",
   });
   const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
@@ -337,40 +338,45 @@ export function PartnersPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Produtos/Serviços
                 </label>
-                <Select
-                  onValueChange={handleAddTag}
-                >
-                  <SelectTrigger className="bg-white w-full">
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Terapia">Terapia</SelectItem>
-                    <SelectItem value="Viagens">Viagens</SelectItem>
-                    <SelectItem value="Alimentação">Alimentação</SelectItem>
-                    <SelectItem value="Lazer">Lazer</SelectItem>
-                    <SelectItem value="Hospedagem">Hospedagem</SelectItem>
-                  </SelectContent>
-                </Select>
-                {tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {tags.map(tag => (
-                      <Badge
-                        key={tag}
-                        variant="secondary"
-                        className="bg-[#8B2F2A] hover:bg-[#8B2F2A]/90 text-white rounded-md px-3 py-1 font-normal flex items-center gap-1"
+                <div className="flex flex-wrap gap-2 p-2 bg-white border rounded-md min-h-[42px] focus-within:ring-2 focus-within:ring-[#E58043]/20 transition-all">
+                  {tags.map((tag: string, index: number) => (
+                    <Badge 
+                      key={index} 
+                      variant="secondary"
+                      className="bg-[#8B2F2A] hover:bg-[#8B2F2A]/90 text-white rounded-md px-3 py-1 font-normal flex items-center gap-1"
+                    >
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveTag(tag)}
+                        className="ml-1 hover:text-gray-200 transition-colors"
                       >
-                        {tag}
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveTag(tag)}
-                          className="ml-1 hover:text-gray-200 transition-colors"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </Badge>
-                    ))}
-                  </div>
-                )}
+                        <X className="w-3 h-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                  <input
+                    className="flex-1 bg-transparent outline-none text-sm min-w-[150px] text-gray-700"
+                    placeholder={tags.length === 0 ? "Ex: Terapia, Viagens, Alimentação..." : ""}
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === " " || e.key === "Enter" || e.key === ",") {
+                        e.preventDefault();
+                        const newTag = tagInput.trim().replace(",", "");
+                        if (newTag && !tags.includes(newTag)) {
+                          setTags([...tags, newTag]);
+                          setTagInput("");
+                        }
+                      } else if (e.key === "Backspace" && !tagInput && tags.length > 0) {
+                        const newTags = [...tags];
+                        newTags.pop();
+                        setTags(newTags);
+                      }
+                    }}
+                  />
+                </div>
+                <p className="text-[10px] text-gray-400 mt-1">Pressione Espaço, vírgula (,) ou Enter para adicionar</p>
               </div>
             </div>
 

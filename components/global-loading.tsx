@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export function GlobalLoading() {
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white">
+    <div className="fixed inset-0 w-screen h-[100dvh] z-[9999] flex flex-col items-center justify-center bg-white">
       <div className="relative flex flex-col items-center">
         {/* Animated Background Glow */}
         <div className="absolute -inset-10 bg-[#8A0204]/5 blur-3xl rounded-full animate-pulse" />

@@ -95,6 +95,7 @@ async function setupDatabase() {
         price DECIMAL(10, 2) DEFAULT 0,
         description TEXT,
         capacity INTEGER DEFAULT 0,
+        type_event TEXT DEFAULT 'Presencial',
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `;
@@ -109,6 +110,7 @@ async function setupDatabase() {
     await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS groups JSONB DEFAULT '[]'`;
     await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS video_url TEXT`;
     await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS age_range TEXT`;
+    await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS type_event TEXT DEFAULT 'Presencial'`;
 
     // Brands table
     await sql`

@@ -146,7 +146,7 @@ export function ProductDetailPage() {
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-8 lg:grid-cols-2">
             <div>
-              <div className="mb-4 relative h-[600px] rounded-xl overflow-hidden bg-gray-50 border border-gray-100">
+              <div className="mb-4 relative h-[300px] sm:h-[600px] rounded-xl overflow-hidden bg-gray-50 border border-gray-100">
                 <Image
                   src={images[selectedImageIndex]}
                   alt={product.name}

@@ -12,6 +12,7 @@ import {
   Link2,
   Filter,
   Loader2,
+  Check,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,11 +20,15 @@ import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { SiteHeader } from "./site-header";
 import { SiteFooter } from "./site-footer";
+import { toast } from "sonner";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { formatBRL } from "@/lib/utils/format";
 import { useLoading } from "@/providers/loading-provider";
@@ -32,13 +37,15 @@ export function EventsPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [events, setEvents] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const { setIsLoading: setGlobalLoading } = useLoading();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState<"newest" | "oldest">("newest");
-  const [ageFilter, setAgeFilter] = useState<string>("all");
-  const [priceFilter, setPriceFilter] = useState<string>("all"); // all, free, paid
-  const [audienceFilter, setAudienceFilter] = useState<string>("all");
+  const [typeFilters, setTypeFilters] = useState<string[]>([]);
+  const [ageFilters, setAgeFilters] = useState<string[]>([]);
+  const [priceFilters, setPriceFilters] = useState<string[]>([]);
+  const [audienceFilters, setAudienceFilters] = useState<string[]>([]);
   const itemsPerPage = 6;
 
   useEffect(() => {
@@ -68,6 +75,7 @@ export function EventsPage() {
       theme: `Tema: ${e.tags?.[0] || "Geral"}`,
       location: e.location,
       title: e.title.toUpperCase(),
+      type_event: e.type_event || 'Presencial',
     }));
 
   const nextSlide = () => {
@@ -88,18 +96,20 @@ export function EventsPage() {
         const matchesSearch = e.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           e.location.toLowerCase().includes(searchTerm.toLowerCase());
         
-        const matchesAge = ageFilter === "all" || e.age_range === ageFilter;
-        const matchesPrice = priceFilter === "all" || 
-          (priceFilter === "free" ? parseFloat(e.price) === 0 : parseFloat(e.price) > 0);
-        const matchesAudience = audienceFilter === "all" || e.target_audience === audienceFilter;
+        const matchesType = typeFilters.length === 0 || typeFilters.includes(e.type_event || 'Presencial');
+        const matchesAge = ageFilters.length === 0 || ageFilters.includes(e.age_range);
+        const matchesPrice = priceFilters.length === 0 || 
+          (priceFilters.includes("free") && parseFloat(e.price) === 0) || 
+          (priceFilters.includes("paid") && parseFloat(e.price) > 0);
+        const matchesAudience = audienceFilters.length === 0 || audienceFilters.includes(e.target_audience);
 
-        return matchesSearch && matchesAge && matchesPrice && matchesAudience;
+        return matchesSearch && matchesType && matchesAge && matchesPrice && matchesAudience;
       }
     )
     .sort((a, b) => {
       const dateA = new Date(a.date).getTime();
       const dateB = new Date(b.date).getTime();
-      return sortBy === "newest" ? dateB - dateA : dateA - dateB;
+      return dateB - dateA;
     });
 
   // Pagination logic
@@ -112,7 +122,7 @@ export function EventsPage() {
   // Reset to page 1 when search or filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, sortBy, ageFilter, priceFilter, audienceFilter]);
+  }, [searchTerm, typeFilters, ageFilters, priceFilters, audienceFilters]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -120,9 +130,9 @@ export function EventsPage() {
 
       {/* Hero Banner with Carousel */}
       {heroSlides.length > 0 && (
-        <section className="relative h-[600px] w-full overflow-hidden px-4 py-0 lg:px-20">
+        <section className="relative h-[450px] sm:h-[600px] w-full overflow-hidden px-4 py-0 lg:px-20">
           <div className="mx-auto max-w-7xl">
-            <div className="relative h-[600px] overflow-hidden rounded-xl">
+            <div className="relative h-[450px] sm:h-[600px] overflow-hidden rounded-xl">
               <div
                 className="flex h-full transition-transform duration-500 ease-in-out"
                 style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -140,7 +150,7 @@ export function EventsPage() {
 
                     <div className="absolute inset-0 flex items-center px-6 lg:px-12">
                       <div className="max-w-2xl absolute bottom-16">
-                        <div className="mb-4 flex gap-3">
+                        <div className="mb-4 flex flex-wrap gap-3">
                           <span className="flex items-center gap-1.5 rounded-full border border-white/40 bg-white/10 px-3 py-1 text-sm font-medium text-white backdrop-blur-md">
                             <span>🏷️</span>
                             {slide.theme}
@@ -149,9 +159,13 @@ export function EventsPage() {
                             <span>📍</span>
                             {slide.location}
                           </span>
+                          <span className="flex items-center gap-1.5 rounded-full border border-white/40 bg-white/10 px-3 py-1 text-sm font-medium text-white backdrop-blur-md">
+                            <span>{slide.type_event === "Online" ? "💻" : "🤝"}</span>
+                            {slide.type_event}
+                          </span>
                         </div>
 
-                        <h1 className="mb-6 text-4xl font-bold leading-tight text-white lg:text-5xl">
+                        <h1 className="mb-6 text-3xl sm:text-4xl font-bold leading-tight text-white lg:text-5xl">
                           {slide.title}
                         </h1>
 
@@ -166,9 +180,30 @@ export function EventsPage() {
                             size="lg"
                             variant="ghost"
                             className="bg-transparent text-white hover:bg-white/10 px-0"
+                            onClick={() => {
+                              const url = `${window.location.origin}/events/${slide.id}`;
+                              navigator.clipboard.writeText(url);
+                              setCopiedId(slide.id);
+                            }}
+                            onMouseLeave={() => {
+                              if (copiedId === slide.id) {
+                                setTimeout(() => setCopiedId(null), 1000);
+                              }
+                            }}
                           >
-                            <Link2 className="h-6 w-6 rotate-[140deg]" />
-                            Copiar Token de convite
+                            {copiedId === slide.id ? (
+                              <>
+                                <Check className="h-5 w-5 sm:h-6 sm:w-6 mr-2" />
+                                <span className="hidden sm:inline">Token de convite copiado!</span>
+                                <span className="inline sm:hidden text-sm">Copiado!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Link2 className="h-5 w-5 sm:h-6 sm:w-6 mr-2 rotate-[140deg]" />
+                                <span className="hidden sm:inline">Copiar Token de convite</span>
+                                <span className="inline sm:hidden text-sm">Convidar</span>
+                              </>
+                            )}
                           </Button>
                         </div>
                       </div>
@@ -177,7 +212,7 @@ export function EventsPage() {
                 ))}
               </div>
 
-              <div className="absolute bottom-6 left-13 flex gap-2">
+              <div className="absolute bottom-6 left-6 sm:left-12 flex gap-2">
                 {heroSlides.map((_, index) => (
                   <button
                     key={index}
@@ -191,7 +226,7 @@ export function EventsPage() {
                 ))}
               </div>
 
-              <div className="absolute bottom-6 right-6 flex gap-3">
+              <div className="absolute bottom-6 right-6 hidden sm:flex gap-3">
                 <button
                   onClick={prevSlide}
                   className="p-4 rounded-full bg-white/30 backdrop-blur-md hover:bg-white/20 transition-colors cursor-pointer text-white"
@@ -230,94 +265,138 @@ export function EventsPage() {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
-                    className="bg-transparent hover:bg-gray-50 text-black min-w-[160px] justify-between"
+                    className="bg-transparent hover:bg-gray-50 text-black min-w-[120px] justify-between"
                   >
                     <div className="flex items-center">
                       <Filter className="mr-2 h-4 w-4 text-primary" />
-                      {sortBy === "newest" ? "Mais Recentes" : "Mais Antigos"}
+                      Filtros
                     </div>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[160px] bg-white border-gray-100">
-                  <DropdownMenuItem
-                    onClick={() => setSortBy("newest")}
-                    className={`cursor-pointer ${sortBy === "newest" ? "font-bold text-black bg-gray-50" : "text-gray-600"}`}
+                <DropdownMenuContent align="end" className="w-[240px] max-h-[400px] overflow-y-auto bg-white border-gray-100">
+                  <DropdownMenuLabel className="text-primary font-bold">Formato</DropdownMenuLabel>
+                  <DropdownMenuCheckboxItem
+                    checked={typeFilters.includes("Presencial")}
+                    onCheckedChange={(checked) => {
+                      setTypeFilters((prev) =>
+                        checked ? [...prev, "Presencial"] : prev.filter((t) => t !== "Presencial")
+                      );
+                    }}
                   >
-                    Mais Recentes
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setSortBy("oldest")}
-                    className={`cursor-pointer ${sortBy === "oldest" ? "font-bold text-black bg-gray-50" : "text-gray-600"}`}
+                    Presencial
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={typeFilters.includes("Online")}
+                    onCheckedChange={(checked) => {
+                      setTypeFilters((prev) =>
+                        checked ? [...prev, "Online"] : prev.filter((t) => t !== "Online")
+                      );
+                    }}
                   >
-                    Mais Antigos
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    Online
+                  </DropdownMenuCheckboxItem>
 
-              {/* Age Filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="bg-transparent text-black min-w-[140px] justify-between">
-                    <div className="flex items-center">
-                      <Filter className="mr-2 h-4 w-4 text-primary" />
-                      {ageFilter === "all" ? "Idade: Todas" : ageFilter}
-                    </div>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[180px] bg-white border-gray-100">
-                  <DropdownMenuItem onClick={() => setAgeFilter("all")}>Todas as idades</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setAgeFilter("18-25 anos")}>18-25 anos</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setAgeFilter("26-35 anos")}>26-35 anos</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setAgeFilter("36-45 anos")}>36-45 anos</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setAgeFilter("46-55 anos")}>46-55 anos</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setAgeFilter("55+ anos")}>55+ anos</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel className="text-primary font-bold">Preço</DropdownMenuLabel>
+                  <DropdownMenuCheckboxItem
+                    checked={priceFilters.includes("free")}
+                    onCheckedChange={(checked) => {
+                      setPriceFilters((prev) =>
+                        checked ? [...prev, "free"] : prev.filter((t) => t !== "free")
+                      );
+                    }}
+                  >
+                    Gratuito
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={priceFilters.includes("paid")}
+                    onCheckedChange={(checked) => {
+                      setPriceFilters((prev) =>
+                        checked ? [...prev, "paid"] : prev.filter((t) => t !== "paid")
+                      );
+                    }}
+                  >
+                    Pago
+                  </DropdownMenuCheckboxItem>
 
-              {/* Price Filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="bg-transparent text-black min-w-[130px] justify-between">
-                    <div className="flex items-center">
-                      <Filter className="mr-2 h-4 w-4 text-primary" />
-                      {priceFilter === "all" ? "Preço: Todos" : priceFilter === "free" ? "Gratuito" : "Pago"}
-                    </div>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[140px] bg-white border-gray-100">
-                  <DropdownMenuItem onClick={() => setPriceFilter("all")}>Todos</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setPriceFilter("free")}>Gratuito</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setPriceFilter("paid")}>Pago</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel className="text-primary font-bold">Faixa Etária</DropdownMenuLabel>
+                  {[
+                    "18-25 anos",
+                    "26-35 anos",
+                    "36-45 anos",
+                    "46-55 anos",
+                    "55+ anos",
+                  ].map((age) => (
+                    <DropdownMenuCheckboxItem
+                      key={age}
+                      checked={ageFilters.includes(age)}
+                      onCheckedChange={(checked) => {
+                        setAgeFilters((prev) =>
+                          checked ? [...prev, age] : prev.filter((t) => t !== age)
+                        );
+                      }}
+                    >
+                      {age}
+                    </DropdownMenuCheckboxItem>
+                  ))}
 
-              {/* Audience Filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="bg-transparent text-black min-w-[150px] justify-between">
-                    <div className="flex items-center">
-                      <Filter className="mr-2 h-4 w-4 text-primary" />
-                      {audienceFilter === "all" ? "Público: Todos" : audienceFilter}
-                    </div>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[180px] bg-white border-gray-100">
-                  <DropdownMenuItem onClick={() => setAudienceFilter("all")}>Todos os públicos</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setAudienceFilter("Apenas casais")}>Apenas casais</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setAudienceFilter("Solteiros")}>Solteiros</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setAudienceFilter("Apenas homens")}>Apenas homens</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setAudienceFilter("Apenas mulheres")}>Apenas mulheres</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setAudienceFilter("LGBTQIA+")}>LGBTQIA+</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setAudienceFilter("Famílias")}>Famílias</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setAudienceFilter("Melhor Idade")}>Melhor Idade</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setAudienceFilter("Jovens")}>Jovens</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setAudienceFilter("18+")}>18+</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel className="text-primary font-bold">Público-alvo</DropdownMenuLabel>
+                  {[
+                    "Apenas casais",
+                    "Solteiros",
+                    "Apenas homens",
+                    "Apenas mulheres",
+                    "LGBTQIA+",
+                    "Famílias",
+                    "Melhor Idade",
+                    "Jovens",
+                    "18+",
+                  ].map((aud) => (
+                    <DropdownMenuCheckboxItem
+                      key={aud}
+                      checked={audienceFilters.includes(aud)}
+                      onCheckedChange={(checked) => {
+                        setAudienceFilters((prev) =>
+                          checked ? [...prev, aud] : prev.filter((t) => t !== aud)
+                        );
+                      }}
+                    >
+                      {aud}
+                    </DropdownMenuCheckboxItem>
+                  ))}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
           </div>
 
-          {isLoading ? null : (
+          {isLoading ? null : paginatedEvents.length === 0 ? (
+            <div className="text-center py-16 bg-gray-50 rounded-2xl border border-dashed border-gray-200 mt-8">
+              <div className="text-5xl mb-4">📅</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Nenhum evento encontrado</h3>
+              <p className="text-gray-500 max-w-md mx-auto text-sm px-4">
+                {events.length === 0
+                  ? "Ainda não há eventos cadastrados na plataforma. Volte mais tarde!"
+                  : "Não encontramos eventos que correspondam aos filtros aplicados ou ao termo buscado."}
+              </p>
+              {events.length > 0 && (
+                <Button
+                  variant="outline"
+                  className="mt-6 bg-white text-black hover:bg-gray-100 border-gray-200"
+                  onClick={() => {
+                    setSearchTerm("");
+                    setTypeFilters([]);
+                    setAgeFilters([]);
+                    setPriceFilters([]);
+                    setAudienceFilters([]);
+                  }}
+                >
+                  Limpar filtros
+                </Button>
+              )}
+            </div>
+          ) : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {paginatedEvents.map((event) => {
                 const date = new Date(event.date);
@@ -338,16 +417,20 @@ export function EventsPage() {
                       />
 
                       <div className="absolute right-3 top-3 flex gap-2">
-                        <button className="rounded-full bg-white p-2.5 shadow-md hover:bg-gray-100 cursor-pointer">
+                        <button className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-100 cursor-pointer">
                           <MapPin className="h-4 w-4 text-black" />
                         </button>
-                        <button className="rounded-full bg-white p-2.5 shadow-md hover:bg-gray-100 cursor-pointer">
+                        <button className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-100 cursor-pointer">
                           <Share2 className="h-4 w-4 text-black" />
                         </button>
                       </div>
 
-                      <div className="absolute left-3 top-3 rounded-lg bg-white px-3 py-2.5 font-semibold text-black shadow-md">
-                        {formatBRL(event.price)}
+                      <div className="absolute left-3 top-3 h-10 rounded-lg bg-white px-3 font-semibold text-black shadow-md flex items-center gap-2">
+                        <span>{formatBRL(event.price)}</span>
+                        <span className="w-px h-4 bg-gray-200" />
+                        <span className="flex items-center gap-1">
+                          <span>{event.type_event || "Presencial"}</span>
+                        </span>
                       </div>
                     </div>
 
@@ -364,6 +447,7 @@ export function EventsPage() {
                         <div className="flex-1 pl-4 relative">
                           <div className="absolute left-0 top-1/4 h-1/2 border-l border-1"></div>
                           <div className="ml-4">
+
                             <h3 className="mb-1 text-lg font-bold text-black line-clamp-1">
                               {event.title}
                             </h3>
@@ -382,8 +466,25 @@ export function EventsPage() {
                         <Button
                           variant="outline"
                           className="w-full bg-transparent text-black hover:bg-gray-50"
+                          onClick={() => {
+                            const url = `${window.location.origin}/events/${event.id}`;
+                            navigator.clipboard.writeText(url);
+                            setCopiedId(event.id);
+                          }}
+                          onMouseLeave={() => {
+                            if (copiedId === event.id) {
+                              setTimeout(() => setCopiedId(null), 1000);
+                            }
+                          }}
                         >
-                          Convidar
+                          {copiedId === event.id ? (
+                            <>
+                              <Check className="mr-2 h-4 w-4" />
+                              Copiado!
+                            </>
+                          ) : (
+                            "Convidar"
+                          )}
                         </Button>
                       </div>
                     </div>

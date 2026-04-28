@@ -12,9 +12,10 @@ interface ImageUploadProps {
   onChange: (url: string) => void;
   onRemove: () => void;
   disabled?: boolean;
+  aspect?: 'video' | 'square';
 }
 
-export function ImageUpload({ value, onChange, onRemove, disabled }: ImageUploadProps) {
+export function ImageUpload({ value, onChange, onRemove, disabled, aspect = 'video' }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,7 +50,7 @@ export function ImageUpload({ value, onChange, onRemove, disabled }: ImageUpload
 
   if (value) {
     return (
-      <div className="relative w-full aspect-video rounded-lg overflow-hidden group">
+      <div className={cn("relative w-full rounded-lg overflow-hidden group", aspect === 'square' ? 'aspect-square' : 'aspect-video')}>
         <Image src={value} alt="Upload" fill className="object-cover" />
         {!disabled && (
           <button
@@ -64,7 +65,7 @@ export function ImageUpload({ value, onChange, onRemove, disabled }: ImageUpload
   }
 
   return (
-    <div className="relative w-full aspect-video border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center bg-gray-50/50">
+    <div className={cn("relative w-full border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center bg-gray-50/50", aspect === 'square' ? 'aspect-square' : 'aspect-video')}>
       <div className="p-3 bg-white rounded-full shadow-sm mb-2">
         {isUploading ? (
           <Loader2 className="w-6 h-6 text-primary animate-spin" />

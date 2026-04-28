@@ -24,6 +24,8 @@ import {
   Check,
   Share,
   Loader2,
+  Users,
+  Laptop,
 } from "lucide-react";
 import Image from "next/image";
 import { EventHeroCarousel } from "./event-hero-carousel";
@@ -40,6 +42,7 @@ export function EventDetailPage() {
   const [isActionLoading, setIsActionLoading] = useState(false);
   const { user, isLoggedIn } = useAuth();
   const router = useRouter();
+  const [isCopied, setIsCopied] = useState(false);
 
   const [mandatoryProductsData, setMandatoryProductsData] = useState<any[]>([]);
 
@@ -239,19 +242,29 @@ export function EventDetailPage() {
                 <div className="flex items-center border border-gray-100 rounded-xl p-1 bg-white shadow-sm ring-1 ring-gray-50">
                   <Input
                     type="text"
-                    value={`checklove.com/invite/${id?.toString().substring(0, 4)}...`}
+                    value={
+                      typeof window !== "undefined"
+                        ? `${window.location.origin}/events/${id}`
+                        : `meetoff.com.br/events/${id}`
+                    }
                     readOnly
                     className="border-none focus-visible:ring-0 shadow-none bg-transparent flex-1 text-[13px] font-medium text-gray-900 truncate px-4"
                   />
                   <Button
                     onClick={() => {
-                      navigator.clipboard.writeText(`checklove.com/invite/${id}`);
-                      toast.success("Link copiado!");
+                      const url = `${window.location.origin}/events/${id}`;
+                      navigator.clipboard.writeText(url);
+                      setIsCopied(true);
+                    }}
+                    onMouseLeave={() => {
+                      if (isCopied) {
+                        setTimeout(() => setIsCopied(false), 1000);
+                      }
                     }}
                     className="bg-[#F28D35] hover:bg-[#e17c2a] text-white rounded-lg px-3 text-[14px] font-bold transition-all"
                     style={{ padding: `15px` }}
                   >
-                    Copiar
+                    {isCopied ? "Copiado!" : "Copiar"}
                   </Button>
                 </div>
               </div>
@@ -267,6 +280,20 @@ export function EventDetailPage() {
                 <Button
                   variant="outline"
                   className="w-full h-14 border-[#1A4B40] text-[#1A4B40] hover:text-[#1A4B40]/75 bg-white font-bold rounded-xl transition-all flex items-center justify-center gap-2"
+                  onClick={() => {
+                    const url = `${window.location.origin}/events/${id}`;
+                    if (navigator.share) {
+                      navigator
+                        .share({
+                          title: event.title,
+                          text: `Venha comigo ao evento ${event.title}!`,
+                          url: url,
+                        })
+                        .catch(console.error);
+                    } else {
+                      navigator.clipboard.writeText(url);
+                    }
+                  }}
                 >
                   <Share2 className="w-5 h-5" />
                   Compartilhar
@@ -319,20 +346,19 @@ export function EventDetailPage() {
                       </span>
                     </li>
                   )}
+
                   <li className="flex items-center gap-2">
                     <Check className="w-[18px] h-[18px] text-gray-800" strokeWidth={3} />
                     <span className="font-bold text-[#355E53] text-[15px]">
-                      Evento certificado com selo MeetOff
+                      Formato do evento: {event.type_event || "Presencial"}
                     </span>
                   </li>
                   {event.has_certificate && (
-                    <li className="flex items-center gap-2 mt-2">
-                      <div className="flex items-center gap-2 bg-[#355E53]/10 px-3 py-1.5 rounded-full border border-[#355E53]/20">
-                        <Check className="w-[16px] h-[16px] text-[#355E53]" strokeWidth={3} />
-                        <span className="font-bold text-[#355E53] text-[13px]">
-                          Com certificado (Selo Meetoff)
-                        </span>
-                      </div>
+                    <li className="flex items-center gap-2">
+                      <Check className="w-[18px] h-[18px] text-gray-800" strokeWidth={3} />
+                      <span className="font-bold text-[#355E53] text-[15px]">
+                        Evento certificado com selo MeetOff
+                      </span>
                     </li>
                   )}
                 </ul>
@@ -344,7 +370,7 @@ export function EventDetailPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
             {/* Products Section */}
             <div>
-              <h2 className="text-[22px] font-bold text-gray-900 mb-6">Produtos obrigatórios</h2>
+              <h2 className="text-[22px] font-bold text-gray-900 mb-6">Produtos opcionais</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {mandatoryProductsData.map((product) => (
                   <div key={product.id} className="space-y-3">
@@ -390,28 +416,51 @@ export function EventDetailPage() {
                 ).map((group: any, i: number) => (
                   <div
                     key={i}
-                    className="flex items-center justify-between py-4 border-t border-gray-50 first:border-t-0"
+                    className="flex flex-col sm:flex-row sm:items-center gap-4 py-4 border-t border-gray-50 first:border-t-0"
                   >
-                    <div className="flex-1">
-                      <h3 className="font-bold text-[#1A4B40] text-[16px]">
-                        {group.name} -{" "}
-                        <span className="text-gray-400 font-normal">
-                          {group.capacity} Vagas Disponíveis
-                        </span>
-                      </h3>
+                    {/* Cover Image */}
+                    <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 shrink-0 mx-auto sm:mx-0 flex items-center justify-center">
+                      {group.image ? (
+                        <Image src={group.image} alt={group.name} fill className="object-cover" />
+                      ) : (
+                        <Users className="w-6 h-6 text-gray-400" />
+                      )}
                     </div>
 
-                    <div className="flex items-center gap-4">
-                      <div className="flex -space-x-2">
-                        {[1, 2, 3, 4].map((j) => (
-                          <Avatar key={j} className="border-2 border-white w-8 h-8">
-                            <AvatarImage src={`https://i.pravatar.cc/100?u=${i}-${j}`} />
-                            <AvatarFallback>U</AvatarFallback>
-                          </Avatar>
-                        ))}
+                    {/* Group Info */}
+                    <div className="flex-1 text-center sm:text-left">
+                      <h3 className="font-bold text-[#1A4B40] text-[16px]">{group.name}</h3>
+
+                      <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-1">
+                        {group.category && (
+                          <span className="bg-gray-50 text-gray-600 border border-gray-100 text-[10px] px-2 py-0.5 rounded-md font-medium">
+                            {group.category}
+                          </span>
+                        )}
+                        {group.age_range && (
+                          <span className="bg-gray-50 text-gray-600 border border-gray-100 text-[10px] px-2 py-0.5 rounded-md font-medium">
+                            Faixa: {group.age_range}
+                          </span>
+                        )}
+                        <span className="text-xs text-gray-400">
+                          {group.capacity} Vagas Disponíveis
+                        </span>
                       </div>
-                      <Button className="bg-[#1A4B40] hover:bg-[#1A4B40]/90 text-white rounded-xl px-6 h-11 font-bold">
-                        Entrar
+                    </div>
+
+                    {/* Button for WhatsApp Link */}
+                    <div className="flex items-center justify-center">
+                      <Button
+                        asChild={!!group.link}
+                        className="bg-[#1A4B40] hover:bg-[#1A4B40]/90 text-white rounded-xl px-6 h-11 font-bold w-full sm:w-auto"
+                      >
+                        {group.link ? (
+                          <a href={group.link} target="_blank" rel="noopener noreferrer">
+                            Entrar no Grupo
+                          </a>
+                        ) : (
+                          <span>Entrar</span>
+                        )}
                       </Button>
                     </div>
                   </div>

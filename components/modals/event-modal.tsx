@@ -68,8 +68,10 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
     has_certificate: event ? event.has_certificate : true,
     video_url: event?.video_url || "",
     age_range: event?.age_range || "Todas as idades",
+    type_event: event?.type_event || "Presencial",
   });
   const [tagInput, setTagInput] = useState("");
+  const [productSearchQuery, setProductSearchQuery] = useState("");
 
   const [availableProducts, setAvailableProducts] = useState<any[]>([]);
 
@@ -85,6 +87,12 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
     };
     fetchProducts();
   }, []);
+
+  const sortedAndFilteredProducts = [...availableProducts]
+    .filter((product) =>
+      product.name.toLowerCase().includes(productSearchQuery.toLowerCase())
+    )
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const handleCepLookup = async (cep: string) => {
     const cleanCep = cep.replace(/\D/g, "");
@@ -193,7 +201,7 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6 py-4">
-          <div className="space-y-4">
+          <div className="space-y-4 p-1">
             <div className="flex items-center justify-between">
               <Label className="text-base font-bold">Fotos do Evento (Até 4)</Label>
               <span className="text-xs text-muted-foreground italic">
@@ -277,7 +285,7 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
               {/* Left Column: Logística e Investimento */}
-              <div className="space-y-6">
+              <div className="space-y-6 p-1">
                 <h3 className="text-sm font-bold uppercase tracking-wider text-primary/70 pb-2 border-b flex items-center gap-2">
                   <Settings2 className="w-4 h-4" />
                   Logística & Investimento
@@ -324,9 +332,17 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
                     <Label htmlFor="capacity">Vagas Totais</Label>
                     <Input
                       id="capacity"
-                      type="number"
+                      type="text"
                       value={formData.capacity}
-                      onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '');
+                        const num = parseInt(val);
+                        if (!val) {
+                          setFormData({ ...formData, capacity: '' });
+                        } else if (num >= 0 && num <= 10000) {
+                          setFormData({ ...formData, capacity: val });
+                        }
+                      }}
                       disabled={isReadOnly}
                     />
                   </div>
@@ -384,11 +400,28 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
               </div>
 
               {/* Right Column: Localização e Público */}
-              <div className="space-y-6">
+              <div className="space-y-6 p-1">
                 <h3 className="text-sm font-bold uppercase tracking-wider text-primary/70 pb-2 border-b flex items-center gap-2">
                   <Users className="w-4 h-4" />
                   Público & Localização
                 </h3>
+
+                <div className="space-y-2">
+                  <Label htmlFor="type_event">Formato do Evento</Label>
+                  <Select
+                    value={formData.type_event || "Presencial"}
+                    onValueChange={(value) => setFormData({ ...formData, type_event: value })}
+                    disabled={isReadOnly}
+                  >
+                    <SelectTrigger id="type_event">
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Presencial">📍 Presencial</SelectItem>
+                      <SelectItem value="Online">💻 Online</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -471,10 +504,10 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="conductor">Condutor(a)</Label>
+                  <Label htmlFor="conductor">Organizador (a)</Label>
                   <Input
                     id="conductor"
-                    placeholder="Quem conduzirá o evento?"
+                    placeholder="Quem organiza o evento?"
                     value={formData.conductor}
                     onChange={(e) => setFormData({ ...formData, conductor: e.target.value })}
                     disabled={isReadOnly}
@@ -498,153 +531,257 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
           </div>
 
           {/* Unified Attachments Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
-            {/* Products Attachment using Collapsible */}
-            <div className="space-y-3">
-              <Collapsible className="border rounded-lg bg-gray-50/50 overflow-hidden">
-                <CollapsibleTrigger asChild>
-                  <div className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-100 transition-colors">
-                    <div className="flex items-center gap-2">
-                      <ShoppingBag className="w-4 h-4 text-primary" />
-                      <span className="text-sm font-bold">Produtos Obrigatórios</span>
-                      <Badge variant="outline" className="text-[10px] h-5">
-                        {formData.mandatory_products.length} Itens
-                      </Badge>
-                    </div>
-                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                  </div>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="p-3 pt-0 space-y-3 animate-in slide-in-from-top-2 duration-200">
-                  <div className="space-y-1 max-h-[200px] overflow-y-auto pr-1">
-                    {availableProducts.map((product) => (
-                      <div
-                        key={product.id}
-                        className="flex items-center space-x-2 p-2 hover:bg-white rounded-md transition-colors border-b border-gray-100/50 last:border-0"
+          <div className="space-y-8 pt-6">
+            {/* Products Attachment using Separator */}
+            <div className="space-y-6">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-primary/70 pb-2 border-b flex items-center gap-2">
+                <ShoppingBag className="w-4 h-4" />
+                Produtos Opcionais
+              </h3>
+
+              <div className="p-1">
+                <div className="relative">
+                  <Input
+                    type="text"
+                    placeholder="Pesquisar produto pelo nome..."
+                    value={productSearchQuery}
+                    onChange={(e) => setProductSearchQuery(e.target.value)}
+                    className="h-9 text-xs bg-white"
+                  />
+                </div>
+
+                <div className="space-y-1 max-h-[200px] overflow-y-auto pr-1 mt-3">
+                  {sortedAndFilteredProducts.map((product) => (
+                    <div
+                      key={product.id}
+                      className="flex items-center space-x-3 p-3 hover:bg-white rounded-lg transition-colors border-b border-gray-100 last:border-0 bg-white mb-1 shadow-xs"
+                    >
+                      <Checkbox
+                        id={`col-prod-${product.id}`}
+                        checked={formData.mandatory_products.includes(product.id)}
+                        onCheckedChange={(checked) => {
+                          const newProducts = checked
+                            ? [...formData.mandatory_products, product.id]
+                            : formData.mandatory_products.filter(
+                                (id: string) => id !== product.id,
+                              );
+                          setFormData({ ...formData, mandatory_products: newProducts });
+                        }}
+                        disabled={isReadOnly}
+                      />
+                      <label
+                        htmlFor={`col-prod-${product.id}`}
+                        className="text-xs font-semibold cursor-pointer flex-1 text-gray-700"
                       >
-                        <Checkbox
-                          id={`col-prod-${product.id}`}
-                          checked={formData.mandatory_products.includes(product.id)}
-                          onCheckedChange={(checked) => {
-                            const newProducts = checked
-                              ? [...formData.mandatory_products, product.id]
-                              : formData.mandatory_products.filter(
-                                  (id: string) => id !== product.id,
-                                );
-                            setFormData({ ...formData, mandatory_products: newProducts });
-                          }}
-                          disabled={isReadOnly}
-                        />
-                        <label
-                          htmlFor={`col-prod-${product.id}`}
-                          className="text-xs font-medium cursor-pointer flex-1"
-                        >
-                          {product.name}
-                        </label>
-                        <span className="text-[10px] text-muted-foreground font-bold">
-                          R$ {product.price}
-                        </span>
-                      </div>
-                    ))}
-                    {availableProducts.length === 0 && (
-                      <p className="text-[10px] text-muted-foreground text-center py-4 italic">
-                        Nenhum produto cadastrado.
-                      </p>
-                    )}
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
+                        {product.name}
+                      </label>
+                      <span className="text-xs text-gray-900 font-bold">
+                        R$ {product.price}
+                      </span>
+                    </div>
+                  ))}
+                  {sortedAndFilteredProducts.length === 0 && (
+                    <p className="text-xs text-muted-foreground text-center py-6 italic">
+                      {productSearchQuery ? "Nenhum produto encontrado para a busca." : "Nenhum produto cadastrado."}
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
 
-            {/* Groups Attachment using Collapsible */}
-            <div className="space-y-3">
-              <Collapsible className="border rounded-lg bg-gray-50/50 overflow-hidden">
-                <CollapsibleTrigger asChild>
-                  <div className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-100 transition-colors">
-                    <div className="flex items-center gap-2">
-                      <Users className="w-4 h-4 text-primary" />
-                      <span className="text-sm font-bold">Grupos de Participação</span>
-                      <Badge variant="outline" className="text-[10px] h-5">
-                        {formData.groups.length} Grupos
-                      </Badge>
-                    </div>
-                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                  </div>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="p-3 pt-0 space-y-3 animate-in slide-in-from-top-2 duration-200">
-                  {!isReadOnly && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="w-full h-8 gap-1 text-xs mb-2 border-dashed bg-white"
-                      onClick={() => {
-                        setFormData({
-                          ...formData,
-                          groups: [
-                            ...formData.groups,
-                            { name: `Grupo ${formData.groups.length + 1}`, capacity: 10 },
-                          ],
-                        });
-                      }}
+            {/* Groups Attachment using Separator */}
+            <div className="space-y-6">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-primary/70 pb-2 border-b flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                Grupos de Participação
+              </h3>
+
+              <div>
+                {!isReadOnly && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-full h-9 gap-1 text-xs border-dashed bg-white hover:bg-gray-50 shadow-xs mb-3 text-primary hover:text-primary/70"
+                    onClick={() => {
+                      setFormData({
+                        ...formData,
+                        groups: [
+                          ...formData.groups,
+                          { name: `Grupo ${formData.groups.length + 1}`, capacity: 10, category: "Todos", age_range: "Livre", link: "", image: "" },
+                        ],
+                      });
+                    }}
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1" /> Adicionar Novo Grupo
+                  </Button>
+                )}
+                
+                <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1">
+                  {formData.groups.map((group: any, index: number) => (
+                    <div
+                      key={index}
+                      className="space-y-4 relative group p-1"
                     >
-                      <Plus className="w-3 h-3" /> Adicionar Grupo
-                    </Button>
-                  )}
-                  <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1">
-                    {formData.groups.map((group: any, index: number) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-2 p-2 bg-white rounded-md border shadow-sm group"
-                      >
-                        <Input
-                          placeholder="Nome"
-                          value={group.name}
-                          onChange={(e) => {
-                            const newGroups = [...formData.groups];
-                            newGroups[index].name = e.target.value;
-                            setFormData({ ...formData, groups: newGroups });
-                          }}
-                          className="h-7 text-xs flex-1"
-                          disabled={isReadOnly}
-                        />
-                        <Input
-                          type="number"
-                          placeholder="Vagas"
-                          value={group.capacity}
-                          onChange={(e) => {
-                            const newGroups = [...formData.groups];
-                            newGroups[index].capacity = parseInt(e.target.value);
-                            setFormData({ ...formData, groups: newGroups });
-                          }}
-                          className="h-7 text-xs w-16 text-center"
-                          disabled={isReadOnly}
-                        />
-                        {!isReadOnly && (
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6 text-red-500 hover:text-white hover:bg-red-500 rounded-md"
-                            onClick={() => {
-                              const newGroups = formData.groups.filter(
-                                (_: any, i: number) => i !== index,
-                              );
+                      <div className="flex flex-col sm:flex-row items-start gap-4">
+                        {/* Left Side: Square Image Upload */}
+                        <div className="w-32 space-y-1 shrink-0 mx-auto sm:mx-0">
+                          <Label className="text-[11px] font-bold text-gray-500">Capa (500x500)</Label>
+                          <ImageUpload
+                            value={group.image || ""}
+                            aspect="square"
+                            onChange={(url) => {
+                              const newGroups = [...formData.groups];
+                              newGroups[index].image = url;
                               setFormData({ ...formData, groups: newGroups });
                             }}
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </Button>
-                        )}
+                            onRemove={() => {
+                              const newGroups = [...formData.groups];
+                              newGroups[index].image = "";
+                              setFormData({ ...formData, groups: newGroups });
+                            }}
+                            disabled={isReadOnly}
+                          />
+                        </div>
+
+                        {/* Right Side: Fields */}
+                        <div className="flex-1 space-y-3 w-full">
+                          {/* Name & Vagas & Delete */}
+                          <div className="flex items-center gap-3">
+                            <div className="flex-1 space-y-1">
+                              <Label className="text-[11px] font-bold text-gray-500">Nome do Grupo</Label>
+                              <Input
+                                placeholder="Ex: Caravana Mulheres 40+"
+                                value={group.name}
+                                onChange={(e) => {
+                                  const newGroups = [...formData.groups];
+                                  newGroups[index].name = e.target.value;
+                                  setFormData({ ...formData, groups: newGroups });
+                                }}
+                                className="h-9 text-xs"
+                                disabled={isReadOnly}
+                              />
+                            </div>
+                            <div className="w-24 space-y-1">
+                              <Label className="text-[11px] font-bold text-gray-500">Vagas</Label>
+                              <Input
+                                type="text"
+                                placeholder="10"
+                                value={group.capacity}
+                                onChange={(e) => {
+                                  const val = e.target.value.replace(/\D/g, '');
+                                  const num = parseInt(val);
+                                  const newGroups = [...formData.groups];
+                                  if (!val) {
+                                    newGroups[index].capacity = '';
+                                    setFormData({ ...formData, groups: newGroups });
+                                  } else if (num >= 0 && num <= 10000) {
+                                    newGroups[index].capacity = num;
+                                    setFormData({ ...formData, groups: newGroups });
+                                  }
+                                }}
+                                className="h-9 text-xs text-center"
+                                disabled={isReadOnly}
+                              />
+                            </div>
+                            {!isReadOnly && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="h-9 w-9 text-red-500 hover:text-white hover:bg-red-500 rounded-lg self-end"
+                                onClick={() => {
+                                  const newGroups = formData.groups.filter(
+                                    (_: any, i: number) => i !== index
+                                  );
+                                  setFormData({ ...formData, groups: newGroups });
+                                }}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
+
+                          {/* Middle Row: Category & Age Range */}
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1">
+                              <Label className="text-[11px] font-bold text-gray-500">Categoria</Label>
+                              <Select
+                                value={group.category || "Todos"}
+                                onValueChange={(val) => {
+                                  const newGroups = [...formData.groups];
+                                  newGroups[index].category = val;
+                                  setFormData({ ...formData, groups: newGroups });
+                                }}
+                                disabled={isReadOnly}
+                              >
+                                <SelectTrigger className="h-9 text-xs">
+                                  <SelectValue placeholder="Selecione" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Todos">Todos os públicos</SelectItem>
+                                  <SelectItem value="Só mulheres">Só mulheres</SelectItem>
+                                  <SelectItem value="Só homens">Só homens</SelectItem>
+                                  <SelectItem value="Mulheres e homens">Mulheres e homens</SelectItem>
+                                  <SelectItem value="Crianças">Crianças</SelectItem>
+                                  <SelectItem value="Gêneros diversos">Gêneros diversos</SelectItem>
+                                  <SelectItem value="Comunidade Gays">Comunidade Gays</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-[11px] font-bold text-gray-500">Faixa Etária</Label>
+                              <Select
+                                value={group.age_range || "Livre"}
+                                onValueChange={(val) => {
+                                  const newGroups = [...formData.groups];
+                                  newGroups[index].age_range = val;
+                                  setFormData({ ...formData, groups: newGroups });
+                                }}
+                                disabled={isReadOnly}
+                              >
+                                <SelectTrigger className="h-9 text-xs">
+                                  <SelectValue placeholder="Selecione" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Livre">Livre</SelectItem>
+                                  <SelectItem value="18+">18+</SelectItem>
+                                  <SelectItem value="30+">30+</SelectItem>
+                                  <SelectItem value="40+">40+</SelectItem>
+                                  <SelectItem value="50+">50+</SelectItem>
+                                  <SelectItem value="60+">60+</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+
+                          {/* Link Row */}
+                          <div className="space-y-1">
+                            <Label className="text-[11px] font-bold text-gray-500">Link do WhatsApp</Label>
+                            <Input
+                              placeholder="https://chat.whatsapp.com/..."
+                              value={group.link || ""}
+                              onChange={(e) => {
+                                const newGroups = [...formData.groups];
+                                newGroups[index].link = e.target.value;
+                                setFormData({ ...formData, groups: newGroups });
+                              }}
+                              className="h-9 text-xs"
+                              disabled={isReadOnly}
+                            />
+                          </div>
+                        </div>
                       </div>
-                    ))}
-                    {formData.groups.length === 0 && (
-                      <p className="text-[10px] text-muted-foreground text-center py-2 italic">
-                        Nenhum grupo configurado.
-                      </p>
-                    )}
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
+                    </div>
+                  ))}
+                  
+                  {formData.groups.length === 0 && (
+                    <p className="text-xs text-muted-foreground text-center py-4 italic bg-white rounded-lg border border-gray-100 shadow-xs">
+                      Nenhum grupo configurado.
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
