@@ -165,12 +165,16 @@ export function EventsPage() {
                           </span>
                         </div>
 
-                        <h1 className="mb-6 text-3xl sm:text-4xl font-bold leading-tight text-white lg:text-5xl">
+                        <h1 className="mb-6 text-3xl sm:text-4xl font-black uppercase italic leading-tight text-white lg:text-6xl drop-shadow-lg">
                           {slide.title}
                         </h1>
 
                         <div className="flex flex-wrap items-center gap-4">
-                          <Button size="lg" className="bg-accent hover:bg-accent/90" asChild>
+                          <Button
+                            size="lg"
+                            className="bg-accent hover:bg-accent/90 font-black uppercase italic px-10 py-8"
+                            asChild
+                          >
                             <Link href={`/events/${slide.id}`}>Ver detalhes</Link>
                           </Button>
 
@@ -248,8 +252,10 @@ export function EventsPage() {
       {/* Events Section */}
       <section className="px-4 py-8 lg:px-20">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-            <h2 className="text-2xl font-bold text-black lg:text-3xl">Eventos Populares</h2>
+          <div className="mb-10 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+            <h2 className="text-3xl font-black uppercase italic text-black lg:text-4xl">
+              Eventos Populares
+            </h2>
 
             <div className="flex w-full gap-3 sm:w-auto">
               <div className="relative flex-1 sm:w-64">
@@ -406,7 +412,7 @@ export function EventsPage() {
                 return (
                   <div
                     key={event.id}
-                    className="group overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md"
+                    className="group overflow-hidden rounded-[2rem] border-none bg-card shadow-xl transition-all hover:-translate-y-2 hover:shadow-2xl"
                   >
                     <div className="relative h-80 overflow-hidden">
                       <Link href={`/events/${event.id}`} className="absolute inset-0 z-0">
@@ -414,60 +420,60 @@ export function EventsPage() {
                           src={event.image || "/placeholder.svg"}
                           alt={event.title}
                           fill
-                          className="object-cover transition-transform group-hover:scale-105"
+                          className="object-cover transition-transform duration-500 group-hover:scale-110"
                         />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                       </Link>
 
-                      <div className="absolute right-3 top-3 flex gap-2 z-10">
-                        <button className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-100 cursor-pointer">
-                          <MapPin className="h-4 w-4 text-black" />
+                      <div className="absolute right-4 top-4 flex gap-2 z-10">
+                        <button className="w-11 h-11 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-sm shadow-md hover:bg-white cursor-pointer transition-all hover:scale-110">
+                          <MapPin className="h-4 w-4 text-primary" />
                         </button>
-                        <button className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-100 cursor-pointer">
-                          <Share2 className="h-4 w-4 text-black" />
+                        <button className="w-11 h-11 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-sm shadow-md hover:bg-white cursor-pointer transition-all hover:scale-110">
+                          <Share2 className="h-4 w-4 text-primary" />
                         </button>
                       </div>
 
-                      <div className="absolute left-3 top-3 h-10 rounded-lg bg-white px-3 font-semibold text-black shadow-md flex items-center gap-2 z-10">
+                      <div className="absolute left-4 top-4 h-11 rounded-full bg-white/90 backdrop-blur-sm px-4 font-black uppercase italic text-xs text-primary shadow-md flex items-center gap-2 z-10">
                         <span>{formatBRL(event.price)}</span>
-                        <span className="w-px h-4 bg-gray-200" />
+                        <span className="w-px h-4 bg-primary/20" />
                         <span className="flex items-center gap-1">
                           <span>{event.type_event || "Presencial"}</span>
                         </span>
                       </div>
                     </div>
 
-                    <div className="p-4">
-                      <div className="mb-4 flex items-start gap-6">
-                        <div className="flex flex-col items-center gap-1 min-w-[50px]">
-                          <span className="text-xs font-semibold text-black uppercase tracking-wide">
+                    <div className="p-8">
+                      <div className="mb-6 flex items-start gap-6">
+                        <div className="flex flex-col items-center gap-1 min-w-[50px] bg-primary/5 p-3 rounded-2xl">
+                          <span className="text-[10px] font-black text-primary uppercase tracking-widest">
                             {month.substring(0, 3)}
                           </span>
-                          <span className="text-3xl font-bold text-secondary leading-none">
+                          <span className="text-3xl font-black text-primary leading-none italic">
                             {day}
                           </span>
                         </div>
-                        <div className="flex-1 pl-4 relative">
-                          <div className="absolute left-0 top-1/4 h-1/2 border-l border-1"></div>
-                          <div className="ml-4">
-
-                            <h3 className="mb-1 text-lg font-bold text-black line-clamp-1">
-                              {event.title}
-                            </h3>
-                            <p className="text-sm text-muted-foreground">
-                              {event.location}{" "}
-                              <span className="text-gray-300 font-normal mx-1">•</span> {event.time}
-                            </p>
-                          </div>
+                        <div className="flex-1 relative">
+                          <h3 className="mb-2 text-xl font-black uppercase italic text-black line-clamp-1 leading-tight">
+                            {event.title}
+                          </h3>
+                          <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                            {event.location}{" "}
+                            <span className="text-primary font-black mx-1">•</span> {event.time}
+                          </p>
                         </div>
                       </div>
 
-                      <div className="flex flex-col gap-2">
-                        <Button className="w-full bg-accent hover:bg-accent/90" asChild>
+                      <div className="flex flex-col gap-3">
+                        <Button
+                          className="w-full bg-primary hover:bg-primary/90 font-black uppercase italic py-7 rounded-2xl"
+                          asChild
+                        >
                           <Link href={`/events/${event.id}`}>Ver detalhes</Link>
                         </Button>
                         <Button
                           variant="outline"
-                          className="w-full bg-transparent text-black hover:bg-gray-50"
+                          className="w-full bg-transparent text-black hover:bg-gray-50 font-black uppercase italic py-7 rounded-2xl border-2"
                           onClick={() => {
                             const url = `${window.location.origin}/events/${event.id}`;
                             navigator.clipboard.writeText(url);

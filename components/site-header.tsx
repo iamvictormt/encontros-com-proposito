@@ -21,8 +21,8 @@ export function SiteHeader() {
   ];
 
   return (
-    <header className="bg-white px-4 py-4 lg:px-20 sticky top-0 z-50">
-      <div className="mx-auto max-w-7xl flex items-center justify-between md:mt-0 md:mb-0 mt-8 mb-8">
+    <header className="bg-white/80 backdrop-blur-md px-4 py-3 lg:px-20 sticky top-0 z-50 border-b border-gray-100 shadow-sm">
+      <div className="mx-auto max-w-7xl flex items-center justify-between md:mt-0 md:mb-0 mt-4 mb-4">
         <div className="flex items-center gap-4">
           <div className="hidden lg:block">
             <Logo href="/events" />
@@ -33,18 +33,24 @@ export function SiteHeader() {
           <Logo href="/events" />
         </div>
 
-        <nav className="hidden items-center gap-6 lg:flex">
+        <nav className="hidden items-center gap-8 lg:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="font-medium text-black hover:text-black/80"
+              className={cn(
+                "text-sm font-bold transition-all hover:text-primary relative after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all hover:after:w-full",
+                pathname === link.href ? "text-primary after:w-full" : "text-black",
+              )}
             >
               {link.label}
             </Link>
           ))}
           {user?.isAdmin && (
-            <Link href="/admin" className="font-bold text-secondary hover:text-secondary/80">
+            <Link
+              href="/admin"
+              className="text-sm font-black italic uppercase text-secondary hover:opacity-80"
+            >
               Admin
             </Link>
           )}
@@ -60,28 +66,28 @@ export function SiteHeader() {
               <Button
                 variant="ghost"
                 asChild
-                className="hidden sm:inline-flex bg-transparent text-black hover:bg-gray-50 hover:text-black"
+                className="hidden sm:inline-flex bg-transparent text-black hover:bg-gray-100/50"
               >
                 <Link href="/account">Minha Conta</Link>
               </Button>
               <Button
                 onClick={() => logout()}
-                className="bg-secondary hover:bg-secondary/90 hidden sm:inline-flex"
+                variant="secondary"
+                className="hidden sm:inline-flex px-8"
               >
                 Sair
               </Button>
-              {/* Only show logout on mobile inside the drawer, but keep the button for tablet/desktop */}
             </>
           ) : (
             <>
               <Button
                 variant="ghost"
                 asChild
-                className="hidden sm:inline-flex bg-transparent text-black hover:bg-gray-50 hover:text-black"
+                className="hidden sm:inline-flex bg-transparent text-black hover:bg-gray-100/50"
               >
                 <Link href="/login">Entrar</Link>
               </Button>
-              <Button asChild className="bg-secondary hover:bg-secondary/90 hidden sm:inline-flex">
+              <Button asChild variant="default" className="hidden sm:inline-flex px-8">
                 <Link href="/signup">Cadastrar</Link>
               </Button>
             </>

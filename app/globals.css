@@ -11,73 +11,73 @@ button,
 
 :root {
   /* Updated theme colors to match MeetOff brand */
-  --background: #fcfcfa;
-  --foreground: #1f4c47;
-  --card: #fcfcfa;
-  --card-foreground: #1f4c47;
-  --popover: #fcfcfa;
-  --popover-foreground: #1f4c47;
-  --primary: #8a0204;
-  --primary-foreground: #fcfcfa;
-  --secondary: #1f4c47;
-  --secondary-foreground: #fcfcfa;
-  --muted: #e8e8e6;
-  --muted-foreground: #6b6b68;
+  --background: #ffffff;
+  --foreground: #000000;
+  --card: #ffffff;
+  --card-foreground: #000000;
+  --popover: #ffffff;
+  --popover-foreground: #000000;
+  --primary: #1f4c47;
+  --primary-foreground: #ffffff;
+  --secondary: #8a0204;
+  --secondary-foreground: #ffffff;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
   --accent: #f18d42;
-  --accent-foreground: #fcfcfa;
+  --accent-foreground: #ffffff;
   --destructive: #8a0204;
-  --destructive-foreground: #fcfcfa;
-  --border: #e0e0dd;
-  --input: #e0e0dd;
-  --ring: #f18d42;
-  --chart-1: #f18d42;
-  --chart-2: #1f4c47;
-  --chart-3: #8a0204;
-  --chart-4: #fcfcfa;
-  --chart-5: #e8e8e6;
-  --radius: 0.75rem;
-  --sidebar: #fcfcfa;
-  --sidebar-foreground: #1f4c47;
-  --sidebar-primary: #8a0204;
-  --sidebar-primary-foreground: #fcfcfa;
+  --destructive-foreground: #ffffff;
+  --border: #e4e4e7;
+  --input: #e4e4e7;
+  --ring: #1f4c47;
+  --chart-1: #1f4c47;
+  --chart-2: #8a0204;
+  --chart-3: #f18d42;
+  --chart-4: #000000;
+  --chart-5: #71717a;
+  --radius: 1rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #000000;
+  --sidebar-primary: #1f4c47;
+  --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #f18d42;
-  --sidebar-accent-foreground: #fcfcfa;
-  --sidebar-border: #e0e0dd;
-  --sidebar-ring: #f18d42;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #e4e4e7;
+  --sidebar-ring: #1f4c47;
 }
 
 .dark {
-  --background: #1f4c47;
-  --foreground: #fcfcfa;
-  --card: #1f4c47;
-  --card-foreground: #fcfcfa;
-  --popover: #1f4c47;
-  --popover-foreground: #fcfcfa;
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #0a0a0a;
+  --card-foreground: #ffffff;
+  --popover: #0a0a0a;
+  --popover-foreground: #ffffff;
   --primary: #f18d42;
-  --primary-foreground: #1f4c47;
-  --secondary: #8a0204;
-  --secondary-foreground: #fcfcfa;
-  --muted: #2d5c56;
-  --muted-foreground: #b8b8b5;
+  --primary-foreground: #000000;
+  --secondary: #1f4c47;
+  --secondary-foreground: #ffffff;
+  --muted: #18181b;
+  --muted-foreground: #a1a1aa;
   --accent: #f18d42;
-  --accent-foreground: #1f4c47;
+  --accent-foreground: #000000;
   --destructive: #8a0204;
-  --destructive-foreground: #fcfcfa;
-  --border: #2d5c56;
-  --input: #2d5c56;
+  --destructive-foreground: #ffffff;
+  --border: #27272a;
+  --input: #27272a;
   --ring: #f18d42;
   --chart-1: #f18d42;
-  --chart-2: #fcfcfa;
+  --chart-2: #ffffff;
   --chart-3: #8a0204;
-  --chart-4: #e8e8e6;
-  --chart-5: #b8b8b5;
-  --sidebar: #1f4c47;
-  --sidebar-foreground: #fcfcfa;
+  --chart-4: #1f4c47;
+  --chart-5: #a1a1aa;
+  --sidebar: #0a0a0a;
+  --sidebar-foreground: #ffffff;
   --sidebar-primary: #f18d42;
-  --sidebar-primary-foreground: #1f4c47;
-  --sidebar-accent: #8a0204;
-  --sidebar-accent-foreground: #fcfcfa;
-  --sidebar-border: #2d5c56;
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: #1f4c47;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #27272a;
   --sidebar-ring: #f18d42;
 }
 
@@ -122,12 +122,27 @@ button,
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-white text-foreground;
+    @apply bg-background text-foreground antialiased transition-colors duration-300;
   }
   button, 
   [role="button"],
