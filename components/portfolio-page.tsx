@@ -27,107 +27,65 @@ const reviews: Review[] = [
 
 export function PortfolioPage() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-white">
       <SiteHeader />
 
-      <main className="px-4 py-8 lg:px-20">
+      <main className="px-4 py-12 lg:px-20">
         <div className="mx-auto max-w-7xl">
-          {/* Header Section */}
-          <div className="flex flex-col md:flex-row gap-6 mb-8">
-            <div className="flex-1">
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden mb-4">
-                <img
-                  src="./images/joao-carlos.png"
-                  alt="João Carlos"
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <h3 className="font-bold text-lg text-black">João Carlos</h3>
-              <p className="text-sm text-gray-500 mb-2">Profissionais na área de terapia</p>
-              <p className="text-sm">
-                Email:{" "}
-                <a
-                  href="mailto:FigmaDesignUXUI@email.com"
-                  className="text-secondary underline decoration-secondary font-bold"
-                >
-                  FigmaDesignUXUI@email.com
-                </a>
-              </p>
+          {/* Hero Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-24">
+            <div className="order-2 lg:order-1">
+               <h1 className="text-5xl sm:text-7xl font-black text-black uppercase italic tracking-tighter leading-[0.9] mb-8">
+                 Conecte-se com <span className="text-primary">Propósito</span>
+               </h1>
+               <p className="text-xl text-gray-500 mb-10 leading-relaxed max-w-xl font-medium">
+                 João Carlos & Labernarde: Facilitadores de encontros reais e transformadores.
+                 Nossa missão é resgatar a essência das conexões humanas.
+               </p>
+               <div className="flex flex-col sm:flex-row items-center gap-6">
+                 <Button
+                   asChild
+                   className="bg-primary hover:bg-primary/90 text-white rounded-full px-10 py-8 text-lg font-black uppercase italic w-full sm:w-auto"
+                 >
+                   <Link href="/schedule-session">Agendar Sessão</Link>
+                 </Button>
+                 <div className="flex gap-4">
+                   <Link href="#" className="w-12 h-12 flex items-center justify-center rounded-full border border-gray-100 text-gray-400 hover:text-primary hover:border-primary transition-all">
+                     <Instagram size={20} />
+                   </Link>
+                   <Link href="#" className="w-12 h-12 flex items-center justify-center rounded-full border border-gray-100 text-gray-400 hover:text-primary hover:border-primary transition-all">
+                     <Linkedin size={20} />
+                   </Link>
+                 </div>
+               </div>
             </div>
 
-            <div className="flex-1">
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden mb-4">
-                <img
-                  src="./images/alesca-de-labernarde.png"
-                  alt="Aiesca de Labernarde"
-                  className="object-cover w-full h-full"
-                />
+            <div className="order-1 lg:order-2 grid grid-cols-2 gap-4">
+              <div className="space-y-4 pt-12">
+                 <div className="aspect-[3/4] rounded-[3rem] overflow-hidden shadow-2xl">
+                    <img src="./images/joao-carlos.png" alt="João Carlos" className="w-full h-full object-cover" />
+                 </div>
+                 <div className="bg-secondary p-6 rounded-[2rem] text-white">
+                    <div className="text-2xl font-black italic">10+</div>
+                    <div className="text-[10px] uppercase font-bold tracking-widest opacity-60">Anos de Experiência</div>
+                 </div>
               </div>
-              <h3 className="font-bold text-lg text-black">Alesca de Labernarde</h3>
-              <p className="text-sm text-gray-500 mb-2">
-                Profissionais na área de advocacia e comércio exterior
-              </p>
-              <p className="text-sm">
-                Email:{" "}
-                <a
-                  href="mailto:FigmaDesignUXUI@email.com"
-                  className="text-secondary underline decoration-secondary font-bold"
-                >
-                  FigmaDesignUXUI@email.com
-                </a>
-              </p>
-            </div>
-          </div>
-
-          {/* Intro Text */}
-          <div className="flex flex-col md:flex-row justify-between items-start mb-12 gap-8 mt-12 md:mt-22">
-            <div className="w-full md:w-[95%] pr-0 md:pr-12">
-              <h1 className="text-3xl md:text-5xl font-bold mb-6 text-black tracking-tight leading-tight">
-                Olá, Nós somos <span className="text-primary">João Carlos</span> &{" "}
-                <span className="text-secondary">Labernarde</span>
-                <br />
-                Terapia especializada em atender mulheres que buscam reencontrar sua força
-              </h1>
-              <p className="text-gray-500 text-lg mb-8 max-w-4xl leading-relaxed">
-                Apoio psicológico acolhedor e direcionado para mulheres que passaram por abuso e
-                outras situações traumáticas, com foco no seu bem-estar e recuperação.
-              </p>
-              <div className="flex flex-col sm:flex-row items-center gap-4">
-                <Button
-                  asChild
-                  className="bg-accent hover:bg-accent/90 text-white rounded-md px-8 py-7 button-base w-full sm:w-auto text-base"
-                >
-                  <Link href="/schedule-session">Agendar Sessão com Fundadores</Link>
-                </Button>
-                <button className="text-sm font-bold flex items-center justify-center hover:underline text-black cursor-pointer w-full sm:w-auto py-3">
-                  <span>Saiba mais sobre meu trabalho</span>
-                  <span className="ml-2 text-lg">↓</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="w-full md:w-auto flex justify-center md:justify-end">
-              <div className="flex flex-row md:flex-col gap-4 text-gray-600 border border-gray-100 rounded-2xl md:rounded-full py-3 px-6 md:py-6 md:px-3 shadow-sm items-center bg-white/50 backdrop-blur-sm">
-                <Link href="#" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                  <Linkedin size={22} />
-                </Link>
-                <Link href="#" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                  <Instagram size={22} />
-                </Link>
-                <Link href="#" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                  <Phone size={22} />
-                </Link>
-                <Link href="#" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                  <Facebook size={22} />
-                </Link>
+              <div className="space-y-4">
+                 <div className="bg-accent p-6 rounded-[2rem] text-white">
+                    <div className="text-2xl font-black italic">300+</div>
+                    <div className="text-[10px] uppercase font-bold tracking-widest opacity-60">Casos Atendidos</div>
+                 </div>
+                 <div className="aspect-[3/4] rounded-[3rem] overflow-hidden shadow-2xl">
+                    <img src="./images/alesca-de-labernarde.png" alt="Aiesca de Labernarde" className="w-full h-full object-cover" />
+                 </div>
               </div>
             </div>
           </div>
 
           {/* Sobre os Profissionais */}
-          <div className="mb-12">
-            <h2 className="text-xl font-bold mb-6 text-black">Sobre os Profissionais</h2>
-            <div className="space-y-4 text-sm text-gray-600 leading-relaxed">
+          <div className="mb-24 py-16 px-8 sm:px-16 bg-gray-50 rounded-[4rem]">
+            <h2 className="text-3xl font-black uppercase italic text-black mb-12 text-center lg:text-left">Os Fundadores</h2>
+            <div className="columns-1 lg:columns-2 gap-12 space-y-6 text-base text-gray-500 leading-relaxed font-medium">
               <p>
                 João Carlos é terapeuta com experiência internacional, com formações e cursos
                 realizados em Lisboa, Portugal, voltados para relacionamentos. Atua como terapeuta
@@ -198,33 +156,22 @@ export function PortfolioPage() {
           </div>
 
           {/* Categorias de Atendimento */}
-          <div className="mb-12">
-            <h2 className="text-xl font-bold mb-6 text-black">Categorias de Atendimento</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <div className="flex flex-col items-center justify-center p-6 border rounded-xl hover:border-gray-300 transition-all bg-gray-50/50">
-                <Heart className="w-8 h-8 text-secondary mb-3" />
-                <span className="font-semibold text-sm text-black">Relacionamentos</span>
-              </div>
-              <div className="flex flex-col items-center justify-center p-6 border rounded-xl hover:border-gray-300 transition-all bg-gray-50/50">
-                <User className="w-8 h-8 text-secondary mb-3" />
-                <span className="font-semibold text-sm text-black">Solteiras</span>
-              </div>
-              <div className="flex flex-col items-center justify-center p-6 border rounded-xl hover:border-gray-300 transition-all bg-gray-50/50">
-                <Users className="w-8 h-8 text-secondary mb-3" />
-                <span className="font-semibold text-sm text-black">Divorciadas</span>
-              </div>
-              <div className="flex flex-col items-center justify-center p-6 border rounded-xl hover:border-gray-300 transition-all bg-gray-50/50">
-                <Frown className="w-8 h-8 text-secondary mb-3" />
-                <span className="font-semibold text-sm text-black">Viúvas</span>
-              </div>
-              <div className="flex flex-col items-center justify-center p-6 border rounded-xl hover:border-gray-300 transition-all bg-gray-50/50">
-                <Users className="w-8 h-8 text-secondary mb-3" />
-                <span className="font-semibold text-sm text-black">Casais</span>
-              </div>
-              <div className="flex flex-col items-center justify-center p-6 border rounded-xl hover:border-gray-300 transition-all bg-gray-50/50">
-                <Users className="w-8 h-8 text-secondary mb-3" />
-                <span className="font-semibold text-sm text-black">Famílias e Grupos</span>
-              </div>
+          <div className="mb-24">
+            <h2 className="text-3xl font-black uppercase italic text-black mb-12 text-center lg:text-left">Áreas de Atuação</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {[
+                { icon: Heart, label: "Relacionamentos" },
+                { icon: User, label: "Solteiras" },
+                { icon: Users, label: "Divorciadas" },
+                { icon: Frown, label: "Viúvas" },
+                { icon: Users, label: "Casais" },
+                { icon: Users, label: "Famílias" },
+              ].map((item, idx) => (
+                <div key={idx} className="flex flex-col items-center justify-center p-8 rounded-[2rem] bg-white border border-gray-50 hover:border-primary/20 hover:shadow-xl transition-all group">
+                  <item.icon className="w-10 h-10 text-gray-300 group-hover:text-primary transition-colors mb-4" />
+                  <span className="font-black text-[10px] uppercase tracking-widest text-black text-center">{item.label}</span>
+                </div>
+              ))}
             </div>
           </div>
 

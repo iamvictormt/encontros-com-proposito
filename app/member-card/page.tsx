@@ -32,7 +32,7 @@ export default async function MemberCard() {
           </p>
           <div className="flex flex-col gap-3">
             <RequestCardModal />
-            <Button asChild className="bg-[#c2395b] hover:bg-[#a12a48] w-full py-6 rounded-xl font-bold">
+            <Button asChild className="bg-primary hover:bg-primary/90 w-full py-6 rounded-xl font-bold">
               <Link href="/activate">Ativar Cartão Rosa</Link>
             </Button>
           </div>  

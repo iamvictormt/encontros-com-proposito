@@ -101,7 +101,7 @@ export function ActivateCardClient() {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full h-12 bg-[#c2395b] hover:bg-[#a12a48]" disabled={loading}>
+              <Button type="submit" className="w-full h-12 bg-primary hover:bg-primary/90" disabled={loading}>
                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Verificar"}
               </Button>
             </form>
