@@ -90,7 +90,7 @@ const FilterContent = ({
       <div className="space-y-2">
         <Slider
           min={0}
-          max={5000}
+          max={500}
           step={10}
           value={priceRange}
           onValueChange={setPriceRange}
@@ -153,7 +153,7 @@ export function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedTheme, setSelectedTheme] = useState("all");
   const [selectedDelivery, setSelectedDelivery] = useState("all");
-  const [priceRange, setPriceRange] = useState([5000]);
+  const [priceRange, setPriceRange] = useState([500]);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
