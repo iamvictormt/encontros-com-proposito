@@ -72,17 +72,17 @@ export function AdminSidebar() {
                       key={item.href}
                       href={item.href}
                       className={cn(
-                        "flex items-center gap-4 px-3 py-2 rounded-lg text-sm font-bold transition-colors",
-                        isActive ? "text-secondary" : "text-muted-foreground hover:text-foreground",
+                        "flex items-center gap-4 px-3 py-3 rounded-2xl text-sm font-black transition-all uppercase italic tracking-tighter",
+                        isActive ? "text-primary bg-primary/5" : "text-gray-400 hover:text-black hover:bg-gray-50",
                       )}
                     >
                       <item.icon
                         className={cn(
-                          "w-6 h-6",
-                          isActive ? "text-secondary" : "text-muted-foreground",
+                          "w-5 h-5",
+                          isActive ? "text-primary" : "text-gray-400",
                         )}
                       />
-                      <span className="tracking-tight">{item.label}</span>
+                      <span>{item.label}</span>
                     </Link>
                   );
                 })}

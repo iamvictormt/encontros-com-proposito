@@ -62,15 +62,22 @@ export default function AdminOverview() {
   if (isLoading) return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-primary w-12 h-12" /></div>;
 
   return (
-    <div className="space-y-8">
-      <section className="bg-white p-4 rounded-md">
-        <h2 className="text-xl font-bold text-black mb-6">Relatórios</h2>
+    <div className="space-y-12 pb-24">
+      <header className="mb-12">
+        <h1 className="text-4xl sm:text-6xl font-black text-black uppercase italic tracking-tighter mb-2">
+          Dashboard <span className="text-primary">Admin</span>
+        </h1>
+        <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest">Controle total da plataforma MeetOff</p>
+      </header>
+
+      <section className="bg-gray-50 p-8 sm:p-12 rounded-[3.5rem] border border-gray-100">
+        <h2 className="text-2xl font-black italic uppercase text-black mb-10 tracking-tight">Relatórios de Performance</h2>
         <AdminStats stats={data?.stats} />
       </section>
 
-      <section className="space-y-6 bg-white p-4 rounded-md">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <h2 className="text-xl font-bold text-black">Criação e Moderação de eventos</h2>
+      <section className="space-y-10 bg-white p-2 rounded-md">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <h2 className="text-3xl font-black italic uppercase text-black tracking-tight">Gestão de Eventos</h2>
           <div className="flex flex-wrap gap-4 w-full md:w-auto">
             <Button className="bg-accent hover:bg-accent/90 text-white flex-1 md:flex-none" asChild>
               <Link href="/admin/events">Criar Novo Evento</Link>
@@ -91,9 +98,9 @@ export default function AdminOverview() {
         </div>
       </section>
 
-      <section className="space-y-6 bg-white p-4 rounded-md">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <h2 className="text-xl font-bold text-black">Aprovação de Locais & Empresas</h2>
+      <section className="space-y-10 bg-white p-2 rounded-md">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <h2 className="text-3xl font-black italic uppercase text-black tracking-tight">Locais & Empresas</h2>
           <div className="flex gap-4 items-center w-full md:w-auto">
             <Button
               variant="outline"
@@ -111,9 +118,9 @@ export default function AdminOverview() {
         </div>
       </section>
 
-      <section className="space-y-6 bg-white p-4 rounded-md">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <h2 className="text-xl font-bold text-black">Edição de Marcas parceiras</h2>
+      <section className="space-y-10 bg-white p-2 rounded-md">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <h2 className="text-3xl font-black italic uppercase text-black tracking-tight">Marcas Parceiras</h2>
           <Button
             variant="outline"
             className="bg-white text-black border-gray-200 w-full md:w-auto"
@@ -125,9 +132,9 @@ export default function AdminOverview() {
         <BrandContentTable brands={data?.brands} />
       </section>
 
-      <section className="space-y-6 bg-white p-4 rounded-md">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <h2 className="text-xl font-bold text-black">Atribuição de Cargos</h2>
+      <section className="space-y-10 bg-white p-2 rounded-md">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <h2 className="text-3xl font-black italic uppercase text-black tracking-tight">Equipe & Cargos</h2>
           <div className="flex gap-4 items-center w-full md:w-auto">
             <Button
               variant="outline"

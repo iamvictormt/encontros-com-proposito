@@ -98,14 +98,14 @@ export function BrandContentTable({
             </div>
 
             <div className="flex gap-2">
-              <Button onClick={() => onEdit?.(brand)} size="sm" className="bg-accent hover:bg-accent/90 text-white flex-1">
+              <Button onClick={() => onEdit?.(brand)} size="sm" className="bg-primary hover:bg-primary/90 text-white flex-1 rounded-full font-black uppercase italic text-[10px] tracking-widest h-10 shadow-md">
                 Editar
               </Button>
               <Button
                 size="sm"
                 variant="destructive"
                 onClick={() => brand.id && onDelete?.(brand.id)}
-                className="bg-[#8a0204] hover:bg-[#7a0204] text-white flex-1"
+                className="bg-secondary hover:bg-secondary/90 text-white flex-1 rounded-full font-black uppercase italic text-[10px] tracking-widest h-10 shadow-md"
               >
                 Deletar
               </Button>

@@ -78,10 +78,17 @@ export default function AdminReports() {
     );
 
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-12 pb-24">
+      <header className="mb-12">
+        <h1 className="text-4xl sm:text-6xl font-black text-black uppercase italic tracking-tighter mb-2">
+          Analytics <span className="text-primary">& Reports</span>
+        </h1>
+        <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest">Monitoramento de crescimento e satisfação</p>
+      </header>
+
       {/* Quick Stats Section */}
-      <section>
-        <h2 className="text-xl font-bold text-black mb-6">Estatísticas Rápidas</h2>
+      <section className="bg-gray-50 p-8 sm:p-12 rounded-[3.5rem] border border-gray-100">
+        <h2 className="text-2xl font-black italic uppercase text-black mb-10 tracking-tight">Números Chave</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatBox label="Total de Vendas" value="45.058" prefix="R$" />
           <StatBox label="Eventos Criados" value="28" />
@@ -91,8 +98,8 @@ export default function AdminReports() {
       </section>
 
       {/* Main Reports Section */}
-      <section>
-        <h2 className="text-xl font-bold text-black mb-6">Relatórios</h2>
+      <section className="space-y-10">
+        <h2 className="text-3xl font-black italic uppercase text-black tracking-tight">Análise de Dados</h2>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
           {/* Sales Profit Chart */}
           <Card className="lg:col-span-2 border-none shadow-sm rounded-2xl overflow-hidden">

@@ -125,9 +125,16 @@ export default function AdminProducts() {
   );
 
   return (
-    <div className="space-y-8 bg-white p-4 rounded-md">
-      <section>
-        <h2 className="text-xl font-bold text-black mb-6">Estatísticas Rápidas</h2>
+    <div className="space-y-12 pb-24">
+      <header className="mb-12">
+        <h1 className="text-4xl sm:text-6xl font-black text-black uppercase italic tracking-tighter mb-2">
+          Inventário <span className="text-primary">& Loja</span>
+        </h1>
+        <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest">Gestão de produtos e estoque</p>
+      </header>
+
+      <section className="bg-gray-50 p-8 sm:p-12 rounded-[3.5rem] border border-gray-100">
+        <h2 className="text-2xl font-black italic uppercase text-black mb-10 tracking-tight">Status do Estoque</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, i) => (
             <StatCard key={i} {...stat} />
@@ -135,9 +142,9 @@ export default function AdminProducts() {
         </div>
       </section>
 
-      <section className="space-y-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <h2 className="text-xl font-bold text-black">Loja & Produtos</h2>
+      <section className="space-y-10">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <h2 className="text-3xl font-black italic uppercase text-black tracking-tight">Produtos</h2>
 
           <div className="flex flex-wrap items-center gap-4 w-full md:w-auto">
             <div className="relative flex-1 md:w-64">
@@ -180,10 +187,10 @@ export default function AdminProducts() {
 
             <Button 
               onClick={() => { setSelectedProduct(null); setIsModalOpen(true); }}
-              className="h-10 bg-secondary hover:bg-secondary/90 text-white gap-2"
+              className="h-10 bg-primary hover:bg-primary/90 text-white gap-2 px-6 rounded-full font-black uppercase italic text-xs tracking-widest shadow-lg flex-1 sm:flex-none"
             >
-              <Plus className="h-4 w-4" />
-              <span>Novo Produto</span>
+              <Plus className="h-4 w-4" strokeWidth={3} />
+              <span className="whitespace-nowrap">Adicionar Item</span>
             </Button>
           </div>
         </div>

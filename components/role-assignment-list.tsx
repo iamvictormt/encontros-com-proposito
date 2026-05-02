@@ -61,7 +61,7 @@ export function RoleAssignmentList({ team, onEdit, onDelete }: RoleAssignmentLis
               <Button 
                 size="sm" 
                 onClick={() => onEdit?.(member)}
-                className="bg-accent hover:bg-accent/90 text-white flex-1 font-bold"
+                className="bg-primary hover:bg-primary/90 text-white flex-1 rounded-full font-black uppercase italic text-[10px] tracking-widest h-10 shadow-md"
               >
                 Editar
               </Button>
@@ -69,7 +69,7 @@ export function RoleAssignmentList({ team, onEdit, onDelete }: RoleAssignmentLis
                 size="sm"
                 variant="destructive"
                 onClick={() => onDelete?.(member.id)}
-                className="bg-[#8a0204] hover:bg-[#7a0204] text-white flex-1 font-bold"
+                className="bg-secondary hover:bg-secondary/90 text-white flex-1 rounded-full font-black uppercase italic text-[10px] tracking-widest h-10 shadow-md"
               >
                 Remover
               </Button>

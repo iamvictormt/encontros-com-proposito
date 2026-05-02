@@ -130,11 +130,11 @@ export function EventsPage() {
 
       {/* Hero Banner with Carousel */}
       {heroSlides.length > 0 && (
-        <section className="relative h-[450px] sm:h-[600px] w-full overflow-hidden px-4 py-0 lg:px-20">
+        <section className="relative h-[450px] sm:h-[600px] w-full overflow-hidden px-0 sm:px-4 py-0 lg:px-20 lg:py-6">
           <div className="mx-auto max-w-7xl">
-            <div className="relative h-[450px] sm:h-[600px] overflow-hidden rounded-xl">
+            <div className="relative h-[450px] sm:h-[600px] overflow-hidden sm:rounded-3xl">
               <div
-                className="flex h-full transition-transform duration-500 ease-in-out"
+                className="flex h-full transition-transform duration-700 cubic-bezier(0.4, 0, 0.2, 1)"
                 style={{ transform: `translateX(-${currentSlide * 100}%)` }}
               >
                 {heroSlides.map((slide, index) => (
@@ -146,64 +146,40 @@ export function EventsPage() {
                       className="object-cover"
                       priority={index === 0}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-                    <div className="absolute inset-0 flex items-center px-6 lg:px-12">
-                      <div className="max-w-2xl absolute bottom-16">
-                        <div className="mb-4 flex flex-wrap gap-3">
-                          <span className="flex items-center gap-1.5 rounded-full border border-white/40 bg-white/10 px-3 py-1 text-sm font-medium text-white backdrop-blur-md">
-                            <span>🏷️</span>
+                    <div className="absolute inset-0 flex items-end px-6 pb-16 lg:px-12 lg:pb-24">
+                      <div className="max-w-2xl">
+                        <div className="mb-4 flex flex-wrap gap-2">
+                          <span className="flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-[10px] sm:text-xs font-bold text-white backdrop-blur-xl uppercase tracking-wider">
                             {slide.theme}
                           </span>
-                          <span className="flex items-center gap-1.5 rounded-full border border-white/40 bg-white/10 px-3 py-1 text-sm font-medium text-white backdrop-blur-md">
-                            <span>📍</span>
-                            {slide.location}
-                          </span>
-                          <span className="flex items-center gap-1.5 rounded-full border border-white/40 bg-white/10 px-3 py-1 text-sm font-medium text-white backdrop-blur-md">
-                            <span>{slide.type_event === "Online" ? "💻" : "🤝"}</span>
+                          <span className="flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-[10px] sm:text-xs font-bold text-white backdrop-blur-xl uppercase tracking-wider">
                             {slide.type_event}
                           </span>
                         </div>
 
-                        <h1 className="mb-6 text-3xl sm:text-4xl font-bold leading-tight text-white lg:text-5xl">
+                        <h1 className="mb-6 text-3xl sm:text-5xl font-black leading-tight text-white lg:text-7xl uppercase italic tracking-tighter">
                           {slide.title}
                         </h1>
 
-                        <div className="flex flex-wrap items-center gap-4">
-                          <Button size="lg" className="bg-accent hover:bg-accent/90" asChild>
+                        <div className="flex items-center gap-4">
+                          <Button size="lg" className="bg-accent hover:bg-accent/90 text-white rounded-full px-8" asChild>
                             <Link href={`/events/${slide.id}`}>Ver detalhes</Link>
                           </Button>
 
-                          <div className="hidden sm:block w-px h-4 bg-white/40 mx-2" />
-
                           <Button
-                            size="lg"
+                            size="icon"
                             variant="ghost"
-                            className="bg-transparent text-white hover:bg-white/10 px-0"
+                            className="bg-white/20 text-white hover:bg-white/30 rounded-full w-12 h-12 backdrop-blur-md"
                             onClick={() => {
                               const url = `${window.location.origin}/events/${slide.id}`;
                               navigator.clipboard.writeText(url);
                               setCopiedId(slide.id);
-                            }}
-                            onMouseLeave={() => {
-                              if (copiedId === slide.id) {
-                                setTimeout(() => setCopiedId(null), 1000);
-                              }
+                              toast.success("Link copiado!");
                             }}
                           >
-                            {copiedId === slide.id ? (
-                              <>
-                                <Check className="h-5 w-5 sm:h-6 sm:w-6 mr-2" />
-                                <span className="hidden sm:inline">Token de convite copiado!</span>
-                                <span className="inline sm:hidden text-sm">Copiado!</span>
-                              </>
-                            ) : (
-                              <>
-                                <Link2 className="h-5 w-5 sm:h-6 sm:w-6 mr-2 rotate-[140deg]" />
-                                <span className="hidden sm:inline">Copiar Token de convite</span>
-                                <span className="inline sm:hidden text-sm">Convidar</span>
-                              </>
-                            )}
+                            <Share2 className="h-5 w-5" />
                           </Button>
                         </div>
                       </div>
@@ -212,33 +188,18 @@ export function EventsPage() {
                 ))}
               </div>
 
-              <div className="absolute bottom-6 left-6 sm:left-12 flex gap-2">
+              <div className="absolute bottom-6 left-6 sm:left-12 flex gap-3">
                 {heroSlides.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentSlide(index)}
-                    className={`h-2 rounded-full transition-all ${
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
                       index === currentSlide
-                        ? "w-10 bg-white h-[5px]"
-                        : "w-2 h-[5px] bg-white/50 hover:bg-white/70 cursor-pointer"
+                        ? "w-8 bg-white"
+                        : "w-1.5 bg-white/40 hover:bg-white/60 cursor-pointer"
                     }`}
                   />
                 ))}
-              </div>
-
-              <div className="absolute bottom-6 right-6 hidden sm:flex gap-3">
-                <button
-                  onClick={prevSlide}
-                  className="p-4 rounded-full bg-white/30 backdrop-blur-md hover:bg-white/20 transition-colors cursor-pointer text-white"
-                >
-                  <ArrowLeft className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={nextSlide}
-                  className="p-4 rounded-full bg-white/30 backdrop-blur-md hover:bg-white/20 transition-colors cursor-pointer text-white"
-                >
-                  <ArrowRight className="w-5 h-5" />
-                </button>
               </div>
             </div>
           </div>
@@ -372,10 +333,10 @@ export function EventsPage() {
           </div>
 
           {isLoading ? null : paginatedEvents.length === 0 ? (
-            <div className="text-center py-16 bg-gray-50 rounded-2xl border border-dashed border-gray-200 mt-8">
-              <div className="text-5xl mb-4">📅</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Nenhum evento encontrado</h3>
-              <p className="text-gray-500 max-w-md mx-auto text-sm px-4">
+            <div className="text-center py-24 bg-gray-50 sm:rounded-3xl border border-dashed border-gray-200 mt-8">
+              <div className="text-6xl mb-6">📅</div>
+              <h3 className="text-2xl font-black text-gray-900 mb-3 uppercase italic">Nenhum evento encontrado</h3>
+              <p className="text-gray-500 max-w-sm mx-auto text-sm px-6">
                 {events.length === 0
                   ? "Ainda não há eventos cadastrados na plataforma. Volte mais tarde!"
                   : "Não encontramos eventos que correspondam aos filtros aplicados ou ao termo buscado."}
@@ -383,7 +344,7 @@ export function EventsPage() {
               {events.length > 0 && (
                 <Button
                   variant="outline"
-                  className="mt-6 bg-white text-black hover:bg-gray-100 border-gray-200"
+                  className="mt-8 rounded-full border-gray-300 px-8"
                   onClick={() => {
                     setSearchTerm("");
                     setTypeFilters([]);
@@ -397,7 +358,7 @@ export function EventsPage() {
               )}
             </div>
           ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {paginatedEvents.map((event) => {
                 const date = new Date(event.date);
                 const month = date.toLocaleString("pt-BR", { month: "short" }).toUpperCase();
@@ -406,89 +367,70 @@ export function EventsPage() {
                 return (
                   <div
                     key={event.id}
-                    className="group overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md"
+                    className="group flex flex-col bg-white overflow-hidden"
                   >
-                    <div className="relative h-80 overflow-hidden">
+                    <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem]">
                       <Link href={`/events/${event.id}`} className="absolute inset-0 z-0">
                         <Image
                           src={event.image || "/placeholder.svg"}
                           alt={event.title}
                           fill
-                          className="object-cover transition-transform group-hover:scale-105"
+                          className="object-cover transition-transform duration-500 group-hover:scale-110"
                         />
                       </Link>
 
-                      <div className="absolute right-3 top-3 flex gap-2 z-10">
-                        <button className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-100 cursor-pointer">
-                          <MapPin className="h-4 w-4 text-black" />
-                        </button>
-                        <button className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-100 cursor-pointer">
-                          <Share2 className="h-4 w-4 text-black" />
-                        </button>
-                      </div>
-
-                      <div className="absolute left-3 top-3 h-10 rounded-lg bg-white px-3 font-semibold text-black shadow-md flex items-center gap-2 z-10">
-                        <span>{formatBRL(event.price)}</span>
-                        <span className="w-px h-4 bg-gray-200" />
-                        <span className="flex items-center gap-1">
-                          <span>{event.type_event || "Presencial"}</span>
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="p-4">
-                      <div className="mb-4 flex items-start gap-6">
-                        <div className="flex flex-col items-center gap-1 min-w-[50px]">
-                          <span className="text-xs font-semibold text-black uppercase tracking-wide">
+                      <div className="absolute left-4 top-4 z-10">
+                        <div className="flex flex-col items-center justify-center w-14 h-16 bg-white/90 backdrop-blur-md rounded-2xl shadow-xl">
+                          <span className="text-[10px] font-black text-primary leading-none mb-1">
                             {month.substring(0, 3)}
                           </span>
-                          <span className="text-3xl font-bold text-secondary leading-none">
+                          <span className="text-2xl font-black text-black leading-none">
                             {day}
                           </span>
                         </div>
-                        <div className="flex-1 pl-4 relative">
-                          <div className="absolute left-0 top-1/4 h-1/2 border-l border-1"></div>
-                          <div className="ml-4">
-
-                            <h3 className="mb-1 text-lg font-bold text-black line-clamp-1">
-                              {event.title}
-                            </h3>
-                            <p className="text-sm text-muted-foreground">
-                              {event.location}{" "}
-                              <span className="text-gray-300 font-normal mx-1">•</span> {event.time}
-                            </p>
-                          </div>
-                        </div>
                       </div>
 
-                      <div className="flex flex-col gap-2">
-                        <Button className="w-full bg-accent hover:bg-accent/90" asChild>
-                          <Link href={`/events/${event.id}`}>Ver detalhes</Link>
-                        </Button>
+                      <div className="absolute right-4 top-4 z-10">
                         <Button
-                          variant="outline"
-                          className="w-full bg-transparent text-black hover:bg-gray-50"
-                          onClick={() => {
+                          size="icon"
+                          variant="ghost"
+                          className="w-10 h-10 bg-white/90 backdrop-blur-md rounded-full shadow-lg hover:bg-white text-black"
+                          onClick={(e) => {
+                            e.preventDefault();
                             const url = `${window.location.origin}/events/${event.id}`;
                             navigator.clipboard.writeText(url);
-                            setCopiedId(event.id);
-                          }}
-                          onMouseLeave={() => {
-                            if (copiedId === event.id) {
-                              setTimeout(() => setCopiedId(null), 1000);
-                            }
+                            toast.success("Link copiado!");
                           }}
                         >
-                          {copiedId === event.id ? (
-                            <>
-                              <Check className="mr-2 h-4 w-4" />
-                              Copiado!
-                            </>
-                          ) : (
-                            "Convidar"
-                          )}
+                          <Share2 className="h-4 w-4" />
                         </Button>
                       </div>
+
+                      <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
+                         <div className="flex items-center gap-2 mb-2">
+                           <span className="px-2.5 py-1 rounded-full bg-accent text-[10px] font-bold text-white uppercase tracking-wider">
+                             {event.type_event || "Presencial"}
+                           </span>
+                           <span className="px-2.5 py-1 rounded-full bg-white/20 text-[10px] font-bold text-white backdrop-blur-md uppercase tracking-wider">
+                             {formatBRL(event.price)}
+                           </span>
+                         </div>
+                         <h3 className="text-xl font-black text-white leading-tight uppercase italic line-clamp-2">
+                           {event.title}
+                         </h3>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 px-2 flex justify-between items-center">
+                       <div className="flex flex-col">
+                         <p className="text-xs font-bold text-gray-400 flex items-center gap-1">
+                           <MapPin className="h-3 w-3" />
+                           {event.location}
+                         </p>
+                       </div>
+                       <Button variant="ghost" size="sm" asChild className="text-primary font-black uppercase text-[10px] tracking-widest hover:bg-primary/5">
+                          <Link href={`/events/${event.id}`}>Ver mais →</Link>
+                       </Button>
                     </div>
                   </div>
                 );

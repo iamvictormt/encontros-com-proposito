@@ -194,19 +194,21 @@ export function PartnersPage() {
     }
   };
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-white">
       <SiteHeader />
 
-      <main className="px-4 py-8 lg:px-20">
+      <main className="px-4 py-12 lg:px-20">
         <div className="mx-auto max-w-7xl">
-          <div className="text-center mb-10">
-            <h1 className="text-2xl md:text-3xl font-bold text-black mb-2">Empresas e Parcerias</h1>
-            <p className="text-gray-500 text-sm md:text-base max-w-lg mx-auto">
-              Cadastre sua empresa e conecte-se a eventos, pontos de encontro e vendas!
+          <div className="text-center mb-16">
+            <h1 className="text-4xl sm:text-6xl font-black text-black uppercase italic tracking-tighter mb-4">
+              Empresas & <span className="text-primary">Parcerias</span>
+            </h1>
+            <p className="text-sm text-muted-foreground uppercase tracking-widest font-bold max-w-lg mx-auto">
+              Cadastre sua empresa e conecte-se a eventos e pontos de encontro!
             </p>
           </div>
           {/* Form Section */}
-          <form onSubmit={handleSubmit} className="max-w-2xl mx-auto mb-16 space-y-6">
+          <form onSubmit={handleSubmit} className="max-w-3xl mx-auto mb-24 space-y-10 bg-gray-50 p-8 sm:p-12 rounded-[3.5rem]">
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -383,7 +385,7 @@ export function PartnersPage() {
             <Button 
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-[#E58043] hover:bg-[#E58043]/90 text-white py-6 text-base rounded-md font-semibold"
+              className="w-full bg-primary hover:bg-primary/90 text-white py-8 text-lg rounded-full font-black uppercase italic"
             >
               {isSubmitting ? (
                 <Loader2 className="w-5 h-5 animate-spin" />

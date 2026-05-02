@@ -113,9 +113,17 @@ export default function AdminBrands() {
   );
 
   return (
-    <div className="space-y-6 bg-white p-4 rounded-md">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <h2 className="text-xl font-bold text-black">Marcas parceiras</h2>
+    <div className="space-y-12 pb-24">
+      <header className="mb-12">
+        <h1 className="text-4xl sm:text-6xl font-black text-black uppercase italic tracking-tighter mb-2">
+          Marcas <span className="text-primary">Parceiras</span>
+        </h1>
+        <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest">Gestão de visibilidade e parcerias</p>
+      </header>
+
+      <div className="space-y-10">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <h2 className="text-3xl font-black italic uppercase text-black tracking-tight">Marcas</h2>
         <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-4 w-full md:w-auto">
           <div className="relative flex-1 sm:w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
@@ -156,10 +164,10 @@ export default function AdminBrands() {
             </DropdownMenu>
             <Button 
               onClick={() => { setSelectedBrand(null); setIsModalOpen(true); }}
-              className="h-10 bg-secondary hover:bg-secondary/90 text-white gap-2 flex-1"
+              className="h-10 bg-primary hover:bg-primary/90 text-white gap-2 px-6 rounded-full font-black uppercase italic text-xs tracking-widest shadow-lg flex-1 sm:flex-none"
             >
-              <Plus className="h-4 w-4" />
-              <span>Nova Marca</span>
+              <Plus className="h-4 w-4" strokeWidth={3} />
+              <span className="whitespace-nowrap">Nova Marca</span>
             </Button>
           </div>
         </div>

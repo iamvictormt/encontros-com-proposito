@@ -8,11 +8,11 @@ interface StatCardProps {
 
 export function StatCard({ label, value, isValue }: StatCardProps) {
   return (
-    <Card className="flex-1 bg-white border-none shadow-sm">
-      <CardContent className="p-6">
-        <p className="text-sm text-muted-foreground mb-1">{label}</p>
-        <p className="text-5xl font-bold text-secondary">
-          {isValue && <span className="text-sm font-bold text-muted-foreground">R$ </span>}
+    <Card className="flex-1 bg-white border border-gray-100 rounded-[2.5rem] shadow-xl overflow-hidden transition-all hover:scale-[1.02]">
+      <CardContent className="p-10">
+        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4">{label}</p>
+        <p className="text-5xl font-black text-black italic tracking-tighter leading-none">
+          {isValue && <span className="text-xl font-black text-primary">R$ </span>}
           {value}
         </p>
       </CardContent>

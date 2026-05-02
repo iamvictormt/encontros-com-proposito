@@ -63,16 +63,16 @@ export function AdminMobileHeader() {
                             href={item.href}
                             onClick={() => setIsOpen(false)}
                             className={cn(
-                              "flex items-center gap-4 px-3 py-3 rounded-lg text-base font-bold transition-colors",
+                              "flex items-center gap-4 px-4 py-4 rounded-2xl text-base font-black transition-all uppercase italic tracking-tighter",
                               isActive
-                                ? "text-secondary bg-secondary/5"
-                                : "text-muted-foreground hover:text-foreground hover:bg-gray-50",
+                                ? "text-primary bg-primary/5 shadow-sm"
+                                : "text-gray-400 hover:text-black hover:bg-gray-50",
                             )}
                           >
                             <item.icon
                               className={cn(
                                 "w-6 h-6",
-                                isActive ? "text-secondary" : "text-muted-foreground",
+                                isActive ? "text-primary" : "text-gray-400",
                               )}
                             />
                             <span>{item.label}</span>

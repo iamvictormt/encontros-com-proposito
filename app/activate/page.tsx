@@ -5,9 +5,9 @@ import { Suspense } from "react";
 
 export default function ActivatePage() {
   return (
-    <div className="min-h-screen bg-[#F0F2F5] flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       <SiteHeader />
-      <main className="flex-1 flex items-center justify-center">
+      <main className="flex-1 flex items-center justify-center py-12">
         <Suspense fallback={<div>Carregando...</div>}>
           <ActivateCardClient />
         </Suspense>

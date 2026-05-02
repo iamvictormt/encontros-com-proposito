@@ -47,19 +47,21 @@ export function ScheduleSessionPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#F3F4F6]">
+    <div className="flex min-h-screen flex-col bg-white">
       <SiteHeader />
 
-      <main className="flex-1 bg-white max-w-4xl mx-auto w-full mb-12 shadow-sm rounded-lg">
-        <div className="px-6 py-12 md:px-24">
-          <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold mb-3 text-black">Agende Sua Sessão</h1>
-            <p className="text-gray-500 text-sm">
-              Preencha os dados abaixo e entraremos em contato para confirmar seu horário.
+      <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-12">
+        <div className="bg-gray-50 p-8 sm:p-16 rounded-[4rem]">
+          <div className="text-center mb-16">
+            <h1 className="text-4xl sm:text-6xl font-black text-black uppercase italic tracking-tighter mb-4">
+              Agende sua <span className="text-primary">Sessão</span>
+            </h1>
+            <p className="text-sm text-muted-foreground uppercase tracking-widest font-bold max-w-md mx-auto">
+              Conecte-se com os fundadores e transforme sua jornada
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-8 max-w-3xl mx-auto">
             <div className="space-y-2">
               <Label htmlFor="token" className="text-sm font-medium">
                 Seu Token
@@ -175,11 +177,11 @@ export function ScheduleSessionPage() {
               />
             </div>
 
-            <div className="flex items-center justify-center gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8">
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="bg-accent hover:bg-accent/90 text-white rounded-md px-10 py-6 button-base w-1/2 md:w-auto"
+                className="bg-primary hover:bg-primary/90 text-white rounded-full px-12 py-8 text-lg font-black uppercase italic w-full sm:w-auto"
               >
                 {isLoading ? (
                   <>
@@ -187,14 +189,14 @@ export function ScheduleSessionPage() {
                     Agendando...
                   </>
                 ) : (
-                  "Agendar Sessão"
+                  "Confirmar Agendamento"
                 )}
               </Button>
               <Button
                 type="button"
-                variant="outline"
+                variant="ghost"
                 asChild
-                className="rounded-md px-10 py-6 button-base w-1/2 md:w-auto border-gray-200 text-black hover:bg-gray-50"
+                className="rounded-full px-12 py-8 text-lg font-black uppercase italic w-full sm:w-auto"
               >
                 <Link href="/portfolio">Voltar</Link>
               </Button>
