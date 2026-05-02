@@ -12,7 +12,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { eventId } = await request.json();
+    const { eventId, selectedProducts = [] } = await request.json();
 
     // Check capacity
     const event = await sql`SELECT capacity FROM events WHERE id = ${eventId}`;
@@ -22,14 +22,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Desculpe, este evento já atingiu o limite de vagas." }, { status: 400 });
     }
 
+    // Ensure the optional_products column exists
+    await sql`ALTER TABLE participations ADD COLUMN IF NOT EXISTS optional_products JSONB DEFAULT '[]'`;
+
     // Register participation
     await sql`
-      INSERT INTO participations (user_id, event_id)
-      VALUES (${payload.userId}, ${eventId})
-      ON CONFLICT (user_id, event_id) DO NOTHING
+      INSERT INTO participations (user_id, event_id, optional_products)
+      VALUES (${payload.userId}, ${eventId}, ${JSON.stringify(selectedProducts)})
+      ON CONFLICT (user_id, event_id) DO UPDATE SET optional_products = EXCLUDED.optional_products
     `;
 
-    return NextResponse.json({ message: "Participação confirmada com sucesso!" });
+    return NextResponse.json({ message: "Inscrição salva com sucesso!" });
   } catch (error) {
     console.error("Participation error:", error);
     return NextResponse.json({ message: "Erro ao confirmar participação" }, { status: 500 });
@@ -44,7 +47,10 @@ export async function GET(request: Request) {
   try {
     if (eventId && userId) {
       const check = await sql`SELECT * FROM participations WHERE event_id = ${eventId} AND user_id = ${userId}`;
-      return NextResponse.json({ isParticipating: check.length > 0 });
+      return NextResponse.json({ 
+        isParticipating: check.length > 0,
+        optionalProducts: check.length > 0 ? check[0].optional_products : []
+      });
     }
     return NextResponse.json({ message: "Missing parameters" }, { status: 400 });
   } catch (error) {

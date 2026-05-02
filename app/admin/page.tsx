@@ -113,7 +113,7 @@ export default function AdminOverview() {
 
       <section className="space-y-6 bg-white p-4 rounded-md">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <h2 className="text-xl font-bold text-black">Edição de Conteúdo de Marcas</h2>
+          <h2 className="text-xl font-bold text-black">Edição de Marcas parceiras</h2>
           <Button
             variant="outline"
             className="bg-white text-black border-gray-200 w-full md:w-auto"

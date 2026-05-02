@@ -34,7 +34,7 @@ export const menuSections = [
       { icon: LayoutGrid, label: "Visão Geral", href: "/admin" },
       { icon: CalendarDays, label: "Eventos", href: "/admin/events" },
       { icon: Building2, label: "Locais & Empresas", href: "/admin/venues" },
-      { icon: PackageOpen, label: "Conteúdo das Marcas", href: "/admin/brands" },
+      { icon: PackageOpen, label: "Marcas parceiras", href: "/admin/brands" },
       { icon: ShoppingCart, label: "Loja & Produtos", href: "/admin/products" },
       { icon: PieChart, label: "Relatórios", href: "/admin/reports" },
       { icon: Users, label: "Equipe & Cargos", href: "/admin/team" },

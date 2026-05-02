@@ -21,10 +21,11 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { logo, name, page, status } = await request.json();
+    const { logo, name, website_url, instagram_url, description, status, value } =
+      await request.json();
     const result = await sql`
-      INSERT INTO brands (logo, name, page, status)
-      VALUES (${logo}, ${name}, ${page}, ${status})
+      INSERT INTO brands (logo, name, website_url, instagram_url, description, status, value)
+      VALUES (${logo}, ${name}, ${website_url}, ${instagram_url}, ${description}, ${status}, ${value || 0})
       RETURNING *
     `;
     return NextResponse.json(result[0], { status: 201 });
@@ -42,10 +43,17 @@ export async function PUT(request: Request) {
   }
 
   try {
-    const { id, logo, name, page, status } = await request.json();
+    const { id, logo, name, website_url, instagram_url, description, status } =
+      await request.json();
     const result = await sql`
       UPDATE brands 
-      SET logo = ${logo}, name = ${name}, page = ${page}, status = ${status}, updated_at = CURRENT_TIMESTAMP
+      SET logo = ${logo}, 
+          name = ${name}, 
+          website_url = ${website_url}, 
+          instagram_url = ${instagram_url}, 
+          description = ${description}, 
+          status = ${status}, 
+          updated_at = CURRENT_TIMESTAMP
       WHERE id = ${id}
       RETURNING *
     `;

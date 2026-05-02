@@ -1,45 +1,42 @@
 import { NextResponse } from "next/server";
 import { sql } from "@/lib/db";
-import { hashPassword, signJWT, validateCPF } from "@/lib/auth-utils";
+import { hashPassword, signJWT, validatePhone } from "@/lib/auth-utils";
 
 export async function POST(request: Request) {
   try {
-    const { fullName, email, cpf, password } = await request.json();
+    const { fullName, email, phone, password } = await request.json();
 
-    if (!fullName || (!email && !cpf) || !password) {
+    if (!fullName || (!email && !phone) || !password) {
       return NextResponse.json({ message: "Todos os campos são obrigatórios" }, { status: 400 });
     }
 
-    if (cpf && !validateCPF(cpf)) {
-      return NextResponse.json({ message: "CPF inválido" }, { status: 400 });
+    if (phone && !validatePhone(phone)) {
+      return NextResponse.json({ message: "Telefone inválido" }, { status: 400 });
     }
 
-    // Ensure DB allows NULL for CPF
-    await sql`ALTER TABLE users ALTER COLUMN cpf DROP NOT NULL`;
-
     const userEmail = email && email.trim() !== "" ? email.trim() : null;
-    const userCpf = cpf && cpf.trim() !== "" ? cpf.trim() : null;
+    const userPhone = phone && phone.trim() !== "" ? phone.trim() : null;
 
-    // Check if email or cpf already exists
+    // Check if email or phone already exists
     let existingUser = [];
-    if (userEmail && userCpf) {
-      existingUser = await sql`SELECT id FROM users WHERE email = ${userEmail} OR cpf = ${userCpf}`;
+    if (userEmail && userPhone) {
+      existingUser = await sql`SELECT id FROM users WHERE email = ${userEmail} OR phone = ${userPhone}`;
     } else if (userEmail) {
       existingUser = await sql`SELECT id FROM users WHERE email = ${userEmail}`;
-    } else if (userCpf) {
-      existingUser = await sql`SELECT id FROM users WHERE cpf = ${userCpf}`;
+    } else if (userPhone) {
+      existingUser = await sql`SELECT id FROM users WHERE phone = ${userPhone}`;
     }
 
     if (existingUser.length > 0) {
-      return NextResponse.json({ message: "E-mail ou CPF já cadastrado" }, { status: 409 });
+      return NextResponse.json({ message: "E-mail ou Telefone já cadastrado" }, { status: 409 });
     }
 
     const hashedPassword = await hashPassword(password);
 
     const newUser = await sql`
-      INSERT INTO users (full_name, email, cpf, password_hash)
-      VALUES (${fullName}, ${userEmail}, ${userCpf}, ${hashedPassword})
-      RETURNING id, full_name, email, cpf, is_admin
+      INSERT INTO users (full_name, email, phone, password_hash)
+      VALUES (${fullName}, ${userEmail}, ${userPhone}, ${hashedPassword})
+      RETURNING id, full_name, email, phone, is_admin
     `;
 
     const user = newUser[0];
@@ -56,7 +53,7 @@ export async function POST(request: Request) {
           id: user.id,
           fullName: user.full_name,
           email: user.email,
-          cpf: user.cpf,
+          phone: user.phone,
           isAdmin: user.is_admin,
         },
       },

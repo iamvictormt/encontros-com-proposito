@@ -24,8 +24,8 @@ async function createAdmin() {
       console.log('Existing user updated to admin');
     } else {
       await sql`
-        INSERT INTO users (full_name, email, cpf, password_hash, is_admin)
-        VALUES ('Admin User', ${email}, '12345678901', ${hashedPassword}, true)
+        INSERT INTO users (full_name, email, phone, password_hash, is_admin)
+        VALUES ('Admin User', ${email}, '11999999999', ${hashedPassword}, true)
       `;
       console.log('New admin user created');
     }

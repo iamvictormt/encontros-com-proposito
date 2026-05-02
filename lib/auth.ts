@@ -2,7 +2,7 @@ export interface AuthUser {
   id: string;
   fullName: string;
   email?: string;
-  cpf?: string;
+  phone?: string;
   isAdmin?: boolean;
 }
 

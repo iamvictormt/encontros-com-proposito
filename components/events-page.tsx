@@ -171,7 +171,7 @@ export function EventsPage() {
 
                         <div className="flex flex-wrap items-center gap-4">
                           <Button size="lg" className="bg-accent hover:bg-accent/90" asChild>
-                            <Link href={`/events/${slide.id}`}>Participar</Link>
+                            <Link href={`/events/${slide.id}`}>Ver detalhes</Link>
                           </Button>
 
                           <div className="hidden sm:block w-px h-4 bg-white/40 mx-2" />
@@ -409,14 +409,16 @@ export function EventsPage() {
                     className="group overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md"
                   >
                     <div className="relative h-80 overflow-hidden">
-                      <Image
-                        src={event.image || "/placeholder.svg"}
-                        alt={event.title}
-                        fill
-                        className="object-cover transition-transform group-hover:scale-105"
-                      />
+                      <Link href={`/events/${event.id}`} className="absolute inset-0 z-0">
+                        <Image
+                          src={event.image || "/placeholder.svg"}
+                          alt={event.title}
+                          fill
+                          className="object-cover transition-transform group-hover:scale-105"
+                        />
+                      </Link>
 
-                      <div className="absolute right-3 top-3 flex gap-2">
+                      <div className="absolute right-3 top-3 flex gap-2 z-10">
                         <button className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-100 cursor-pointer">
                           <MapPin className="h-4 w-4 text-black" />
                         </button>
@@ -425,7 +427,7 @@ export function EventsPage() {
                         </button>
                       </div>
 
-                      <div className="absolute left-3 top-3 h-10 rounded-lg bg-white px-3 font-semibold text-black shadow-md flex items-center gap-2">
+                      <div className="absolute left-3 top-3 h-10 rounded-lg bg-white px-3 font-semibold text-black shadow-md flex items-center gap-2 z-10">
                         <span>{formatBRL(event.price)}</span>
                         <span className="w-px h-4 bg-gray-200" />
                         <span className="flex items-center gap-1">
@@ -461,7 +463,7 @@ export function EventsPage() {
 
                       <div className="flex flex-col gap-2">
                         <Button className="w-full bg-accent hover:bg-accent/90" asChild>
-                          <Link href={`/events/${event.id}`}>Participar</Link>
+                          <Link href={`/events/${event.id}`}>Ver detalhes</Link>
                         </Button>
                         <Button
                           variant="outline"

@@ -4,16 +4,16 @@ import { comparePassword, signJWT } from "@/lib/auth-utils";
 
 export async function POST(request: Request) {
   try {
-    const { emailOrCpf, password, rememberMe } = await request.json();
+    const { emailOrPhone, password, rememberMe } = await request.json();
 
-    if (!emailOrCpf || !password) {
-      return NextResponse.json({ message: "E-mail/CPF e senha são obrigatórios" }, { status: 400 });
+    if (!emailOrPhone || !password) {
+      return NextResponse.json({ message: "E-mail/Telefone e senha são obrigatórios" }, { status: 400 });
     }
 
     const results = await sql`
-      SELECT id, full_name, email, cpf, password_hash, is_admin
+      SELECT id, full_name, email, phone, password_hash, is_admin
       FROM users
-      WHERE email = ${emailOrCpf} OR cpf = ${emailOrCpf}
+      WHERE email = ${emailOrPhone} OR phone = ${emailOrPhone}
     `;
 
     if (results.length === 0) {
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
           id: user.id,
           fullName: user.full_name,
           email: user.email,
-          cpf: user.cpf,
+          phone: user.phone,
           isAdmin: user.is_admin,
         },
       },

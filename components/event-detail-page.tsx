@@ -11,7 +11,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatBRL } from "@/lib/utils/format";
 import { SiteHeader } from "./site-header";
 import { SiteFooter } from "./site-footer";
 import {
@@ -45,6 +53,17 @@ export function EventDetailPage() {
   const [isCopied, setIsCopied] = useState(false);
 
   const [mandatoryProductsData, setMandatoryProductsData] = useState<any[]>([]);
+  const [associatedBrandsData, setAssociatedBrandsData] = useState<any[]>([]);
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+  const [viewingProduct, setViewingProduct] = useState<any>(null);
+
+  const toggleProductSelection = (productId: string) => {
+    setSelectedProducts((prev) =>
+      prev.includes(productId)
+        ? prev.filter((id) => id !== productId)
+        : [...prev, productId]
+    );
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -70,10 +89,35 @@ export function EventDetailPage() {
           }
         }
 
+        // Fetch brand details for associated brands
+        if (data.associated_brands) {
+          const brandIds =
+            typeof data.associated_brands === "string"
+              ? JSON.parse(data.associated_brands)
+              : data.associated_brands;
+
+          if (brandIds.length > 0) {
+            const brandsRes = await fetch("/api/brands");
+            const allBrands = await brandsRes.json();
+            const filtered = allBrands.filter((b: any) => brandIds.includes(b.id));
+            setAssociatedBrandsData(filtered);
+          }
+        }
+
         if (isLoggedIn && user) {
           const partRes = await fetch(`/api/participate?eventId=${id}&userId=${user.id}`);
           const partData = await partRes.json();
           setIsParticipating(partData.isParticipating);
+          if (partData.optionalProducts) {
+            try {
+              const parsed = typeof partData.optionalProducts === "string"
+                ? JSON.parse(partData.optionalProducts)
+                : partData.optionalProducts;
+              setSelectedProducts(Array.isArray(parsed) ? parsed : []);
+            } catch (e) {
+              console.error("Error parsing optional products:", e);
+            }
+          }
         }
       } catch (error) {
         toast.error("Erro ao carregar detalhes do evento");
@@ -96,17 +140,12 @@ export function EventDetailPage() {
       return;
     }
 
-    if (isParticipating) {
-      toast.info("Você já está inscrito neste evento");
-      return;
-    }
-
     setIsActionLoading(true);
     try {
       const res = await fetch("/api/participate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ eventId: id }),
+        body: JSON.stringify({ eventId: id, selectedProducts }),
       });
 
       const data = await res.json();
@@ -194,7 +233,7 @@ export function EventDetailPage() {
 
               <Button
                 onClick={handleParticipate}
-                disabled={isParticipating || isActionLoading}
+                disabled={isActionLoading}
                 className={`w-full font-bold text-[16px] py-7 rounded-xl ${
                   isParticipating
                     ? "bg-green-600 hover:bg-green-700"
@@ -204,27 +243,10 @@ export function EventDetailPage() {
                 {isActionLoading
                   ? "Processando..."
                   : isParticipating
-                    ? "Inscrição Confirmada"
+                    ? "Salvar Produtos Selecionados"
                     : "Pagar e participar"}
               </Button>
 
-              <div className="relative flex items-center py-8">
-                <div className="grow border-t border-gray-100"></div>
-                <span className="shrink-0 px-4 text-[13px] text-gray-400 bg-white">ou</span>
-                <div className="grow border-t border-gray-100"></div>
-              </div>
-
-              <div className="mt-auto">
-                <p className="text-[13px] text-gray-400 mb-2">Integrar com:</p>
-                <Select defaultValue="mounter">
-                  <SelectTrigger className="w-full bg-white text-gray-900 font-semibold h-14 rounded-xl border-gray-200 focus:ring-1 focus:ring-[#F28D35]">
-                    <SelectValue placeholder="Selecione..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="mounter">Mounter</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
 
             {/* Card 3: Token */}
@@ -372,29 +394,47 @@ export function EventDetailPage() {
             <div>
               <h2 className="text-[22px] font-bold text-gray-900 mb-6">Produtos opcionais</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {mandatoryProductsData.map((product) => (
-                  <div key={product.id} className="space-y-3">
-                    <div className="relative aspect-square rounded-2xl overflow-hidden bg-white shadow-sm border border-gray-100 p-2">
-                      <div className="absolute top-3 left-3 z-10 bg-white rounded-full p-1 shadow-md border border-gray-100">
-                        <div className="w-5 h-5 rounded-full bg-[#F28D35] flex items-center justify-center">
-                          <Check className="w-3 h-3 text-white" strokeWidth={4} />
+                {mandatoryProductsData.map((product) => {
+                  const isSelected = selectedProducts.includes(product.id);
+                  return (
+                    <div 
+                      key={product.id} 
+                      className="space-y-3 cursor-pointer group"
+                      onClick={() => setViewingProduct(product)}
+                    >
+                      <div className={`relative aspect-square rounded-2xl overflow-hidden bg-white shadow-sm border p-2 transition-all ${
+                        isSelected ? "border-[#F28D35] ring-2 ring-[#F28D35]/20" : "border-gray-100 group-hover:border-[#F28D35]/50"
+                      }`}>
+                        <div 
+                          className="absolute top-3 left-3 z-10 bg-white rounded-full p-1 shadow-md border border-gray-100 cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleProductSelection(product.id);
+                          }}
+                        >
+                          <div className={`w-5 h-5 rounded-full flex items-center justify-center transition-colors ${
+                            isSelected ? "bg-[#F28D35]" : "bg-gray-100"
+                          }`}>
+                            <Check className={`w-3 h-3 ${isSelected ? "text-white" : "text-gray-300"}`} strokeWidth={4} />
+                          </div>
+                        </div>
+                        <div className="relative w-full h-full rounded-xl overflow-hidden">
+                          <Image
+                            src={product.image || "/placeholder.svg"}
+                            alt={product.name}
+                            fill
+                            className="object-cover transition-transform group-hover:scale-105"
+                          />
                         </div>
                       </div>
-                      <div className="relative w-full h-full rounded-xl overflow-hidden">
-                        <Image
-                          src={product.image}
-                          alt={product.name}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
+                      <h3 className="text-sm font-bold text-black text-center group-hover:text-[#F28D35] transition-colors">{product.name}</h3>
+                      <p className="text-xs text-gray-500 text-center font-semibold">{formatBRL(product.price || 0)}</p>
                     </div>
-                    <h3 className="text-sm font-bold text-black text-center">{product.name}</h3>
-                  </div>
-                ))}
+                  );
+                })}
                 {mandatoryProductsData.length === 0 && (
                   <p className="text-gray-400 text-sm italic">
-                    Nenhum produto obrigatório para este evento.
+                    Nenhum produto opcional para este evento.
                   </p>
                 )}
               </div>
@@ -472,8 +512,113 @@ export function EventDetailPage() {
               </div>
             </div>
           </div>
+
+          {/* Brands Section */}
+          {associatedBrandsData.length > 0 && (
+            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 mt-8">
+              <h2 className="text-[22px] font-bold text-gray-900 mb-6">Marcas e Parceiros</h2>
+              <div className="flex flex-wrap gap-6 items-start">
+                {associatedBrandsData.map((brand, i) => (
+                  <div key={i} className="flex flex-col items-center text-center space-y-3 w-28">
+                    <div className="relative w-20 h-20 rounded-full overflow-hidden border border-gray-100 shadow-sm bg-white flex items-center justify-center p-2">
+                      {brand.logo ? (
+                        <div className="relative w-full h-full rounded-full overflow-hidden">
+                          <Image
+                            src={brand.logo}
+                            alt={brand.name}
+                            fill
+                            className="object-contain"
+                          />
+                        </div>
+                      ) : (
+                        <div className="text-gray-400 font-medium text-[10px] text-center break-words leading-tight">
+                          {brand.name}
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-gray-800 text-xs leading-tight line-clamp-2">{brand.name}</h3>
+                      {brand.website_url && (
+                        <a
+                          href={brand.website_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[10px] text-primary hover:underline mt-1 inline-block"
+                        >
+                          Visitar Site
+                        </a>
+                      )}
+                      {!brand.website_url && brand.instagram_url && (
+                        <a
+                          href={`https://instagram.com/${brand.instagram_url.replace('@', '')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[10px] text-primary hover:underline mt-1 inline-block"
+                        >
+                          Instagram
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </main>
+
+      {/* Product Details Modal */}
+      <Dialog open={!!viewingProduct} onOpenChange={(open) => !open && setViewingProduct(null)}>
+        <DialogContent className="sm:max-w-md border-0 p-0 overflow-hidden rounded-[2rem] gap-0">
+          {viewingProduct && (
+            <>
+              <div className="relative w-full h-64 bg-gray-50">
+                <Image
+                  src={viewingProduct.image || "/placeholder.svg"}
+                  alt={viewingProduct.name}
+                  fill
+                  className="object-contain p-6"
+                />
+              </div>
+              <div className="p-8">
+                <div className="mb-2">
+                  <span className="text-xs font-semibold text-primary uppercase">{viewingProduct.category || "Produto"}</span>
+                </div>
+                <DialogTitle className="text-2xl font-bold text-black mb-2">
+                  {viewingProduct.name}
+                </DialogTitle>
+                <div className="text-xl font-bold text-black mb-6">
+                  {formatBRL(viewingProduct.price || 0)}
+                </div>
+                {viewingProduct.description && (
+                  <div className="mb-8">
+                    <DialogDescription className="text-sm text-gray-500 leading-relaxed whitespace-pre-wrap">
+                      {viewingProduct.description}
+                    </DialogDescription>
+                  </div>
+                )}
+                <div className="flex gap-4">
+                  <Button
+                    onClick={() => {
+                      toggleProductSelection(viewingProduct.id);
+                      setViewingProduct(null);
+                    }}
+                    className={`flex-1 h-14 rounded-xl font-bold text-[15px] ${
+                      selectedProducts.includes(viewingProduct.id)
+                        ? "bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700"
+                        : "bg-[#F28D35] text-white hover:bg-[#e17c2a]"
+                    }`}
+                  >
+                    {selectedProducts.includes(viewingProduct.id)
+                      ? "Remover Produto"
+                      : "Adicionar Produto"}
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <SiteFooter />
     </div>

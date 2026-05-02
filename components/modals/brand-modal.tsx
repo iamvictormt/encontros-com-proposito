@@ -28,8 +28,10 @@ export function BrandModal({ isOpen, onClose, onSuccess, brand, isReadOnly }: Br
   const [formData, setFormData] = useState({
     name: brand?.name || "",
     logo: brand?.logo || "",
-    page: brand?.page || "Home",
-    status: brand?.status || "Publicado",
+    website_url: brand?.website_url || "",
+    instagram_url: brand?.instagram_url || "",
+    description: brand?.description || "",
+    status: brand?.status || "Ativo",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -81,12 +83,37 @@ export function BrandModal({ isOpen, onClose, onSuccess, brand, isReadOnly }: Br
             />
           </div>
 
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="website_url">Site (Opcional)</Label>
+              <Input 
+                id="website_url" 
+                placeholder="https://..."
+                value={formData.website_url} 
+                onChange={(e) => setFormData({ ...formData, website_url: e.target.value })} 
+                disabled={isReadOnly}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="instagram_url">Instagram (Opcional)</Label>
+              <Input 
+                id="instagram_url" 
+                placeholder="@..."
+                value={formData.instagram_url} 
+                onChange={(e) => setFormData({ ...formData, instagram_url: e.target.value })} 
+                disabled={isReadOnly}
+              />
+            </div>
+          </div>
+
           <div className="space-y-2">
-            <Label htmlFor="page">Página</Label>
-            <Input 
-              id="page" 
-              value={formData.page} 
-              onChange={(e) => setFormData({ ...formData, page: e.target.value })} 
+            <Label htmlFor="description">Descrição Curta</Label>
+            <textarea 
+              id="description" 
+              className="w-full min-h-[80px] px-3 py-2 bg-white border rounded-md text-sm border-input focus:ring-2 focus:ring-primary/20 outline-none resize-none"
+              placeholder="Descreva brevemente o parceiro..."
+              value={formData.description} 
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
               disabled={isReadOnly}
             />
           </div>
@@ -102,8 +129,8 @@ export function BrandModal({ isOpen, onClose, onSuccess, brand, isReadOnly }: Br
                 <SelectValue placeholder="Selecione o status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Publicado">Publicado</SelectItem>
-                <SelectItem value="Rascunho">Rascunho</SelectItem>
+                <SelectItem value="Ativo">Ativo</SelectItem>
+                <SelectItem value="Inativo">Inativo</SelectItem>
               </SelectContent>
             </Select>
           </div>

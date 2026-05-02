@@ -1,7 +1,7 @@
 /**
- * Formata o CPF com máscara XXX.XXX.XXX-XX
+ * Formata o Telefone com máscara (XX) XXXXX-XXXX
  */
-export function formatCPF(value: string): string {
+export function formatPhone(value: string): string {
   // Remove tudo que não é dígito
   const numbers = value.replace(/\D/g, "");
 
@@ -9,52 +9,27 @@ export function formatCPF(value: string): string {
   const limited = numbers.slice(0, 11);
 
   // Aplica a máscara
-  if (limited.length <= 3) return limited;
-  if (limited.length <= 6) return `${limited.slice(0, 3)}.${limited.slice(3)}`;
-  if (limited.length <= 9)
-    return `${limited.slice(0, 3)}.${limited.slice(3, 6)}.${limited.slice(6)}`;
-  return `${limited.slice(0, 3)}.${limited.slice(3, 6)}.${limited.slice(6, 9)}-${limited.slice(9)}`;
+  if (limited.length === 0) return "";
+  if (limited.length <= 2) return `(${limited}`;
+  if (limited.length <= 6) return `(${limited.slice(0, 2)}) ${limited.slice(2)}`;
+  if (limited.length <= 10)
+    return `(${limited.slice(0, 2)}) ${limited.slice(2, 6)}-${limited.slice(6)}`;
+  return `(${limited.slice(0, 2)}) ${limited.slice(2, 7)}-${limited.slice(7)}`;
 }
 
 /**
- * Remove a máscara do CPF
+ * Remove a máscara do Telefone
  */
-export function unformatCPF(value: string): string {
+export function unformatPhone(value: string): string {
   return value.replace(/\D/g, "");
 }
 
 /**
- * Valida se o CPF é válido
+ * Valida se o Telefone é válido
  */
-export function validateCPF(cpf: string): boolean {
-  const numbers = cpf.replace(/\D/g, "");
-
-  if (numbers.length !== 11) return false;
-
-  // Verifica se todos os dígitos são iguais
-  if (/^(\d)\1{10}$/.test(numbers)) return false;
-
-  // Validação do primeiro dígito verificador
-  let sum = 0;
-  for (let i = 0; i < 9; i++) {
-    sum += Number.parseInt(numbers.charAt(i)) * (10 - i);
-  }
-  let remainder = 11 - (sum % 11);
-  const digit1 = remainder >= 10 ? 0 : remainder;
-
-  if (digit1 !== Number.parseInt(numbers.charAt(9))) return false;
-
-  // Validação do segundo dígito verificador
-  sum = 0;
-  for (let i = 0; i < 10; i++) {
-    sum += Number.parseInt(numbers.charAt(i)) * (11 - i);
-  }
-  remainder = 11 - (sum % 11);
-  const digit2 = remainder >= 10 ? 0 : remainder;
-
-  if (digit2 !== Number.parseInt(numbers.charAt(10))) return false;
-
-  return true;
+export function validatePhone(phone: string): boolean {
+  const numbers = phone.replace(/\D/g, "");
+  return numbers.length >= 10 && numbers.length <= 11;
 }
 
 /**
@@ -66,10 +41,10 @@ export function validateEmail(email: string): boolean {
 }
 
 /**
- * Detecta se o input é um CPF (apenas números) ou email (contém @)
+ * Detecta se o input é um Telefone (apenas números ou parênteses) ou email (contém @)
  */
-export function detectInputType(value: string): "cpf" | "email" | "unknown" {
+export function detectInputType(value: string): "phone" | "email" | "unknown" {
   if (value.includes("@")) return "email";
-  if (/^\d/.test(value) || /^\d{3}\./.test(value)) return "cpf";
+  if (/^[\d(]/.test(value)) return "phone";
   return "email";
 }

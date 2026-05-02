@@ -12,23 +12,23 @@ export async function PUT(request: Request) {
   }
 
   try {
-    const { fullName, email, cpf, password } = await request.json();
+    const { fullName, email, phone, password } = await request.json();
     
     let result;
     if (password) {
       const hashedPassword = await hashPassword(password);
       result = await sql`
         UPDATE users 
-        SET full_name = ${fullName}, email = ${email}, cpf = ${cpf}, password_hash = ${hashedPassword}
+        SET full_name = ${fullName}, email = ${email}, phone = ${phone}, password_hash = ${hashedPassword}
         WHERE id = ${payload.userId}
-        RETURNING id, full_name, email, cpf, is_admin
+        RETURNING id, full_name, email, phone, is_admin
       `;
     } else {
       result = await sql`
         UPDATE users 
-        SET full_name = ${fullName}, email = ${email}, cpf = ${cpf}
+        SET full_name = ${fullName}, email = ${email}, phone = ${phone}
         WHERE id = ${payload.userId}
-        RETURNING id, full_name, email, cpf, is_admin
+        RETURNING id, full_name, email, phone, is_admin
       `;
     }
 

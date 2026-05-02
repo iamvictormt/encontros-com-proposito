@@ -3,7 +3,7 @@ import { apiClient } from "./api-client";
 import { API_CONFIG } from "@/lib/config/api.config";
 
 export interface LoginCredentials {
-  emailOrCpf: string;
+  emailOrPhone: string;
   password: string;
   rememberMe?: boolean;
 }
@@ -11,7 +11,7 @@ export interface LoginCredentials {
 export interface RegisterData {
   fullName: string;
   email: string;
-  cpf: string;
+  phone: string;
   password: string;
 }
 
@@ -19,7 +19,7 @@ export interface AuthUser {
   id: string;
   fullName: string;
   email: string;
-  cpf: string;
+  phone: string;
   isAdmin: boolean;
 }
 

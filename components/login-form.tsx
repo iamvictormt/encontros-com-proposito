@@ -17,9 +17,9 @@ import { useToast } from "@/hooks/use-toast";
 import { useLoading } from "@/providers/loading-provider";
 import { authService } from "@/lib/services/auth.service";
 import {
-  formatCPF,
-  unformatCPF,
-  validateCPF,
+  formatPhone,
+  unformatPhone,
+  validatePhone,
   validateEmail,
   detectInputType,
 } from "@/lib/utils/validators";
@@ -52,7 +52,7 @@ export function LoginForm() {
   const [year, setYear] = useState("");
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [emailCpfError, setEmailCpfError] = useState("");
+  const [emailPhoneError, setEmailPhoneError] = useState("");
   const { isLoggedIn, user, isLoading: authLoading, refreshAuth } = useAuth();
   const { setIsLoading: setGlobalLoading } = useLoading();
   const router = useRouter();
@@ -73,41 +73,41 @@ export function LoginForm() {
     }
   }, [authLoading, isLoggedIn, user, router, showSuccessVideo, setGlobalLoading]);
 
-  const handleEmailCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEmailPhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const inputType = detectInputType(value);
 
-    if (inputType === "cpf") {
-      const formatted = formatCPF(value);
+    if (inputType === "phone") {
+      const formatted = formatPhone(value);
       setEmail(formatted);
-      setEmailCpfError("");
+      setEmailPhoneError("");
     } else if (inputType === "email") {
       setEmail(value);
-      setEmailCpfError("");
+      setEmailPhoneError("");
     } else {
       setEmail(value);
     }
   };
 
-  const handleEmailCpfBlur = () => {
+  const handleEmailPhoneBlur = () => {
     if (!email) return;
 
     const inputType = detectInputType(email);
 
-    if (inputType === "cpf") {
-      const cpfNumbers = unformatCPF(email);
-      if (cpfNumbers.length === 11 && !validateCPF(email)) {
-        setEmailCpfError("CPF inválido");
-      } else if (cpfNumbers.length > 0 && cpfNumbers.length < 11) {
-        setEmailCpfError("CPF incompleto");
+    if (inputType === "phone") {
+      const phoneNumbers = unformatPhone(email);
+      if (phoneNumbers.length >= 10 && !validatePhone(email)) {
+        setEmailPhoneError("Telefone inválido");
+      } else if (phoneNumbers.length > 0 && phoneNumbers.length < 10) {
+        setEmailPhoneError("Telefone incompleto");
       } else {
-        setEmailCpfError("");
+        setEmailPhoneError("");
       }
     } else if (inputType === "email") {
       if (!validateEmail(email)) {
-        setEmailCpfError("Email inválido");
+        setEmailPhoneError("Email inválido");
       } else {
-        setEmailCpfError("");
+        setEmailPhoneError("");
       }
     }
   };
@@ -115,11 +115,11 @@ export function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (emailCpfError) {
+    if (emailPhoneError) {
       toast({
         variant: "error",
         title: "Erro de validação",
-        description: emailCpfError,
+        description: emailPhoneError,
       });
       return;
     }
@@ -129,10 +129,10 @@ export function LoginForm() {
 
     try {
       const inputType = detectInputType(email);
-      const loginIdentifier = inputType === "cpf" ? unformatCPF(email) : email;
+      const loginIdentifier = inputType === "phone" ? unformatPhone(email) : email;
 
       const response = await authService.login({
-        emailOrCpf: loginIdentifier,
+        emailOrPhone: loginIdentifier,
         password,
         rememberMe,
       });
@@ -240,21 +240,21 @@ export function LoginForm() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-2">
                     <label htmlFor="email" className="text-sm font-medium text-foreground">
-                      {"Email ou CPF"}
+                      {"Email ou Telefone"}
                     </label>
                     <Input
                       id="email"
                       type="text"
-                      placeholder="Informe seu Email ou CPF"
+                      placeholder="Informe seu Email ou Telefone"
                       value={email}
-                      onChange={handleEmailCpfChange}
-                      onBlur={handleEmailCpfBlur}
+                      onChange={handleEmailPhoneChange}
+                      onBlur={handleEmailPhoneBlur}
                       className={`w-full rounded-md h-11 sm:h-12 text-sm sm:text-base ${
-                        emailCpfError ? "border-red-500 focus-visible:ring-red-500" : ""
+                        emailPhoneError ? "border-red-500 focus-visible:ring-red-500" : ""
                       }`}
                       required
                     />
-                    {emailCpfError && <p className="text-xs text-red-600">{emailCpfError}</p>}
+                    {emailPhoneError && <p className="text-xs text-red-600">{emailPhoneError}</p>}
                   </div>
 
                   <div className="space-y-2">

@@ -34,20 +34,21 @@ export async function POST(request: Request) {
     const { 
       title, image, date, time, location, price, status, tags, 
       description, capacity, mandatory_products, groups,
-      target_audience, conductor, has_certificate, video_url, age_range, type_event
+      target_audience, conductor, has_certificate, video_url, age_range, type_event, associated_brands
     } = body;
     
     const result = await sql`
       INSERT INTO events (
         title, image, date, time, location, price, status, tags, 
         description, capacity, mandatory_products, groups,
-        target_audience, conductor, has_certificate, video_url, age_range, type_event
+        target_audience, conductor, has_certificate, video_url, age_range, type_event, associated_brands
       )
       VALUES (
         ${title}, ${image}, ${date}, ${time}, ${location}, ${price}, ${status}, ${tags}, 
         ${description}, ${capacity}, ${JSON.stringify(mandatory_products || [])}, 
         ${JSON.stringify(groups || [])},
-        ${target_audience}, ${conductor}, ${has_certificate}, ${video_url}, ${age_range}, ${type_event || 'Presencial'}
+        ${target_audience}, ${conductor}, ${has_certificate}, ${video_url}, ${age_range}, ${type_event || 'Presencial'},
+        ${JSON.stringify(associated_brands || [])}
       )
       RETURNING *
     `;
@@ -72,7 +73,7 @@ export async function PUT(request: Request) {
     const { 
       id, title, image, date, time, location, price, status, tags, 
       description, capacity, mandatory_products, groups,
-      target_audience, conductor, has_certificate, video_url, age_range, type_event
+      target_audience, conductor, has_certificate, video_url, age_range, type_event, associated_brands
     } = body;
     
     const result = await sql`
@@ -94,7 +95,8 @@ export async function PUT(request: Request) {
           has_certificate = ${has_certificate},
           video_url = ${video_url},
           age_range = ${age_range},
-          type_event = ${type_event || 'Presencial'}
+          type_event = ${type_event || 'Presencial'},
+          associated_brands = ${JSON.stringify(associated_brands || [])}
       WHERE id = ${id}
       RETURNING *
     `;

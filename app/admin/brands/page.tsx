@@ -115,7 +115,7 @@ export default function AdminBrands() {
   return (
     <div className="space-y-6 bg-white p-4 rounded-md">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <h2 className="text-xl font-bold text-black">Conteúdo das marcas</h2>
+        <h2 className="text-xl font-bold text-black">Marcas parceiras</h2>
         <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-4 w-full md:w-auto">
           <div className="relative flex-1 sm:w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
@@ -154,13 +154,13 @@ export default function AdminBrands() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            {/* <Button 
+            <Button 
               onClick={() => { setSelectedBrand(null); setIsModalOpen(true); }}
               className="h-10 bg-secondary hover:bg-secondary/90 text-white gap-2 flex-1"
             >
               <Plus className="h-4 w-4" />
               <span>Nova Marca</span>
-            </Button> */}
+            </Button>
           </div>
         </div>
       </div>

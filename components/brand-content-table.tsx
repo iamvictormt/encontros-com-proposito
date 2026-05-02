@@ -18,10 +18,11 @@ import Image from "next/image";
 import { formatBRL, formatDate, formatDateHour } from "@/lib/utils/format";
 
 interface BrandContentProps {
-  id?: string;
   logo: string;
   name: string;
-  page: string;
+  website_url?: string;
+  instagram_url?: string;
+  description?: string;
   updated_at: string;
   status: string;
 }
@@ -57,9 +58,26 @@ export function BrandContentTable({
               </div>
               <div className="min-w-0">
                 <p className="font-bold text-black">{brand.name}</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs text-muted-foreground">Página:</span>
-                  <span className="text-xs font-medium text-black">{brand.page}</span>
+                <div className="flex flex-col gap-1 mt-1">
+                  {brand.website_url && (
+                    <div className="flex items-center gap-1">
+                      <span className="text-[10px] text-muted-foreground uppercase">Site:</span>
+                      <a href={brand.website_url} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-primary hover:underline truncate max-w-[150px]">
+                        {brand.website_url.replace(/^https?:\/\//, '')}
+                      </a>
+                    </div>
+                  )}
+                  {brand.instagram_url && (
+                    <div className="flex items-center gap-1">
+                      <span className="text-[10px] text-muted-foreground uppercase">Insta:</span>
+                      <a href={`https://instagram.com/${brand.instagram_url.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-primary hover:underline truncate max-w-[150px]">
+                        {brand.instagram_url}
+                      </a>
+                    </div>
+                  )}
+                  {!brand.website_url && !brand.instagram_url && (
+                    <span className="text-xs text-muted-foreground italic">Sem contatos</span>
+                  )}
                 </div>
               </div>
             </div>
@@ -103,7 +121,7 @@ export function BrandContentTable({
             <TableRow>
               <TableHead className="text-muted-foreground whitespace-nowrap">Marca</TableHead>
               <TableHead className="text-muted-foreground whitespace-nowrap">
-                Página/Seção
+                Contatos
               </TableHead>
               <TableHead className="text-muted-foreground whitespace-nowrap">Atualização</TableHead>
               <TableHead className="text-muted-foreground whitespace-nowrap">Status</TableHead>
@@ -127,7 +145,21 @@ export function BrandContentTable({
                   </div>
                 </TableCell>
                 <TableCell className="text-sm text-black">
-                  {brand.page || "N/A"}
+                  <div className="flex flex-col gap-1">
+                    {brand.website_url && (
+                      <a href={brand.website_url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline truncate max-w-[200px] block">
+                        🌐 {brand.website_url.replace(/^https?:\/\//, '')}
+                      </a>
+                    )}
+                    {brand.instagram_url && (
+                      <a href={`https://instagram.com/${brand.instagram_url.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline truncate max-w-[200px] block">
+                        📸 {brand.instagram_url}
+                      </a>
+                    )}
+                    {!brand.website_url && !brand.instagram_url && (
+                      <span className="text-xs text-muted-foreground italic">Nenhum</span>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell className="text-sm text-black">
                   {formatDateHour(brand.updated_at)}

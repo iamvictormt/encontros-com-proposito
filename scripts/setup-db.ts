@@ -20,7 +20,7 @@ async function setupDatabase() {
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         full_name TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
-        cpf TEXT UNIQUE NOT NULL,
+        phone TEXT UNIQUE,
         password_hash TEXT NOT NULL,
         is_admin BOOLEAN DEFAULT FALSE,
         role TEXT DEFAULT 'Usuário',
@@ -32,6 +32,8 @@ async function setupDatabase() {
 
     // Ensure columns exist for users if table was already created
     await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'Usuário'`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS phone TEXT UNIQUE`;
+    await sql`ALTER TABLE users DROP COLUMN IF EXISTS cpf`;
     await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar TEXT`;
     await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP`;
 
@@ -111,18 +113,28 @@ async function setupDatabase() {
     await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS video_url TEXT`;
     await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS age_range TEXT`;
     await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS type_event TEXT DEFAULT 'Presencial'`;
+    await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS associated_brands JSONB DEFAULT '[]'`;
 
     // Brands table
     await sql`
       CREATE TABLE IF NOT EXISTS brands (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         name TEXT NOT NULL,
-        logo TEXT,
+        logo TEXT NOT NULL,
         description TEXT,
-        website TEXT,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        website_url TEXT,
+        instagram_url TEXT,
+        status TEXT DEFAULT 'Ativo',
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `;
+    
+    await sql`ALTER TABLE brands ADD COLUMN IF NOT EXISTS website_url TEXT`;
+    await sql`ALTER TABLE brands ADD COLUMN IF NOT EXISTS instagram_url TEXT`;
+    await sql`ALTER TABLE brands ADD COLUMN IF NOT EXISTS description TEXT`;
+    await sql`ALTER TABLE brands ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'Ativo'`;
+    await sql`ALTER TABLE brands ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP`;
 
     // Products table
     await sql`
@@ -133,13 +145,13 @@ async function setupDatabase() {
         price DECIMAL(10, 2) NOT NULL,
         image TEXT,
         images TEXT,
-        brand_id UUID REFERENCES brands(id),
         stock INTEGER DEFAULT 0,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `;
     
     await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS images TEXT`;
+    await sql`ALTER TABLE products DROP COLUMN IF EXISTS brand_id`;
 
     // Participations table (Event joining)
     await sql`
@@ -147,10 +159,13 @@ async function setupDatabase() {
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         event_id UUID REFERENCES events(id) ON DELETE CASCADE,
         user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+        optional_products JSONB DEFAULT '[]',
         joined_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         UNIQUE(event_id, user_id)
       );
     `;
+    
+    await sql`ALTER TABLE participations ADD COLUMN IF NOT EXISTS optional_products JSONB DEFAULT '[]'`;
 
     // Interactions table
     await sql`

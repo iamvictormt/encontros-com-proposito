@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "@/components/image-upload";
 import { toast } from "sonner";
+import { formatBRL } from "@/lib/utils/format";
 import {
   Select,
   SelectContent,
@@ -28,6 +29,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Trash2, Users, ChevronDown, ShoppingBag, Settings2, Video } from "lucide-react";
 import { VideoUpload } from "@/components/video-upload";
 import { useEffect } from "react";
+import { BrandModal } from "@/components/modals/brand-modal";
 
 interface EventModalProps {
   isOpen: boolean;
@@ -39,6 +41,7 @@ interface EventModalProps {
 
 export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: EventModalProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [displayPrice, setDisplayPrice] = useState("");
   const [formData, setFormData] = useState({
     title: event?.title || "",
     image: event?.image || "",
@@ -63,6 +66,11 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
         ? JSON.parse(event.groups)
         : event.groups
       : [],
+    associated_brands: event?.associated_brands
+      ? typeof event.associated_brands === "string"
+        ? JSON.parse(event.associated_brands)
+        : event.associated_brands
+      : [],
     target_audience: event?.target_audience || "Todos os públicos",
     conductor: event?.conductor || "",
     has_certificate: event ? event.has_certificate : true,
@@ -72,20 +80,30 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
   });
   const [tagInput, setTagInput] = useState("");
   const [productSearchQuery, setProductSearchQuery] = useState("");
+  const [brandSearchQuery, setBrandSearchQuery] = useState("");
 
   const [availableProducts, setAvailableProducts] = useState<any[]>([]);
+  const [availableBrands, setAvailableBrands] = useState<any[]>([]);
+  const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
+
+  const fetchProductsAndBrands = async () => {
+    try {
+      const [resProducts, resBrands] = await Promise.all([
+        fetch("/api/products"),
+        fetch("/api/brands")
+      ]);
+      const dataProducts = await resProducts.json();
+      const dataBrands = await resBrands.json();
+      
+      setAvailableProducts(Array.isArray(dataProducts) ? dataProducts : []);
+      setAvailableBrands(Array.isArray(dataBrands) ? dataBrands : []);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await fetch("/api/products");
-        const data = await res.json();
-        setAvailableProducts(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
-    fetchProducts();
+    fetchProductsAndBrands();
   }, []);
 
   const sortedAndFilteredProducts = [...availableProducts]
@@ -93,6 +111,33 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
       product.name.toLowerCase().includes(productSearchQuery.toLowerCase())
     )
     .sort((a, b) => a.name.localeCompare(b.name));
+
+  const sortedAndFilteredBrands = [...availableBrands]
+    .filter((brand) =>
+      brand.name.toLowerCase().includes(brandSearchQuery.toLowerCase())
+    )
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  useEffect(() => {
+    if (event?.price) {
+      setDisplayPrice(formatBRL(event.price));
+    } else {
+      setDisplayPrice("");
+    }
+  }, [event]);
+
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, "");
+    if (!value) {
+      setDisplayPrice("");
+      setFormData({ ...formData, price: 0 });
+      return;
+    }
+
+    const numericValue = parseFloat(value) / 100;
+    setDisplayPrice(formatBRL(numericValue));
+    setFormData({ ...formData, price: numericValue });
+  };
 
   const handleCepLookup = async (cep: string) => {
     const cleanCep = cep.replace(/\D/g, "");
@@ -171,6 +216,7 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
         capacity: parseInt(formData.capacity.toString()),
         mandatory_products: JSON.stringify(formData.mandatory_products),
         groups: JSON.stringify(formData.groups),
+        associated_brands: JSON.stringify(formData.associated_brands),
       };
 
       const res = await fetch("/api/events", {
@@ -317,14 +363,14 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="price">Preço (R$)</Label>
+                    <Label htmlFor="price">Preço de Venda</Label>
                     <Input
                       id="price"
-                      type="number"
-                      step="0.01"
-                      value={formData.price}
-                      onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                      className="text-lg font-bold text-secondary"
+                      value={displayPrice}
+                      onChange={handlePriceChange}
+                      placeholder="R$ 0,00"
+                      className="text-lg font-bold text-primary"
+                      required
                       disabled={isReadOnly}
                     />
                   </div>
@@ -589,6 +635,97 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
               </div>
             </div>
 
+            {/* Brands Attachment */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-primary/70 flex items-center gap-2">
+                  <Settings2 className="w-4 h-4" />
+                  Marcas Associadas
+                </h3>
+                {!isReadOnly && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 text-xs font-bold text-primary hover:text-primary/80 hover:bg-primary/10"
+                    onClick={() => setIsBrandModalOpen(true)}
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1" /> Nova Marca
+                  </Button>
+                )}
+              </div>
+
+              <div className="p-1 space-y-3">
+                {/* Selected Brands Badges */}
+                {formData.associated_brands.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {formData.associated_brands.map((brandId: string) => {
+                      const brand = availableBrands.find((b) => b.id === brandId);
+                      return (
+                        <Badge
+                          key={brandId}
+                          variant="secondary"
+                          className="flex items-center gap-1 py-1.5 px-3 text-xs bg-white border border-gray-200 text-gray-700 shadow-sm"
+                        >
+                          {brand?.name || "Marca Desconhecida"}
+                          {!isReadOnly && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  associated_brands: prev.associated_brands.filter(
+                                    (id: string) => id !== brandId
+                                  ),
+                                }));
+                              }}
+                              className="hover:text-red-500 transition-colors ml-1 focus:outline-none"
+                            >
+                              <Plus className="w-3.5 h-3.5 rotate-45" />
+                            </button>
+                          )}
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Dropdown to select brands */}
+                {!isReadOnly && availableBrands.filter(b => !formData.associated_brands.includes(b.id)).length > 0 && (
+                  <Select
+                    value=""
+                    onValueChange={(val) => {
+                      if (val) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          associated_brands: [...prev.associated_brands, val],
+                        }));
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-full md:w-[300px] h-9 text-xs bg-white">
+                      <SelectValue placeholder="Adicionar marca..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableBrands
+                        .filter(b => !formData.associated_brands.includes(b.id))
+                        .map(brand => (
+                          <SelectItem key={brand.id} value={brand.id}>
+                            {brand.name}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                )}
+                
+                {availableBrands.length === 0 && (
+                  <p className="text-xs text-muted-foreground italic">
+                    Nenhuma marca cadastrada.
+                  </p>
+                )}
+              </div>
+            </div>
+
             {/* Groups Attachment using Separator */}
             <div className="space-y-6">
               <h3 className="text-sm font-bold uppercase tracking-wider text-primary/70 pb-2 border-b flex items-center gap-2">
@@ -811,6 +948,14 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
           </DialogFooter>
         </form>
       </DialogContent>
+
+      {isBrandModalOpen && (
+        <BrandModal
+          isOpen={isBrandModalOpen}
+          onClose={() => setIsBrandModalOpen(false)}
+          onSuccess={() => fetchProductsAndBrands()}
+        />
+      )}
     </Dialog>
   );
 }

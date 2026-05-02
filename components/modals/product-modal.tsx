@@ -125,7 +125,7 @@ export function ProductModal({ isOpen, onClose, onSuccess, product, isReadOnly }
     }
 
     const numericValue = parseFloat(value) / 100;
-    setDisplayPrice(numericValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 }));
+    setDisplayPrice(formatBRL(numericValue));
     setFormData({ ...formData, price: numericValue });
   };
 
