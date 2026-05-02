@@ -62,25 +62,25 @@ export default function AdminOverview() {
   if (isLoading) return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-primary w-12 h-12" /></div>;
 
   return (
-    <div className="space-y-8">
-      <section className="bg-white p-4 rounded-md">
-        <h2 className="text-xl font-bold text-black mb-6">Relatórios</h2>
+    <div className="space-y-12 animate-fade-in">
+      <section className="bg-white/50 backdrop-blur-sm p-8 rounded-[2.5rem] shadow-xl border border-white">
+        <h2 className="text-3xl font-black uppercase italic text-black mb-10 tracking-tight">Relatórios Gerais</h2>
         <AdminStats stats={data?.stats} />
       </section>
 
-      <section className="space-y-6 bg-white p-4 rounded-md">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <h2 className="text-xl font-bold text-black">Criação e Moderação de eventos</h2>
+      <section className="space-y-8 bg-white/50 backdrop-blur-sm p-8 rounded-[2.5rem] shadow-xl border border-white">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+          <h2 className="text-3xl font-black uppercase italic text-black tracking-tight">Criação e Moderação</h2>
           <div className="flex flex-wrap gap-4 w-full md:w-auto">
-            <Button className="bg-accent hover:bg-accent/90 text-white flex-1 md:flex-none" asChild>
+            <Button className="bg-accent hover:bg-accent/90 text-white font-black uppercase italic py-7 px-8 rounded-2xl flex-1 md:flex-none" asChild>
               <Link href="/admin/events">Criar Novo Evento</Link>
             </Button>
             <Button
               variant="outline"
-              className="bg-white text-black border-gray-200 flex-1 md:flex-none"
+              className="bg-white text-black border-gray-200 font-black uppercase italic py-7 px-8 rounded-2xl flex-1 md:flex-none"
               asChild
             >
-              <Link href="/admin/events">Ver todos os eventos</Link>
+              <Link href="/admin/events">Ver todos</Link>
             </Button>
           </div>
         </div>
@@ -91,9 +91,9 @@ export default function AdminOverview() {
         </div>
       </section>
 
-      <section className="space-y-6 bg-white p-4 rounded-md">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <h2 className="text-xl font-bold text-black">Aprovação de Locais & Empresas</h2>
+      <section className="space-y-8 bg-white/50 backdrop-blur-sm p-8 rounded-[2.5rem] shadow-xl border border-white">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+          <h2 className="text-3xl font-black uppercase italic text-black tracking-tight">Aprovação de Locais</h2>
           <div className="flex gap-4 items-center w-full md:w-auto">
             <Button
               variant="outline"

@@ -229,7 +229,7 @@ export function LoginForm() {
             <div className="w-full max-w-md space-y-6 sm:space-y-10">
               <div className="space-y-5 sm:space-y-6">
                 <div className="space-y-5 text-center mb-10">
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black">
+                  <h2 className="text-2xl sm:text-3xl md:text-5xl font-black uppercase italic text-black leading-tight">
                     {"Bem-vindo(a) de volta!"}
                   </h2>
                   <p className="text-sm sm:text-base text-muted-foreground">
@@ -289,7 +289,8 @@ export function LoginForm() {
                   <Button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full bg-[#8A0204] hover:bg-[#6a0103] text-white font-medium h-11 sm:h-12 text-sm sm:text-base rounded-md disabled:opacity-50"
+                    variant="secondary"
+                    className="w-full font-black uppercase italic h-12 sm:h-14 text-base rounded-2xl disabled:opacity-50"
                   >
                     {isLoading ? "Entrando..." : "Iniciar Sessão"}
                   </Button>
@@ -298,7 +299,7 @@ export function LoginForm() {
                 <div className="text-center text-sm flex flex-col gap-3">
                   <div>
                     <span className="text-muted-foreground">{"Não possui uma conta? "}</span>
-                    <Link href="/signup" className="text-[#8A0204] hover:underline font-medium">
+                    <Link href="/signup" className="text-secondary hover:underline font-black uppercase italic">
                       {"Criar uma nova conta"}
                     </Link>
                   </div>
@@ -328,9 +329,9 @@ export function LoginForm() {
           />
 
           <div className="absolute bottom-0 left-0 right-0 p-12 z-20">
-            <div className="backdrop-blur-md rounded-xl p-8 border border-white/20">
-              <div className="text-white space-y-4">
-                <h2 className="text-3xl md:text-4xl text-pretty">
+            <div className="backdrop-blur-lg rounded-[2.5rem] p-10 border border-white/20 bg-black/20">
+              <div className="text-white space-y-6">
+                <h2 className="text-3xl md:text-5xl font-black uppercase italic leading-tight">
                   {carouselSlides[currentSlide].title}
                 </h2>
                 <p className="text-base md:text-lg leading-relaxed text-pretty">

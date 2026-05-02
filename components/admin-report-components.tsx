@@ -15,11 +15,18 @@ interface StatBoxProps {
 
 export function StatBox({ label, value, prefix, className = "" }: StatBoxProps) {
   return (
-    <div className={`bg-[#F8F9FA] p-6 rounded-2xl border border-gray-100 flex flex-col gap-2 ${className}`}>
-      <span className="text-gray-400 text-sm font-medium">{label}</span>
-      <div className="flex items-baseline gap-1">
-        {prefix && <span className="text-[#1A4B40] text-xl font-bold">{prefix}</span>}
-        <span className="text-[#1A4B40] text-4xl font-bold tracking-tight">{value}</span>
+    <div
+      className={`bg-white p-8 rounded-[2rem] shadow-xl border border-white flex flex-col gap-3 relative overflow-hidden group transition-all hover:scale-[1.02] ${className}`}
+    >
+      <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 transition-all group-hover:scale-150" />
+      <span className="text-muted-foreground text-[10px] font-black uppercase italic tracking-widest relative z-10">
+        {label}
+      </span>
+      <div className="flex items-baseline gap-1 relative z-10">
+        {prefix && <span className="text-primary text-xl font-black italic uppercase">{prefix}</span>}
+        <span className="text-primary text-5xl font-black italic uppercase tracking-tight">
+          {value}
+        </span>
       </div>
     </div>
   );
