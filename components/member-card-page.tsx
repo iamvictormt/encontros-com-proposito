@@ -3,6 +3,7 @@
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { useState, useEffect } from "react";
+import { Button } from "./ui/button";
 
 interface MemberCardProps {
   cardType?: "GREEN" | "PINK";
@@ -36,78 +37,103 @@ export function MemberCardPage({
   const backBg = isPink ? "/cartao-rosa-verso.svg" : "/cartao-verde-verso.svg";
 
   return (
-    <div className="min-h-screen flex flex-col font-sans">
+    <div className="min-h-screen flex flex-col bg-background font-sans overflow-x-hidden">
       <SiteHeader />
 
-      <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8">
-        <div className="w-full max-w-[580px]">
-          <h1 className="text-2xl font-bold text-gray-900 mb-8 text-center">Seu Cartão MeetOff</h1>
+      <main className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12 relative">
+        {/* Background Decorations */}
+        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-brand-green/10 blur-[120px] rounded-full -z-10" />
+        <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-brand-orange/10 blur-[120px] rounded-full -z-10" />
 
-          {/* Front Card */}
-          <div
-            className={`relative w-full aspect-[1.58] rounded-[32px] overflow-hidden transition-all duration-500 bg-cover bg-center`}
-            style={{ backgroundImage: `url('${frontBg}')` }}
-          >
-            {/* Dynamic Data Overlay */}
-            <div className="absolute inset-0 p-8 flex flex-col justify-end">
-              <div className="flex justify-between items-end w-full">
-                {/* Name for card */}
-                <div className="flex flex-col mb-3 sm:mb-8">
-                  <div className="text-white text-[10px] sm:text-sm font-bold tracking-wide uppercase drop-shadow-sm">
-                    {name || "Visitante"}
+        <div className="w-full max-w-2xl space-y-12 relative">
+          <div className="text-center space-y-4">
+            <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
+              Seu Acesso Exclusivo
+            </span>
+            <h1 className="text-4xl md:text-6xl font-black text-brand-black uppercase tracking-tighter leading-none">
+              MeetOff <span className="text-brand-orange">Member</span> Card
+            </h1>
+            <p className="text-gray-500 font-medium max-w-md mx-auto text-sm">
+              Seu passaporte digital para o ecossistema mais exclusivo de conexões e eventos premium.
+            </p>
+          </div>
+
+          <div className="grid gap-12 lg:gap-16">
+            {/* Front Card */}
+            <div className="group perspective-1000">
+              <div
+                className="relative w-full aspect-[1.58] rounded-[2.5rem] overflow-hidden transition-all duration-700 bg-cover bg-center shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] group-hover:scale-[1.02] group-hover:-rotate-1"
+                style={{ backgroundImage: `url('${frontBg}')` }}
+              >
+                {/* Dynamic Data Overlay */}
+                <div className="absolute inset-0 p-8 sm:p-12 flex flex-col justify-end bg-gradient-to-t from-black/40 to-transparent">
+                  <div className="flex justify-between items-end w-full">
+                    <div className="space-y-1 mb-2 sm:mb-4">
+                      <p className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em]">Nome do Membro</p>
+                      <h3 className="text-white text-lg sm:text-2xl font-black uppercase tracking-widest drop-shadow-lg">
+                        {name || "Visitante Premium"}
+                      </h3>
+                    </div>
+
+                    <div className="w-16 h-16 sm:w-24 sm:h-24 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl">
+                      <img
+                        src={qrUrl}
+                        alt="QR Code"
+                        className="w-full h-full object-contain mix-blend-screen brightness-125"
+                      />
+                    </div>
                   </div>
                 </div>
+              </div>
+            </div>
 
-                {/* White QR Code with Transparency effect */}
-                <div className="w-12 h-12 sm:w-20 sm:h-20 mr-4 sm:mr-8.5 sm:mb-4 overflow-hidden">
-                  <img
-                    src={qrUrl}
-                    alt="QR Code"
-                    className="w-full h-full object-contain mix-blend-screen"
-                    style={{ filter: "brightness(1.5)" }}
-                  />
+            {/* Back Card */}
+            <div className="group perspective-1000">
+              <div
+                className="relative w-full aspect-[1.58] rounded-[2.5rem] overflow-hidden transition-all duration-700 bg-cover bg-center shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] group-hover:scale-[1.02] group-hover:rotate-1"
+                style={{ backgroundImage: `url('${backBg}')` }}
+              >
+                <div className="absolute inset-0 p-8 sm:p-12 flex flex-col justify-end bg-gradient-to-b from-black/40 to-transparent">
+                  <div className="grid grid-cols-2 gap-8 items-end">
+                    {/* Left Column - Meta Data */}
+                    <div className="flex flex-col gap-2 font-mono text-white text-[10px] sm:text-xs font-bold leading-tight drop-shadow-md">
+                      <div className="opacity-60">AUTH_SEQ: 1.6180339887</div>
+                      <div className="opacity-60">ID_TOKEN: 11235813</div>
+                      <div className="mt-2 tracking-[0.3em] text-sm sm:text-base">**** **** **** 2024</div>
+                    </div>
+
+                    {/* Right Column - Security & Info */}
+                    <div className="flex flex-col justify-start items-start gap-6 text-white drop-shadow-md">
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-black uppercase tracking-widest opacity-60 block">
+                          Cód. Segurança
+                        </span>
+                        <span className="font-mono text-sm sm:text-lg font-black tracking-widest">
+                          {cvv}
+                        </span>
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-black uppercase tracking-widest opacity-60 block">
+                          Nascimento
+                        </span>
+                        <span className="font-mono text-sm sm:text-lg font-black tracking-widest">
+                          {birthDate || "XX/XX/XXXX"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Back Card */}
-          <div
-            className={`relative w-full aspect-[1.58] rounded-[32px] overflow-hidden mt-8 transition-all duration-500 bg-cover bg-center`}
-            style={{ backgroundImage: `url('${backBg}')` }}
-          >
-            {/* Dynamic Data Overlay */}
-            <div className="absolute inset-0 p-8 flex flex-col justify-end pb-12">
-              <div className="grid grid-cols-2 gap-8 items-end sm:pb-12">
-                {/* Left Column - Numbers */}
-                <div className="flex flex-col gap-1 font-mono text-white text-[10px] sm:text-sm font-bold leading-tight drop-shadow-sm">
-                  <div>1.6180339887</div>
-                  <div>11235813</div>
-                  <div className="mt-1 tracking-wider">66 73 37 12 40 24 06 88</div>
-                  <div className="mt-1">1234</div>
-                </div>
-
-                {/* Right Column - CVV and DOB */}
-                <div className="flex flex-col justify-start items-start gap-4 text-white/80 drop-shadow-sm">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] sm:text-sm font-bold uppercase tracking-wider opacity-70">
-                      Código de segurança
-                    </span>
-                    <span className="font-mono text-[10px] sm:text-sm font-bold text-white">
-                      {cvv}
-                    </span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[10px] sm:text-sm font-bold uppercase tracking-wider opacity-70">
-                      Data nascimento
-                    </span>
-                    <span className="font-mono text-[10px] sm:text-sm font-bold text-white">
-                      {birthDate || "--/--/----"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
+             <Button className="h-14 rounded-2xl bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-[10px] px-8 shadow-xl shadow-brand-green/20">
+              Salvar na Apple Wallet
+            </Button>
+            <Button variant="outline" className="h-14 rounded-2xl border-brand-black/10 bg-white hover:bg-brand-black hover:text-white transition-all font-black uppercase tracking-widest text-[10px] px-8">
+              Baixar PDF Oficial
+            </Button>
           </div>
         </div>
       </main>

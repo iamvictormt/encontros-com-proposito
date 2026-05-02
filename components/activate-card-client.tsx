@@ -73,74 +73,93 @@ export function ActivateCardClient() {
   };
 
   return (
-    <div className="container max-w-md mx-auto py-12 px-4">
-      <Card className="border-none shadow-xl bg-white/80 backdrop-blur-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-gray-900">Ativação MeetOff</CardTitle>
-          <CardDescription>
+    <div className="w-full max-w-xl mx-auto py-12 px-4 relative">
+      {/* Decorative Blur */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-brand-orange/10 blur-[100px] -z-10 rounded-full" />
+      
+      <div className="glass p-8 md:p-12 rounded-[3rem] border-white/40 shadow-2xl space-y-10">
+        <div className="text-center space-y-4">
+          <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
+            Passaporte MeetOff
+          </span>
+          <h2 className="text-3xl md:text-5xl font-black text-brand-black uppercase tracking-tighter leading-none">
+            {step === 1 ? "Ativar" : "Finalizar"} <span className="text-brand-orange">Cartão</span>
+          </h2>
+          <p className="text-gray-500 font-medium text-sm">
             {step === 1 
-              ? "Insira o código do seu cartão rosa para começar" 
-              : "Complete seu cadastro para ativar o cartão"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+              ? "Insira o código exclusivo do seu cartão físico para iniciar a ativação digital." 
+              : "Quase lá! Precisamos de alguns dados para personalizar sua credencial."}
+          </p>
+        </div>
+
+        <div className="space-y-8">
           {step === 1 ? (
-            <form onSubmit={handleVerifyCode} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="code">Código de Ativação</Label>
+            <form onSubmit={handleVerifyCode} className="space-y-6">
+              <div className="space-y-3">
+                <Label htmlFor="code" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Código de Ativação</Label>
                 <Input
                   id="code"
-                  placeholder="Ex: ABC-123-XYZ"
+                  placeholder="XXX - XXX - XXX"
                   value={token}
                   onChange={(e) => {
                     const cleaned = e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
                     const chunks = cleaned.match(/.{1,3}/g);
                     setToken(chunks ? chunks.slice(0, 3).join('-') : '');
                   }}
-                  className="h-12 text-center text-lg font-mono tracking-widest"
+                  className="h-16 text-center text-2xl font-black font-mono tracking-[0.5em] rounded-2xl bg-white/50 border-brand-green/10 focus:border-brand-orange transition-all"
                   required
                 />
               </div>
-              <Button type="submit" className="w-full h-12 bg-[#c2395b] hover:bg-[#a12a48]" disabled={loading}>
-                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Verificar"}
+              <Button 
+                type="submit" 
+                className="w-full h-16 rounded-2xl bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-sm shadow-xl shadow-brand-green/20" 
+                disabled={loading}
+              >
+                {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Verificar Código"}
               </Button>
             </form>
           ) : (
-            <form onSubmit={handleActivate} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Nome Completo</Label>
+            <form onSubmit={handleActivate} className="space-y-6">
+              <div className="space-y-3">
+                <Label htmlFor="name" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Nome Completo</Label>
                 <Input
                   id="name"
                   placeholder="Como aparecerá no cartão"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="h-12"
+                  className="h-14 rounded-2xl bg-white/50 border-brand-green/10 focus:border-brand-orange transition-all font-medium px-6"
                   required
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="birthDate">Data de Nascimento</Label>
+              <div className="space-y-3">
+                <Label htmlFor="birthDate" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Data de Nascimento</Label>
                 <Input
                   id="birthDate"
                   type="date"
                   value={formData.birthDate}
                   onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
-                  className="h-12"
+                  className="h-14 rounded-2xl bg-white/50 border-brand-green/10 focus:border-brand-orange transition-all font-medium px-6"
                   required
                 />
               </div>
-              <Button type="submit" className="w-full h-12 bg-secondary hover:bg-secondary/90" disabled={loading}>
-                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Ativar Cartão"}
+              <Button 
+                type="submit" 
+                className="w-full h-16 rounded-2xl bg-brand-orange hover:bg-brand-orange/90 text-white font-black uppercase tracking-widest text-sm shadow-xl shadow-brand-orange/20" 
+                disabled={loading}
+              >
+                {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Ativar Credencial"}
               </Button>
             </form>
           )}
-        </CardContent>
-        <CardFooter className="justify-center">
-          <p className="text-xs text-gray-500 text-center">
-            Ao ativar, você concorda com nossos termos de uso e privacidade.
+        </div>
+
+        <div className="pt-6 border-t border-brand-black/5 text-center">
+          <p className="text-[10px] font-medium text-gray-400 uppercase tracking-[0.2em] leading-relaxed">
+            Ao ativar, você concorda com nossos <br/>
+            <Link href="#" className="text-brand-orange hover:underline">Termos de Uso</Link> e <Link href="#" className="text-brand-orange hover:underline">Privacidade</Link>.
           </p>
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

@@ -218,158 +218,164 @@ export function LoginForm() {
           />
         </div>
       )}
-      <div className="min-h-screen flex flex-col lg:flex-row bg-white">
+      <div className="min-h-screen flex flex-col lg:flex-row bg-background">
         {/* Left Column - Login Form */}
-        <div className="w-full lg:w-1/2 flex flex-col p-6 sm:p-8 md:p-12 lg:p-16 relative ">
-          <div className="lg:absolute lg:top-6 lg:left-20 mb-8 lg:mb-0">
+        <div className="w-full lg:w-1/2 flex flex-col p-8 sm:p-12 lg:p-20 relative">
+          <div className="mb-12">
             <Logo className="justify-center flex md:block" />
           </div>
 
-          <div className="flex-1 flex items-center justify-center py-4">
-            <div className="w-full max-w-md space-y-6 sm:space-y-10">
-              <div className="space-y-5 sm:space-y-6">
-                <div className="space-y-5 text-center mb-10">
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black">
-                    {"Bem-vindo(a) de volta!"}
-                  </h2>
-                  <p className="text-sm sm:text-base text-muted-foreground">
-                    {"Conecte-se para continuar sua jornada."}
-                  </p>
+          <div className="flex-1 flex items-center justify-center">
+            <div className="w-full max-w-md space-y-12">
+              <div className="space-y-4">
+                <h2 className="text-4xl lg:text-5xl font-black text-brand-black tracking-tighter uppercase leading-none">
+                  Bem-vindo(a) <br/><span className="text-brand-orange">de volta!</span>
+                </h2>
+                <p className="text-gray-500 font-medium">
+                  Acesse sua conta para continuar vivendo experiências únicas e conexões reais.
+                </p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                    Email ou Telefone
+                  </label>
+                  <Input
+                    id="email"
+                    type="text"
+                    placeholder="ex@email.com"
+                    value={email}
+                    onChange={handleEmailPhoneChange}
+                    onBlur={handleEmailPhoneBlur}
+                    className={cn(
+                      "w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-6",
+                      emailPhoneError && "border-brand-red focus:border-brand-red"
+                    )}
+                    required
+                  />
+                  {emailPhoneError && <p className="text-[10px] text-brand-red font-bold uppercase tracking-wide px-1">{emailPhoneError}</p>}
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <label htmlFor="email" className="text-sm font-medium text-foreground">
-                      {"Email ou Telefone"}
-                    </label>
-                    <Input
-                      id="email"
-                      type="text"
-                      placeholder="Informe seu Email ou Telefone"
-                      value={email}
-                      onChange={handleEmailPhoneChange}
-                      onBlur={handleEmailPhoneBlur}
-                      className={`w-full rounded-md h-11 sm:h-12 text-sm sm:text-base ${
-                        emailPhoneError ? "border-red-500 focus-visible:ring-red-500" : ""
-                      }`}
-                      required
-                    />
-                    {emailPhoneError && <p className="text-xs text-red-600">{emailPhoneError}</p>}
-                  </div>
+                <div className="space-y-2">
+                  <label htmlFor="password" title="Senha" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                    Senha
+                  </label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-6"
+                    required
+                  />
+                </div>
 
-                  <div className="space-y-2">
-                    <label htmlFor="password" className="text-sm font-medium text-foreground">
-                      {"Senha"}
-                    </label>
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full rounded-md h-11 sm:h-12 text-sm sm:text-base"
-                      required
-                    />
-                  </div>
-
+                <div className="flex items-center justify-between px-1">
                   <div className="flex items-center space-x-2">
                     <Checkbox
                       id="remember"
                       checked={rememberMe}
                       onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                      className="rounded-md border-brand-green/20 data-[state=checked]:bg-brand-orange data-[state=checked]:border-brand-orange"
                     />
                     <label
                       htmlFor="remember"
-                      className="text-sm font-medium text-black cursor-pointer"
+                      className="text-xs font-bold text-brand-black uppercase tracking-wide cursor-pointer"
                     >
-                      {"Lembrar de mim"}
+                      Manter conectado
                     </label>
                   </div>
-
-                  <Button
-                    type="submit"
-                    disabled={isLoading}
-                    className="w-full bg-[#8A0204] hover:bg-[#6a0103] text-white font-medium h-11 sm:h-12 text-sm sm:text-base rounded-md disabled:opacity-50"
-                  >
-                    {isLoading ? "Entrando..." : "Iniciar Sessão"}
-                  </Button>
-                </form>
-
-                <div className="text-center text-sm flex flex-col gap-3">
-                  <div>
-                    <span className="text-muted-foreground">{"Não possui uma conta? "}</span>
-                    <Link href="/signup" className="text-[#8A0204] hover:underline font-medium">
-                      {"Criar uma nova conta"}
-                    </Link>
-                  </div>
+                  <Link href="/forgot-password" size="sm" className="text-xs font-bold text-brand-orange uppercase tracking-wide hover:underline">
+                    Esqueceu a senha?
+                  </Link>
                 </div>
+
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full h-16 rounded-2xl bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-sm shadow-xl shadow-brand-green/20 disabled:opacity-50 transition-all active:scale-[0.98]"
+                >
+                  {isLoading ? <Loader2 className="animate-spin" /> : "Iniciar Sessão"}
+                </Button>
+              </form>
+
+              <div className="text-center pt-4">
+                <p className="text-sm font-medium text-gray-500">
+                  Ainda não faz parte?{" "}
+                  <Link href="/signup" className="text-brand-orange font-black uppercase tracking-widest text-xs hover:underline ml-2">
+                    Criar conta premium
+                  </Link>
+                </p>
               </div>
             </div>
           </div>
 
-          <div className="lg:absolute lg:bottom-16 lg:left-20 lg:right-16 mt-8 lg:mt-0">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 text-sm">
-              <span className="text-gray-500">{`©MeetOff, ${year}`}</span>
-              <a href="#" className="text-black hover:text-black underline">
-                {"Termos e Política de privacidade"}
-              </a>
+          <div className="mt-20 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+            <span>© MeetOff {year}</span>
+            <div className="flex gap-6">
+              <a href="#" className="hover:text-brand-black transition-colors">Termos</a>
+              <a href="#" className="hover:text-brand-black transition-colors">Privacidade</a>
             </div>
           </div>
         </div>
 
         {/* Right Column - Hero Carousel */}
-        <div className="hidden lg:block lg:w-1/2 relative lg:min-h-screen rounded-l-4xl rounded-r-4xl">
-          <Image
-            src={carouselSlides[currentSlide].image || "/placeholder.svg"}
-            alt="Pessoas conectadas em experiências"
-            fill
-            className="object-cover transition-opacity duration-500 rounded-l-4xl rounded-r-4xl"
-            priority
-          />
+        <div className="hidden lg:block lg:w-1/2 relative p-8">
+          <div className="relative w-full h-full rounded-[3.5rem] overflow-hidden shadow-2xl">
+            <Image
+              src={carouselSlides[currentSlide].image || "/placeholder.svg"}
+              alt="Background"
+              fill
+              className="object-cover transition-transform duration-[2000ms] group-hover:scale-110"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-brand-black/80 via-brand-black/20 to-transparent" />
 
-          <div className="absolute bottom-0 left-0 right-0 p-12 z-20">
-            <div className="backdrop-blur-md rounded-xl p-8 border border-white/20">
-              <div className="text-white space-y-4">
-                <h2 className="text-3xl md:text-4xl text-pretty">
-                  {carouselSlides[currentSlide].title}
-                </h2>
-                <p className="text-base md:text-lg leading-relaxed text-pretty">
-                  {carouselSlides[currentSlide].description}
-                </p>
+            <div className="absolute bottom-0 left-0 right-0 p-12">
+              <div className="glass p-12 rounded-[2.5rem] border-white/20 shadow-2xl">
+                <div className="space-y-6">
+                  <h2 className="text-4xl font-black text-white uppercase tracking-tighter leading-none text-pretty">
+                    {carouselSlides[currentSlide].title}
+                  </h2>
+                  <p className="text-lg font-medium text-white/80 leading-relaxed text-pretty">
+                    {carouselSlides[currentSlide].description}
+                  </p>
 
-                <div className="flex items-center justify-between pt-4">
-                  {/* Pagination dots */}
-                  <div className="flex gap-2">
-                    {carouselSlides.map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => goToSlide(index)}
-                        className={`h-2 rounded-full transition-all ${
-                          index === currentSlide
-                            ? "w-10 bg-white h-[5px]"
-                            : "w-2 h-[5px] bg-white/50 hover:bg-white/70 cursor-pointer"
-                        }`}
-                        aria-label={`Go to slide ${index + 1}`}
-                      />
-                    ))}
-                  </div>
+                  <div className="flex items-center justify-between pt-6 border-t border-white/10">
+                    <div className="flex gap-3">
+                      {carouselSlides.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => goToSlide(index)}
+                          className={cn(
+                            "h-1.5 rounded-full transition-all duration-500",
+                            index === currentSlide ? "w-12 bg-white" : "w-3 bg-white/30 hover:bg-white/50"
+                          )}
+                          aria-label={`Slide ${index + 1}`}
+                        />
+                      ))}
+                    </div>
 
-                  {/* Navigation arrows */}
-                  <div className="flex gap-2">
-                    <button
-                      onClick={prevSlide}
-                      className="p-4 rounded-full border border-white/30 hover:bg-white/10 transition-colors cursor-pointer"
-                      aria-label="Previous slide"
-                    >
-                      <ArrowLeft className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={nextSlide}
-                      className="p-4 rounded-full border border-white/30 hover:bg-white/10 transition-colors cursor-pointer"
-                      aria-label="Next slide"
-                    >
-                      <ArrowRight className="w-5 h-5" />
-                    </button>
+                    <div className="flex gap-4">
+                      <Button
+                        onClick={prevSlide}
+                        size="icon"
+                        variant="outline"
+                        className="w-12 h-12 rounded-2xl glass border-white/20 text-white hover:bg-white hover:text-brand-black transition-all"
+                      >
+                        <ArrowLeft className="w-5 h-5" />
+                      </Button>
+                      <Button
+                        onClick={nextSlide}
+                        size="icon"
+                        variant="outline"
+                        className="w-12 h-12 rounded-2xl glass border-white/20 text-white hover:bg-white hover:text-brand-black transition-all"
+                      >
+                        <ArrowRight className="w-5 h-5" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>

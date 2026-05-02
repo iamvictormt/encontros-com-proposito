@@ -22,7 +22,7 @@ export function BottomNav() {
   }
 
   return (
-    <nav className="fixed bottom-0 z-50 flex h-20 items-center justify-around rounded-t-xl border-t border-white/20 bg-white backdrop-blur-xl px-6 shadow-2xl shadow-black/10 lg:hidden">
+    <nav className="fixed bottom-6 left-4 right-4 sm:left-6 sm:right-6 z-50 flex h-16 sm:h-20 items-center justify-between rounded-[2rem] glass-dark px-2 sm:px-4 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] lg:hidden border border-white/20 backdrop-blur-2xl">
       {navLinks.map((link) => {
         const isActive = pathname.startsWith(link.href);
         const Icon = link.icon;
@@ -31,22 +31,20 @@ export function BottomNav() {
             key={link.href}
             href={link.href}
             className={cn(
-              "flex flex-col items-center justify-center gap-1.5 transition-all duration-300 relative px-2",
-              isActive ? "text-[#1A4B40] scale-110" : "text-gray-400 hover:text-gray-600"
+              "flex flex-1 flex-col items-center justify-center gap-1 sm:gap-2 transition-all duration-300 relative py-1 sm:py-2 rounded-2xl",
+              isActive ? "text-brand-orange" : "text-white/30 hover:text-white"
             )}
           >
-            <div className={cn(
-              "p-2 rounded-2xl transition-all duration-500",
-              isActive ? "bg-[#1A4B40]/5 shadow-inner" : ""
-            )}>
-              <Icon className={cn("h-6 w-6", isActive && "fill-[#1A4B40]/10")} />
-            </div>
+            <Icon className={cn("h-4 w-4 sm:h-5 sm:w-5 transition-all duration-500", isActive && "scale-110 drop-shadow-[0_0_8px_rgba(241,141,66,0.4)]")} />
             <span className={cn(
-              "text-[9px] font-black uppercase tracking-[0.1em]",
-              isActive ? "opacity-100" : "opacity-0 h-0 overflow-hidden"
+              "text-[7px] sm:text-[8px] font-black uppercase tracking-[0.15em] sm:tracking-[0.25em] transition-all",
+              isActive ? "opacity-100" : "opacity-40"
             )}>
               {link.label}
             </span>
+            {isActive && (
+              <span className="absolute -bottom-1 sm:bottom-0 left-1/2 -translate-x-1/2 w-4 sm:w-8 h-0.5 sm:h-1 bg-brand-orange rounded-full shadow-[0_0_15px_#F18D42]" />
+            )}
           </Link>
         );
       })}

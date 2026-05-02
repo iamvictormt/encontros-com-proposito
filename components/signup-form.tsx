@@ -149,62 +149,63 @@ export function SignupForm() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-white">
-      <div className="w-full lg:w-1/2 flex flex-col p-6 sm:p-8 md:p-12 lg:p-16 lg:relative">
-        <div className="lg:absolute lg:top-6 lg:left-20 mb-8 lg:mb-0">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-background">
+      <div className="w-full lg:w-1/2 flex flex-col p-8 sm:p-12 lg:p-20 relative">
+        <div className="mb-12">
           <Logo className="justify-center flex md:block" />
         </div>
 
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-full max-w-md space-y-6 sm:space-y-10">
-            <div className="space-y-5 sm:space-y-6">
-              <div className="space-y-5 text-center mb-10">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black">
-                  {"Criar uma nova conta"}
-                </h2>
-                <p className="text-sm sm:text-base text-muted-foreground">
-                  {"Vamos começar com alguns fatos sobre você"}
-                </p>
+          <div className="w-full max-w-md space-y-12">
+            <div className="space-y-4">
+              <h2 className="text-4xl lg:text-5xl font-black text-brand-black tracking-tighter uppercase leading-none">
+                Criar sua <br/><span className="text-brand-red">Conta Premium</span>
+              </h2>
+              <p className="text-gray-500 font-medium">
+                Junte-se a uma comunidade exclusiva e comece sua jornada de conexões reais.
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <label htmlFor="fullName" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                  Nome Completo
+                </label>
+                <Input
+                  id="fullName"
+                  type="text"
+                  placeholder="Seu nome"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-6"
+                  required
+                />
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <label htmlFor="fullName" className="text-sm font-medium text-foreground">
-                    {"Nome completo"}
-                  </label>
-                  <Input
-                    id="fullName"
-                    type="text"
-                    placeholder="Informe Nome completo"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="w-full rounded-md h-11 sm:h-12 text-sm sm:text-base"
-                    required
-                  />
-                </div>
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                  Email ou Telefone
+                </label>
+                <Input
+                  id="email"
+                  type="text"
+                  placeholder="ex@email.com"
+                  value={email}
+                  onChange={handleEmailPhoneChange}
+                  onBlur={handleEmailPhoneBlur}
+                  className={cn(
+                    "w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-6",
+                    emailPhoneError && "border-brand-red focus:border-brand-red"
+                  )}
+                  required
+                />
+                {emailPhoneError && <p className="text-[10px] text-brand-red font-bold uppercase tracking-wide px-1">{emailPhoneError}</p>}
+              </div>
 
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-medium text-foreground">
-                    {"Email ou Telefone"}
-                  </label>
-                  <Input
-                    id="email"
-                    type="text"
-                    placeholder="Informe seu Email ou Telefone"
-                    value={email}
-                    onChange={handleEmailPhoneChange}
-                    onBlur={handleEmailPhoneBlur}
-                    className={`w-full rounded-md h-11 sm:h-12 text-sm sm:text-base ${
-                      emailPhoneError ? "border-red-500 focus-visible:ring-red-500" : ""
-                    }`}
-                    required
-                  />
-                  {emailPhoneError && <p className="text-xs text-red-600">{emailPhoneError}</p>}
-                </div>
-
-                <div className="space-y-2">
-                  <label htmlFor="password" className="text-sm font-medium text-foreground">
-                    {"Senha"}
+                  <label htmlFor="password" title="Senha" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                    Senha
                   </label>
                   <Input
                     id="password"
@@ -212,14 +213,14 @@ export function SignupForm() {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full rounded-md h-11 sm:h-12 text-sm sm:text-base"
+                    className="w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-6"
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">
-                    {"Confirmar Senha"}
+                  <label htmlFor="confirmPassword" title="Confirmar" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                    Confirmar
                   </label>
                   <Input
                     id="confirmPassword"
@@ -227,62 +228,63 @@ export function SignupForm() {
                     placeholder="••••••••"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full rounded-md h-11 sm:h-12 text-sm sm:text-base"
+                    className="w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-6"
                     required
                   />
                 </div>
-
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-[#1F4C47] hover:bg-[#163a36] text-white"
-                >
-                  {isLoading ? "Criando conta..." : "Criar uma nova conta"}
-                </Button>
-              </form>
-
-              <div className="text-center text-sm flex flex-col gap-3">
-                <div>
-                  <span className="text-muted-foreground">{"Já tem uma conta? "}</span>
-                  <Link href="/login" className="text-[#1F4C47] hover:underline font-medium">
-                    {"Fazer Login"}
-                  </Link>
-                </div>
               </div>
+
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full h-16 rounded-2xl bg-brand-orange hover:bg-brand-orange/90 text-white font-black uppercase tracking-widest text-sm shadow-xl shadow-brand-orange/20 disabled:opacity-50 transition-all active:scale-[0.98]"
+              >
+                {isLoading ? <Loader2 className="animate-spin" /> : "Criar Conta Agora"}
+              </Button>
+            </form>
+
+            <div className="text-center pt-4">
+              <p className="text-sm font-medium text-gray-500">
+                Já possui uma conta?{" "}
+                <Link href="/login" className="text-brand-green font-black uppercase tracking-widest text-xs hover:underline ml-2">
+                  Fazer login
+                </Link>
+              </p>
             </div>
           </div>
         </div>
 
-        <div className="lg:absolute lg:bottom-16 lg:left-20 lg:right-16 mt-8 lg:mt-0">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 text-sm">
-            <span className="text-gray-500">{`©MeetOff, ${year}`}</span>
-            <a href="#" className="text-black hover:text-black underline">
-              {"Termos e Política de privacidade"}
-            </a>
+        <div className="mt-20 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+          <span>© MeetOff {year}</span>
+          <div className="flex gap-6">
+            <a href="#" className="hover:text-brand-black transition-colors">Termos</a>
+            <a href="#" className="hover:text-brand-black transition-colors">Privacidade</a>
           </div>
         </div>
       </div>
 
-      <div className="hidden lg:block lg:w-1/2 relative lg:min-h-screen rounded-l-4xl rounded-r-4xl">
-        <Image
-          src="https://images.unsplash.com/photo-1631287941887-7b5185ff4791?q=80&w=1920"
-          alt="Celular mostrando a plataforma de conexões"
-          fill
-          className="object-cover rounded-l-4xl rounded-r-4xl"
-          priority
-        />
+      {/* Right Column - Hero Section */}
+      <div className="hidden lg:block lg:w-1/2 relative p-8">
+        <div className="relative w-full h-full rounded-[3.5rem] overflow-hidden shadow-2xl group">
+          <Image
+            src="https://images.unsplash.com/photo-1631287941887-7b5185ff4791?q=80&w=1920"
+            alt="Hero"
+            fill
+            className="object-cover transition-transform duration-[3000ms] group-hover:scale-110"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-brand-black/80 via-brand-black/20 to-transparent" />
 
-        <div className="absolute bottom-0 left-0 right-0 p-12 z-20">
-          <div className="backdrop-blur-md rounded-xl p-8 border border-white/20">
-            <div className="text-white space-y-4">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl text-pretty">
-                {"Acesso único, experiências autênticas."}
-              </h2>
-              <p className="text-sm sm:text-base md:text-lg leading-relaxed text-pretty">
-                {
-                  "Cada convite é um portal. Use seu token e viva algo que só você pode experienciar."
-                }
-              </p>
+          <div className="absolute bottom-0 left-0 right-0 p-12">
+            <div className="glass p-12 rounded-[2.5rem] border-white/20 shadow-2xl">
+              <div className="space-y-6">
+                <h2 className="text-4xl font-black text-white uppercase tracking-tighter leading-none text-pretty">
+                  Acesso único, <br/><span className="text-brand-orange">experiências reais.</span>
+                </h2>
+                <p className="text-lg font-medium text-white/80 leading-relaxed text-pretty">
+                  Cada convite é um portal. Use seu token e viva algo que só você pode experienciar em nossa comunidade premium.
+                </p>
+              </div>
             </div>
           </div>
         </div>

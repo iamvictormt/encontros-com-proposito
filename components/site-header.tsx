@@ -21,70 +21,80 @@ export function SiteHeader() {
   ];
 
   return (
-    <header className="bg-white px-4 py-4 lg:px-20 sticky top-0 z-50">
-      <div className="mx-auto max-w-7xl flex items-center justify-between md:mt-0 md:mb-0 mt-8 mb-8">
-        <div className="flex items-center gap-4">
-          <div className="hidden lg:block">
-            <Logo href="/events" />
-          </div>
-        </div>
-
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:hidden">
+    <header className="sticky top-0 z-50 w-full px-4 lg:px-20 glass border-b border-white/10">
+      <div className="mx-auto max-w-7xl flex h-24 items-center justify-between">
+        <div className="flex items-center gap-12">
           <Logo href="/events" />
+          
+          <nav className="hidden items-center gap-10 lg:flex">
+            {navLinks.map((link) => {
+              const isActive = pathname.startsWith(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "relative py-1 text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 hover:text-brand-orange",
+                    isActive ? "text-brand-orange" : "text-brand-black/70"
+                  )}
+                >
+                  {link.label}
+                  {isActive && (
+                    <span className="absolute -bottom-2 left-0 h-0.5 w-full bg-brand-orange rounded-full shadow-[0_0_8px_rgba(241,141,66,0.5)]" />
+                  )}
+                </Link>
+              );
+            })}
+            {user?.isAdmin && (
+              <Link 
+                href="/admin" 
+                className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-green hover:text-brand-green/80 transition-colors bg-brand-green/5 px-4 py-1.5 rounded-full"
+              >
+                Admin
+              </Link>
+            )}
+          </nav>
         </div>
 
-        <nav className="hidden items-center gap-6 lg:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="font-medium text-black hover:text-black/80"
-            >
-              {link.label}
-            </Link>
-          ))}
-          {user?.isAdmin && (
-            <Link href="/admin" className="font-bold text-secondary hover:text-secondary/80">
-              Admin
-            </Link>
-          )}
-        </nav>
-
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           {isLoading ? (
-            <div className="flex items-center justify-center">
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-solid border-primary border-r-transparent"></div>
+            <div className="flex h-10 w-10 items-center justify-center">
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-solid border-brand-red border-r-transparent"></div>
             </div>
           ) : isLoggedIn ? (
-            <>
+            <div className="flex items-center gap-4">
+              <Link href="/account" className="hidden sm:flex items-center gap-3 group">
+                <div className="text-right">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 group-hover:text-brand-orange transition-colors">Olá, {user?.name?.split(' ')[0]}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-brand-black">Minha Conta</p>
+                </div>
+                <div className="h-10 w-10 rounded-xl bg-brand-green/10 border border-brand-green/10 flex items-center justify-center text-brand-green group-hover:bg-brand-green group-hover:text-white transition-all">
+                  <User size={18} />
+                </div>
+              </Link>
               <Button
                 variant="ghost"
-                asChild
-                className="hidden sm:inline-flex bg-transparent text-black hover:bg-gray-50 hover:text-black"
-              >
-                <Link href="/account">Minha Conta</Link>
-              </Button>
-              <Button
                 onClick={() => logout()}
-                className="bg-secondary hover:bg-secondary/90 hidden sm:inline-flex"
+                className="h-10 w-10 rounded-xl hover:bg-brand-red/10 hover:text-brand-red transition-all hidden sm:flex items-center justify-center p-0"
               >
-                Sair
+                <LogOut size={18} />
               </Button>
-              {/* Only show logout on mobile inside the drawer, but keep the button for tablet/desktop */}
-            </>
+            </div>
           ) : (
-            <>
-              <Button
-                variant="ghost"
-                asChild
-                className="hidden sm:inline-flex bg-transparent text-black hover:bg-gray-50 hover:text-black"
+            <div className="flex items-center gap-4">
+              <Link 
+                href="/login" 
+                className="hidden sm:inline-block text-[10px] font-black uppercase tracking-widest text-brand-black hover:text-brand-orange transition-colors"
               >
-                <Link href="/login">Entrar</Link>
-              </Button>
-              <Button asChild className="bg-secondary hover:bg-secondary/90 hidden sm:inline-flex">
+                Login
+              </Link>
+              <Button 
+                asChild 
+                className="h-12 px-8 rounded-xl bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-[10px] shadow-lg shadow-brand-green/20 hidden sm:flex"
+              >
                 <Link href="/signup">Cadastrar</Link>
               </Button>
-            </>
+            </div>
           )}
         </div>
       </div>

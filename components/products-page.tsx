@@ -10,7 +10,7 @@ import { SiteFooter } from "./site-footer";
 import { formatBRL } from "@/lib/utils/format";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import Link from "next/link";
-import { format } from "path";
+import { cn } from "@/lib/utils";
 
 const staticThemes = [
   { id: "all", label: "Tudo" },
@@ -60,24 +60,28 @@ const FilterContent = ({
   selectedDelivery,
   setSelectedDelivery
 }: FilterContentProps) => (
-  <>
+  <div className="space-y-12">
     {/* Categorias */}
-    <div className="mb-8">
-      <h3 className="text-lg font-bold text-primary mb-4">Categorias</h3>
-      <div className="space-y-2">
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <div className="h-1 w-8 bg-brand-orange rounded-full" />
+        <h3 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">Categorias</h3>
+      </div>
+      <div className="space-y-1">
         {categories.map((cat) => (
           <button
             key={cat.id}
             onClick={() => setSelectedCategory(cat.id)}
-            className={`flex items-center justify-between w-full text-left text-sm py-1 transition-colors ${
+            className={cn(
+              "group flex items-center justify-between w-full text-left px-4 py-3 rounded-xl transition-all duration-300",
               selectedCategory === cat.id
-                ? "text-black font-bold"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+                ? "bg-brand-black text-white shadow-xl shadow-brand-black/20"
+                : "text-gray-500 hover:bg-brand-black/5 hover:text-brand-black"
+            )}
           >
-            <span>{cat.label}</span>
+            <span className="text-[11px] font-black uppercase tracking-widest">{cat.label}</span>
             {selectedCategory === cat.id && (
-              <span className="w-2 h-2 rounded-full bg-secondary" />
+              <div className="w-1.5 h-1.5 rounded-full bg-brand-orange shadow-[0_0_8px_#F18D42]" />
             )}
           </button>
         ))}
@@ -85,9 +89,12 @@ const FilterContent = ({
     </div>
 
     {/* Preço */}
-    <div className="mb-8">
-      <h3 className="text-lg font-bold text-primary mb-4">Preço</h3>
-      <div className="space-y-2">
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <div className="h-1 w-8 bg-brand-green rounded-full" />
+        <h3 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">Preço Máximo</h3>
+      </div>
+      <div className="px-2 space-y-4">
         <Slider
           min={0}
           max={500}
@@ -96,54 +103,64 @@ const FilterContent = ({
           onValueChange={setPriceRange}
           className="w-full"
         />
-        <p className="text-sm text-muted-foreground">{formatBRL(priceRange[0])}</p>
+        <div className="flex justify-between items-center">
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Até</span>
+          <span className="text-xl font-black text-brand-black tracking-tighter">
+            {formatBRL(priceRange[0])}
+          </span>
+        </div>
       </div>
     </div>
 
     {/* Tema */}
-    <div className="mb-8">
-      <h3 className="text-lg font-bold text-primary mb-4">Tema</h3>
-      <div className="space-y-2">
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <div className="h-1 w-8 bg-brand-red rounded-full" />
+        <h3 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">Temas Exclusivos</h3>
+      </div>
+      <div className="space-y-1">
         {themes.map((theme) => (
           <button
             key={theme.id}
             onClick={() => setSelectedTheme(theme.id)}
-            className={`flex items-center justify-between w-full text-left text-sm py-1 transition-colors ${
+            className={cn(
+              "group flex items-center justify-between w-full text-left px-4 py-3 rounded-xl transition-all duration-300",
               selectedTheme === theme.id
-                ? "text-black font-bold"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+                ? "bg-brand-black text-white shadow-xl shadow-brand-black/20"
+                : "text-gray-500 hover:bg-brand-black/5 hover:text-brand-black"
+            )}
           >
-            <span>{theme.label}</span>
-            {selectedTheme === theme.id && <span className="w-2 h-2 rounded-full bg-secondary" />}
+            <span className="text-[11px] font-black uppercase tracking-widest">{theme.label}</span>
+            {selectedTheme === theme.id && <div className="w-1.5 h-1.5 rounded-full bg-brand-red" />}
           </button>
         ))}
       </div>
     </div>
 
     {/* Entrega */}
-    <div className="mb-8">
-      <h3 className="text-lg font-bold text-primary mb-4">Entrega</h3>
-      <div className="space-y-2">
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <div className="h-1 w-8 bg-brand-green rounded-full" />
+        <h3 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">Tipo de Acesso</h3>
+      </div>
+      <div className="grid grid-cols-1 gap-2">
         {delivery.map((del) => (
           <button
             key={del.id}
             onClick={() => setSelectedDelivery(del.id)}
-            className={`flex items-center justify-between w-full text-left text-sm py-1 transition-colors ${
+            className={cn(
+              "px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all duration-300 text-center",
               selectedDelivery === del.id
-                ? "text-black font-bold"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <span>{del.label}</span>
-            {selectedDelivery === del.id && (
-              <span className="w-2 h-2 rounded-full bg-secondary" />
+                ? "bg-brand-green border-brand-green text-white shadow-lg shadow-brand-green/20"
+                : "border-brand-black/10 text-gray-500 hover:border-brand-black hover:text-brand-black"
             )}
+          >
+            {del.label}
           </button>
         ))}
       </div>
     </div>
-  </>
+  </div>
 );
 
 export function ProductsPage() {
@@ -238,117 +255,147 @@ export function ProductsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <SiteHeader />
 
-      <main className="flex-1 px-4 py-8 lg:px-20">
-        <div className="mx-auto max-w-7xl flex gap-8">
-          {/* Desktop Sidebar Filters */}
-          <aside className="hidden lg:block w-64 flex-shrink-0">
-            <FilterContent {...filterProps} />
-          </aside>
+      <main className="flex-1 px-4 py-12 lg:px-20">
+        <div className="mx-auto max-w-7xl">
+          {/* Page Header */}
+          <div className="mb-16 text-center space-y-4">
+            <h4 className="text-brand-orange font-bold uppercase tracking-[0.3em] text-xs">Exclusividade</h4>
+            <h1 className="text-5xl font-black text-brand-black tracking-tighter uppercase lg:text-6xl">
+              Produtos <span className="text-brand-red">Autorais</span>
+            </h1>
+            <p className="text-gray-500 max-w-lg mx-auto font-medium">
+              Itens exclusivos desenvolvidos para eternizar suas experiências em nossos encontros.
+            </p>
+          </div>
 
-          {/* Main Content */}
-          <div className="flex-1">
-            {/* Page Title and Mobile Filter Button */}
-            <div className="mb-6 text-center">
-              <h1 className="text-3xl font-bold text-black mb-2">Produtos Autorais</h1>
-              <p className="text-sm text-muted-foreground">
-                Encontre itens exclusivos dos nossos eventos
-              </p>
+          <div className="flex flex-col lg:flex-row gap-12">
+            {/* Desktop Sidebar Filters */}
+            <aside className="hidden lg:block w-72 flex-shrink-0">
+              <div className="glass p-10 rounded-[3rem] border-white/40 shadow-xl sticky top-32">
+                <FilterContent {...filterProps} />
+              </div>
+            </aside>
 
-              <div className="mt-4 lg:hidden">
+            {/* Main Content */}
+            <div className="flex-1">
+              <div className="lg:hidden mb-12">
                 <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
                   <SheetTrigger asChild>
-                    <Button variant="outline" className="w-full sm:w-auto bg-transparent">
-                      <SlidersHorizontal className="mr-2 h-4 w-4" />
-                      Filtros
+                    <Button variant="outline" className="w-full h-16 rounded-[2rem] border-white shadow-xl glass bg-white/60 text-brand-black font-black uppercase tracking-widest text-[10px] group transition-all active:scale-95">
+                      <SlidersHorizontal className="mr-3 h-4 w-4 text-brand-orange group-hover:rotate-90 transition-transform duration-500" />
+                      Filtrar Coleção
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="left" className="w-80 overflow-y-auto px-6">
-                    <SheetHeader className="mb-6">
-                      <SheetTitle>Filtros</SheetTitle>
+                  <SheetContent side="left" className="w-[85vw] sm:w-[400px] glass border-brand-green/10 px-8 pt-16 overflow-y-auto">
+                    <SheetHeader className="mb-12 text-left">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="h-1 w-8 bg-brand-orange rounded-full" />
+                        <span className="text-[10px] font-black text-brand-black/40 uppercase tracking-[0.3em]">Explorar</span>
+                      </div>
+                      <SheetTitle className="text-4xl font-black uppercase tracking-tighter text-brand-black leading-none">Filtros</SheetTitle>
                     </SheetHeader>
-                    <FilterContent {...filterProps} />
+                    <div className="pb-20">
+                      <FilterContent {...filterProps} />
+                    </div>
                   </SheetContent>
                 </Sheet>
               </div>
-            </div>
 
-            {/* Products Grid */}
-            {isLoading ? (
-              <div className="flex justify-center items-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-              </div>
-            ) : paginatedProducts.length === 0 ? (
-              <div className="text-center py-20">
-                <p className="text-lg text-muted-foreground">Nenhum produto encontrado com os filtros selecionados.</p>
-              </div>
-            ) : (
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
-                {paginatedProducts.map((product, index) => (
-                  <Link href={`/products/${product.id}`} key={index}>
-                    <div className="group overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
-                      <div className="relative h-64 overflow-hidden bg-gray-100">
-                        <Image
-                          src={product.image || "/placeholder.svg"}
-                          alt={product.name}
-                          fill
-                          className="object-cover transition-transform group-hover:scale-105"
-                        />
-                      </div>
-
-                      <div className="p-4">
-                        <p className="mb-1 text-xs font-semibold text-primary uppercase">
-                          {product.category}
-                        </p>
-                        <h3 className="mb-3 text-base font-bold text-black">{product.name}</h3>
-
-                        <div className="mb-4 flex items-baseline gap-2">
-                          <span className="text-xl font-bold text-black">
-                            {formatBRL(product.price)}
-                          </span>
-                          {product.originalPrice && (
-                            <span className="text-sm text-muted-foreground line-through">
-                              {formatBRL(product.originalPrice)}
+              {/* Products Grid */}
+              {isLoading ? (
+                <div className="flex justify-center items-center py-24">
+                  <div className="h-12 w-12 animate-spin rounded-full border-4 border-solid border-brand-red border-r-transparent"></div>
+                </div>
+              ) : paginatedProducts.length === 0 ? (
+                <div className="text-center py-24 glass rounded-[2.5rem] border-dashed border-brand-green/20">
+                  <div className="text-6xl mb-6 grayscale opacity-30">🛍️</div>
+                  <h3 className="text-2xl font-black text-brand-black uppercase tracking-tighter">Nenhum produto encontrado</h3>
+                  <p className="text-gray-500 mt-2 font-medium">Tente ajustar seus filtros para encontrar o que procura.</p>
+                </div>
+              ) : (
+                <div className="grid gap-8 sm:grid-cols-2 xl:grid-cols-3">
+                  {paginatedProducts.map((product, index) => (
+                    <Link href={`/products/${product.id}`} key={index} className="group">
+                      <div className="premium-card bg-white rounded-[2.5rem] overflow-hidden flex flex-col h-full border-none shadow-xl hover:shadow-2xl">
+                        <div className="relative h-50 overflow-hidden p-6">
+                          <Image
+                            src={product.image || "/placeholder.svg"}
+                            alt={product.name}
+                            fill
+                            className="object-contain transition-transform duration-500 group-hover:scale-110"
+                          />
+                          <div className="absolute top-6 left-6">
+                             <span className="glass-dark px-3 py-1 rounded-lg text-[8px] font-black text-white uppercase tracking-widest shadow-lg">
+                              {product.category}
                             </span>
-                          )}
+                          </div>
                         </div>
 
-                        <Button className="w-full bg-accent hover:bg-accent/90">Comprar</Button>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
+                        <div className="p-8 flex flex-col flex-1">
+                          <h3 className="mb-4 text-xl font-black text-brand-black leading-tight uppercase tracking-tight group-hover:text-brand-orange transition-colors">
+                            {product.name}
+                          </h3>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="mt-8 flex items-center justify-center gap-8">
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="bg-transparent text-black hover:bg-gray-50 hover:text-black/80 disabled:opacity-30"
-                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                  disabled={currentPage === 1}
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                </Button>
-                <span className="text-sm text-foreground font-medium">
-                  Página {currentPage} de {totalPages}
-                </span>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="bg-transparent text-black hover:bg-gray-50 hover:text-black/80 disabled:opacity-30"
-                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                  disabled={currentPage === totalPages}
-                >
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
+                          <div className="mt-auto pt-6 border-t border-brand-green/5 flex items-center justify-between">
+                            <div className="flex flex-col">
+                              <span className="text-2xl font-black text-brand-black tracking-tighter">
+                                {formatBRL(product.price)}
+                              </span>
+                              {product.originalPrice && (
+                                <span className="text-xs text-gray-400 line-through font-bold">
+                                  {formatBRL(product.originalPrice)}
+                                </span>
+                              )}
+                            </div>
+                            <Button size="icon" className="w-12 h-12 rounded-2xl bg-brand-green hover:bg-brand-green/90 shadow-lg shadow-brand-green/20">
+                              <ArrowRight className="w-5 h-5" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="mt-20 flex items-center justify-center gap-6">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-12 w-12 rounded-2xl border-brand-green/10 bg-white text-brand-black hover:bg-brand-green hover:text-white transition-all shadow-sm disabled:opacity-20"
+                    onClick={() => {
+                      setCurrentPage(prev => Math.max(1, prev - 1));
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    disabled={currentPage === 1}
+                  >
+                    <ArrowLeft className="h-5 w-5" />
+                  </Button>
+                  <div className="flex items-center gap-2 font-black text-xs uppercase tracking-widest text-brand-green/60">
+                    <span className="text-brand-black text-base">{currentPage}</span>
+                    <span className="h-px w-8 bg-brand-green/20" />
+                    <span>{totalPages}</span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-12 w-12 rounded-2xl border-brand-green/10 bg-white text-brand-black hover:bg-brand-green hover:text-white transition-all shadow-sm disabled:opacity-20"
+                    onClick={() => {
+                      setCurrentPage(prev => Math.min(totalPages, prev + 1));
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    disabled={currentPage === totalPages}
+                  >
+                    <ArrowRight className="h-5 w-5" />
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </main>

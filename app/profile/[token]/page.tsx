@@ -46,106 +46,123 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
   const isPink = card.type === "PINK";
 
   return (
-    <div className="min-h-screen flex flex-col font-sans">
+    <div className="min-h-screen flex flex-col bg-background font-sans overflow-x-hidden">
       <SiteHeader />
 
-      <main className="flex-1 max-w-4xl mx-auto w-full p-4 py-8 sm:px-6 lg:px-8">
+      <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-16 lg:px-20 relative">
+        {/* Background Decorations */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-brand-orange/5 blur-[120px] rounded-full -mr-48 -mt-48" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-green/5 blur-[120px] rounded-full -ml-48 -mb-48" />
+
         {/* Profile Card Header */}
-        <div className="bg-white rounded-[32px] shadow-xl border border-gray-100 overflow-hidden mb-8 transition-all duration-500">
-          <div className={`h-60 ${isPink ? 'bg-gradient-to-r from-[#8A0204] to-[#c9184a]' : 'bg-gradient-to-r from-[#1B4B42] to-[#2D6A4F]'} relative`}>
-            {/* Pattern Overlay */}
-            <div className="absolute inset-0 flex items-center justify-center p-8">
-              <img src="/meet-off-nome.svg" alt="MeetOff" className="h-32 object-contain invert brightness-0" />
+        <div className="glass rounded-[3.5rem] border-white/40 shadow-2xl overflow-hidden mb-12 relative group">
+          <div className={`h-64 relative transition-all duration-700 ${isPink ? 'bg-brand-red' : 'bg-brand-green'}`}>
+            <div className="absolute inset-0 opacity-10 bg-[url('/meetoff-pattern.png')] bg-repeat" />
+            <div className="absolute inset-0 flex items-center justify-center p-12">
+               <h1 className="text-white text-5xl md:text-7xl font-black italic tracking-tighter opacity-20">MeetOff</h1>
             </div>
           </div>
 
-          <div className="px-6 pb-6 flex flex-col items-center -mt-16 relative text-center">
+          <div className="px-8 pb-12 flex flex-col items-center -mt-20 relative text-center space-y-6">
             {/* Avatar */}
-            <div className="w-32 h-32 rounded-full border-4 border-white bg-gray-200 shadow-md flex items-center justify-center overflow-hidden">
+            <div className="w-40 h-40 rounded-[2.5rem] border-8 border-white bg-gray-100 shadow-2xl flex items-center justify-center overflow-hidden transition-transform duration-500 hover:scale-105">
               {card.avatar ? (
                 <img src={card.avatar} alt={card.name || card.full_name} className="w-full h-full object-cover" />
               ) : (
-                <span className="text-4xl font-bold text-gray-400 uppercase">
+                <span className="text-5xl font-black text-brand-black/20 uppercase">
                   {(card.name || card.full_name || "M")[0]}
                 </span>
               )}
             </div>
 
             {/* Name & Badge */}
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mt-4">
-              {card.name || card.full_name || "Membro MeetOff"}
-            </h2>
-            
-            <div className="flex items-center gap-2 mt-2">
-              <span className={`px-4 py-1 rounded-full text-xs font-bold tracking-wider uppercase shadow-sm ${
-                isPink 
-                  ? 'bg-[#8A0204]/10 text-[#8A0204] border border-[#8A0204]/20' 
-                  : 'bg-[#1B4B42]/10 text-[#1B4B42] border border-[#1B4B42]/20'
-              }`}>
-                {isPink ? "Convidado" : "Membro Oficial"}
-              </span>
+            <div className="space-y-3">
+              <h2 className="text-3xl md:text-5xl font-black text-brand-black uppercase tracking-tighter">
+                {card.name || card.full_name || "Membro MeetOff"}
+              </h2>
+              
+              <div className="flex items-center justify-center gap-3">
+                <span className={cn(
+                  "px-6 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase shadow-sm border",
+                  isPink 
+                    ? 'bg-brand-red/10 text-brand-red border-brand-red/20' 
+                    : 'bg-brand-green/10 text-brand-green border-brand-green/20'
+                )}>
+                  {isPink ? "Convidado Special" : "Membro Black Edition"}
+                </span>
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                  <Award className="w-3 h-3 text-brand-orange" /> ID: {token.slice(0, 8).toUpperCase()}
+                </span>
+              </div>
             </div>
-
-            <p className="text-gray-400 text-xs mt-3 flex items-center gap-1 font-mono">
-              <Award className="w-3 h-3 text-yellow-500" /> ID: {token.slice(0, 8).toUpperCase()}
-            </p>
           </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-4 mb-8">
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
-            <span className="text-gray-400 text-xs uppercase tracking-wider font-bold flex items-center justify-center gap-1.5">
-              <MapPin className="w-4 h-4 text-secondary" /> Presenças
-            </span>
-            <span className="text-3xl font-black text-gray-900 mt-2 block">
-              {interactions.length}
-            </span>
-          </div>
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
-            <span className="text-gray-400 text-xs uppercase tracking-wider font-bold flex items-center justify-center gap-1.5">
-              <Users className="w-4 h-4 text-secondary" /> Na Rede desde
-            </span>
-            <span className="text-lg font-bold text-gray-900 mt-3 block">
-              {card.user_joined 
-                ? (() => {
-                    const str = new Date(card.user_joined).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
-                    return str.charAt(0).toUpperCase() + str.slice(1);
-                  })()
-                : "Recentemente"}
-            </span>
-          </div>
-        </div>
-
-        {/* History / Timeline */}
-        <div className="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100">
-          <h3 className="font-bold text-xl text-gray-900 border-b pb-4 flex items-center gap-2 mb-6">
-            <Calendar className="w-5 h-5 text-secondary" /> Histórico de Encontros
-          </h3>
-
-          {interactions.length === 0 ? (
-            <div className="text-center py-12 text-gray-400">
-              <p>Nenhum encontro registrado ainda.</p>
-              <p className="text-xs mt-1">Escaneie placas MeetOff em locais parceiros para pontuar!</p>
-            </div>
-          ) : (
-            <div className="space-y-6 relative before:absolute before:left-[21px] before:top-2 before:bottom-2 before:w-[2px] before:bg-gray-100">
-              {interactions.map((interaction) => (
-                <div key={interaction.id} className="flex items-start gap-4 relative">
-                  <div className="w-11 h-11 rounded-full bg-green-50 border border-green-200 text-green-600 flex items-center justify-center z-10 flex-shrink-0 shadow-sm">
-                    <CheckCircle2 className="w-5 h-5" />
+        <div className="grid lg:grid-cols-12 gap-12">
+          {/* Stats & Info Sidebar */}
+          <div className="lg:col-span-4 space-y-8">
+            <div className="grid grid-cols-2 lg:grid-cols-1 gap-6">
+              {[
+                { label: "Presenças Oficiais", value: interactions.length, icon: MapPin, color: "text-brand-orange", bg: "bg-brand-orange/10" },
+                { label: "Membro desde", value: card.user_joined 
+                  ? (() => {
+                      const str = new Date(card.user_joined).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
+                      return str.charAt(0).toUpperCase() + str.slice(1);
+                    })()
+                  : "Recentemente", icon: Users, color: "text-brand-green", bg: "bg-brand-green/10" }
+              ].map((stat, i) => (
+                <div key={i} className="glass p-8 rounded-[2.5rem] border-white/40 shadow-xl space-y-4">
+                  <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center", stat.bg)}>
+                    <stat.icon className={cn("w-6 h-6", stat.color)} />
                   </div>
-                  <div className="flex-1">
-                    <p className="font-bold text-gray-900">{interaction.venue_name}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{interaction.venue_location}</p>
-                    <span className="inline-block text-[10px] font-semibold text-gray-500 bg-gray-100 px-2.5 py-0.5 rounded-full mt-2">
-                      {new Date(interaction.created_at).toLocaleDateString('pt-BR')} às {new Date(interaction.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                    </span>
+                  <div>
+                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block">{stat.label}</span>
+                    <p className="text-3xl font-black text-brand-black tracking-tighter">{stat.value}</p>
                   </div>
                 </div>
               ))}
             </div>
-          )}
+          </div>
+
+          {/* Timeline / History */}
+          <div className="lg:col-span-8">
+            <div className="glass p-10 rounded-[3.5rem] border-white/40 shadow-2xl h-full">
+              <div className="flex items-center gap-4 mb-12">
+                <div className="h-1 w-12 bg-brand-red rounded-full" />
+                <h3 className="font-black text-2xl text-brand-black uppercase tracking-tighter">Histórico de <span className="text-brand-red">Conexões</span></h3>
+              </div>
+
+              {interactions.length === 0 ? (
+                <div className="text-center py-20 space-y-4">
+                  <div className="w-20 h-20 bg-brand-black/5 rounded-full flex items-center justify-center mx-auto">
+                    <Calendar className="w-10 h-10 text-gray-300" />
+                  </div>
+                  <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Nenhum encontro registrado</p>
+                </div>
+              ) : (
+                <div className="space-y-10 relative before:absolute before:left-[27px] before:top-2 before:bottom-2 before:w-[2px] before:bg-brand-black/5">
+                  {interactions.map((interaction) => (
+                    <div key={interaction.id} className="flex items-start gap-8 relative group">
+                      <div className="w-14 h-14 rounded-2xl bg-white border border-brand-black/5 text-brand-green flex items-center justify-center z-10 flex-shrink-0 shadow-xl transition-transform group-hover:scale-110 duration-500">
+                        <CheckCircle2 className="w-6 h-6" />
+                      </div>
+                      <div className="space-y-2 pt-1">
+                        <div className="space-y-0.5">
+                          <p className="font-black text-brand-black uppercase tracking-tight text-lg">{interaction.venue_name}</p>
+                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                            <MapPin size={10} className="text-brand-orange" /> {interaction.venue_location}
+                          </p>
+                        </div>
+                        <span className="inline-block text-[9px] font-black text-white bg-brand-black px-4 py-1.5 rounded-full uppercase tracking-widest">
+                          {new Date(interaction.created_at).toLocaleDateString('pt-BR')} às {new Date(interaction.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </main>
 

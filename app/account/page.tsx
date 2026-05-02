@@ -27,82 +27,137 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background overflow-x-hidden">
       <SiteHeader />
       
-      <main className="flex-1 max-w-4xl mx-auto w-full p-4 py-8 sm:px-6 lg:px-8 bg-white">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Minha Conta</h1>
-          <p className="text-gray-500 mt-2">Gerencie suas informações e acesse seus benefícios.</p>
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-16 lg:px-20 relative">
+        {/* Background Decorations */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-brand-orange/5 blur-[120px] rounded-full -mr-48 -mt-48" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-green/5 blur-[120px] rounded-full -ml-48 -mb-48" />
+
+        <header className="mb-16 space-y-4 relative">
+           <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
+            Dashboard Pessoal
+          </span>
+          <h1 className="text-4xl md:text-6xl font-black text-brand-black uppercase tracking-tighter leading-none">
+            Minha <span className="text-brand-orange">Conta</span>
+          </h1>
+          <p className="text-gray-500 font-medium max-w-xl text-lg">
+            Gerencie sua identidade digital e acesse seus benefícios exclusivos na MeetOff.
+          </p>
         </header>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid lg:grid-cols-12 gap-12 relative">
           {/* Sidebar / Info */}
-          <div className="md:col-span-1 space-y-6">
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center">
-              <div className="w-20 h-20 bg-secondary/10 rounded-full flex items-center justify-center mb-4">
-                <User className="w-10 h-10 text-secondary" />
+          <div className="lg:col-span-4 space-y-8">
+            <div className="glass p-10 rounded-[3rem] border-white/40 shadow-2xl flex flex-col items-center text-center space-y-6 relative overflow-hidden group">
+              <div className="absolute inset-0 bg-brand-green/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="w-28 h-28 bg-brand-green/10 rounded-[2rem] flex items-center justify-center relative transition-transform duration-500 group-hover:scale-110">
+                <User className="w-12 h-12 text-brand-green" />
+                <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-brand-orange rounded-xl flex items-center justify-center text-white shadow-lg">
+                  <Shield size={16} />
+                </div>
               </div>
-              <h2 className="font-bold text-xl text-gray-900">{user.fullName || "Usuário"}</h2>
-              <p className="text-sm text-gray-500 mt-1 uppercase tracking-wider font-semibold">
-                {user.isAdmin ? "Administrador" : "Membro Oficial"}
-              </p>
+              <div className="space-y-1 relative">
+                <h2 className="font-black text-2xl text-brand-black uppercase tracking-tight">{user.fullName || "Membro MeetOff"}</h2>
+                <p className="text-[10px] font-black text-brand-orange uppercase tracking-[0.2em]">
+                  {user.isAdmin ? "Administrador Master" : "Membro Black Edition"}
+                </p>
+              </div>
+              <div className="w-full pt-6 border-t border-brand-black/5 relative">
+                <Button variant="outline" className="w-full h-12 rounded-xl border-brand-black/10 font-black uppercase tracking-widest text-[10px] hover:bg-brand-black hover:text-white transition-all">
+                  Editar Perfil
+                </Button>
+              </div>
+            </div>
+
+            {/* Quick Stats */}
+            <div className="premium-card bg-brand-black p-8 rounded-[2.5rem] text-white space-y-6">
+              <h4 className="text-[10px] font-black text-brand-orange uppercase tracking-[0.3em]">Seu Impacto</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <p className="text-2xl font-black tracking-tighter">12</p>
+                  <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Encontros</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-2xl font-black tracking-tighter">04</p>
+                  <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Produtos</p>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Main Content */}
-          <div className="md:col-span-2 space-y-6">
-            <div className="bg-white overflow-hidden rounded-2xl shadow-sm border border-gray-100 transition-all hover:shadow-md group">
-              <div className="p-6">
-                <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
-
-                  
-                  <div className="flex-1 text-center md:text-left">
-                    <h3 className="font-bold text-xl text-gray-900">Seu Cartão de Membro</h3>
-                    <p className="text-gray-500 text-sm mt-1 leading-relaxed">
-                      Sua credencial exclusiva para eventos, parcerias e histórico de encontros. 
-                      Sempre disponível digitalmente aqui.
-                    </p>
-                    <div className="mt-6">
-                      <Button asChild className="w-full md:w-auto h-12 bg-secondary hover:bg-secondary/90 px-8 rounded-xl flex items-center justify-center gap-2 group">
-                        <Link href="/member-card">
-                          Ver Cartão MeetOff
-                          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                        </Link>
-                      </Button>
-                    </div>
+          <div className="lg:col-span-8 space-y-12">
+            {/* Member Card Teaser */}
+            <div className="glass p-8 md:p-12 rounded-[3.5rem] border-white/40 shadow-2xl relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-brand-green/10 blur-[80px] -mr-32 -mt-32 rounded-full" />
+              
+              <div className="flex flex-col md:flex-row gap-10 items-center relative">
+                <div className="w-full md:w-1/3 aspect-[1.58] bg-brand-black rounded-2xl p-6 flex flex-col justify-between shadow-2xl rotate-2 group-hover:rotate-0 transition-transform duration-700">
+                  <div className="flex justify-between items-start">
+                    <div className="w-8 h-6 bg-white/20 rounded-md" />
+                    <CreditCard className="text-white/40" size={20} />
                   </div>
+                  <div className="space-y-1">
+                    <div className="h-1 w-8 bg-brand-orange rounded-full" />
+                    <p className="text-[8px] font-mono text-white/40 uppercase tracking-widest">MeetOff Card</p>
+                  </div>
+                </div>
+
+                <div className="flex-1 space-y-6 text-center md:text-left">
+                  <div className="space-y-2">
+                    <h3 className="font-black text-3xl text-brand-black uppercase tracking-tighter">Seu Acesso Premium</h3>
+                    <p className="text-gray-500 font-medium leading-relaxed">
+                      Sua credencial digital MeetOff garante acesso antecipado a eventos e benefícios exclusivos em nossa rede de parceiros.
+                    </p>
+                  </div>
+                  <Button asChild className="h-14 rounded-2xl bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-[10px] px-8 shadow-xl shadow-brand-green/20 group">
+                    <Link href="/member-card" className="flex items-center gap-3">
+                      Acessar Cartão Digital
+                      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-2" />
+                    </Link>
+                  </Button>
                 </div>
               </div>
             </div>
 
-            {/* User Details */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-6">
-              <h3 className="font-bold text-lg text-gray-900 border-b pb-4">Dados Pessoais</h3>
+            {/* Personal Data Grid */}
+            <div className="glass p-10 rounded-[3rem] border-white/40 shadow-xl space-y-10">
+              <div className="flex items-center gap-4">
+                <div className="h-1 w-12 bg-brand-red rounded-full" />
+                <h3 className="font-black text-xl text-brand-black uppercase tracking-tight">Dados de Segurança</h3>
+              </div>
               
-              <div className="grid gap-6">
-                <div className="flex items-center gap-4">
-                  <div className="p-2 bg-gray-50 rounded-lg text-gray-400">
-                    <Mail className="w-5 h-5" />
+              <div className="grid md:grid-cols-2 gap-10">
+                <div className="flex items-center gap-6 group">
+                  <div className="w-14 h-14 rounded-2xl bg-brand-black/5 flex items-center justify-center text-brand-black group-hover:bg-brand-black group-hover:text-white transition-all">
+                    <Mail size={24} />
                   </div>
-                  <div>
-                    <p className="text-xs text-gray-400 uppercase font-bold tracking-wider">Email</p>
-                    <p className="text-gray-900 font-medium">{user.email}</p>
+                  <div className="space-y-1">
+                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">E-mail Principal</p>
+                    <p className="text-brand-black font-black uppercase tracking-tight">{user.email}</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                  <div className="p-2 bg-gray-50 rounded-lg text-gray-400">
-                    <Shield className="w-5 h-5" />
+                <div className="flex items-center gap-6 group">
+                  <div className="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-600 group-hover:bg-green-600 group-hover:text-white transition-all">
+                    <Shield size={24} />
                   </div>
-                  <div>
-                    <p className="text-xs text-gray-400 uppercase font-bold tracking-wider">Status da Conta</p>
-                    <div className="flex items-center gap-1.5 text-green-600 font-bold">
-                      <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse"></div>
-                      Ativa
+                  <div className="space-y-1">
+                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Status da Conta</p>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
+                      <p className="text-green-600 font-black uppercase tracking-tight text-xs">Verificada & Ativa</p>
                     </div>
                   </div>
                 </div>
+              </div>
+
+              <div className="pt-8 border-t border-brand-black/5">
+                <p className="text-[10px] text-gray-400 font-medium italic">
+                  * Suas informações são protegidas por criptografia de ponta a ponta e nunca serão compartilhadas sem seu consentimento explícito.
+                </p>
               </div>
             </div>
           </div>

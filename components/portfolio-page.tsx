@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { SiteHeader } from "./site-header";
 import { SiteFooter } from "./site-footer";
-import { Linkedin, Instagram, Phone, Facebook, Heart, User, Users, Frown } from "lucide-react";
+import { Linkedin, Instagram, Phone, Facebook, Heart, User, Users, Frown, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { TestimonialCarousel, Review } from "./testimonial-carousel";
 
@@ -27,212 +27,156 @@ const reviews: Review[] = [
 
 export function PortfolioPage() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-background">
       <SiteHeader />
 
-      <main className="px-4 py-8 lg:px-20">
+      <main className="flex-1 px-4 py-16 lg:px-20">
         <div className="mx-auto max-w-7xl">
-          {/* Header Section */}
-          <div className="flex flex-col md:flex-row gap-6 mb-8">
-            <div className="flex-1">
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden mb-4">
-                <img
-                  src="./images/joao-carlos.png"
-                  alt="João Carlos"
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <h3 className="font-bold text-lg text-black">João Carlos</h3>
-              <p className="text-sm text-gray-500 mb-2">Profissionais na área de terapia</p>
-              <p className="text-sm">
-                Email:{" "}
-                <a
-                  href="mailto:FigmaDesignUXUI@email.com"
-                  className="text-secondary underline decoration-secondary font-bold"
-                >
-                  FigmaDesignUXUI@email.com
-                </a>
-              </p>
-            </div>
-
-            <div className="flex-1">
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden mb-4">
-                <img
-                  src="./images/alesca-de-labernarde.png"
-                  alt="Aiesca de Labernarde"
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <h3 className="font-bold text-lg text-black">Alesca de Labernarde</h3>
-              <p className="text-sm text-gray-500 mb-2">
-                Profissionais na área de advocacia e comércio exterior
-              </p>
-              <p className="text-sm">
-                Email:{" "}
-                <a
-                  href="mailto:FigmaDesignUXUI@email.com"
-                  className="text-secondary underline decoration-secondary font-bold"
-                >
-                  FigmaDesignUXUI@email.com
-                </a>
-              </p>
-            </div>
-          </div>
-
-          {/* Intro Text */}
-          <div className="flex flex-col md:flex-row justify-between items-start mb-12 gap-8 mt-12 md:mt-22">
-            <div className="w-full md:w-[95%] pr-0 md:pr-12">
-              <h1 className="text-3xl md:text-5xl font-bold mb-6 text-black tracking-tight leading-tight">
-                Olá, Nós somos <span className="text-primary">João Carlos</span> &{" "}
-                <span className="text-secondary">Labernarde</span>
-                <br />
-                Terapia especializada em atender mulheres que buscam reencontrar sua força
+          {/* Founders Hero Section */}
+          <div className="grid lg:grid-cols-2 gap-16 items-center mb-24">
+            <div className="space-y-10 relative">
+               <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
+                Nossa História & Propósito
+              </span>
+              <h1 className="text-5xl md:text-7xl font-black text-brand-black uppercase tracking-tighter leading-[0.85]">
+                Olá, Nós somos <br/>
+                <span className="text-brand-orange">João Carlos</span> <br/>
+                <span className="text-brand-green">&</span> <span className="text-brand-red">Labernarde</span>
               </h1>
-              <p className="text-gray-500 text-lg mb-8 max-w-4xl leading-relaxed">
-                Apoio psicológico acolhedor e direcionado para mulheres que passaram por abuso e
-                outras situações traumáticas, com foco no seu bem-estar e recuperação.
+              <p className="text-gray-500 font-medium text-lg md:text-xl leading-relaxed max-w-xl">
+                Facilitadores de conexões reais e terapeutas especializados em reencontros profundos e restauração de propósitos.
               </p>
-              <div className="flex flex-col sm:flex-row items-center gap-4">
+              
+              <div className="flex flex-col sm:flex-row items-center gap-6">
                 <Button
                   asChild
-                  className="bg-accent hover:bg-accent/90 text-white rounded-md px-8 py-7 button-base w-full sm:w-auto text-base"
+                  className="h-16 rounded-2xl bg-brand-orange hover:bg-brand-orange/90 text-white font-black uppercase tracking-widest text-sm shadow-xl shadow-brand-orange/20 px-8 transition-all active:scale-95"
                 >
-                  <Link href="/schedule-session">Agendar Sessão com Fundadores</Link>
+                  <Link href="/schedule-session">Agendar com Fundadores</Link>
                 </Button>
-                <button className="text-sm font-bold flex items-center justify-center hover:underline text-black cursor-pointer w-full sm:w-auto py-3">
-                  <span>Saiba mais sobre meu trabalho</span>
-                  <span className="ml-2 text-lg">↓</span>
-                </button>
+                <Link href="#about" className="text-xs font-black uppercase tracking-widest text-brand-black hover:text-brand-orange transition-colors flex items-center gap-3 group">
+                  Conheça nossa Jornada <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-2" />
+                </Link>
               </div>
             </div>
 
-            <div className="w-full md:w-auto flex justify-center md:justify-end">
-              <div className="flex flex-row md:flex-col gap-4 text-gray-600 border border-gray-100 rounded-2xl md:rounded-full py-3 px-6 md:py-6 md:px-3 shadow-sm items-center bg-white/50 backdrop-blur-sm">
-                <Link href="#" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                  <Linkedin size={22} />
-                </Link>
-                <Link href="#" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                  <Instagram size={22} />
-                </Link>
-                <Link href="#" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                  <Phone size={22} />
-                </Link>
-                <Link href="#" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                  <Facebook size={22} />
-                </Link>
+            <div className="grid grid-cols-2 gap-6 relative">
+              <div className="absolute inset-0 bg-brand-orange/10 blur-[100px] rounded-full" />
+              <div className="space-y-6 relative translate-y-12">
+                <div className="aspect-[3/4] rounded-[2.5rem] overflow-hidden border-4 border-white shadow-2xl">
+                  <img
+                    src="./images/joao-carlos.png"
+                    alt="João Carlos"
+                    className="object-cover w-full h-full grayscale hover:grayscale-0 transition-all duration-700 hover:scale-110"
+                  />
+                </div>
+                <div className="px-4">
+                   <h3 className="font-black text-brand-black uppercase tracking-tight text-lg">João Carlos</h3>
+                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Fundador & CEO</p>
+                </div>
+              </div>
+              <div className="space-y-6 relative">
+                <div className="aspect-[3/4] rounded-[2.5rem] overflow-hidden border-4 border-white shadow-2xl">
+                  <img
+                    src="./images/alesca-de-labernarde.png"
+                    alt="Aiesca de Labernarde"
+                    className="object-cover w-full h-full grayscale hover:grayscale-0 transition-all duration-700 hover:scale-110"
+                  />
+                </div>
+                <div className="px-4">
+                   <h3 className="font-black text-brand-black uppercase tracking-tight text-lg">Labernarde</h3>
+                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Co-Founder & Especialista</p>
+                </div>
+              </div>
+
+              {/* Float Socials */}
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 hidden xl:flex flex-col gap-4">
+                {[Linkedin, Instagram, Phone, Facebook].map((Icon, i) => (
+                  <Link key={i} href="#" className="w-12 h-12 rounded-2xl glass border-white/40 flex items-center justify-center text-brand-black hover:bg-brand-black hover:text-white transition-all shadow-xl">
+                    <Icon size={20} />
+                  </Link>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Sobre os Profissionais */}
-          <div className="mb-12">
-            <h2 className="text-xl font-bold mb-6 text-black">Sobre os Profissionais</h2>
-            <div className="space-y-4 text-sm text-gray-600 leading-relaxed">
-              <p>
-                João Carlos é terapeuta com experiência internacional, com formações e cursos
-                realizados em Lisboa, Portugal, voltados para relacionamentos. Atua como terapeuta
-                de casal, terapeuta familiar, constelador familiar e coach de relacionamento, sendo
-                reconhecido como um verdadeiro facilitador de encontros.
-              </p>
-              <p>
-                Sua vivência em diversos países europeus possibilitou compreender diferentes
-                culturas e comportamentos na escolha de um companheiro da vida. Morou em Portugal e
-                na Irlanda, além de ter realizado cursos no Brasil e no exterior. Com essa bagagem,
-                trouxe para o Brasil projetos inovadores que resgatam a forma mais natural e
-                verdadeira de conectar alguém para compartilhar a vida.
-              </p>
-              <p>
-                Com sua experiência como empreendedor na área de viagens, eventos e turismo,
-                desenvolveu uma ideia inovadora ao unirem esses serviços à encontros específicos
-                para solteiros, casais, famílias, além de promover interações voltadas para
-                networking e negócios, criando assim um formato diferenciado de conexão presencial.
-              </p>
-              <p>
-                Aiesca de Labernarde é formada em advocacia e comércio exterior. Após anos de
-                carreira, descobriu sua verdadeira vocação: atender mulheres e compreender a
-                complexidade e a importância de um relacionamento saudável. Especialista em questões
-                familiares, presenciou inúmeros casos em que pequenos detalhes não percebidos ao
-                longo dos anos levaram a destruição de famílias. Ao perceber a fragilidade das
-                mulheres após uma separação e os impactos de um divórcio, decidiu unir forças para
-                aliviar as dores emocionais que surgem nestes momentos.
-              </p>
-              <p>
-                Junto com seu marido, criou um formato de atendimento único voltado especialmente
-                para mulheres em busca de apoio emocional, oferecendo compreensão e acolhimento nos
-                períodos mais delicados.
-              </p>
-              <p>
-                João Carlos é fundador e CEO do FindB, Encontre seu Equilíbrio, MeetOff, Mimo Meu e
-                Seu Projeto Esposa Feliz e Check-In Love. Todos esses aplicativos têm como objetivo
-                facilitar a conexão entre pessoas, seja para relacionamentos, amizades, networking,
-                negócios, parcerias de viagem ou eventos presenciais. A proposta é criar
-                oportunidades reais de encontro, valorizando a interação humana e o contato pessoal.
-              </p>
-              <p>
-                João Carlos e Aiesca de Labernarde são facilitadores de encontros e acreditam que
-                cada conexão verdadeira pode transformar vidas.
-              </p>
-            </div>
-          </div>
-
-          {/* Stats Box */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 border-t border-b border-gray-100 py-8">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-accent mb-1">10+</div>
-              <div className="text-xs font-semibold text-black uppercase tracking-widest">
-                Anos de Experiência
+          {/* Stats Bar */}
+          <div className="glass rounded-[3rem] p-12 border-white/40 shadow-2xl mb-32 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-brand-green/5 blur-3xl -mr-32 -mt-32 rounded-full" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+              <div className="text-center space-y-2">
+                <div className="text-6xl font-black text-brand-green tracking-tighter">10+</div>
+                <div className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Anos de Experiência</div>
               </div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-accent mb-1">300+</div>
-              <div className="text-xs font-semibold text-black uppercase tracking-widest">
-                casos atendidos
+              <div className="text-center space-y-2 border-y md:border-y-0 md:border-x border-brand-green/10 py-8 md:py-0">
+                <div className="text-6xl font-black text-brand-orange tracking-tighter">300+</div>
+                <div className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Casos Transformados</div>
               </div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-accent mb-1">99%</div>
-              <div className="text-xs font-semibold text-black uppercase tracking-widest">
-                de taxa de satisfação das pacientes
+              <div className="text-center space-y-2">
+                <div className="text-6xl font-black text-brand-red tracking-tighter">99%</div>
+                <div className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Taxa de Satisfação</div>
               </div>
             </div>
           </div>
 
-          {/* Categorias de Atendimento */}
-          <div className="mb-12">
-            <h2 className="text-xl font-bold mb-6 text-black">Categorias de Atendimento</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <div className="flex flex-col items-center justify-center p-6 border rounded-xl hover:border-gray-300 transition-all bg-gray-50/50">
-                <Heart className="w-8 h-8 text-secondary mb-3" />
-                <span className="font-semibold text-sm text-black">Relacionamentos</span>
-              </div>
-              <div className="flex flex-col items-center justify-center p-6 border rounded-xl hover:border-gray-300 transition-all bg-gray-50/50">
-                <User className="w-8 h-8 text-secondary mb-3" />
-                <span className="font-semibold text-sm text-black">Solteiras</span>
-              </div>
-              <div className="flex flex-col items-center justify-center p-6 border rounded-xl hover:border-gray-300 transition-all bg-gray-50/50">
-                <Users className="w-8 h-8 text-secondary mb-3" />
-                <span className="font-semibold text-sm text-black">Divorciadas</span>
-              </div>
-              <div className="flex flex-col items-center justify-center p-6 border rounded-xl hover:border-gray-300 transition-all bg-gray-50/50">
-                <Frown className="w-8 h-8 text-secondary mb-3" />
-                <span className="font-semibold text-sm text-black">Viúvas</span>
-              </div>
-              <div className="flex flex-col items-center justify-center p-6 border rounded-xl hover:border-gray-300 transition-all bg-gray-50/50">
-                <Users className="w-8 h-8 text-secondary mb-3" />
-                <span className="font-semibold text-sm text-black">Casais</span>
-              </div>
-              <div className="flex flex-col items-center justify-center p-6 border rounded-xl hover:border-gray-300 transition-all bg-gray-50/50">
-                <Users className="w-8 h-8 text-secondary mb-3" />
-                <span className="font-semibold text-sm text-black">Famílias e Grupos</span>
+          {/* About Section */}
+          <div id="about" className="grid lg:grid-cols-12 gap-16 mb-32 items-start">
+            <div className="lg:col-span-4 space-y-6 sticky top-24">
+              <div className="h-1 w-20 bg-brand-red rounded-full" />
+              <h2 className="text-4xl font-black text-brand-black uppercase tracking-tighter leading-none">
+                Nossa <br/><span className="text-brand-red">Bagagem</span>
+              </h2>
+              <p className="text-gray-500 font-medium leading-relaxed italic">
+                "Acreditamos que cada conexão verdadeira pode transformar vidas e restaurar o equilíbrio que o mundo moderno tenta nos tirar."
+              </p>
+            </div>
+            <div className="lg:col-span-8 space-y-8">
+              <div className="premium-card bg-white p-12 rounded-[2.5rem] shadow-xl space-y-6">
+                <p className="text-gray-600 font-medium leading-relaxed">
+                  João Carlos é terapeuta com experiência internacional, com formações e cursos realizados em Lisboa, Portugal. Atua como terapeuta de casal, familiar, constelador familiar e coach de relacionamento, sendo reconhecido como um verdadeiro facilitador de encontros. Sua vivência possibilitou compreender diferentes culturas e comportamentos na escolha de um companheiro da vida.
+                </p>
+                <p className="text-gray-600 font-medium leading-relaxed">
+                  Aiesca de Labernarde, após anos na advocacia, descobriu sua verdadeira vocação: atender mulheres e compreender a complexidade de relacionamentos saudáveis. Especialista em questões familiares, dedica-se a aliviar as dores emocionais e promover o acolhimento em momentos delicados.
+                </p>
+                <p className="text-gray-600 font-medium leading-relaxed">
+                  Juntos, fundaram o ecossistema MeetOff, integrando viagens, eventos e tecnologia para resgatar a forma mais natural de conectar pessoas para compartilhar a vida, seja para amor, networking ou amizade.
+                </p>
               </div>
             </div>
           </div>
 
-          {/* O que minhas pacientes dizem */}
-          <div>
-            <h2 className="text-xl font-bold mb-6 text-black">O que minhas pacientes dizem</h2>
-            <div className="max-w-5xl mx-auto">
-              <TestimonialCarousel reviews={reviews} />
+          {/* Service Areas */}
+          <div className="mb-32">
+            <div className="text-center mb-16 space-y-4">
+              <h2 className="text-4xl font-black text-brand-black uppercase tracking-tighter">Áreas de <span className="text-brand-green">Atuação</span></h2>
+              <p className="text-gray-500 font-medium">Soluções personalizadas para cada fase da sua jornada emocional.</p>
+            </div>
+            
+            <div className="grid grid-cols-2 lg:grid-cols-6 gap-6">
+              {[
+                { icon: Heart, label: "Relacionamentos" },
+                { icon: User, label: "Solteiras" },
+                { icon: Users, label: "Divorciadas" },
+                { icon: Frown, label: "Viúvas" },
+                { icon: Users, label: "Casais" },
+                { icon: Users, label: "Famílias" }
+              ].map((item, i) => (
+                <div key={i} className="group glass p-8 rounded-[2rem] border-white/40 shadow-lg flex flex-col items-center justify-center gap-4 hover:bg-brand-black hover:-translate-y-2 transition-all cursor-pointer">
+                  <item.icon className="w-10 h-10 text-brand-orange group-hover:text-white transition-colors" />
+                  <span className="text-[10px] font-black text-brand-black group-hover:text-white uppercase tracking-widest text-center">{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Testimonials */}
+          <div className="space-y-12">
+            <div className="flex items-center gap-3">
+              <div className="h-1 w-12 bg-brand-orange rounded-full" />
+              <h2 className="text-3xl font-black text-brand-black uppercase tracking-tighter">Vozes da Comunidade</h2>
+            </div>
+            <div className="min-h-[400px] flex items-center">
+              <TestimonialCarousel reviews={reviews} variant="stacked" arrowsPosition="right" />
             </div>
           </div>
         </div>

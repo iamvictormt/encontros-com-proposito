@@ -17,6 +17,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { ImageUpload } from "./image-upload";
+import { cn } from "@/lib/utils";
 
 interface Partner {
   name: string;
@@ -194,303 +195,304 @@ export function PartnersPage() {
     }
   };
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-background">
       <SiteHeader />
 
-      <main className="px-4 py-8 lg:px-20">
+      <main className="flex-1 px-4 py-16 lg:px-20">
         <div className="mx-auto max-w-7xl">
-          <div className="text-center mb-10">
-            <h1 className="text-2xl md:text-3xl font-bold text-black mb-2">Empresas e Parcerias</h1>
-            <p className="text-gray-500 text-sm md:text-base max-w-lg mx-auto">
-              Cadastre sua empresa e conecte-se a eventos, pontos de encontro e vendas!
+          {/* Header Section */}
+          <div className="text-center mb-16 space-y-4">
+             <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
+              B2B & Partnerships
+            </span>
+            <h1 className="text-4xl md:text-6xl font-black text-brand-black uppercase tracking-tighter leading-none">
+              Impulsione seu <span className="text-brand-orange">Negócio</span>
+            </h1>
+            <p className="text-gray-500 font-medium max-w-2xl mx-auto text-lg">
+              Cadastre sua empresa em nossa rede exclusiva e conecte-se a eventos premium, pontos de encontro e oportunidades de vendas.
             </p>
           </div>
-          {/* Form Section */}
-          <form onSubmit={handleSubmit} className="max-w-2xl mx-auto mb-16 space-y-6">
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nome da Empresa
-                </label>
-                <Input 
-                  placeholder="Informe o nome da sua empresa" 
-                  className="bg-white" 
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                />
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Nome do Responsável
-                  </label>
-                  <Input 
-                    placeholder="Nome completo do responsável" 
-                    className="bg-white" 
-                    value={formData.responsible_name}
-                    onChange={(e) => setFormData({ ...formData, responsible_name: e.target.value })}
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Contato (WhatsApp)
-                  </label>
-                  <Input 
-                    placeholder="(00) 00000-0000" 
-                    className="bg-white" 
-                    value={formData.contact_phone}
-                    onChange={handlePhoneChange}
-                    required
-                  />
-                </div>
-              </div>
+          <div className="grid lg:grid-cols-12 gap-16 items-start">
+            {/* Form Section */}
+            <div className="lg:col-span-7">
+              <div className="glass p-8 md:p-12 rounded-[3rem] border-white/40 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-brand-orange/10 blur-3xl -mr-16 -mt-16 rounded-full" />
+                
+                <form onSubmit={handleSubmit} className="space-y-8 relative">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2 md:col-span-2">
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Nome da Empresa</label>
+                      <Input 
+                        placeholder="Nome Fantasia" 
+                        className="h-14 rounded-2xl bg-white/50 border-brand-green/10 focus:border-brand-orange transition-all font-medium px-6" 
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        required
+                      />
+                    </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Tipo de Negócio
-                  </label>
-                  <Select 
-                    onValueChange={(v) => setFormData({ ...formData, businessType: v })}
-                    value={formData.businessType}
-                  >
-                    <SelectTrigger className="bg-white w-full">
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Serviços">Serviços</SelectItem>
-                      <SelectItem value="Produtos">Produtos</SelectItem>
-                      <SelectItem value="Tecnologia">Tecnologia</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
-                  <Select
-                    onValueChange={(v) => setFormData({ ...formData, category: v })}
-                    value={formData.category}
-                  >
-                    <SelectTrigger className="bg-white w-full">
-                      <SelectValue placeholder="Ex: Ponto de encontro" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Ponto de encontro">Ponto de encontro</SelectItem>
-                      <SelectItem value="Fornecedor">Fornecedor</SelectItem>
-                      <SelectItem value="Parceiro Estratégico">Parceiro Estratégico</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Nome do Responsável</label>
+                      <Input 
+                        placeholder="Seu Nome" 
+                        className="h-14 rounded-2xl bg-white/50 border-brand-green/10 focus:border-brand-orange transition-all font-medium px-6" 
+                        value={formData.responsible_name}
+                        onChange={(e) => setFormData({ ...formData, responsible_name: e.target.value })}
+                        required
+                      />
+                    </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">CEP</label>
-                  <Input
-                    placeholder="00000-000"
-                    className="bg-white"
-                    value={formData.cep}
-                    onChange={onCepChange}
-                    maxLength={9}
-                    required
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Localização (Cidade/UF)</label>
-                  <Input
-                    placeholder="Cidade/UF"
-                    className="bg-gray-50 font-medium text-black"
-                    value={formData.location}
-                    readOnly
-                    required
-                  />
-                </div>
-              </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">WhatsApp Business</label>
+                      <Input 
+                        placeholder="(00) 00000-0000" 
+                        className="h-14 rounded-2xl bg-white/50 border-brand-green/10 focus:border-brand-orange transition-all font-medium px-6" 
+                        value={formData.contact_phone}
+                        onChange={handlePhoneChange}
+                        required
+                      />
+                    </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Endereço Completo</label>
-                <Input
-                  placeholder="Logradouro, Número, Bairro"
-                  className="bg-gray-50 font-medium text-black"
-                  value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  readOnly
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Foto da Empresa / Fachada
-                </label>
-                <ImageUpload 
-                  value={formData.image}
-                  onChange={(url) => setFormData({ ...formData, image: url })}
-                  onRemove={() => setFormData({ ...formData, image: "" })}
-                />
-                <p className="text-xs text-gray-400 mt-2 italic">
-                  * Uma boa foto ajuda na aprovação e atrai mais clientes.
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Produtos/Serviços
-                </label>
-                <div className="flex flex-wrap gap-2 p-2 bg-white border rounded-md min-h-[42px] focus-within:ring-2 focus-within:ring-[#E58043]/20 transition-all">
-                  {tags.map((tag: string, index: number) => (
-                    <Badge 
-                      key={index} 
-                      variant="secondary"
-                      className="bg-[#8B2F2A] hover:bg-[#8B2F2A]/90 text-white rounded-md px-3 py-1 font-normal flex items-center gap-1"
-                    >
-                      {tag}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveTag(tag)}
-                        className="ml-1 hover:text-gray-200 transition-colors"
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Tipo de Negócio</label>
+                      <Select 
+                        onValueChange={(v) => setFormData({ ...formData, businessType: v })}
+                        value={formData.businessType}
                       >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </Badge>
-                  ))}
-                  <input
-                    className="flex-1 bg-transparent outline-none text-sm min-w-[150px] text-gray-700"
-                    placeholder={tags.length === 0 ? "Ex: Terapia, Viagens, Alimentação..." : ""}
-                    value={tagInput}
-                    onChange={(e) => setTagInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === " " || e.key === "Enter" || e.key === ",") {
-                        e.preventDefault();
-                        const newTag = tagInput.trim().replace(",", "");
-                        if (newTag && !tags.includes(newTag)) {
-                          setTags([...tags, newTag]);
-                          setTagInput("");
-                        }
-                      } else if (e.key === "Backspace" && !tagInput && tags.length > 0) {
-                        const newTags = [...tags];
-                        newTags.pop();
-                        setTags(newTags);
-                      }
-                    }}
-                  />
-                </div>
-                <p className="text-[10px] text-gray-400 mt-1">Pressione Espaço, vírgula (,) ou Enter para adicionar</p>
-              </div>
-            </div>
+                        <SelectTrigger className="h-14 rounded-2xl bg-white/50 border-brand-green/10 focus:ring-brand-orange px-6">
+                          <SelectValue placeholder="Selecione" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-2xl border-brand-green/10">
+                          <SelectItem value="Serviços">Serviços</SelectItem>
+                          <SelectItem value="Produtos">Produtos</SelectItem>
+                          <SelectItem value="Tecnologia">Tecnologia</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-            <Button 
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-[#E58043] hover:bg-[#E58043]/90 text-white py-6 text-base rounded-md font-semibold"
-            >
-              {isSubmitting ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                "Enviar Cadastro para Aprovação"
-              )}
-            </Button>
-          </form>
-          {/* Separator */}
-          <div className="w-24 h-px bg-gray-200 mx-auto mb-12"></div>
-          {/* Featured Partners */}
-          <div className="mb-16">
-            <h2 className="text-xl font-bold text-black mb-8 text-center">Parceiros em destaque</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
-              {paginatedPartners.map((partner, idx) => (
-                <div
-                  key={idx}
-                  className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group"
-                >
-                  <div className="relative h-48 w-full">
-                    <Image
-                      src={partner.image || "https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=800&auto=format&fit=crop"}
-                      alt={partner.name}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="p-5">
-                    <h3 className="font-bold text-black text-lg mb-3">{partner.name}</h3>
-                    <div className="space-y-1 text-sm">
-                      <p className="text-gray-500">
-                        <span className="text-gray-400">Tipo:</span>{" "}
-                        <span className="font-semibold text-secondary">{partner.type}</span>
-                      </p>
-                      <p className="text-gray-500">
-                        <span className="text-gray-400">Local:</span>{" "}
-                        <span className="font-semibold text-secondary underline underline-offset-2">
-                          {partner.location}
-                        </span>
-                      </p>
-                      <p className="text-gray-500">
-                        <span className="text-gray-400">Produtos:</span>{" "}
-                        <span className="font-semibold text-secondary">{partner.products}</span>
-                      </p>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Categoria Principal</label>
+                      <Select
+                        onValueChange={(v) => setFormData({ ...formData, category: v })}
+                        value={formData.category}
+                      >
+                        <SelectTrigger className="h-14 rounded-2xl bg-white/50 border-brand-green/10 focus:ring-brand-orange px-6">
+                          <SelectValue placeholder="Ex: Ponto de encontro" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-2xl border-brand-green/10">
+                          <SelectItem value="Ponto de encontro">Ponto de encontro</SelectItem>
+                          <SelectItem value="Fornecedor">Fornecedor</SelectItem>
+                          <SelectItem value="Parceiro Estratégico">Parceiro Estratégico</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">CEP</label>
+                      <Input
+                        placeholder="00000-000"
+                        className="h-14 rounded-2xl bg-white/50 border-brand-green/10 focus:border-brand-orange transition-all font-medium px-6"
+                        value={formData.cep}
+                        onChange={onCepChange}
+                        maxLength={9}
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Cidade / UF</label>
+                      <Input
+                        placeholder="Cidade/UF"
+                        className="h-14 rounded-2xl bg-brand-black/5 border-transparent font-black text-brand-black px-6"
+                        value={formData.location}
+                        readOnly
+                        required
+                      />
                     </div>
                   </div>
-                </div>
-              ))}
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Endereço de Atuação</label>
+                    <Input
+                      placeholder="Logradouro, Número, Bairro"
+                      className="h-14 rounded-2xl bg-brand-black/5 border-transparent font-black text-brand-black px-6"
+                      value={formData.address}
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                      readOnly
+                    />
+                  </div>
+
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1 block">Fachada / Branding</label>
+                    <div className="p-4 rounded-3xl bg-white/50 border-2 border-dashed border-brand-green/20">
+                      <ImageUpload 
+                        value={formData.image}
+                        onChange={(url) => setFormData({ ...formData, image: url })}
+                        onRemove={() => setFormData({ ...formData, image: "" })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1 block">Especialidades & Tags</label>
+                    <div className="flex flex-wrap gap-2 p-3 bg-white/50 border border-brand-green/10 rounded-2xl min-h-[56px] focus-within:ring-2 focus-within:ring-brand-orange/20 transition-all">
+                      {tags.map((tag: string, index: number) => (
+                        <Badge 
+                          key={index} 
+                          className="bg-brand-red hover:bg-brand-red/90 text-white rounded-xl px-4 py-2 font-black text-[10px] uppercase tracking-widest flex items-center gap-2"
+                        >
+                          {tag}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveTag(tag)}
+                            className="hover:scale-125 transition-transform"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                      <input
+                        className="flex-1 bg-transparent outline-none text-sm min-w-[200px] text-brand-black font-medium px-2"
+                        placeholder={tags.length === 0 ? "Ex: Terapia, Viagens, Gastronomia..." : "Adicionar mais..."}
+                        value={tagInput}
+                        onChange={(e) => setTagInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === " " || e.key === "Enter" || e.key === ",") {
+                            e.preventDefault();
+                            const newTag = tagInput.trim().replace(",", "");
+                            if (newTag && !tags.includes(newTag)) {
+                              setTags([...tags, newTag]);
+                              setTagInput("");
+                            }
+                          } else if (e.key === "Backspace" && !tagInput && tags.length > 0) {
+                            const newTags = [...tags];
+                            newTags.pop();
+                            setTags(newTags);
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <Button 
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full h-16 rounded-2xl bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-sm shadow-xl shadow-brand-green/20"
+                  >
+                    {isSubmitting ? (
+                      <Loader2 className="w-6 h-6 animate-spin" />
+                    ) : (
+                      "Solicitar Parceria Premium"
+                    )}
+                  </Button>
+                </form>
+              </div>
             </div>
-            <div className="text-center">
-              <button className="text-primary text-sm tracking-wide hover:underline underline-offset-4 cursor-pointer">
-                Ver Mais
-              </button>
-            </div>
-          </div>
-          {/* Separator */}
-          <div className="w-24 h-px bg-gray-200 mx-auto mb-12"></div>
-          {/* Benefits */}
-          <div className="mb-8">
-            <h2 className="text-xl font-bold text-center text-black mb-10">
-              Benefícios para Parceiros
-            </h2>
-            <div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10 mb-10">
-                <div>
-                  <ShieldCheck className="w-6 h-6 text-gray-800 mb-3" />
-                  <h3 className="text-md text-black mb-2">Selo Oficial</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">
-                    Ganhe o selo de aprovação, aumentando a confiança e credibilidade do seu
-                    negócio.
-                  </p>
+
+            {/* Benefits Column */}
+            <div className="lg:col-span-5 space-y-12">
+              <div className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="h-1 w-12 bg-brand-orange rounded-full" />
+                  <h2 className="text-2xl font-black text-brand-black uppercase tracking-tighter">Vantagens Exclusivas</h2>
                 </div>
-                <div>
-                  <Target className="w-6 h-6 text-gray-800 mb-3" />
-                  <h3 className="text-md text-black mb-2">Público Qualificado</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">
-                    Conecte-se diretamente com pessoas interessadas nos seus serviços e produtos.
-                  </p>
+
+                <div className="grid gap-6">
+                  {[
+                    { icon: ShieldCheck, title: "Selo de Aprovação", desc: "Garanta credibilidade e confiança perante nossa comunidade selecionada.", color: "bg-brand-green" },
+                    { icon: Target, title: "Público High-End", desc: "Acesso direto a um ecossistema de alto valor e conexões estratégicas.", color: "bg-brand-orange" },
+                    { icon: Megaphone, title: "Visibilidade Premium", desc: "Destaque garantido em nossos canais oficiais e eventos sazonais.", color: "bg-brand-red" },
+                    { icon: Share2, title: "Networking B2B", desc: "Interaja com outros CEOs e fundadores parceiros da MeetOff.", color: "bg-brand-black" }
+                  ].map((benefit, i) => (
+                    <div key={i} className="glass p-6 rounded-[2rem] border-white/40 shadow-lg flex gap-6 group hover:scale-[1.02] transition-transform">
+                      <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 text-white shadow-lg shadow-black/5", benefit.color)}>
+                        <benefit.icon className="w-6 h-6" />
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="font-black text-brand-black uppercase tracking-tight">{benefit.title}</h3>
+                        <p className="text-sm text-gray-500 font-medium leading-relaxed">{benefit.desc}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div>
-                  <CalendarDays className="w-6 h-6 text-gray-800 mb-3" />
-                  <h3 className="text-md text-black mb-2">Participação em Eventos</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">
-                    Presença garantida nos eventos e ações exclusivas da plataforma.
+              </div>
+
+              {/* Stats/Social Proof */}
+              <div className="premium-card bg-brand-black rounded-[3rem] p-10 text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-brand-green/20 blur-[80px] -mr-32 -mt-32 rounded-full" />
+                <div className="relative space-y-6">
+                  <h4 className="text-brand-orange font-bold uppercase tracking-[0.3em] text-[10px]">Ecossistema MeetOff</h4>
+                  <div className="grid grid-cols-2 gap-8">
+                    <div>
+                      <p className="text-4xl font-black tracking-tighter">500+</p>
+                      <p className="text-xs font-bold uppercase text-white/60 tracking-widest">Empresas</p>
+                    </div>
+                    <div>
+                      <p className="text-4xl font-black tracking-tighter">50k+</p>
+                      <p className="text-xs font-bold uppercase text-white/60 tracking-widest">Membros</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-white/60 font-medium leading-relaxed">
+                    Nossa missão é transformar transações comerciais em relacionamentos duradouros e prósperos.
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10 lg:w-2/3 lg:mx-auto">
-                <div>
-                  <Megaphone className="w-6 h-6 text-gray-800 mb-3" />
-                  <h3 className="text-md text-black mb-2">Divulgação Premium</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">
-                    Destaque em banners e áreas de maior visibilidade no sistema.
-                  </p>
-                </div>
-                <div>
-                  <Share2 className="w-6 h-6 text-gray-800 mb-3" />
-                  <h3 className="text-md text-black mb-2">Rede de Parcerias</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">
-                    Faça networking com outros parceiros estratégicos para gerar mais oportunidades.
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
+
+          {/* Featured Partners Section */}
+          {partners.length > 0 && (
+            <div className="mt-32">
+              <div className="flex items-end justify-between mb-12">
+                <div className="space-y-2">
+                  <h4 className="text-brand-orange font-bold uppercase tracking-[0.3em] text-[10px]">Showcase</h4>
+                  <h2 className="text-4xl font-black text-brand-black uppercase tracking-tighter">Parceiros em <span className="text-brand-red">Destaque</span></h2>
+                </div>
+                <Button variant="link" className="text-brand-black font-black uppercase tracking-widest text-[10px] hover:text-brand-orange gap-2">
+                  Ver Diretório Completo <ArrowRight className="w-4 h-4" />
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {partners.map((partner, idx) => (
+                  <div key={idx} className="group premium-card bg-white rounded-[2.5rem] overflow-hidden flex flex-col shadow-xl">
+                    <div className="relative h-56 overflow-hidden">
+                      <Image
+                        src={partner.image || "https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=800&auto=format&fit=crop"}
+                        alt={partner.name}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                      <div className="absolute top-6 left-6">
+                        <Badge className="bg-brand-black/80 backdrop-blur-md text-white border-white/20 rounded-xl px-4 py-1.5 font-black text-[10px] uppercase tracking-widest">
+                          {partner.type.split(" - ")[0]}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="p-8 space-y-6">
+                      <div className="space-y-1">
+                        <h3 className="text-xl font-black text-brand-black uppercase tracking-tight group-hover:text-brand-orange transition-colors">{partner.name}</h3>
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                          <Target className="w-3 h-3" /> {partner.location}
+                        </p>
+                      </div>
+                      <p className="text-sm text-gray-500 font-medium line-clamp-2 leading-relaxed">
+                        {partner.products}
+                      </p>
+                      <Button className="w-full h-12 rounded-xl bg-brand-green/5 hover:bg-brand-green text-brand-green hover:text-white font-black uppercase tracking-widest text-[10px] border border-brand-green/10 transition-all">
+                        Conhecer Perfil
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </main>
+
+
 
       <SiteFooter />
     </div>
