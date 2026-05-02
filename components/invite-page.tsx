@@ -30,39 +30,41 @@ export function InvitePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col font-sans">
+    <div className="min-h-screen flex flex-col bg-white font-sans">
       <SiteHeader />
 
-      <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-8 md:py-16">
-        <div className="text-center mb-10">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-            Convite com Token Único
+      <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-12 lg:py-20">
+        <div className="text-center mb-16">
+          <h1 className="text-4xl sm:text-6xl font-black text-black uppercase italic tracking-tighter mb-4">
+            Sistema de <span className="text-primary">Convites</span>
           </h1>
-          <p className="text-gray-500 text-sm md:text-base">
-            Gere seu token exclusivo para convidar amigos e ganhar recompensas
+          <p className="text-sm text-muted-foreground uppercase tracking-widest font-bold max-w-md mx-auto">
+            Gere seu token exclusivo e ganhe recompensas reais
           </p>
         </div>
 
         {/* Token Section */}
-        <div className="mb-10">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Seu Token</label>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Input
-              value="ABCD-1234-EFGH-5678"
-              readOnly
-              className="flex-1 font-mono text-center sm:text-left bg-gray-50"
-            />
-            <div className="flex gap-2">
+        <div className="mb-16 bg-gray-50 p-8 sm:p-12 rounded-[3.5rem] border border-gray-100 shadow-sm">
+          <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-6 text-center">Seu Token de Acesso Único</label>
+          <div className="flex flex-col gap-6">
+            <div className="relative group">
+              <Input
+                value="ABCD-1234-EFGH-5678"
+                readOnly
+                className="h-20 text-3xl font-black text-black text-center bg-white border-2 border-gray-100 rounded-3xl tracking-tighter"
+              />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Button 
                 onClick={handleCopyToken}
-                className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-white"
+                className="h-16 bg-primary hover:bg-primary/90 text-white rounded-full font-black uppercase italic text-lg shadow-xl"
               >
                 Copiar Token
               </Button>
               <Button 
                 variant="outline" 
                 onClick={handleCopyLink}
-                className="w-full sm:w-auto text-black"
+                className="h-16 rounded-full font-black uppercase italic text-lg border-gray-200"
               >
                 Copiar Link
               </Button>

@@ -113,9 +113,17 @@ export default function AdminTeam() {
     });
 
   return (
-    <section className="space-y-6 bg-white p-4 rounded-md">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <h2 className="text-xl font-bold text-black">Atribuição de Cargos</h2>
+    <div className="space-y-12 pb-24">
+      <header className="mb-12">
+        <h1 className="text-4xl sm:text-6xl font-black text-black uppercase italic tracking-tighter mb-2">
+          Equipe & <span className="text-primary">Cargos</span>
+        </h1>
+        <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest">Gestão de permissões e acessos</p>
+      </header>
+
+      <section className="space-y-10">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <h2 className="text-3xl font-black italic uppercase text-black tracking-tight">Membros</h2>
         <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-4 w-full md:w-auto">
           <div className="relative flex-1 sm:w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />

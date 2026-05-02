@@ -29,40 +29,47 @@ export function AdminEventCard({
   onViewDetails,
 }: AdminEventCardProps) {
   return (
-    <Card className="overflow-hidden border border-gray-100 shadow-sm bg-white rounded-2xl py-0 gap-4">
-      <div className="relative h-48">
-        <Image src={image} alt={title} fill className="object-cover" />
-        <Badge
-          className={`absolute top-3 left-3 bg-white ${status === "Ativo" ? "text-secondary" : "text-destructive "} hover:bg-white font-bold border-none p-3 text-[13px]`}
-          variant="outline"
-        >
-          {status}
-        </Badge>
+    <Card className="overflow-hidden border border-gray-100 shadow-2xl bg-white rounded-[2.5rem] py-0 gap-0 group">
+      <div className="relative h-56 overflow-hidden">
+        <Image src={image} alt={title} fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
+        <div className="absolute top-4 left-4">
+          <Badge
+            className={`bg-white/90 backdrop-blur-md ${status === "Ativo" ? "text-primary" : "text-secondary"} font-black uppercase italic border-none px-4 py-2 text-[10px] tracking-widest shadow-lg`}
+            variant="outline"
+          >
+            {status}
+          </Badge>
+        </div>
       </div>
-      <CardContent className="pb-5">
-        <div className="flex flex-wrap gap-2 mb-4">
+      <CardContent className="p-8">
+        <div className="flex flex-wrap gap-2 mb-6">
           {tags.map((tag, i) => (
-            <Badge
+            <span
               key={i}
-              className="bg-primary hover:bg-primary text-white rounded-full px-3 py-1 text-[12px] border-none"
+              className="bg-gray-100 text-gray-500 rounded-full px-3 py-1 text-[9px] font-black uppercase tracking-widest"
             >
               {tag}
-            </Badge>
+            </span>
           ))}
         </div>
-        <h3 className="text-xl font-bold mb-2 text-black">{title}</h3>
-        <p className="text-sm text-muted-foreground mb-1">
-          <span>Data:</span> <span className="font-bold text-black">{formatDate(date)}</span>
-        </p>
-        <p className="text-sm text-muted-foreground mb-5">
-          <span>Local:</span>{" "}
-          <span className="underline font-bold text-secondary cursor-pointer">{location}</span>
-        </p>
+        <h3 className="text-2xl font-black mb-4 text-black uppercase italic tracking-tighter leading-none line-clamp-2">{title}</h3>
+
+        <div className="space-y-3 mb-8">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">Quando</span>
+            <span className="text-xs font-bold text-black">{formatDate(date)}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">Onde</span>
+            <span className="text-xs font-bold text-primary italic uppercase">{location}</span>
+          </div>
+        </div>
+
         <div className="flex flex-col gap-2">
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <Button
               onClick={onEdit}
-              className="flex-1 bg-accent hover:bg-accent/90 text-white font-bold py-6 rounded-xl text-base"
+              className="flex-1 bg-primary hover:bg-primary/90 text-white font-black uppercase italic py-6 rounded-full text-xs tracking-widest shadow-lg"
             >
               Editar
             </Button>

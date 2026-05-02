@@ -46,67 +46,67 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
   const isPink = card.type === "PINK";
 
   return (
-    <div className="min-h-screen flex flex-col font-sans">
+    <div className="min-h-screen bg-white flex flex-col font-sans">
       <SiteHeader />
 
-      <main className="flex-1 max-w-4xl mx-auto w-full p-4 py-8 sm:px-6 lg:px-8">
+      <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-12 lg:px-8">
         {/* Profile Card Header */}
-        <div className="bg-white rounded-[32px] shadow-xl border border-gray-100 overflow-hidden mb-8 transition-all duration-500">
-          <div className={`h-60 ${isPink ? 'bg-gradient-to-r from-[#8A0204] to-[#c9184a]' : 'bg-gradient-to-r from-[#1B4B42] to-[#2D6A4F]'} relative`}>
+        <div className="bg-white rounded-[3.5rem] shadow-2xl border border-gray-100 overflow-hidden mb-12 transition-all duration-500">
+          <div className={`h-64 ${isPink ? 'bg-secondary' : 'bg-primary'} relative`}>
             {/* Pattern Overlay */}
-            <div className="absolute inset-0 flex items-center justify-center p-8">
-              <img src="/meet-off-nome.svg" alt="MeetOff" className="h-32 object-contain invert brightness-0" />
+            <div className="absolute inset-0 flex items-center justify-center p-8 opacity-20">
+              <img src="/meet-off-nome.svg" alt="MeetOff" className="h-40 object-contain invert brightness-0" />
             </div>
           </div>
 
-          <div className="px-6 pb-6 flex flex-col items-center -mt-16 relative text-center">
+          <div className="px-8 pb-12 flex flex-col items-center -mt-20 relative text-center">
             {/* Avatar */}
-            <div className="w-32 h-32 rounded-full border-4 border-white bg-gray-200 shadow-md flex items-center justify-center overflow-hidden">
+            <div className="w-40 h-40 rounded-full border-8 border-white bg-gray-50 shadow-2xl flex items-center justify-center overflow-hidden">
               {card.avatar ? (
                 <img src={card.avatar} alt={card.name || card.full_name} className="w-full h-full object-cover" />
               ) : (
-                <span className="text-4xl font-bold text-gray-400 uppercase">
+                <span className="text-5xl font-black text-gray-300 uppercase italic">
                   {(card.name || card.full_name || "M")[0]}
                 </span>
               )}
             </div>
 
             {/* Name & Badge */}
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mt-4">
+            <h2 className="text-4xl sm:text-5xl font-black text-black mt-6 uppercase italic tracking-tighter leading-none">
               {card.name || card.full_name || "Membro MeetOff"}
             </h2>
             
-            <div className="flex items-center gap-2 mt-2">
-              <span className={`px-4 py-1 rounded-full text-xs font-bold tracking-wider uppercase shadow-sm ${
+            <div className="flex items-center gap-3 mt-4">
+              <span className={`px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase shadow-lg ${
                 isPink 
-                  ? 'bg-[#8A0204]/10 text-[#8A0204] border border-[#8A0204]/20' 
-                  : 'bg-[#1B4B42]/10 text-[#1B4B42] border border-[#1B4B42]/20'
+                  ? 'bg-secondary text-white'
+                  : 'bg-primary text-white'
               }`}>
-                {isPink ? "Convidado" : "Membro Oficial"}
+                {isPink ? "Pink Edition" : "Green Member"}
               </span>
             </div>
 
-            <p className="text-gray-400 text-xs mt-3 flex items-center gap-1 font-mono">
-              <Award className="w-3 h-3 text-yellow-500" /> ID: {token.slice(0, 8).toUpperCase()}
+            <p className="text-gray-300 text-[10px] mt-6 flex items-center gap-2 font-black uppercase tracking-widest">
+              <Award className="w-3.5 h-3.5 text-accent" strokeWidth={3} /> Token: {token.slice(0, 12).toUpperCase()}
             </p>
           </div>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-4 mb-8">
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
-            <span className="text-gray-400 text-xs uppercase tracking-wider font-bold flex items-center justify-center gap-1.5">
-              <MapPin className="w-4 h-4 text-secondary" /> Presenças
+        <div className="grid grid-cols-2 gap-6 mb-12">
+          <div className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 text-center shadow-sm">
+            <span className="text-gray-400 text-[10px] uppercase tracking-widest font-black flex items-center justify-center gap-2 mb-3">
+              <MapPin className="w-4 h-4 text-primary" strokeWidth={3} /> Presenças
             </span>
-            <span className="text-3xl font-black text-gray-900 mt-2 block">
+            <span className="text-5xl font-black text-black italic leading-none">
               {interactions.length}
             </span>
           </div>
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
-            <span className="text-gray-400 text-xs uppercase tracking-wider font-bold flex items-center justify-center gap-1.5">
-              <Users className="w-4 h-4 text-secondary" /> Na Rede desde
+          <div className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 text-center shadow-sm">
+            <span className="text-gray-400 text-[10px] uppercase tracking-widest font-black flex items-center justify-center gap-2 mb-3">
+              <Users className="w-4 h-4 text-primary" strokeWidth={3} /> Na Rede desde
             </span>
-            <span className="text-lg font-bold text-gray-900 mt-3 block">
+            <span className="text-xl font-black text-black uppercase italic leading-none block mt-2">
               {card.user_joined 
                 ? (() => {
                     const str = new Date(card.user_joined).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });

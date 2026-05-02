@@ -142,16 +142,16 @@ export function ProductDetailPage() {
     <div className="min-h-screen bg-white flex flex-col">
       <SiteHeader />
 
-      <main className="flex-1 px-4 py-8 lg:px-20">
+      <main className="flex-1 px-4 py-12 lg:px-20">
         <div className="mx-auto max-w-7xl">
-          <div className="grid gap-8 lg:grid-cols-2">
+          <div className="grid gap-16 lg:grid-cols-2">
             <div>
-              <div className="mb-4 relative h-[300px] sm:h-[600px] rounded-xl overflow-hidden bg-gray-50 border border-gray-100">
+              <div className="mb-6 relative h-[400px] sm:h-[700px] rounded-[3rem] overflow-hidden bg-gray-50 border border-gray-100 shadow-2xl">
                 <Image
                   src={images[selectedImageIndex]}
                   alt={product.name}
                   fill
-                  className="object-contain p-4"
+                  className="object-cover"
                 />
 
                 {images.length > 1 && (
@@ -198,28 +198,29 @@ export function ProductDetailPage() {
               )}
             </div>
 
-            <div>
-              <div className="mb-4">
-                <p className="text-sm text-primary font-semibold mb-2">{product.category}</p>
+            <div className="flex flex-col justify-center">
+              <div className="mb-6">
+                <span className="px-4 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest">{product.category}</span>
               </div>
 
-              <h1 className="text-3xl font-bold text-black mb-2">{product.name}</h1>
-              <div className="flex items-center gap-4 mb-6">
-                <p className="text-sm text-gray-500 flex items-center gap-1">
-                  <ShoppingCart className="mr-1 h-4 w-4" />
-                  {product.stock > 0 ? `${product.stock} Unidades Disponíveis` : "Produto Esgotado"}
+              <h1 className="text-5xl sm:text-6xl font-black text-black mb-4 uppercase italic tracking-tighter leading-none">{product.name}</h1>
+
+              <div className="flex items-center gap-4 mb-8">
+                <p className="text-[10px] text-gray-400 flex items-center gap-1.5 font-black uppercase tracking-widest">
+                  <ShoppingCart className="h-3.5 w-3.5 text-primary" />
+                  {product.stock > 0 ? `${product.stock} em estoque` : "Esgotado"}
                 </p>
                 {product.type && (
-                  <span className="text-xs px-2 py-1 bg-gray-100 rounded text-gray-600 font-medium">
+                  <span className="text-[10px] px-3 py-1 bg-gray-50 rounded-lg text-gray-500 font-black uppercase tracking-widest">
                     {product.type}
                   </span>
                 )}
               </div>
 
               {product.description && (
-                <div className="mb-6">
-                  <h2 className="text-lg font-bold text-black mb-3">Descrição do produto</h2>
-                  <p className="text-sm text-gray-500 leading-relaxed whitespace-pre-wrap">
+                <div className="mb-10">
+                  <h2 className="text-xs font-black text-black mb-3 uppercase tracking-widest border-b border-gray-100 pb-2">Descrição</h2>
+                  <p className="text-base text-gray-500 leading-relaxed font-medium whitespace-pre-wrap">
                     {product.description}
                   </p>
                 </div>

@@ -175,39 +175,39 @@ export function EventDetailPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#F0F2F5] flex flex-col font-sans">
+    <div className="min-h-screen bg-white flex flex-col font-sans">
       <SiteHeader />
 
-      <main className="flex-1 pb-16">
+      <main className="flex-1 pb-24">
         {/* Hero Section */}
         <EventHeroCarousel images={event.images ? JSON.parse(event.images) : [event.image]} />
 
-        <div className="mx-auto max-w-7xl px-4 md:px-0">
-          <div className="grid grid-cols-1 lg:grid-cols-3 -mt-24 md:-mt-48 relative z-10 mb-12 bg-white rounded-[2rem] shadow-xl overflow-hidden">
+        <div className="mx-auto max-w-7xl px-4 lg:px-0">
+          <div className="grid grid-cols-1 lg:grid-cols-3 -mt-24 md:-mt-48 relative z-10 mb-16 bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-gray-100">
             {/* Card 1: Event Info */}
-            <div className="p-10 flex flex-col justify-between h-full">
+            <div className="p-12 flex flex-col justify-between h-full bg-gray-50/50">
               <div>
-                <h1 className="text-3xl md:text-[36px] leading-tight font-bold text-black mb-12">
+                <h1 className="text-4xl md:text-5xl font-black text-black mb-12 uppercase italic tracking-tighter leading-none">
                   {event.title}
                 </h1>
 
                 <div className="space-y-10">
                   <div className="flex flex-col">
                     <div className="flex items-center gap-2 mb-2">
-                      <MapPin className="w-5 h-5 text-[#1A4B40]" strokeWidth={2.5} />
-                      <p className="text-[15px] text-gray-400">Local</p>
+                      <MapPin className="w-5 h-5 text-primary" strokeWidth={3} />
+                      <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest">Local</p>
                     </div>
-                    <p className="text-[#F28D35] font-semibold text-[16px] underline decoration-1 underline-offset-4 cursor-pointer">
+                    <p className="text-black font-black italic text-lg uppercase tracking-tight">
                       {event.location}
                     </p>
                   </div>
 
                   <div className="flex flex-col">
                     <div className="flex items-center gap-2 mb-2">
-                      <Calendar className="w-5 h-5 text-[#1A4B40]" strokeWidth={2.5} />
-                      <p className="text-[15px] text-gray-400">Data e Hora</p>
+                      <Calendar className="w-5 h-5 text-primary" strokeWidth={3} />
+                      <p className="text-[10px] text-gray-400 uppercase font-black tracking-widest">Data e Hora</p>
                     </div>
-                    <p className="font-bold text-gray-900 text-[16px]">
+                    <p className="text-black font-black italic text-lg uppercase tracking-tight">
                       {eventDate} <span className="text-gray-300 font-normal mx-1">•</span>{" "}
                       {event.time}
                     </p>
@@ -217,48 +217,32 @@ export function EventDetailPage() {
             </div>
 
             {/* Card 2: Ingresso */}
-            <div
-              className="p-10 flex flex-col justify-start h-full border-gray-200"
-              style={{
-                backgroundImage: `linear-gradient(to bottom, #E5E7EB 60%, transparent 60%)`,
-                backgroundSize: "1px 15px",
-                backgroundRepeat: "repeat-y",
-                backgroundPosition: "left",
-              }}
-            >
-              <div className="mb-6 text-center lg:text-left">
-                <h2 className="text-[24px] font-bold text-gray-900 mb-1">Ingresso</h2>
-                <p className="text-[15px] text-gray-400">Comprar pelo nosso sistema</p>
+            <div className="p-12 flex flex-col justify-center h-full border-y lg:border-y-0 lg:border-x border-gray-100">
+              <div className="mb-8 text-center">
+                <h2 className="text-3xl font-black text-black mb-2 uppercase italic tracking-tighter">Ingresso</h2>
+                <p className="text-xs text-gray-400 uppercase font-bold tracking-widest">Acesso exclusivo MeetOff</p>
               </div>
 
               <Button
                 onClick={handleParticipate}
                 disabled={isActionLoading}
-                className={`w-full font-bold text-[16px] py-7 rounded-xl ${
+                className={`w-full font-black uppercase italic text-lg py-10 rounded-full shadow-xl transition-all active:scale-[0.98] ${
                   isParticipating
-                    ? "bg-green-600 hover:bg-green-700"
-                    : "bg-[#F28D35] hover:bg-[#e17c2a]"
-                } text-white shadow-md transition-all active:scale-[0.98]`}
+                    ? "bg-primary text-white"
+                    : "bg-accent text-white"
+                }`}
               >
                 {isActionLoading
-                  ? "Processando..."
+                  ? "Aguarde..."
                   : isParticipating
-                    ? "Salvar Produtos Selecionados"
-                    : "Pagar e participar"}
+                    ? "Salvar Opções"
+                    : "Participar Agora"}
               </Button>
-
+              <p className="mt-4 text-[10px] text-center text-gray-400 uppercase font-bold">Garantia de experiência autêntica</p>
             </div>
 
             {/* Card 3: Token */}
-            <div
-              className="p-10 flex flex-col justify-start h-full border-gray-200"
-              style={{
-                backgroundImage: `linear-gradient(to bottom, #E5E7EB 60%, transparent 60%)`,
-                backgroundSize: "1px 15px",
-                backgroundRepeat: "repeat-y",
-                backgroundPosition: "left",
-              }}
-            >
+            <div className="p-12 flex flex-col justify-center h-full bg-gray-50/50">
               <div className="mb-6">
                 <h2 className="text-[24px] font-bold text-gray-900 mb-6">Seu token exclusivo</h2>
                 <div className="flex items-center border border-gray-100 rounded-xl p-1 bg-white shadow-sm ring-1 ring-gray-50">
@@ -338,18 +322,20 @@ export function EventDetailPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 flex flex-col justify-start">
-              <h2 className="text-[22px] font-bold text-gray-900 mb-4">Sobre o Evento</h2>
-              <div className="space-y-4">
-                <p className="text-gray-500 leading-relaxed text-[15px] whitespace-pre-wrap">
+            <div className="bg-white rounded-[3rem] shadow-xl border border-gray-100 p-10 flex flex-col justify-start">
+              <h2 className="text-3xl font-black text-black mb-8 uppercase italic tracking-tighter">Sobre o Evento</h2>
+              <div className="space-y-6">
+                <p className="text-gray-500 leading-relaxed text-base font-medium whitespace-pre-wrap">
                   {event.description}
                 </p>
 
-                <ul className="space-y-2 mt-4 pt-4">
-                  <li className="flex items-center gap-2">
-                    <Check className="w-[18px] h-[18px] text-gray-800" strokeWidth={3} />
-                    <span className="font-bold text-[#355E53] text-[15px]">
-                      Aberto para{" "}
+                <ul className="space-y-4 mt-6 pt-6 border-t border-gray-50">
+                  <li className="flex items-center gap-3">
+                    <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                       <Check className="w-3.5 h-3.5 text-primary" strokeWidth={4} />
+                    </div>
+                    <span className="font-black text-black text-xs uppercase tracking-widest">
+                      Público: {" "}
                       {!event.target_audience ||
                       event.target_audience.trim() === "" ||
                       event.target_audience === "all" ||
