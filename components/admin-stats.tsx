@@ -1,4 +1,3 @@
-import { Card, CardContent } from "@/components/ui/card";
 
 interface StatCardProps {
   label: string;
@@ -8,15 +7,13 @@ interface StatCardProps {
 
 export function StatCard({ label, value, isValue }: StatCardProps) {
   return (
-    <Card className="flex-1 bg-white border-none shadow-sm">
-      <CardContent className="p-6">
-        <p className="text-sm text-muted-foreground mb-1">{label}</p>
-        <p className="text-5xl font-bold text-secondary">
-          {isValue && <span className="text-sm font-bold text-muted-foreground">R$ </span>}
-          {value}
-        </p>
-      </CardContent>
-    </Card>
+    <div className="flex-1 bg-white/40 backdrop-blur-sm border border-brand-green/5 p-8 rounded-[2rem] premium-card">
+      <p className="text-[10px] font-black text-brand-black/40 uppercase tracking-[0.2em] mb-4">{label}</p>
+      <p className="text-4xl font-black text-brand-green tracking-tighter">
+        {isValue && <span className="text-lg font-black text-brand-orange">R$ </span>}
+        {value}
+      </p>
+    </div>
   );
 }
 

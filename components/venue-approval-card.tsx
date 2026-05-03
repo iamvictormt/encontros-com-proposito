@@ -1,7 +1,6 @@
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-
+import { cn } from "@/lib/utils";
 interface VenueApprovalCardProps {
   id?: string;
   name: string;
@@ -33,52 +32,58 @@ export function VenueApprovalCard({
   onSetPending,
 }: VenueApprovalCardProps) {
   return (
-    <Card className="relative flex flex-col sm:flex-row items-stretch sm:items-center gap-4 p-4 border-none shadow-sm bg-white w-full overflow-hidden">
+    <div className="group relative flex flex-col sm:flex-row items-stretch sm:items-center gap-6 p-6 bg-white/40 backdrop-blur-sm rounded-[2rem] border border-brand-green/5 premium-card w-full overflow-hidden">
       {/* BOTÃO TOP RIGHT */}
       {isPageLocalEmpresas && (
         <Button
           size="sm"
           variant="ghost"
           onClick={onViewDetails}
-          className="absolute top-2 right-2 text-[10px] sm:text-xs hover:bg-gray-50 text-gray-500 hover:text-black h-8 px-2"
+          className="absolute top-4 right-4 text-[10px] font-black uppercase tracking-widest text-brand-black/40 hover:text-brand-black hover:bg-brand-green/5 h-8 rounded-xl"
         >
           Ver detalhes
         </Button>
       )}
 
       {/* IMAGEM */}
-      <div className="relative w-full sm:w-40 h-40 sm:h-32 flex-shrink-0">
-        <Image src={image} alt={name} fill className="object-cover rounded-lg" />
+      <div className="relative w-full sm:w-32 h-32 flex-shrink-0 overflow-hidden rounded-2xl">
+        <Image 
+          src={image} 
+          alt={name} 
+          fill 
+          className="object-cover transition-transform duration-700 group-hover:scale-110" 
+        />
       </div>
 
       {/* TEXTO */}
-      <div className="flex flex-col justify-center flex-1 min-w-0 pr-0 sm:pr-24">
-        <h4 className="font-bold text-secondary text-base sm:text-lg mb-1">{name}</h4>
+      <div className="flex flex-col justify-center flex-1 min-w-0">
+        <h4 className="text-lg font-black text-brand-black uppercase tracking-tight mb-2 group-hover:text-brand-orange transition-colors">{name}</h4>
 
-        <div className="space-y-0.5 mb-3">
-          <p className="text-xs sm:text-sm text-muted-foreground">
-            Local: <span className="text-black font-medium">{location}</span>
-          </p>
-          <p className="text-xs sm:text-sm text-muted-foreground">
-            Tipo: <span className="text-black font-medium">{type}</span>
-          </p>
+        <div className="flex flex-wrap gap-x-6 gap-y-2 mb-4">
+          <div className="flex items-center gap-2 text-[10px] font-black text-brand-black/40 uppercase tracking-widest">
+            <span className="text-brand-red">●</span>
+            <span className="line-clamp-1">{location}</span>
+          </div>
+          <div className="flex items-center gap-2 text-[10px] font-black text-brand-black/40 uppercase tracking-widest">
+            <span className="text-brand-orange">●</span>
+            <span>{type}</span>
+          </div>
         </div>
 
-        <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+        <div className="flex flex-wrap gap-3 w-full sm:w-auto">
           {(!status || status === "Pendente") && (
             <>
               <Button
                 size="sm"
                 onClick={onApprove}
-                className="bg-secondary hover:bg-secondary/90 text-white flex-1 sm:flex-none font-bold min-w-[100px]"
+                className="bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-[10px] h-10 px-6 rounded-xl shadow-lg shadow-brand-green/20"
               >
                 Aprovar
               </Button>
               <Button
                 size="sm"
-                variant="destructive"
                 onClick={onReject}
-                className="bg-primary hover:bg-primary/90 text-white flex-1 sm:flex-none font-bold min-w-[100px]"
+                className="bg-brand-red hover:bg-brand-red/90 text-white font-black uppercase tracking-widest text-[10px] h-10 px-6 rounded-xl shadow-lg shadow-brand-red/20"
               >
                 Recusar
               </Button>
@@ -87,13 +92,16 @@ export function VenueApprovalCard({
 
           {status && status !== "Pendente" && (
             <div className="py-2">
-              <span className={`text-sm font-bold ${status === "Aprovado" ? "text-secondary" : "text-primary"}`}>
-                Item {status.toLowerCase()}
+              <span className={cn(
+                "text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-xl glass",
+                status === "Aprovado" ? "text-brand-green" : "text-brand-red"
+              )}>
+                {status}
               </span>
             </div>
           )}
         </div>
       </div>
-    </Card>
+    </div>
   );
 }

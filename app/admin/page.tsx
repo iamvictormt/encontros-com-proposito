@@ -62,84 +62,139 @@ export default function AdminOverview() {
   if (isLoading) return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-primary w-12 h-12" /></div>;
 
   return (
-    <div className="space-y-8">
-      <section className="bg-white p-4 rounded-md">
-        <h2 className="text-xl font-bold text-black mb-6">Relatórios</h2>
+    <div className="space-y-12 pb-20">
+      <header className="mb-12">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="h-1 w-8 bg-brand-orange rounded-full" />
+          <span className="text-[10px] font-black text-brand-black/40 uppercase tracking-[0.3em]">
+            Administração
+          </span>
+        </div>
+        <h1 className="text-4xl font-black uppercase tracking-tighter text-brand-black lg:text-5xl">
+          Painel de <span className="text-brand-red">Controle</span>
+        </h1>
+      </header>
+
+      <section className="glass rounded-[2rem] p-8 lg:p-10 border-brand-green/5">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="h-1 w-6 bg-brand-green rounded-full" />
+          <h2 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">
+            Visão Geral e Relatórios
+          </h2>
+        </div>
         <AdminStats stats={data?.stats} />
       </section>
 
-      <section className="space-y-6 bg-white p-4 rounded-md">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <h2 className="text-xl font-bold text-black">Criação e Moderação de eventos</h2>
-          <div className="flex flex-wrap gap-4 w-full md:w-auto">
-            <Button className="bg-accent hover:bg-accent/90 text-white flex-1 md:flex-none" asChild>
+      <section className="glass rounded-[2rem] p-8 lg:p-10 border-brand-green/5">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+          <div className="space-y-1">
+            <div className="flex items-center gap-3">
+              <div className="h-1 w-6 bg-brand-red rounded-full" />
+              <h2 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">
+                Eventos
+              </h2>
+            </div>
+            <p className="text-2xl font-black text-brand-black uppercase tracking-tight mt-2">
+              Criação e Moderação
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3 w-full md:w-auto">
+            <Button className="bg-brand-red hover:bg-brand-red/90 text-white font-black uppercase tracking-widest text-[10px] px-8 h-12 rounded-xl shadow-lg shadow-brand-red/20 flex-1 md:flex-none" asChild>
               <Link href="/admin/events">Criar Novo Evento</Link>
             </Button>
             <Button
               variant="outline"
-              className="bg-white text-black border-gray-200 flex-1 md:flex-none"
+              className="bg-white/50 border-brand-green/10 text-brand-black hover:bg-brand-green hover:text-white font-black uppercase tracking-widest text-[10px] px-8 h-12 rounded-xl flex-1 md:flex-none"
               asChild
             >
-              <Link href="/admin/events">Ver todos os eventos</Link>
+              <Link href="/admin/events">Ver todos</Link>
             </Button>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {data?.events.map((event: any) => (
             <AdminEventCard key={event.id} {...event} />
           ))}
         </div>
       </section>
 
-      <section className="space-y-6 bg-white p-4 rounded-md">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <h2 className="text-xl font-bold text-black">Aprovação de Locais & Empresas</h2>
-          <div className="flex gap-4 items-center w-full md:w-auto">
-            <Button
-              variant="outline"
-              className="bg-white text-black border-gray-200 w-full md:w-auto"
-              asChild
-            >
-              <Link href="/admin/venues">Ver todos os locais</Link>
-            </Button>
+      <section className="glass rounded-[2rem] p-8 lg:p-10 border-brand-green/5">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+          <div className="space-y-1">
+            <div className="flex items-center gap-3">
+              <div className="h-1 w-6 bg-brand-orange rounded-full" />
+              <h2 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">
+                Parceiros
+              </h2>
+            </div>
+            <p className="text-2xl font-black text-brand-black uppercase tracking-tight mt-2">
+              Aprovação de Locais & Empresas
+            </p>
           </div>
+          <Button
+            variant="outline"
+            className="bg-white/50 border-brand-green/10 text-brand-black hover:bg-brand-green hover:text-white font-black uppercase tracking-widest text-[10px] px-8 h-12 rounded-xl w-full md:w-auto"
+            asChild
+          >
+            <Link href="/admin/venues">Ver todos os locais</Link>
+          </Button>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {data?.venues.map((venue: any, i: number) => (
             <VenueApprovalCard key={i} {...venue} />
           ))}
         </div>
       </section>
 
-      <section className="space-y-6 bg-white p-4 rounded-md">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <h2 className="text-xl font-bold text-black">Edição de Marcas parceiras</h2>
-          <Button
-            variant="outline"
-            className="bg-white text-black border-gray-200 w-full md:w-auto"
-            asChild
-          >
-            <Link href="/admin/brands">Ver todos</Link>
-          </Button>
-        </div>
-        <BrandContentTable brands={data?.brands} />
-      </section>
-
-      <section className="space-y-6 bg-white p-4 rounded-md">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <h2 className="text-xl font-bold text-black">Atribuição de Cargos</h2>
-          <div className="flex gap-4 items-center w-full md:w-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <section className="glass rounded-[2rem] p-8 lg:p-10 border-brand-green/5">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+            <div className="space-y-1">
+              <div className="flex items-center gap-3">
+                <div className="h-1 w-6 bg-brand-green rounded-full" />
+                <h2 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">
+                  Marcas
+                </h2>
+              </div>
+              <p className="text-xl font-black text-brand-black uppercase tracking-tight mt-2">
+                Edição de Parceiras
+              </p>
+            </div>
             <Button
               variant="outline"
-              className="bg-white text-black border-gray-200 w-full md:w-auto"
+              className="bg-white/50 border-brand-green/10 text-brand-black hover:bg-brand-green hover:text-white font-black uppercase tracking-widest text-[10px] px-6 h-10 rounded-xl"
+              asChild
+            >
+              <Link href="/admin/brands">Ver todas</Link>
+            </Button>
+          </div>
+          <BrandContentTable brands={data?.brands} />
+        </section>
+
+        <section className="glass rounded-[2rem] p-8 lg:p-10 border-brand-green/5">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+            <div className="space-y-1">
+              <div className="flex items-center gap-3">
+                <div className="h-1 w-6 bg-brand-red rounded-full" />
+                <h2 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">
+                  Time
+                </h2>
+              </div>
+              <p className="text-xl font-black text-brand-black uppercase tracking-tight mt-2">
+                Atribuição de Cargos
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              className="bg-white/50 border-brand-green/10 text-brand-black hover:bg-brand-green hover:text-white font-black uppercase tracking-widest text-[10px] px-6 h-10 rounded-xl"
               asChild
             >
               <Link href="/admin/team">Ver todos</Link>
             </Button>
           </div>
-        </div>
-        <RoleAssignmentList team={data?.team} />
-      </section>
+          <RoleAssignmentList team={data?.team} />
+        </section>
+      </div>
     </div>
   );
 }

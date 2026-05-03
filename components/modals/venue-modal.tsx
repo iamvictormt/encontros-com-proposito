@@ -58,83 +58,128 @@ export function VenueModal({ isOpen, onClose, onSuccess, venue, isReadOnly }: Ve
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{isReadOnly ? "Detalhes do Local" : venue ? "Editar Local" : "Novo Local"}</DialogTitle>
+      <DialogContent className="sm:max-w-[500px] w-[95vw] glass border-brand-green/5 rounded-[2rem] p-0 gap-0 shadow-2xl overflow-hidden">
+        <DialogHeader className="p-6 lg:p-8 border-b border-brand-green/5">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="h-1 w-6 bg-brand-orange rounded-full" />
+            <span className="text-[10px] font-black text-brand-black/40 uppercase tracking-[0.3em]">
+              {isReadOnly ? "Visualização" : venue ? "Edição" : "Criação"}
+            </span>
+          </div>
+          <DialogTitle className="text-2xl font-bold tracking-tight text-brand-black lg:text-3xl">
+            {isReadOnly ? "Detalhes do" : venue ? "Editar" : "Novo"}{" "}
+            <span className="text-brand-red">Local</span>
+          </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <ImageUpload 
-            value={formData.image} 
-            onChange={(url) => setFormData({ ...formData, image: url })}
-            onRemove={() => setFormData({ ...formData, image: "" })}
-            disabled={isReadOnly}
-          />
+        <form onSubmit={handleSubmit} className="p-6 lg:p-8 space-y-6">
+          <div className="space-y-2">
+            <Label className="text-[10px] font-black text-brand-black/40 uppercase tracking-widest ml-1">Imagem do Local</Label>
+            <div className="max-w-[120px]">
+              <ImageUpload 
+                value={formData.image} 
+                onChange={(url) => setFormData({ ...formData, image: url })}
+                onRemove={() => setFormData({ ...formData, image: "" })}
+                disabled={isReadOnly}
+              />
+            </div>
+          </div>
 
           <div className="space-y-2">
-            <Label htmlFor="name">Nome do Local/Empresa</Label>
+            <Label htmlFor="name" className="text-[10px] font-black text-brand-black/40 uppercase tracking-widest ml-1">Nome do Local/Empresa</Label>
             <Input 
               id="name" 
               value={formData.name} 
               onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
+              className="h-12 bg-white/50 border-brand-green/10 rounded-xl focus:ring-brand-orange/20 focus:border-brand-orange transition-all font-medium text-sm text-brand-black placeholder:text-brand-black/20"
               required 
               disabled={isReadOnly}
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="location">Cidade/UF</Label>
-            <Input 
-              id="location" 
-              value={formData.location} 
-              onChange={(e) => setFormData({ ...formData, location: e.target.value })} 
-              required 
-              disabled={isReadOnly}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="type">Tipo</Label>
+              <Label htmlFor="location" className="text-[10px] font-black text-brand-black/40 uppercase tracking-widest ml-1">Cidade/UF</Label>
               <Input 
-                id="type" 
-                placeholder="Ex: Externo, Interno" 
-                value={formData.type} 
-                onChange={(e) => setFormData({ ...formData, type: e.target.value })} 
+                id="location" 
+                value={formData.location} 
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })} 
+                className="h-12 bg-white/50 border-brand-green/10 rounded-xl focus:ring-brand-orange/20 focus:border-brand-orange transition-all font-medium text-sm text-brand-black placeholder:text-brand-black/20"
+                required 
                 disabled={isReadOnly}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
+              <Label htmlFor="type" className="text-[10px] font-black text-brand-black/40 uppercase tracking-widest ml-1">Tipo de Local</Label>
               <Select 
-                value={formData.status}
-                onValueChange={(value) => setFormData({ ...formData, status: value })}
+                value={formData.type}
+                onValueChange={(value) => setFormData({ ...formData, type: value })}
                 disabled={isReadOnly}
               >
-                <SelectTrigger id="status" className="bg-white">
-                  <SelectValue placeholder="Selecione o status" />
+                <SelectTrigger id="type" className="h-12 bg-white/50 border-brand-green/10 rounded-xl focus:ring-brand-orange/20 focus:border-brand-orange transition-all font-medium text-sm text-brand-black">
+                  <SelectValue placeholder="Selecione o tipo" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Aprovado">Aprovado</SelectItem>
-                  <SelectItem value="Pendente">Pendente</SelectItem>
-                  <SelectItem value="Recusado">Recusado</SelectItem>
+                <SelectContent className="glass border-brand-green/10">
+                  <SelectItem value="Espaço de Eventos" className="text-sm font-medium py-3">Espaço de Eventos</SelectItem>
+                  <SelectItem value="Restaurante/Bar" className="text-sm font-medium py-3">Restaurante/Bar</SelectItem>
+                  <SelectItem value="Hotel/Resort" className="text-sm font-medium py-3">Hotel/Resort</SelectItem>
+                  <SelectItem value="Outro" className="text-sm font-medium py-3">Outro</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
-          <DialogFooter>
+          <div className="space-y-2">
+            <Label htmlFor="status" className="text-[10px] font-black text-brand-black/40 uppercase tracking-widest ml-1">Status</Label>
+            <Select 
+              value={formData.status}
+              onValueChange={(value) => setFormData({ ...formData, status: value })}
+              disabled={isReadOnly}
+            >
+              <SelectTrigger id="status" className="h-12 bg-white/50 border-brand-green/10 rounded-xl focus:ring-brand-orange/20 focus:border-brand-orange transition-all font-medium text-sm text-brand-black">
+                <SelectValue placeholder="Selecione o status" />
+              </SelectTrigger>
+              <SelectContent className="glass border-brand-green/10">
+                <SelectItem value="Ativo" className="text-sm font-medium py-3">Ativo</SelectItem>
+                <SelectItem value="Inativo" className="text-sm font-medium py-3">Inativo</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="pt-4 border-t border-brand-green/5 flex flex-col sm:flex-row gap-3">
             {isReadOnly ? (
-              <Button type="button" className="bg-secondary hover:bg-secondary/90 text-white" onClick={onClose}>Fechar</Button>
+              <Button 
+                type="button" 
+                className="h-12 bg-brand-black hover:bg-brand-black/80 text-white font-bold text-xs px-10 rounded-xl shadow-xl shadow-brand-black/20 transition-all flex-1 sm:flex-none ml-auto" 
+                onClick={onClose}
+              >
+                Fechar
+              </Button>
             ) : (
               <>
-                <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
-                <Button type="submit" className="bg-secondary hover:bg-secondary/90 text-white" disabled={isLoading}>
-                  {isLoading ? "Salvando..." : "Salvar Local"}
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={onClose}
+                  className="h-12 border-brand-green/10 bg-white/50 text-brand-black/60 hover:bg-brand-green/5 font-bold text-xs px-8 rounded-xl flex-1 sm:flex-none"
+                >
+                  Cancelar
+                </Button>
+                <Button 
+                  type="submit" 
+                  className="h-12 bg-brand-green hover:bg-brand-green/90 text-white font-bold text-xs px-10 rounded-xl shadow-xl shadow-brand-green/20 transition-all flex-1 sm:flex-none ml-auto" 
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                      <span>Salvando...</span>
+                    </div>
+                  ) : "Salvar Local"}
                 </Button>
               </>
             )}
-          </DialogFooter>
+          </div>
         </form>
       </DialogContent>
     </Dialog>

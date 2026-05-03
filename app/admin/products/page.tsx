@@ -17,6 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 export default function AdminProducts() {
   const [products, setProducts] = useState<any[]>([]);
@@ -125,9 +126,26 @@ export default function AdminProducts() {
   );
 
   return (
-    <div className="space-y-8 bg-white p-4 rounded-md">
-      <section>
-        <h2 className="text-xl font-bold text-black mb-6">Estatísticas Rápidas</h2>
+    <div className="space-y-12 pb-20">
+      <header className="mb-12">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="h-1 w-8 bg-brand-orange rounded-full" />
+          <span className="text-[10px] font-black text-brand-black/40 uppercase tracking-[0.3em]">
+            Administração
+          </span>
+        </div>
+        <h1 className="text-4xl font-black uppercase tracking-tighter text-brand-black lg:text-5xl">
+          Gestão de <span className="text-brand-red">Produtos</span>
+        </h1>
+      </header>
+
+      <section className="glass rounded-[2rem] p-8 lg:p-10 border-brand-green/5">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="h-1 w-6 bg-brand-green rounded-full" />
+          <h2 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">
+            Estatísticas Rápidas
+          </h2>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, i) => (
             <StatCard key={i} {...stat} />
@@ -135,119 +153,159 @@ export default function AdminProducts() {
         </div>
       </section>
 
-      <section className="space-y-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <h2 className="text-xl font-bold text-black">Loja & Produtos</h2>
+      <section className="glass rounded-[2rem] p-8 lg:p-10 border-brand-green/5">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+          <div className="space-y-1">
+            <div className="flex items-center gap-3">
+              <div className="h-1 w-6 bg-brand-red rounded-full" />
+              <h2 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">
+                Inventário
+              </h2>
+            </div>
+            <p className="text-2xl font-black text-brand-black uppercase tracking-tight mt-2">
+              Loja & Produtos
+            </p>
+          </div>
 
-          <div className="flex flex-wrap items-center gap-4 w-full md:w-auto">
-            <div className="relative flex-1 md:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
+          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-4 w-full md:w-auto">
+            <div className="relative flex-1 sm:w-64">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-green" />
               <Input
-                placeholder="Procurar"
-                className="pl-10 h-10 bg-white border-gray-200 rounded-lg"
+                placeholder="Procurar produtos..."
+                className="pl-12 h-12 bg-white/50 border-brand-green/10 rounded-xl focus:ring-brand-orange/20 focus:border-brand-orange transition-all w-full"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="h-10 border-gray-200 bg-white text-gray-400 gap-2 flex-1 sm:flex-none"
-                >
-                  <Filter className="h-4 w-4 text-black" />
-                  <span className="text-sm">
-                    Filtro: <span className="text-black font-medium">{filterType === "recent" ? "Mais recente" : "Mais antigo"}</span>
-                  </span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 bg-white">
-                <DropdownMenuItem 
-                  onClick={() => setFilterType("recent")}
-                  className={filterType === "recent" ? "bg-gray-100 font-bold" : ""}
-                >
-                  Mais recente
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => setFilterType("old")}
-                  className={filterType === "old" ? "bg-gray-100 font-bold" : ""}
-                >
-                  Mais antigo
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex gap-3">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="h-12 border-brand-green/10 bg-white/50 text-brand-black/60 hover:bg-brand-green hover:text-white font-bold text-xs gap-3 px-6 rounded-xl flex-1 sm:flex-none"
+                  >
+                    <Filter className="h-4 w-4" />
+                    <span>
+                      Filtro: <span className="text-brand-orange">{filterType === "recent" ? "Recentes" : "Antigos"}</span>
+                    </span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48 glass border-brand-green/10">
+                  <DropdownMenuItem 
+                    onClick={() => setFilterType("recent")}
+                    className={cn("text-xs font-bold py-3", filterType === "recent" && "bg-brand-green/10 text-brand-green")}
+                  >
+                    Mais recente
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => setFilterType("old")}
+                    className={cn("text-xs font-bold py-3", filterType === "old" && "bg-brand-green/10 text-brand-green")}
+                  >
+                    Mais antigo
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-            <Button 
-              onClick={() => { setSelectedProduct(null); setIsModalOpen(true); }}
-              className="h-10 bg-secondary hover:bg-secondary/90 text-white gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              <span>Novo Produto</span>
-            </Button>
+              <Button 
+                onClick={() => { setSelectedProduct(null); setIsModalOpen(true); }}
+                className="h-12 bg-brand-red hover:bg-brand-red/90 text-white font-bold text-xs px-8 rounded-xl shadow-lg shadow-brand-red/20 flex-1 sm:flex-none gap-3"
+              >
+                <Plus className="h-4 w-4" />
+                <span className="whitespace-nowrap">Novo Produto</span>
+              </Button>
+            </div>
           </div>
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center py-12"><Loader2 className="animate-spin text-primary w-8 h-8" /></div>
+          <div className="flex justify-center py-20"><Loader2 className="animate-spin text-brand-red w-12 h-12" /></div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-12">
             {/* Cards for Mobile */}
-            <div className="grid grid-cols-1 gap-4 lg:hidden">
+            <div className="grid grid-cols-1 gap-6 lg:hidden">
               {paginatedProducts.map((product, i) => (
-                <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 space-y-4">
+                <div key={i} className="bg-white/40 backdrop-blur-sm rounded-[2rem] border border-brand-green/5 p-6 space-y-6 premium-card">
                   <div className="flex items-center gap-4">
-                    <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                    <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-brand-green/5 flex-shrink-0 border border-brand-green/5">
                       <Image src={product.image} alt={product.name} fill className="object-cover" />
                     </div>
                     <div className="min-w-0">
-                      <p className="font-bold text-black">{product.name}</p>
-                      <p className="text-sm text-secondary font-bold">R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}</p>
+                      <p className="text-lg font-black text-brand-black uppercase tracking-tight">{product.name}</p>
+                      <p className="text-sm text-brand-green font-black uppercase tracking-widest mt-1">{formatBRL(product.price)}</p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button onClick={() => handleEdit(product)} size="sm" className="bg-accent hover:bg-accent/90 text-white flex-1">Editar</Button>
-                    <Button onClick={() => handleDelete(product.id)} size="sm" className="bg-primary hover:bg-primary/90 text-white flex-1">Deletar</Button>
+                  <div className="flex gap-3">
+                    <Button 
+                      onClick={() => handleEdit(product)} 
+                      className="bg-brand-black hover:bg-brand-black/80 text-white font-black uppercase tracking-widest text-[10px] h-12 rounded-xl flex-1 shadow-lg shadow-brand-black/20"
+                    >
+                      Editar
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      onClick={() => handleDelete(product.id)} 
+                      className="border-brand-red/20 text-brand-red hover:bg-brand-red hover:text-white font-black uppercase tracking-widest text-[10px] h-12 rounded-xl flex-1"
+                    >
+                      Deletar
+                    </Button>
                   </div>
                 </div>
               ))}
             </div>
 
             {/* Table for Desktop */}
-            <div className="hidden lg:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="hidden lg:block bg-white/40 backdrop-blur-md rounded-[2.5rem] border border-brand-green/5 overflow-hidden shadow-xl">
               <table className="w-full text-left">
-                <thead className="bg-gray-50/50 text-sm text-muted-foreground">
+                <thead className="bg-brand-green/5 text-[10px] font-black text-brand-black/40 uppercase tracking-[0.2em]">
                   <tr>
-                    <th className="px-6 py-4 font-medium">Produto</th>
-                    <th className="px-6 py-4 font-medium">Tipo</th>
-                    <th className="px-6 py-4 font-medium">Categoria</th>
-                    <th className="px-6 py-4 font-medium">Tema</th>
-                    <th className="px-6 py-4 font-medium">Preço</th>
-                    <th className="px-6 py-4 font-medium">Ação</th>
+                    <th className="px-8 py-6 font-black h-16">Produto</th>
+                    <th className="px-6 py-6 font-black h-16">Tipo</th>
+                    <th className="px-6 py-6 font-black h-16">Categoria</th>
+                    <th className="px-6 py-6 font-black h-16">Tema</th>
+                    <th className="px-6 py-6 font-black h-16">Preço</th>
+                    <th className="px-8 py-6 font-black h-16 text-center">Ação</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-brand-green/5">
                   {paginatedProducts.map((product, i) => (
-                    <tr key={i} className="group hover:bg-gray-50/50 transition-colors">
-                      <td className="px-6 py-4">
+                    <tr key={i} className="group hover:bg-brand-green/5 transition-colors">
+                      <td className="px-8 py-6">
                         <div className="flex items-center gap-4">
-                          <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                            <Image src={product.image} alt={product.name} fill className="object-cover" />
+                          <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-brand-green/5 flex-shrink-0 border border-brand-green/5">
+                            <Image src={product.image} alt={product.name} fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
                           </div>
                           <div>
-                            <p className="font-bold text-black">{product.name}</p>
-                            <p className="text-sm text-muted-foreground">Estoque: {product.stock}</p>
+                            <p className="font-black text-brand-black uppercase tracking-tight">{product.name}</p>
+                            <p className="text-[10px] font-black text-brand-black/40 uppercase tracking-widest">Estoque: {product.stock}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-black">{product.type}</td>
-                      <td className="px-6 py-4 text-sm text-black">{product.category}</td>
-                      <td className="px-6 py-4 text-sm text-black">{product.theme || "-"}</td>
-                      <td className="px-6 py-4 text-sm text-black font-bold">{formatBRL(product.price)}</td>
-                      <td className="px-6 py-4">
-                        <div className="flex gap-2">
-                          <Button onClick={() => handleEdit(product)} size="sm" className="bg-accent hover:bg-accent/90 text-white">Editar</Button>
-                          <Button onClick={() => handleDelete(product.id)} size="sm" className="bg-primary hover:bg-primary/90 text-white">Deletar</Button>
+                      <td className="px-6 py-6">
+                        <span className="text-[10px] font-black text-brand-black/60 uppercase tracking-widest px-3 py-1 rounded-full glass">{product.type}</span>
+                      </td>
+                      <td className="px-6 py-6">
+                        <span className="text-[10px] font-black text-brand-black/60 uppercase tracking-widest">{product.category}</span>
+                      </td>
+                      <td className="px-6 py-6">
+                        <span className="text-[10px] font-black text-brand-black/60 uppercase tracking-widest">{product.theme || "-"}</span>
+                      </td>
+                      <td className="px-6 py-6 text-sm font-black text-brand-green uppercase tracking-tight">{formatBRL(product.price)}</td>
+                      <td className="px-8 py-6">
+                        <div className="flex justify-center gap-3">
+                          <Button 
+                            onClick={() => handleEdit(product)} 
+                            className="bg-brand-black hover:bg-brand-black/80 text-white font-black uppercase tracking-widest text-[10px] h-10 px-6 rounded-xl shadow-lg shadow-brand-black/20"
+                          >
+                            Editar
+                          </Button>
+                          <Button 
+                            variant="outline"
+                            onClick={() => handleDelete(product.id)} 
+                            className="border-brand-red/20 text-brand-red hover:bg-brand-red hover:text-white font-black uppercase tracking-widest text-[10px] h-10 px-6 rounded-xl"
+                          >
+                            Deletar
+                          </Button>
                         </div>
                       </td>
                     </tr>
