@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { APIError } from "@/lib/services/api-client";
 import { Logo } from "./logo";
@@ -23,23 +23,27 @@ import {
   validateEmail,
   detectInputType,
 } from "@/lib/utils/validators";
+import { cn } from "@/lib/utils";
 
 const carouselSlides = [
   {
     image: "https://images.pexels.com/photos/9578709/pexels-photo-9578709.jpeg",
-    title: "Grandes Experiências começam aqui",
+    title: "Grandes experiências",
+    highlightedText: "começam aqui",
     description:
       "Descubra eventos que unem pessoas, histórias e propósitos presenciais ou online, com experiências únicas que fazem sentido pra você.",
   },
   {
     image: "https://images.unsplash.com/photo-1549342902-be005322599a?q=100&w=1920",
-    title: "Conecte-se com pessoas reais",
+    title: "Conecte-se",
+    highlightedText: "com pessoas reais",
     description:
       "Participe de encontros presenciais e online que transformam conexões em relacionamentos verdadeiros.",
   },
   {
     image: "https://images.unsplash.com/photo-1613093335399-829e30811789?q=100&w=1920",
-    title: "Experiências que fazem sentido",
+    title: "Experiências",
+    highlightedText: "que fazem sentido",
     description:
       "Viva momentos autênticos através de retiros, terapias e eventos que unem tecnologia e emoção.",
   },
@@ -72,6 +76,15 @@ export function LoginForm() {
       router.push(user.isAdmin ? "/admin" : "/events");
     }
   }, [authLoading, isLoggedIn, user, router, showSuccessVideo, setGlobalLoading]);
+
+  // Auto-slide carousel every 5 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % carouselSlides.length);
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, [currentSlide]);
 
   const handleEmailPhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -287,7 +300,7 @@ export function LoginForm() {
                       Manter conectado
                     </label>
                   </div>
-                  <Link href="/forgot-password" size="sm" className="text-xs font-bold text-brand-orange uppercase tracking-wide hover:underline">
+                  <Link href="/forgot-password" className="text-xs font-bold text-brand-orange uppercase tracking-wide hover:underline">
                     Esqueceu a senha?
                   </Link>
                 </div>
@@ -305,7 +318,7 @@ export function LoginForm() {
                 <p className="text-sm font-medium text-gray-500">
                   Ainda não faz parte?{" "}
                   <Link href="/signup" className="text-brand-orange font-black uppercase tracking-widest text-xs hover:underline ml-2">
-                    Criar conta premium
+                    Criar conta
                   </Link>
                 </p>
               </div>
@@ -334,16 +347,17 @@ export function LoginForm() {
             <div className="absolute inset-0 bg-gradient-to-t from-brand-black/80 via-brand-black/20 to-transparent" />
 
             <div className="absolute bottom-0 left-0 right-0 p-12">
-              <div className="glass p-12 rounded-[2.5rem] border-white/20 shadow-2xl">
+              <div className="glass-dark p-12 rounded-[2.5rem] border-white/20 shadow-2xl">
                 <div className="space-y-6">
                   <h2 className="text-4xl font-black text-white uppercase tracking-tighter leading-none text-pretty">
-                    {carouselSlides[currentSlide].title}
+                    <span className="text-brand-orange">{carouselSlides[currentSlide].title}{" "}</span>
+                    {carouselSlides[currentSlide].highlightedText}
                   </h2>
                   <p className="text-lg font-medium text-white/80 leading-relaxed text-pretty">
                     {carouselSlides[currentSlide].description}
                   </p>
 
-                  <div className="flex items-center justify-between pt-6 border-t border-white/10">
+                  <div className="flex items-center justify-between pt-6">
                     <div className="flex gap-3">
                       {carouselSlides.map((_, index) => (
                         <button
@@ -356,25 +370,6 @@ export function LoginForm() {
                           aria-label={`Slide ${index + 1}`}
                         />
                       ))}
-                    </div>
-
-                    <div className="flex gap-4">
-                      <Button
-                        onClick={prevSlide}
-                        size="icon"
-                        variant="outline"
-                        className="w-12 h-12 rounded-2xl glass border-white/20 text-white hover:bg-white hover:text-brand-black transition-all"
-                      >
-                        <ArrowLeft className="w-5 h-5" />
-                      </Button>
-                      <Button
-                        onClick={nextSlide}
-                        size="icon"
-                        variant="outline"
-                        className="w-12 h-12 rounded-2xl glass border-white/20 text-white hover:bg-white hover:text-brand-black transition-all"
-                      >
-                        <ArrowRight className="w-5 h-5" />
-                      </Button>
                     </div>
                   </div>
                 </div>

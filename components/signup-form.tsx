@@ -20,6 +20,8 @@ import { Logo } from "./logo";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { authService } from "@/lib/services/auth.service";
+import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 
 export function SignupForm() {
   const [fullName, setFullName] = useState("");
@@ -159,7 +161,7 @@ export function SignupForm() {
           <div className="w-full max-w-md space-y-12">
             <div className="space-y-4">
               <h2 className="text-4xl lg:text-5xl font-black text-brand-black tracking-tighter uppercase leading-none">
-                Criar sua <br/><span className="text-brand-red">Conta Premium</span>
+                Criar sua <span className="text-brand-red">Conta</span>
               </h2>
               <p className="text-gray-500 font-medium">
                 Junte-se a uma comunidade exclusiva e comece sua jornada de conexões reais.
@@ -276,7 +278,7 @@ export function SignupForm() {
           <div className="absolute inset-0 bg-gradient-to-t from-brand-black/80 via-brand-black/20 to-transparent" />
 
           <div className="absolute bottom-0 left-0 right-0 p-12">
-            <div className="glass p-12 rounded-[2.5rem] border-white/20 shadow-2xl">
+            <div className="glass-dark p-12 rounded-[2.5rem] border-white/20 shadow-2xl">
               <div className="space-y-6">
                 <h2 className="text-4xl font-black text-white uppercase tracking-tighter leading-none text-pretty">
                   Acesso único, <br/><span className="text-brand-orange">experiências reais.</span>
