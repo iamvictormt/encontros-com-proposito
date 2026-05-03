@@ -59,23 +59,35 @@ export function BrandModal({ isOpen, onClose, onSuccess, brand, isReadOnly }: Br
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{isReadOnly ? "Detalhes da Marca" : brand ? "Editar Marca" : "Nova Marca"}</DialogTitle>
+      <DialogContent className="bg-white rounded-[2.5rem] border-none shadow-2xl p-8 sm:p-12 max-w-2xl">
+        <DialogHeader className="space-y-3 mb-8">
+          <DialogTitle className="text-3xl font-black uppercase tracking-tighter text-brand-black">
+            {isReadOnly ? "Detalhes da Marca" : brand ? "Editar Marca" : "Nova Marca"}
+          </DialogTitle>
+          <p className="text-gray-500 font-medium text-sm">
+            Gerencie as informações da marca parceira MeetOff.
+          </p>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <ImageUpload 
-            value={formData.logo} 
-            onChange={(url) => setFormData({ ...formData, logo: url })}
-            onRemove={() => setFormData({ ...formData, logo: "" })}
-            disabled={isReadOnly}
-          />
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="flex justify-center mb-8">
+            <div className="w-32 h-32">
+              <ImageUpload 
+                value={formData.logo} 
+                onChange={(url) => setFormData({ ...formData, logo: url })}
+                onRemove={() => setFormData({ ...formData, logo: "" })}
+                disabled={isReadOnly}
+              />
+            </div>
+          </div>
 
           <div className="space-y-2">
-            <Label htmlFor="name">Nome da Marca</Label>
+            <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+              Nome da Marca
+            </Label>
             <Input 
               id="name" 
+              className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white transition-all font-bold"
               value={formData.name} 
               onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
               required 
@@ -83,22 +95,28 @@ export function BrandModal({ isOpen, onClose, onSuccess, brand, isReadOnly }: Br
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="website_url">Site (Opcional)</Label>
+              <Label htmlFor="website_url" className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                Site (Opcional)
+              </Label>
               <Input 
                 id="website_url" 
                 placeholder="https://..."
+                className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white transition-all font-bold"
                 value={formData.website_url} 
                 onChange={(e) => setFormData({ ...formData, website_url: e.target.value })} 
                 disabled={isReadOnly}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="instagram_url">Instagram (Opcional)</Label>
+              <Label htmlFor="instagram_url" className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                Instagram (Opcional)
+              </Label>
               <Input 
                 id="instagram_url" 
                 placeholder="@..."
+                className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white transition-all font-bold"
                 value={formData.instagram_url} 
                 onChange={(e) => setFormData({ ...formData, instagram_url: e.target.value })} 
                 disabled={isReadOnly}
@@ -107,10 +125,12 @@ export function BrandModal({ isOpen, onClose, onSuccess, brand, isReadOnly }: Br
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Descrição Curta</Label>
+            <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+              Descrição Curta
+            </Label>
             <textarea 
               id="description" 
-              className="w-full min-h-[80px] px-3 py-2 bg-white border rounded-md text-sm border-input focus:ring-2 focus:ring-primary/20 outline-none resize-none"
+              className="w-full min-h-[100px] p-4 bg-gray-50 border-brand-black/5 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-brand-orange/20 outline-none resize-none transition-all font-medium"
               placeholder="Descreva brevemente o parceiro..."
               value={formData.description} 
               onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
@@ -119,30 +139,36 @@ export function BrandModal({ isOpen, onClose, onSuccess, brand, isReadOnly }: Br
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="status">Status</Label>
+            <Label htmlFor="status" className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+              Status Operacional
+            </Label>
             <Select 
               value={formData.status}
               onValueChange={(value) => setFormData({ ...formData, status: value })}
               disabled={isReadOnly}
             >
-              <SelectTrigger id="status" className="bg-white">
+              <SelectTrigger id="status" className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white font-bold">
                 <SelectValue placeholder="Selecione o status" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Ativo">Ativo</SelectItem>
-                <SelectItem value="Inativo">Inativo</SelectItem>
+              <SelectContent className="rounded-xl border-white/20 glass">
+                <SelectItem value="Ativo" className="text-brand-green font-bold">● Ativo</SelectItem>
+                <SelectItem value="Inativo" className="text-brand-red font-bold">● Inativo</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="pt-8 gap-4">
             {isReadOnly ? (
-              <Button type="button" className="bg-secondary hover:bg-secondary/90 text-white" onClick={onClose}>Fechar</Button>
+              <Button type="button" className="w-full h-14 rounded-2xl bg-brand-black hover:bg-brand-black/90 text-white font-black uppercase tracking-widest text-[10px] shadow-xl" onClick={onClose}>
+                Fechar
+              </Button>
             ) : (
               <>
-                <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
-                <Button type="submit" className="bg-secondary hover:bg-secondary/90 text-white" disabled={isLoading}>
-                  {isLoading ? "Salvando..." : "Salvar Marca"}
+                <Button type="button" variant="ghost" className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] text-gray-400 hover:text-brand-black" onClick={onClose}>
+                  Cancelar
+                </Button>
+                <Button type="submit" className="flex-1 h-14 rounded-2xl bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-[10px] shadow-xl shadow-brand-green/20" disabled={isLoading}>
+                  {isLoading ? "Processando..." : brand ? "Salvar Alterações" : "Criar Marca"}
                 </Button>
               </>
             )}

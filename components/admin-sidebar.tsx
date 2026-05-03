@@ -51,20 +51,19 @@ export function AdminSidebar() {
   const { logout } = useAuth();
 
   return (
-    <aside className="w-72 border-r bg-white flex-col h-screen sticky top-0 hidden lg:flex">
-      <div className="p-8">
+    <aside className="w-80 glass border-r border-white/20 flex-col h-[calc(100vh-2rem)] sticky top-4 left-4 m-4 rounded-[2.5rem] hidden lg:flex shadow-2xl z-50">
+      <div className="p-10">
         <Logo href="/admin" />
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-6 pb-4 flex flex-col">
-        <div className="h-px bg-gray-100 mb-6" />
+      <nav className="flex-1 overflow-y-auto px-8 pb-6 flex flex-col">
         <div className="flex-1">
           {menuSections.map((section, sectionIdx) => (
             <div
               key={sectionIdx}
-              className={cn("py-2", section.borderTop && "border-t border-gray-100 mt-4")}
+              className={cn("py-2", section.borderTop && "border-t border-brand-green/5 mt-6 pt-6")}
             >
-              <div className="space-y-4 py-2">
+              <div className="space-y-2">
                 {section.items.map((item) => {
                   const isActive = pathname === item.href;
                   return (
@@ -72,17 +71,22 @@ export function AdminSidebar() {
                       key={item.href}
                       href={item.href}
                       className={cn(
-                        "flex items-center gap-4 px-3 py-2 rounded-lg text-sm font-bold transition-colors",
-                        isActive ? "text-secondary" : "text-muted-foreground hover:text-foreground",
+                        "group flex items-center gap-4 px-4 py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300",
+                        isActive 
+                          ? "bg-brand-black text-white shadow-xl shadow-brand-black/20" 
+                          : "text-brand-black/50 hover:bg-brand-black/5 hover:text-brand-black",
                       )}
                     >
                       <item.icon
                         className={cn(
-                          "w-6 h-6",
-                          isActive ? "text-secondary" : "text-muted-foreground",
+                          "w-5 h-5 transition-transform duration-300 group-hover:scale-110",
+                          isActive ? "text-brand-orange" : "text-brand-black/40",
                         )}
                       />
-                      <span className="tracking-tight">{item.label}</span>
+                      <span>{item.label}</span>
+                      {isActive && (
+                        <div className="ml-auto w-1.5 h-1.5 rounded-full bg-brand-orange shadow-[0_0_8px_#FF1D55]" />
+                      )}
                     </Link>
                   );
                 })}
@@ -91,12 +95,12 @@ export function AdminSidebar() {
           ))}
         </div>
 
-        <div className="py-2 border-t border-gray-100 mt-auto">
+        <div className="pt-6 border-t border-brand-green/5 mt-auto">
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <button className="flex items-center gap-4 px-3 py-2 rounded-lg text-sm font-bold transition-colors text-muted-foreground hover:text-red-600 w-full cursor-pointer">
-                <LogOut className="w-6 h-6" />
-                <span className="tracking-tight">Sair</span>
+              <button className="flex items-center gap-4 px-4 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 text-brand-black/50 hover:bg-brand-red hover:text-white hover:shadow-xl hover:shadow-brand-red/20 w-full cursor-pointer group">
+                <LogOut className="w-5 h-5 transition-transform duration-300 group-hover:rotate-12" />
+                <span>Sair do Painel</span>
               </button>
             </AlertDialogTrigger>
             <AlertDialogContent>

@@ -162,19 +162,22 @@ export function ProductModal({ isOpen, onClose, onSuccess, product, isReadOnly }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[1200px] w-[95vw] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">
+      <DialogContent className="sm:max-w-[1000px] w-[95vw] max-h-[90vh] overflow-y-auto bg-white rounded-[2.5rem] border-none shadow-2xl p-8 sm:p-12">
+        <DialogHeader className="mb-8">
+          <DialogTitle className="text-3xl font-black uppercase tracking-tighter text-brand-black">
             {isReadOnly ? "Detalhes do Produto" : product ? "Editar Produto" : "Novo Produto"}
           </DialogTitle>
+          <p className="text-gray-500 font-medium text-sm">
+            Gerencie o catálogo de produtos e itens exclusivos MeetOff.
+          </p>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-8 py-4">
+        <form onSubmit={handleSubmit} className="space-y-12">
           {/* Section: Images */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Label className="text-base font-bold">Fotos do Produto (Até 4)</Label>
-              <span className="text-xs text-muted-foreground italic">A primeira será a principal</span>
+          <div className="space-y-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="h-6 w-1 bg-brand-orange rounded-full" />
+              <Label className="text-[10px] font-black uppercase tracking-widest text-brand-black">Galeria de Fotos (Até 4)</Label>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {[0, 1, 2, 3].map((index) => (
@@ -192,82 +195,83 @@ export function ProductModal({ isOpen, onClose, onSuccess, product, isReadOnly }
                       setFormData({ ...formData, images: newImages });
                     }}
                     disabled={isReadOnly}
+                    aspect="square"
                   />
-                  <p className="text-[10px] text-center text-muted-foreground">Foto {index + 1}</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-center text-brand-black/20">Foto {index + 1}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Column 1: Main Info */}
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-primary/70">Informações Básicas</h3>
+            <div className="space-y-8">
+              <div className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="h-6 w-1 bg-brand-green rounded-full" />
+                  <h3 className="text-[10px] font-black uppercase tracking-widest text-brand-black">Informações de Venda</h3>
+                </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="name">Nome do Produto</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Nome do Produto</Label>
                     <Input 
                       id="name" 
+                      className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white transition-all font-bold"
                       value={formData.name} 
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
-                      placeholder="Ex: Kit Mimo Meu e Seu"
+                      placeholder="Ex: Camiseta MeetOff Original"
                       required 
                       disabled={isReadOnly}
                     />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="type">Entrega (Tipo)</Label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <Label htmlFor="type" className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Modalidade</Label>
                     <Select 
                       value={formData.type}
                       onValueChange={(value) => setFormData({ ...formData, type: value })}
                       disabled={isReadOnly}
                     >
-                      <SelectTrigger id="type" className="bg-white border border-input focus:ring-2 focus:ring-primary/20">
-                        <SelectValue placeholder="Selecione o tipo" />
+                      <SelectTrigger id="type" className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white font-bold">
+                        <SelectValue placeholder="Tipo" />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Físico">Entrega Física</SelectItem>
-                        <SelectItem value="Digital">Download Imediato</SelectItem>
+                      <SelectContent className="rounded-xl border-white/20 glass">
+                        <SelectItem value="Físico" className="font-bold">📦 Produto Físico</SelectItem>
+                        <SelectItem value="Digital" className="font-bold">⚡ Digital / Link</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="category">Categoria</Label>
+                  <div className="space-y-3">
+                    <Label htmlFor="category" className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Categoria</Label>
                     <Popover open={openCategory} onOpenChange={setOpenCategory}>
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
                           role="combobox"
                           aria-expanded={openCategory}
-                          className="w-full justify-between bg-white border-input h-11 sm:h-12 font-normal"
+                          className="w-full justify-between h-12 rounded-xl border-brand-black/5 bg-gray-50 hover:bg-gray-100 font-bold px-4"
                           disabled={isReadOnly}
                         >
-                          {formData.category || "Selecione a categoria"}
+                          <span className="truncate">{formData.category || "Selecionar..."}</span>
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
-                        <Command>
-                          <CommandInput 
-                            placeholder="Procurar categoria..." 
-                            value={categorySearch}
-                            onValueChange={setCategorySearch}
-                          />
+                      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 border-none shadow-2xl rounded-2xl overflow-hidden" align="start">
+                        <Command className="rounded-2xl">
+                          <CommandInput placeholder="Filtrar categorias..." className="h-12 border-none" />
                           <CommandList>
-                            <CommandEmpty>
+                            <CommandEmpty className="p-4">
                               <Button 
-                                variant="ghost" 
-                                className="w-full justify-start text-primary"
+                                variant="outline" 
+                                className="w-full h-10 border-brand-orange/20 text-brand-orange text-[10px] font-black uppercase tracking-widest rounded-xl"
                                 onClick={() => handleCreateCategory(categorySearch)}
                               >
-                                <Plus className="mr-2 h-4 w-4" />
+                                <Plus className="mr-2 h-3 w-3" />
                                 Criar "{categorySearch}"
                               </Button>
                             </CommandEmpty>
-                            <CommandGroup>
+                            <CommandGroup className="p-2">
                               {categories.map((cat) => (
                                 <CommandItem
                                   key={cat.id}
@@ -276,10 +280,11 @@ export function ProductModal({ isOpen, onClose, onSuccess, product, isReadOnly }
                                     setFormData({ ...formData, category: currentValue });
                                     setOpenCategory(false);
                                   }}
+                                  className="rounded-lg px-4 py-3 text-xs font-bold mb-1"
                                 >
                                   <Check
                                     className={cn(
-                                      "mr-2 h-4 w-4",
+                                      "mr-2 h-4 w-4 text-brand-orange",
                                       formData.category === cat.name ? "opacity-100" : "opacity-0"
                                     )}
                                   />
@@ -294,29 +299,30 @@ export function ProductModal({ isOpen, onClose, onSuccess, product, isReadOnly }
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="theme">Tema</Label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <Label htmlFor="theme" className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Temática</Label>
                     <Select 
                       value={formData.theme}
                       onValueChange={(value) => setFormData({ ...formData, theme: value })}
                       disabled={isReadOnly}
                     >
-                      <SelectTrigger id="theme" className="bg-white border border-input focus:ring-2 focus:ring-primary/20">
-                        <SelectValue placeholder="Selecione o tema" />
+                      <SelectTrigger id="theme" className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white font-bold">
+                        <SelectValue placeholder="Tema" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="rounded-xl border-white/20 glass">
                         {THEMES.map(theme => (
-                          <SelectItem key={theme} value={theme}>{theme}</SelectItem>
+                          <SelectItem key={theme} value={theme} className="font-bold">{theme}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="stock">Estoque</Label>
+                  <div className="space-y-3">
+                    <Label htmlFor="stock" className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Estoque Inicial</Label>
                     <Input 
                       id="stock" 
                       type="number" 
+                      className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white transition-all font-bold"
                       value={formData.stock} 
                       onChange={(e) => setFormData({ ...formData, stock: parseInt(e.target.value) || 0 })} 
                       disabled={isReadOnly}
@@ -324,14 +330,14 @@ export function ProductModal({ isOpen, onClose, onSuccess, product, isReadOnly }
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="price">Preço de Venda</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="price" className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Valor do Produto</Label>
                   <Input 
                     id="price" 
                     value={displayPrice} 
                     onChange={handlePriceChange}
                     placeholder="R$ 0,00"
-                    className="text-lg font-bold text-primary"
+                    className="h-14 rounded-2xl border-brand-black/5 bg-brand-black/5 focus:bg-white focus:ring-brand-orange/20 focus:border-brand-orange transition-all px-6 text-xl font-black text-brand-orange"
                     required
                     disabled={isReadOnly}
                   />
@@ -340,60 +346,55 @@ export function ProductModal({ isOpen, onClose, onSuccess, product, isReadOnly }
             </div>
 
             {/* Column 2: Details & More */}
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-primary/70">Detalhes & Especificações</h3>
+            <div className="space-y-8">
+              <div className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="h-6 w-1 bg-brand-red rounded-full" />
+                  <h3 className="text-[10px] font-black uppercase tracking-widest text-brand-black">Especificações Técnicas</h3>
+                </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="description">Descrição do Produto</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Descrição Comercial</Label>
                   <textarea 
                     id="description" 
-                    className="w-full min-h-[120px] px-3 py-2 bg-white border rounded-md text-sm border-input focus:ring-2 focus:ring-primary/20 outline-none resize-none"
+                    className="w-full min-h-[120px] p-4 bg-gray-50 border-brand-black/5 rounded-2xl text-sm focus:bg-white focus:ring-2 focus:ring-brand-orange/20 outline-none resize-none transition-all font-medium"
                     value={formData.description} 
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
-                    placeholder="Conte mais sobre o que torna este produto especial..."
+                    placeholder="Conte a história por trás deste produto..."
                     disabled={isReadOnly}
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="size">Tamanho / Dimensões</Label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <Label htmlFor="size" className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Dimensões / Tamanho</Label>
                     <Input 
                       id="size" 
+                      className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white transition-all font-bold"
                       value={formData.size} 
                       onChange={(e) => setFormData({ ...formData, size: e.target.value })} 
-                      placeholder="Ex: 20x30cm ou P, M, G"
+                      placeholder="Ex: P, M, G ou 20x30cm"
                       disabled={isReadOnly}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="materials">Materiais</Label>
+                  <div className="space-y-3">
+                    <Label htmlFor="materials" className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Composição</Label>
                     <Input 
                       id="materials" 
+                      className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white transition-all font-bold"
                       value={formData.materials} 
                       onChange={(e) => setFormData({ ...formData, materials: e.target.value })} 
-                      placeholder="Ex: Algodão, Madeira"
+                      placeholder="Ex: 100% Algodão"
                       disabled={isReadOnly}
                     />
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="manufacturing_details">Detalhes da Fabricação</Label>
-                  <Input 
-                    id="manufacturing_details" 
-                    value={formData.manufacturing_details} 
-                    onChange={(e) => setFormData({ ...formData, manufacturing_details: e.target.value })} 
-                    placeholder="Ex: Feito à mão, sob encomenda"
-                    disabled={isReadOnly}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="presentation_link">Link de Apresentação (Vídeo)</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="presentation_link" className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Vídeo de Apresentação</Label>
                   <Input 
                     id="presentation_link" 
+                    className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white transition-all font-bold"
                     value={formData.presentation_link} 
                     onChange={(e) => setFormData({ ...formData, presentation_link: e.target.value })} 
                     placeholder="Link do YouTube ou Vimeo"
@@ -401,13 +402,14 @@ export function ProductModal({ isOpen, onClose, onSuccess, product, isReadOnly }
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="tags">Tags (separadas por vírgula)</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="tags" className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Palavras-chave (Separadas por vírgula)</Label>
                   <Input 
                     id="tags" 
+                    className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white transition-all font-bold"
                     value={formData.tags} 
                     onChange={(e) => setFormData({ ...formData, tags: e.target.value })} 
-                    placeholder="Ex: presente, amor, exclusivo"
+                    placeholder="Ex: presente, sustentável, exclusivo"
                     disabled={isReadOnly}
                   />
                 </div>
@@ -415,18 +417,18 @@ export function ProductModal({ isOpen, onClose, onSuccess, product, isReadOnly }
             </div>
           </div>
 
-          <DialogFooter className="gap-2 pt-6 border-t">
+          <DialogFooter className="pt-12 gap-4 border-t border-brand-black/5">
             {isReadOnly ? (
-              <Button type="button" className="bg-secondary hover:bg-secondary/90 text-white min-w-[120px]" onClick={onClose}>
-                Fechar
+              <Button type="button" className="w-full h-16 rounded-[2rem] bg-brand-black hover:bg-brand-black/90 text-white font-black uppercase tracking-widest text-[12px] shadow-2xl" onClick={onClose}>
+                Fechar Painel
               </Button>
             ) : (
               <>
-                <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
+                <Button type="button" variant="ghost" className="h-16 rounded-[2rem] font-black uppercase tracking-widest text-[12px] text-gray-400 hover:text-brand-black px-8" onClick={onClose} disabled={isLoading}>
                   Cancelar
                 </Button>
-                <Button type="submit" className="bg-secondary hover:bg-secondary/90 text-white min-w-[120px]" disabled={isLoading}>
-                  {isLoading ? "Salvando..." : (product ? "Salvar Alterações" : "Criar Produto")}
+                <Button type="submit" className="flex-1 h-16 rounded-[2rem] bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-[12px] shadow-2xl shadow-brand-green/20" disabled={isLoading}>
+                  {isLoading ? "Processando..." : (product ? "Salvar Alterações" : "Publicar Produto")}
                 </Button>
               </>
             )}

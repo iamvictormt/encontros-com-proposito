@@ -16,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 export default function AdminEvents() {
   const [events, setEvents] = useState<any[]>([]);
@@ -119,76 +120,94 @@ export default function AdminEvents() {
   );
 
   return (
-    <div className="space-y-8 bg-white p-4 rounded-md">
+    <div className="space-y-16">
       <section>
-        <h2 className="text-xl font-bold text-black mb-6">Estatísticas Rápidas</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="h-1 w-8 bg-brand-orange rounded-full" />
+          <h2 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">
+            Status dos Eventos
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {stats.map((stat, i) => (
             <StatCard key={i} {...stat} />
           ))}
         </div>
       </section>
 
-      <section className="space-y-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-          <h2 className="text-xl font-bold text-black">Eventos</h2>
+      <section className="space-y-12">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8">
+          <div className="space-y-2">
+            <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
+              Gerenciamento
+            </span>
+            <h2 className="text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
+              Todos os <span className="text-brand-red">Eventos</span>
+            </h2>
+          </div>
 
-          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-4 w-full md:w-auto">
-            <div className="relative flex-1 sm:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
+          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-4 w-full lg:w-auto">
+            <div className="relative flex-1 sm:w-80">
+              <Search className="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-brand-green" />
               <Input
-                placeholder="Procurar Eventos"
-                className="pl-10 h-10 bg-white border-gray-200 rounded-lg w-full"
+                placeholder="Buscar por título ou local..."
+                className="pl-12 h-14 bg-white border-brand-green/10 rounded-2xl focus:ring-brand-orange/20 focus:border-brand-orange transition-all w-full"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
 
             <div className="flex gap-4 w-full sm:w-auto">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="h-10 border-gray-200 bg-white text-gray-400 gap-2 flex-1 sm:flex-none"
-                >
-                  <Filter className="h-4 w-4 text-black" />
-                  <span className="text-sm">
-                    Filtro: <span className="text-black font-medium">{filterType === "recent" ? "Mais recente" : "Mais antigo"}</span>
-                  </span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 bg-white">
-                <DropdownMenuItem 
-                  onClick={() => setFilterType("recent")}
-                  className={filterType === "recent" ? "bg-gray-100 font-bold" : ""}
-                >
-                  Mais recente
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => setFilterType("old")}
-                  className={filterType === "old" ? "bg-gray-100 font-bold" : ""}
-                >
-                  Mais antigo
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="h-14 px-6 border-brand-black/10 bg-white rounded-2xl text-brand-black font-black uppercase tracking-widest text-[10px] hover:bg-brand-black hover:text-white transition-all flex-1 sm:flex-none gap-3"
+                  >
+                    <Filter className="h-4 w-4 text-brand-orange" />
+                    <span>
+                      {filterType === "recent" ? "Mais Recentes" : "Mais Antigos"}
+                    </span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 glass border-white/20 p-2 rounded-2xl">
+                  <DropdownMenuItem 
+                    onClick={() => setFilterType("recent")}
+                    className={cn(
+                      "rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest transition-all",
+                      filterType === "recent" ? "bg-brand-black text-white" : "text-brand-black/60 hover:bg-brand-black/5"
+                    )}
+                  >
+                    Mais Recentes
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => setFilterType("old")}
+                    className={cn(
+                      "rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest transition-all",
+                      filterType === "old" ? "bg-brand-black text-white" : "text-brand-black/60 hover:bg-brand-black/5"
+                    )}
+                  >
+                    Mais Antigos
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               <Button 
                 onClick={() => { setSelectedEvent(null); setIsModalOpen(true); }}
-                className="h-10 bg-secondary hover:bg-secondary/90 text-white gap-2 px-4 rounded-lg flex-1 sm:flex-none"
+                className="h-14 px-8 bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-lg shadow-brand-green/20 flex-1 sm:flex-none gap-3"
               >
                 <Plus className="h-4 w-4" />
-                <span className="whitespace-nowrap">Novo Evento</span>
+                <span>Novo Evento</span>
               </Button>
             </div>
           </div>
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center py-12"><Loader2 className="animate-spin text-primary w-8 h-8" /></div>
+          <div className="flex justify-center py-24 grayscale opacity-30"><Loader2 className="animate-spin text-brand-black w-12 h-12" /></div>
         ) : (
-          <div className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+          <div className="space-y-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {paginatedEvents.map((event) => (
                 <AdminEventCard 
                   key={event.id} 
@@ -199,6 +218,18 @@ export default function AdminEvents() {
                 />
               ))}
             </div>
+
+            {paginatedEvents.length === 0 && (
+              <div className="text-center py-24 glass rounded-[2.5rem] border-dashed border-brand-green/20">
+                <div className="text-6xl mb-6 grayscale opacity-50">📅</div>
+                <h3 className="text-2xl font-black text-brand-black mb-2 uppercase tracking-tight">
+                  Nenhum evento encontrado
+                </h3>
+                <p className="text-gray-500 max-w-md mx-auto text-sm leading-relaxed px-4 font-medium">
+                  Não encontramos eventos com esses critérios de busca.
+                </p>
+              </div>
+            )}
 
             <AdminPagination 
               currentPage={currentPage}

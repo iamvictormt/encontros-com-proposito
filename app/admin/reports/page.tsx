@@ -78,11 +78,15 @@ export default function AdminReports() {
     );
 
   return (
-    <div className="space-y-8 pb-12">
-      {/* Quick Stats Section */}
+    <div className="space-y-16 pb-12">
       <section>
-        <h2 className="text-xl font-bold text-black mb-6">Estatísticas Rápidas</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="h-1 w-8 bg-brand-orange rounded-full" />
+          <h2 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">
+            Estatísticas de Desempenho
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           <StatBox label="Total de Vendas" value="45.058" prefix="R$" />
           <StatBox label="Eventos Criados" value="28" />
           <StatBox label="Convites Aceitos" value="342" />
@@ -90,35 +94,46 @@ export default function AdminReports() {
         </div>
       </section>
 
-      {/* Main Reports Section */}
-      <section>
-        <h2 className="text-xl font-bold text-black mb-6">Relatórios</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+      <section className="space-y-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+          <div className="space-y-2">
+            <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
+              Relatórios Detalhados
+            </span>
+            <h2 className="text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
+              Análise de <span className="text-brand-orange">Crescimento</span>
+            </h2>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
           {/* Sales Profit Chart */}
-          <Card className="lg:col-span-2 border-none shadow-sm rounded-2xl overflow-hidden">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <div className="flex items-center gap-2">
-                <CardTitle className="text-sm font-bold text-black flex items-center gap-1">
-                  Lucro de vendas <span className="text-gray-300 text-xs font-normal">ⓘ</span>
+          <Card className="lg:col-span-2 border-none shadow-sm rounded-[2.5rem] bg-white overflow-hidden p-4 sm:p-8">
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-8 px-0 pt-0">
+              <div className="flex items-center gap-3">
+                <div className="h-8 w-1.5 bg-brand-green rounded-full" />
+                <CardTitle className="text-xl font-black uppercase tracking-tighter text-brand-black">
+                  Lucro de Vendas
                 </CardTitle>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 text-xs">
-                   <div className="flex items-center gap-1">
-                      <div className="w-8 h-0.5 bg-[#8B2F2A]" />
-                      <span className="text-gray-400">Meses anteriores</span>
-                   </div>
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="flex items-center gap-4 bg-brand-black/5 px-4 py-2 rounded-xl">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-brand-green" />
+                    <span className="text-[9px] font-black uppercase text-brand-black/40">Este Mês</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-brand-red" />
+                    <span className="text-[9px] font-black uppercase text-brand-black/40">Anterior</span>
+                  </div>
                 </div>
-                <Button variant="outline" size="sm" className="h-8 text-xs gap-2 rounded-lg border-gray-200">
-                  <Calendar className="w-3.5 h-3.5 text-[#1A4B40]" />
+                <Button variant="outline" size="sm" className="h-10 text-[10px] font-black uppercase tracking-widest gap-2 rounded-xl border-brand-black/10">
+                  <Calendar className="w-3.5 h-3.5 text-brand-orange" />
                   Junho 2024
-                </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400">
-                  <MoreHorizontal className="w-4 h-4" />
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="h-[300px] pt-4">
+            <CardContent className="h-[350px] p-0">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={mockLineData}>
                   <CartesianGrid strokeDasharray="0" vertical={false} stroke="#F3F4F6" />
@@ -126,23 +141,23 @@ export default function AdminReports() {
                     dataKey="name" 
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{ fill: '#9CA3AF', fontSize: 10 }}
+                    tick={{ fill: '#000', fontSize: 10, fontWeight: 900 }}
                     dy={10}
                   />
                   <YAxis 
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{ fill: '#9CA3AF', fontSize: 10 }}
-                    tickFormatter={(v) => `${v/1000}k`}
+                    tick={{ fill: '#000', fontSize: 10, fontWeight: 900 }}
+                    tickFormatter={(v) => `R$ ${v/1000}k`}
                   />
                   <Tooltip 
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         return (
-                          <div className="bg-white p-3 rounded-xl shadow-xl border border-gray-100">
-                            <p className="text-[10px] text-gray-400 mb-1">Esse mês</p>
-                            <p className="text-sm font-bold text-black">R${payload[0].value}</p>
-                            <p className="text-[10px] text-gray-400">Junho</p>
+                          <div className="bg-brand-black p-4 rounded-2xl shadow-2xl border-none">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-white/40 mb-1">Performance</p>
+                            <p className="text-lg font-black text-white">R$ {payload[0].value?.toLocaleString()}</p>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-brand-orange">Meta Batida</p>
                           </div>
                         );
                       }
@@ -152,18 +167,18 @@ export default function AdminReports() {
                   <Line 
                     type="monotone" 
                     dataKey="previous" 
-                    stroke="#8B2F2A" 
-                    strokeWidth={3} 
+                    stroke="#FF1D55" 
+                    strokeWidth={4} 
                     dot={false}
-                    activeDot={{ r: 4, stroke: '#fff', strokeWidth: 2 }}
+                    activeDot={{ r: 6, stroke: '#fff', strokeWidth: 3 }}
                   />
                   <Line 
                     type="monotone" 
                     dataKey="current" 
-                    stroke="#1A4B40" 
-                    strokeWidth={3} 
+                    stroke="#0A4742" 
+                    strokeWidth={4} 
                     dot={false}
-                    activeDot={{ r: 4, stroke: '#fff', strokeWidth: 2 }}
+                    activeDot={{ r: 6, stroke: '#fff', strokeWidth: 3 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -171,58 +186,53 @@ export default function AdminReports() {
           </Card>
 
           {/* Satisfaction Gauge */}
-          <Card className="border-none shadow-sm rounded-2xl flex flex-col">
-            <CardHeader>
-              <CardTitle className="text-sm font-bold text-black">Satisfação de Clientes</CardTitle>
-              <p className="text-[10px] text-gray-400">porcentagem de satisfação</p>
+          <Card className="border-none shadow-sm rounded-[2.5rem] bg-white flex flex-col p-8">
+            <CardHeader className="px-0 pt-0">
+              <CardTitle className="text-xl font-black uppercase tracking-tighter text-brand-black">Satisfação</CardTitle>
+              <p className="text-[10px] font-black uppercase tracking-widest text-brand-black/40 mt-1">Feedback dos Clientes</p>
             </CardHeader>
-            <CardContent className="flex-1 flex items-center justify-center pt-0">
+            <CardContent className="flex-1 flex items-center justify-center p-0">
               <SatisfactionGauge percentage={95} />
             </CardContent>
           </Card>
         </div>
       </section>
 
-      {/* Lists Section */}
-      <div className="grid grid-cols-1 gap-8">
-        {/* Top Products */}
-        <section>
-          <Card className="border-none shadow-sm rounded-2xl overflow-hidden">
-            <CardHeader>
-              <CardTitle className="text-lg font-bold text-black">Produtos mais vendidos</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="divide-y divide-gray-50">
-                {mockProducts.map((product, i) => (
-                  <ProductListItem 
-                    key={i} 
-                    {...product} 
-                    maxUnits={150} 
-                  />
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+      <div className="grid grid-cols-1 gap-16">
+        <section className="space-y-8">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-1.5 bg-brand-red rounded-full" />
+            <h2 className="text-2xl font-black uppercase tracking-tighter text-brand-black">Produtos em Destaque</h2>
+          </div>
+          <div className="bg-white rounded-[2.5rem] overflow-hidden p-4 sm:p-8 shadow-sm">
+            <div className="space-y-4">
+              {mockProducts.map((product, i) => (
+                <ProductListItem 
+                  key={i} 
+                  {...product} 
+                  maxUnits={150} 
+                />
+              ))}
+            </div>
+          </div>
         </section>
 
-        {/* Invite Sources */}
-        <section>
-          <Card className="border-none shadow-sm rounded-2xl overflow-hidden">
-            <CardHeader>
-              <CardTitle className="text-lg font-bold text-black">Convites por origem</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="divide-y divide-gray-50">
-                {mockInvites.map((invite, i) => (
-                  <InviteSourceItem 
-                    key={i} 
-                    {...invite} 
-                    maxInvites={200} 
-                  />
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+        <section className="space-y-8">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-1.5 bg-brand-orange rounded-full" />
+            <h2 className="text-2xl font-black uppercase tracking-tighter text-brand-black">Canais de Conversão</h2>
+          </div>
+          <div className="bg-white rounded-[2.5rem] overflow-hidden p-4 sm:p-8 shadow-sm">
+            <div className="space-y-4">
+              {mockInvites.map((invite, i) => (
+                <InviteSourceItem 
+                  key={i} 
+                  {...invite} 
+                  maxInvites={200} 
+                />
+              ))}
+            </div>
+          </div>
         </section>
       </div>
     </div>

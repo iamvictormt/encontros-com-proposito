@@ -28,33 +28,35 @@ export function AdminMobileHeader() {
   const { logout } = useAuth();
 
   return (
-    <header className="lg:hidden bg-white border-b border-gray-100 px-6 py-4 sticky top-0 z-40 flex items-center justify-between">
+    <header className="lg:hidden glass border-b border-white/10 px-6 h-24 sticky top-0 z-40 flex items-center justify-between">
+      <Logo href="/admin" />
+      
       <div className="flex items-center gap-4">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <Menu className="h-6 w-6" />
+            <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl bg-brand-black/5">
+              <Menu className="h-6 w-6 text-brand-black" />
               <span className="sr-only">Abrir menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-[300px] flex flex-col p-0 text-black">
-            <SheetHeader className="p-6 border-b text-left">
+          <SheetContent side="right" className="w-[85vw] glass border-l border-white/20 flex flex-col p-0 text-brand-black">
+            <SheetHeader className="p-8 border-b border-brand-green/5 text-left">
               <SheetTitle>
                 <Logo href="/admin" onClick={() => setIsOpen(false)} />
               </SheetTitle>
             </SheetHeader>
 
-            <nav className="flex-1 overflow-y-auto py-6">
-              <div className="flex flex-col px-6 space-y-1">
+            <nav className="flex-1 overflow-y-auto py-8">
+              <div className="flex flex-col px-6 space-y-2">
                 {menuSections.map((section, sectionIdx) => (
                   <div
                     key={sectionIdx}
                     className={cn(
                       "py-2",
-                      section.borderTop && "border-t border-gray-100 mt-4 pt-4",
+                      section.borderTop && "border-t border-brand-green/5 mt-6 pt-6",
                     )}
                   >
-                    <div className="space-y-1">
+                    <div className="space-y-2">
                       {section.items.map((item) => {
                         const isActive = pathname === item.href;
                         return (
@@ -63,16 +65,16 @@ export function AdminMobileHeader() {
                             href={item.href}
                             onClick={() => setIsOpen(false)}
                             className={cn(
-                              "flex items-center gap-4 px-3 py-3 rounded-lg text-base font-bold transition-colors",
+                              "flex items-center gap-4 px-5 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300",
                               isActive
-                                ? "text-secondary bg-secondary/5"
-                                : "text-muted-foreground hover:text-foreground hover:bg-gray-50",
+                                ? "bg-brand-black text-white shadow-xl shadow-brand-black/20"
+                                : "text-brand-black/50 hover:bg-brand-black/5 hover:text-brand-black",
                             )}
                           >
                             <item.icon
                               className={cn(
-                                "w-6 h-6",
-                                isActive ? "text-secondary" : "text-muted-foreground",
+                                "w-5 h-5",
+                                isActive ? "text-brand-orange" : "text-brand-black/40",
                               )}
                             />
                             <span>{item.label}</span>
@@ -85,11 +87,11 @@ export function AdminMobileHeader() {
               </div>
             </nav>
 
-            <div className="p-6 border-t bg-gray-50/50">
+            <div className="p-8 border-t border-brand-green/5 bg-brand-black/5">
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <button className="flex items-center gap-4 px-3 py-3 rounded-lg text-base font-bold transition-colors text-muted-foreground hover:text-red-600 w-full cursor-pointer">
-                    <LogOut className="w-6 h-6" />
+                  <button className="flex items-center gap-4 px-5 py-5 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 text-brand-black/50 hover:bg-brand-red hover:text-white hover:shadow-xl hover:shadow-brand-red/20 w-full cursor-pointer">
+                    <LogOut className="w-5 h-5" />
                     <span>Sair do Painel</span>
                   </button>
                 </AlertDialogTrigger>

@@ -50,59 +50,105 @@ export default function AdminSettings() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      {/* <h2 className="text-2xl font-bold text-black">Configurações do Perfil</h2>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle>Dados Pessoais</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="fullName">Nome Completo</Label>
+    <div className="max-w-3xl mx-auto space-y-12">
+      <div className="space-y-2 text-center">
+        <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
+          Configurações
+        </span>
+        <h2 className="text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
+          Meu <span className="text-brand-orange">Perfil</span>
+        </h2>
+      </div>
+
+      <div className="bg-white rounded-[2.5rem] p-8 sm:p-12 shadow-sm border border-brand-green/5 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-brand-green via-brand-red to-brand-orange" />
+        
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-3">
+              <Label 
+                htmlFor="fullName"
+                className="text-[10px] font-black uppercase tracking-widest text-brand-black/40 ml-1"
+              >
+                Nome Completo
+              </Label>
               <Input 
                 id="fullName" 
+                placeholder="Seu nome completo"
+                className="h-14 rounded-2xl border-brand-black/5 bg-brand-black/5 focus:bg-white focus:ring-brand-orange/20 focus:border-brand-orange transition-all px-6 font-bold"
                 value={formData.fullName} 
                 onChange={e => setFormData({...formData, fullName: e.target.value})} 
               />
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="email">E-mail</Label>
+            <div className="space-y-3">
+              <Label 
+                htmlFor="email"
+                className="text-[10px] font-black uppercase tracking-widest text-brand-black/40 ml-1"
+              >
+                E-mail Administrativo
+              </Label>
               <Input 
                 id="email" 
                 type="email" 
+                placeholder="seu@email.com"
+                className="h-14 rounded-2xl border-brand-black/5 bg-brand-black/5 focus:bg-white focus:ring-brand-orange/20 focus:border-brand-orange transition-all px-6 font-bold"
                 value={formData.email} 
                 onChange={e => setFormData({...formData, email: e.target.value})} 
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="cpf">CPF</Label>
+            <div className="space-y-3">
+              <Label 
+                htmlFor="cpf"
+                className="text-[10px] font-black uppercase tracking-widest text-brand-black/40 ml-1"
+              >
+                CPF
+              </Label>
               <Input 
                 id="cpf" 
+                placeholder="000.000.000-00"
+                className="h-14 rounded-2xl border-brand-black/5 bg-brand-black/5 focus:bg-white focus:ring-brand-orange/20 focus:border-brand-orange transition-all px-6 font-bold"
                 value={formData.cpf} 
                 onChange={e => setFormData({...formData, cpf: e.target.value})} 
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Nova Senha (deixe em branco para não alterar)</Label>
+            <div className="space-y-3">
+              <Label 
+                htmlFor="password"
+                className="text-[10px] font-black uppercase tracking-widest text-brand-black/40 ml-1"
+              >
+                Nova Senha
+              </Label>
               <Input 
                 id="password" 
                 type="password" 
+                placeholder="••••••••"
+                className="h-14 rounded-2xl border-brand-black/5 bg-brand-black/5 focus:bg-white focus:ring-brand-orange/20 focus:border-brand-orange transition-all px-6 font-bold"
                 value={formData.password} 
                 onChange={e => setFormData({...formData, password: e.target.value})} 
               />
+              <p className="text-[9px] font-medium text-brand-black/30 ml-1 italic">Deixe em branco para manter a senha atual.</p>
             </div>
+          </div>
 
-            <Button type="submit" className="w-full bg-[#1f4c47]" disabled={isLoading}>
-              {isLoading ? "Salvando..." : "Salvar Alterações"}
+          <div className="pt-8 border-t border-brand-green/5">
+            <Button 
+              type="submit" 
+              className="w-full h-16 bg-brand-black hover:bg-brand-black/80 text-white font-black uppercase tracking-widest text-[12px] rounded-2xl shadow-xl shadow-brand-black/20 transition-all hover:scale-[1.02] active:scale-95" 
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-white border-r-transparent" />
+                  <span>Salvando Alterações...</span>
+                </div>
+              ) : "Atualizar Meu Perfil"}
             </Button>
-          </form>
-        </CardContent>
-      </Card> */}
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

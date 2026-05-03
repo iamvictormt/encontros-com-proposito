@@ -62,83 +62,114 @@ export default function AdminOverview() {
   if (isLoading) return <div className="flex justify-center py-20"><Loader2 className="animate-spin text-primary w-12 h-12" /></div>;
 
   return (
-    <div className="space-y-8">
-      <section className="bg-white p-4 rounded-md">
-        <h2 className="text-xl font-bold text-black mb-6">Relatórios</h2>
+    <div className="space-y-16">
+      <section>
+        <div className="flex items-center gap-3 mb-8">
+          <div className="h-1 w-8 bg-brand-orange rounded-full" />
+          <h2 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">
+            Visão Geral e Relatórios
+          </h2>
+        </div>
         <AdminStats stats={data?.stats} />
       </section>
 
-      <section className="space-y-6 bg-white p-4 rounded-md">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <h2 className="text-xl font-bold text-black">Criação e Moderação de eventos</h2>
+      <section className="space-y-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+          <div className="space-y-2">
+            <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
+              Eventos
+            </span>
+            <h2 className="text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
+              Criação e <span className="text-brand-red">Moderação</span>
+            </h2>
+          </div>
           <div className="flex flex-wrap gap-4 w-full md:w-auto">
-            <Button className="bg-accent hover:bg-accent/90 text-white flex-1 md:flex-none" asChild>
+            <Button className="bg-brand-red hover:bg-brand-red/90 text-white font-black uppercase tracking-widest text-[10px] px-8 h-14 rounded-2xl shadow-lg shadow-brand-red/20 flex-1 md:flex-none" asChild>
               <Link href="/admin/events">Criar Novo Evento</Link>
             </Button>
             <Button
               variant="outline"
-              className="bg-white text-black border-gray-200 flex-1 md:flex-none"
+              className="h-14 px-8 border-brand-black/10 bg-white rounded-2xl text-brand-black font-black uppercase tracking-widest text-[10px] hover:bg-brand-black hover:text-white transition-all flex-1 md:flex-none"
               asChild
             >
-              <Link href="/admin/events">Ver todos os eventos</Link>
+              <Link href="/admin/events">Ver todos</Link>
             </Button>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {data?.events.map((event: any) => (
             <AdminEventCard key={event.id} {...event} />
           ))}
         </div>
       </section>
 
-      <section className="space-y-6 bg-white p-4 rounded-md">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <h2 className="text-xl font-bold text-black">Aprovação de Locais & Empresas</h2>
-          <div className="flex gap-4 items-center w-full md:w-auto">
-            <Button
-              variant="outline"
-              className="bg-white text-black border-gray-200 w-full md:w-auto"
-              asChild
-            >
-              <Link href="/admin/venues">Ver todos os locais</Link>
-            </Button>
+      <section className="space-y-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+          <div className="space-y-2">
+            <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
+              Parceiros
+            </span>
+            <h2 className="text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
+              Aprovação de <span className="text-brand-green">Locais</span>
+            </h2>
           </div>
+          <Button
+            variant="outline"
+            className="h-14 px-8 border-brand-black/10 bg-white rounded-2xl text-brand-black font-black uppercase tracking-widest text-[10px] hover:bg-brand-black hover:text-white transition-all w-full md:w-auto"
+            asChild
+          >
+            <Link href="/admin/venues">Ver todos os locais</Link>
+          </Button>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {data?.venues.map((venue: any, i: number) => (
             <VenueApprovalCard key={i} {...venue} />
           ))}
         </div>
       </section>
 
-      <section className="space-y-6 bg-white p-4 rounded-md">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <h2 className="text-xl font-bold text-black">Edição de Marcas parceiras</h2>
+      <section className="space-y-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+          <div className="space-y-2">
+            <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
+              Marcas
+            </span>
+            <h2 className="text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
+              Marcas <span className="text-brand-orange">Parceiras</span>
+            </h2>
+          </div>
           <Button
             variant="outline"
-            className="bg-white text-black border-gray-200 w-full md:w-auto"
+            className="h-14 px-8 border-brand-black/10 bg-white rounded-2xl text-brand-black font-black uppercase tracking-widest text-[10px] hover:bg-brand-black hover:text-white transition-all w-full md:w-auto"
             asChild
           >
-            <Link href="/admin/brands">Ver todos</Link>
+            <Link href="/admin/brands">Ver todas as marcas</Link>
           </Button>
         </div>
         <BrandContentTable brands={data?.brands} />
       </section>
 
-      <section className="space-y-6 bg-white p-4 rounded-md">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <h2 className="text-xl font-bold text-black">Atribuição de Cargos</h2>
-          <div className="flex gap-4 items-center w-full md:w-auto">
-            <Button
-              variant="outline"
-              className="bg-white text-black border-gray-200 w-full md:w-auto"
-              asChild
-            >
-              <Link href="/admin/team">Ver todos</Link>
-            </Button>
+      <section className="space-y-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+          <div className="space-y-2">
+            <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
+              Equipe
+            </span>
+            <h2 className="text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
+              Gestão de <span className="text-brand-green">Cargos</span>
+            </h2>
           </div>
+          <Button
+            variant="outline"
+            className="h-14 px-8 border-brand-black/10 bg-white rounded-2xl text-brand-black font-black uppercase tracking-widest text-[10px] hover:bg-brand-black hover:text-white transition-all w-full md:w-auto"
+            asChild
+          >
+            <Link href="/admin/team">Ver toda a equipe</Link>
+          </Button>
         </div>
-        <RoleAssignmentList team={data?.team} />
+        <div className="bg-white rounded-[2.5rem] p-8 shadow-sm">
+          <RoleAssignmentList team={data?.team} />
+        </div>
       </section>
     </div>
   );

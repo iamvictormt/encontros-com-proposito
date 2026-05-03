@@ -11,6 +11,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -47,16 +48,25 @@ export function ConfirmModal({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>{description}</AlertDialogDescription>
+      <AlertDialogContent className="bg-white rounded-[2.5rem] border-none shadow-2xl p-8 sm:p-12 max-w-md">
+        <AlertDialogHeader className="space-y-3 mb-8">
+          <AlertDialogTitle className="text-3xl font-black uppercase tracking-tighter text-brand-black leading-tight">
+            {title}
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-gray-500 font-medium text-sm">
+            {description}
+          </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel onClick={onClose}>{cancelText}</AlertDialogCancel>
+        <AlertDialogFooter className="gap-3">
+          <AlertDialogCancel onClick={onClose} className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] text-gray-400 hover:text-brand-black border-none bg-transparent">
+            {cancelText}
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
-            className={getVariantClass()}
+            className={cn(
+              "h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl flex-1 px-8",
+              getVariantClass()
+            )}
           >
             {confirmText}
           </AlertDialogAction>

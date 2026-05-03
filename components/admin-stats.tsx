@@ -8,13 +8,16 @@ interface StatCardProps {
 
 export function StatCard({ label, value, isValue }: StatCardProps) {
   return (
-    <Card className="flex-1 bg-white border-none shadow-sm">
-      <CardContent className="p-6">
-        <p className="text-sm text-muted-foreground mb-1">{label}</p>
-        <p className="text-5xl font-bold text-secondary">
-          {isValue && <span className="text-sm font-bold text-muted-foreground">R$ </span>}
-          {value}
-        </p>
+    <Card className="flex-1 premium-card bg-white rounded-[2rem] border-none">
+      <CardContent className="p-8">
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-black/40 mb-3">{label}</p>
+        <div className="flex items-baseline gap-1">
+          {isValue && <span className="text-lg font-black text-brand-orange">R$</span>}
+          <p className="text-5xl font-black text-brand-black tracking-tighter">
+            {value}
+          </p>
+        </div>
+        <div className="h-1 w-12 bg-brand-orange rounded-full mt-6 shadow-[0_0_8px_#FF1D55]" />
       </CardContent>
     </Card>
   );

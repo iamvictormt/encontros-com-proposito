@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Search, Filter, Plus, Loader2, ChevronLeft, ChevronRight, Eye } from "lucide-react";
+import { Search, Filter, Plus, Loader2, ChevronLeft, ChevronRight, Eye, Trash } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -17,6 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 export default function AdminProducts() {
   const [products, setProducts] = useState<any[]>([]);
@@ -125,136 +126,169 @@ export default function AdminProducts() {
   );
 
   return (
-    <div className="space-y-8 bg-white p-4 rounded-md">
+    <div className="space-y-16">
       <section>
-        <h2 className="text-xl font-bold text-black mb-6">Estatísticas Rápidas</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="h-1 w-8 bg-brand-orange rounded-full" />
+          <h2 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">
+            Status da Loja
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {stats.map((stat, i) => (
             <StatCard key={i} {...stat} />
           ))}
         </div>
       </section>
 
-      <section className="space-y-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <h2 className="text-xl font-bold text-black">Loja & Produtos</h2>
+      <section className="space-y-12">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8">
+          <div className="space-y-2">
+            <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
+              Gestão Comercial
+            </span>
+            <h2 className="text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
+              Loja & <span className="text-brand-red">Produtos</span>
+            </h2>
+          </div>
 
-          <div className="flex flex-wrap items-center gap-4 w-full md:w-auto">
-            <div className="relative flex-1 md:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
+          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-4 w-full lg:w-auto">
+            <div className="relative flex-1 sm:w-80">
+              <Search className="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-brand-green" />
               <Input
-                placeholder="Procurar"
-                className="pl-10 h-10 bg-white border-gray-200 rounded-lg"
+                placeholder="Buscar produtos..."
+                className="pl-12 h-14 bg-white border-brand-green/10 rounded-2xl focus:ring-brand-orange/20 focus:border-brand-orange transition-all w-full"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="h-10 border-gray-200 bg-white text-gray-400 gap-2 flex-1 sm:flex-none"
-                >
-                  <Filter className="h-4 w-4 text-black" />
-                  <span className="text-sm">
-                    Filtro: <span className="text-black font-medium">{filterType === "recent" ? "Mais recente" : "Mais antigo"}</span>
-                  </span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 bg-white">
-                <DropdownMenuItem 
-                  onClick={() => setFilterType("recent")}
-                  className={filterType === "recent" ? "bg-gray-100 font-bold" : ""}
-                >
-                  Mais recente
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => setFilterType("old")}
-                  className={filterType === "old" ? "bg-gray-100 font-bold" : ""}
-                >
-                  Mais antigo
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex gap-4 w-full sm:w-auto">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="h-14 px-6 border-brand-black/10 bg-white rounded-2xl text-brand-black font-black uppercase tracking-widest text-[10px] hover:bg-brand-black hover:text-white transition-all flex-1 sm:flex-none gap-3"
+                  >
+                    <Filter className="h-4 w-4 text-brand-orange" />
+                    <span>
+                      {filterType === "recent" ? "Recentes" : "Antigos"}
+                    </span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 glass border-white/20 p-2 rounded-2xl">
+                  <DropdownMenuItem 
+                    onClick={() => setFilterType("recent")}
+                    className={cn(
+                      "rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest transition-all",
+                      filterType === "recent" ? "bg-brand-black text-white" : "text-brand-black/60 hover:bg-brand-black/5"
+                    )}
+                  >
+                    Mais Recentes
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => setFilterType("old")}
+                    className={cn(
+                      "rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest transition-all",
+                      filterType === "old" ? "bg-brand-black text-white" : "text-brand-black/60 hover:bg-brand-black/5"
+                    )}
+                  >
+                    Mais Antigos
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-            <Button 
-              onClick={() => { setSelectedProduct(null); setIsModalOpen(true); }}
-              className="h-10 bg-secondary hover:bg-secondary/90 text-white gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              <span>Novo Produto</span>
-            </Button>
+              <Button 
+                onClick={() => { setSelectedProduct(null); setIsModalOpen(true); }}
+                className="h-14 px-8 bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-lg shadow-brand-green/20 flex-1 sm:flex-none gap-3"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Novo Produto</span>
+              </Button>
+            </div>
           </div>
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center py-12"><Loader2 className="animate-spin text-primary w-8 h-8" /></div>
+          <div className="flex justify-center py-24 grayscale opacity-30"><Loader2 className="animate-spin text-brand-black w-12 h-12" /></div>
         ) : (
-          <div className="space-y-6">
-            {/* Cards for Mobile */}
-            <div className="grid grid-cols-1 gap-4 lg:hidden">
+          <div className="space-y-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {paginatedProducts.map((product, i) => (
-                <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 space-y-4">
-                  <div className="flex items-center gap-4">
-                    <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                      <Image src={product.image} alt={product.name} fill className="object-cover" />
+                <div key={i} className="group premium-card bg-white rounded-[2rem] border-none shadow-sm overflow-hidden flex flex-col">
+                  <div className="relative h-64 overflow-hidden">
+                    <Image 
+                      src={product.image || "/placeholder.svg"} 
+                      alt={product.name} 
+                      fill 
+                      className="object-cover transition-transform duration-700 group-hover:scale-110" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-brand-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    
+                    <div className="absolute left-6 top-6 z-10">
+                      <span className="glass px-4 py-2 rounded-xl text-[10px] font-black text-brand-black uppercase tracking-widest shadow-lg">
+                        {product.type}
+                      </span>
                     </div>
-                    <div className="min-w-0">
-                      <p className="font-bold text-black">{product.name}</p>
-                      <p className="text-sm text-secondary font-bold">R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}</p>
+
+                    <div className="absolute right-6 top-6 flex flex-col gap-3 z-10 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300">
+                      <button 
+                        onClick={() => handleView(product)}
+                        className="w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow-xl hover:bg-brand-orange hover:text-white transition-colors cursor-pointer text-brand-black"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </button>
+                    </div>
+
+                    <div className="absolute bottom-6 left-6 z-10">
+                      <span className="glass-dark px-4 py-2 rounded-xl text-sm font-black text-white shadow-lg">
+                        {formatBRL(product.price)}
+                      </span>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button onClick={() => handleEdit(product)} size="sm" className="bg-accent hover:bg-accent/90 text-white flex-1">Editar</Button>
-                    <Button onClick={() => handleDelete(product.id)} size="sm" className="bg-primary hover:bg-primary/90 text-white flex-1">Deletar</Button>
+
+                  <div className="p-8 flex flex-col flex-1">
+                    <div className="mb-6 space-y-2">
+                      <p className="text-[9px] font-black uppercase tracking-[0.2em] text-brand-black/40">{product.category}</p>
+                      <h3 className="text-xl font-black text-brand-black leading-tight line-clamp-2 uppercase tracking-tight group-hover:text-brand-orange transition-colors">
+                        {product.name}
+                      </h3>
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                        Estoque: <span className={cn(product.stock > 0 ? "text-brand-green" : "text-brand-red")}>{product.stock} unidades</span>
+                      </p>
+                    </div>
+
+                    <div className="mt-auto pt-6 border-t border-brand-green/5 flex gap-2">
+                      <Button
+                        onClick={() => handleEdit(product)}
+                        className="flex-1 bg-brand-black hover:bg-brand-black/80 text-white font-black uppercase tracking-widest text-[10px] px-8 h-12 rounded-xl transition-all"
+                      >
+                        Editar
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => handleDelete(product.id)}
+                        className="w-12 h-12 border-brand-red/10 text-brand-red hover:bg-brand-red hover:text-white rounded-xl transition-all flex items-center justify-center p-0"
+                      >
+                        <Trash className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Table for Desktop */}
-            <div className="hidden lg:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-              <table className="w-full text-left">
-                <thead className="bg-gray-50/50 text-sm text-muted-foreground">
-                  <tr>
-                    <th className="px-6 py-4 font-medium">Produto</th>
-                    <th className="px-6 py-4 font-medium">Tipo</th>
-                    <th className="px-6 py-4 font-medium">Categoria</th>
-                    <th className="px-6 py-4 font-medium">Tema</th>
-                    <th className="px-6 py-4 font-medium">Preço</th>
-                    <th className="px-6 py-4 font-medium">Ação</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {paginatedProducts.map((product, i) => (
-                    <tr key={i} className="group hover:bg-gray-50/50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-4">
-                          <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                            <Image src={product.image} alt={product.name} fill className="object-cover" />
-                          </div>
-                          <div>
-                            <p className="font-bold text-black">{product.name}</p>
-                            <p className="text-sm text-muted-foreground">Estoque: {product.stock}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-black">{product.type}</td>
-                      <td className="px-6 py-4 text-sm text-black">{product.category}</td>
-                      <td className="px-6 py-4 text-sm text-black">{product.theme || "-"}</td>
-                      <td className="px-6 py-4 text-sm text-black font-bold">{formatBRL(product.price)}</td>
-                      <td className="px-6 py-4">
-                        <div className="flex gap-2">
-                          <Button onClick={() => handleEdit(product)} size="sm" className="bg-accent hover:bg-accent/90 text-white">Editar</Button>
-                          <Button onClick={() => handleDelete(product.id)} size="sm" className="bg-primary hover:bg-primary/90 text-white">Deletar</Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            {paginatedProducts.length === 0 && (
+              <div className="text-center py-24 glass rounded-[2.5rem] border-dashed border-brand-green/20">
+                <div className="text-6xl mb-6 grayscale opacity-50">🛍️</div>
+                <h3 className="text-2xl font-black text-brand-black mb-2 uppercase tracking-tight">
+                  Nenhum produto encontrado
+                </h3>
+                <p className="text-gray-500 max-w-md mx-auto text-sm leading-relaxed px-4 font-medium">
+                  Não encontramos itens com esses critérios de busca.
+                </p>
+              </div>
+            )}
 
             <AdminPagination 
               currentPage={currentPage}

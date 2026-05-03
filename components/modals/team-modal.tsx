@@ -49,42 +49,56 @@ export function TeamModal({ isOpen, onClose, onSave, member }: TeamModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Editar Cargo: {member?.full_name}</DialogTitle>
+      <DialogContent className="bg-white rounded-[2.5rem] border-none shadow-2xl p-8 sm:p-12 max-w-md">
+        <DialogHeader className="space-y-3 mb-8">
+          <DialogTitle className="text-3xl font-black uppercase tracking-tighter text-brand-black leading-tight">
+            Gerenciar <span className="text-brand-green">Acesso</span>
+          </DialogTitle>
+          <p className="text-gray-500 font-medium text-sm">
+            Defina o cargo e as permissões administrativas para {member?.full_name?.split(' ')[0]}.
+          </p>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6 pt-4">
-          <div className="space-y-2">
-            <Label htmlFor="role">Cargo</Label>
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="space-y-3">
+            <Label htmlFor="role" className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+              Cargo / Função
+            </Label>
             <Input 
               id="role" 
-              placeholder="Ex: Gerente, Vendedor, Fotógrafo" 
+              placeholder="Ex: Gerente Comercial" 
+              className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white transition-all font-bold"
               value={formData.role} 
               onChange={(e) => setFormData({ ...formData, role: e.target.value })} 
               required 
             />
           </div>
 
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="isAdmin" 
-              checked={formData.isAdmin}
-              onCheckedChange={(checked) => setFormData({ ...formData, isAdmin: checked === true })}
-            />
-            <Label 
-              htmlFor="isAdmin"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Acesso de Administrador
-            </Label>
+          <div className="p-4 rounded-2xl bg-brand-black/5 border border-brand-black/5">
+            <div className="flex items-center gap-3">
+              <Checkbox 
+                id="isAdmin" 
+                checked={formData.isAdmin}
+                onCheckedChange={(checked) => setFormData({ ...formData, isAdmin: checked === true })}
+                className="w-5 h-5 rounded-lg border-brand-black/20 data-[state=checked]:bg-brand-green data-[state=checked]:border-brand-green"
+              />
+              <div className="space-y-0.5">
+                <Label 
+                  htmlFor="isAdmin"
+                  className="text-xs font-black uppercase tracking-widest text-brand-black cursor-pointer"
+                >
+                  Permissão de Administrador
+                </Label>
+                <p className="text-[10px] text-gray-500 font-medium leading-none">Acesso total ao painel de controle.</p>
+              </div>
+            </div>
           </div>
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose} className="text-black">
+          <DialogFooter className="pt-4 gap-3">
+            <Button type="button" variant="ghost" onClick={onClose} className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] text-gray-400 hover:text-brand-black">
               Cancelar
             </Button>
-            <Button type="submit" className="bg-secondary hover:bg-secondary/90 text-white">
+            <Button type="submit" className="flex-1 h-14 rounded-2xl bg-brand-black hover:bg-brand-black/90 text-white font-black uppercase tracking-widest text-[10px] shadow-xl shadow-brand-black/20">
               Salvar Alterações
             </Button>
           </DialogFooter>

@@ -15,12 +15,13 @@ interface StatBoxProps {
 
 export function StatBox({ label, value, prefix, className = "" }: StatBoxProps) {
   return (
-    <div className={`bg-[#F8F9FA] p-6 rounded-2xl border border-gray-100 flex flex-col gap-2 ${className}`}>
-      <span className="text-gray-400 text-sm font-medium">{label}</span>
+    <div className={`premium-card bg-white p-8 rounded-[2rem] flex flex-col border-none ${className}`}>
+      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-black/40 mb-3">{label}</span>
       <div className="flex items-baseline gap-1">
-        {prefix && <span className="text-[#1A4B40] text-xl font-bold">{prefix}</span>}
-        <span className="text-[#1A4B40] text-4xl font-bold tracking-tight">{value}</span>
+        {prefix && <span className="text-lg font-black text-brand-orange">{prefix}</span>}
+        <span className="text-5xl font-black text-brand-black tracking-tighter">{value}</span>
       </div>
+      <div className="h-1 w-12 bg-brand-orange rounded-full mt-6 shadow-[0_0_8px_#FF1D55]" />
     </div>
   );
 }
@@ -92,30 +93,33 @@ interface ProductListItemProps {
 
 export function ProductListItem({ image, name, stock, profit, units, maxUnits }: ProductListItemProps) {
   return (
-    <div className="flex items-center justify-between p-4 bg-white hover:bg-gray-50 transition-colors rounded-xl">
-      <div className="flex items-center gap-4">
-        <div className="relative h-16 w-16 rounded-lg overflow-hidden bg-gray-100 border border-gray-100">
-          <Image src={image} alt={name} fill className="object-cover" />
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-6 bg-white hover:bg-brand-black/5 transition-all duration-300 rounded-3xl group">
+      <div className="flex items-center gap-6 mb-4 sm:mb-0">
+        <div className="relative h-20 w-20 rounded-2xl overflow-hidden shadow-md border border-brand-green/5 flex-shrink-0">
+          <Image src={image} alt={name} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
         </div>
         <div>
-          <h4 className="font-bold text-black text-sm">{name}</h4>
-          <p className="text-gray-400 text-xs">Estoque: {stock} Disponíveis</p>
+          <h4 className="font-black text-brand-black text-lg uppercase tracking-tighter group-hover:text-brand-orange transition-colors">{name}</h4>
+          <p className="text-[10px] font-black uppercase tracking-widest text-brand-black/40 mt-1">
+            Estoque: <span className={stock > 10 ? "text-brand-green" : "text-brand-red"}>{stock} DISPONÍVEIS</span>
+          </p>
         </div>
       </div>
       
-      <div className="flex items-center gap-12">
-        <div className="text-right">
-          <span className="text-gray-400 text-xs block">Lucro:</span>
-          <span className="font-bold text-black">{profit.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+      <div className="flex flex-wrap items-center gap-8 sm:gap-16">
+        <div className="text-left sm:text-right">
+          <span className="text-[9px] font-black uppercase tracking-widest text-brand-black/30 block mb-1">Lucro Gerado:</span>
+          <span className="text-xl font-black text-brand-black">R$ {profit.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
         </div>
         
-        <div className="w-32">
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-[10px] text-gray-400 font-medium underline decoration-gray-300 underline-offset-4">
-               {units} unidades
+        <div className="flex-1 sm:w-48 min-w-[200px]">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-[10px] font-black uppercase tracking-widest text-brand-black/40">
+               Volume de Vendas
             </span>
+            <span className="text-[10px] font-black text-brand-orange">{units} un.</span>
           </div>
-          <Progress value={(units / maxUnits) * 100} className="h-1.5 bg-gray-100" indicatorClassName="bg-[#1A4B40]" />
+          <Progress value={(units / maxUnits) * 100} className="h-2 bg-brand-black/5 rounded-full overflow-hidden" indicatorClassName="bg-brand-orange shadow-[0_0_8px_#FF1D55]" />
         </div>
       </div>
     </div>
@@ -131,22 +135,25 @@ interface InviteSourceItemProps {
 
 export function InviteSourceItem({ label, invites, accepted, maxInvites }: InviteSourceItemProps) {
   return (
-    <div className="flex items-center justify-between p-4 bg-white hover:bg-gray-50 transition-colors rounded-xl">
-      <div className="w-1/4">
-        <h4 className="font-bold text-[#1A4B40] text-sm">{label}:</h4>
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-6 bg-white hover:bg-brand-black/5 transition-all duration-300 rounded-3xl group">
+      <div className="w-full sm:w-1/4 mb-4 sm:mb-0">
+        <h4 className="font-black text-brand-black text-lg uppercase tracking-tighter group-hover:text-brand-orange transition-colors">{label}</h4>
+        <p className="text-[10px] font-black uppercase tracking-widest text-brand-black/40 mt-1">Canal de Origem</p>
       </div>
       
-      <div className="w-1/3 px-4">
-        <div className="flex justify-start mb-1">
-          <span className="text-[10px] text-gray-400 font-medium underline decoration-gray-300 underline-offset-4">
-            {invites} Convites
+      <div className="flex-1 px-0 sm:px-12 mb-4 sm:mb-0">
+        <div className="flex justify-between mb-2">
+          <span className="text-[10px] font-black uppercase tracking-widest text-brand-black/40">
+            Total de Convites
           </span>
+          <span className="text-[10px] font-black text-brand-green">{invites}</span>
         </div>
-        <Progress value={(invites / maxInvites) * 100} className="h-1.5 bg-gray-100" indicatorClassName="bg-[#1A4B40]" />
+        <Progress value={(invites / maxInvites) * 100} className="h-2 bg-brand-black/5 rounded-full overflow-hidden" indicatorClassName="bg-brand-green shadow-[0_0_8px_#1F4C47]" />
       </div>
 
-      <div className="w-1/3 text-right">
-        <span className="font-bold text-black text-sm">{accepted} Convites Aceitos</span>
+      <div className="w-full sm:w-1/4 text-left sm:text-right">
+        <span className="text-[9px] font-black uppercase tracking-widest text-brand-black/30 block mb-1">Aceitos:</span>
+        <span className="text-xl font-black text-brand-black">{accepted} Convites</span>
       </div>
     </div>
   );

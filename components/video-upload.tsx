@@ -68,7 +68,7 @@ export function VideoUpload({ value, onChange, onRemove, disabled }: VideoUpload
 
   if (value) {
     return (
-      <div className="relative w-full aspect-video rounded-lg overflow-hidden group bg-black">
+      <div className="relative w-full aspect-video rounded-2xl overflow-hidden group bg-brand-black border border-brand-green/10 shadow-lg">
         <video
           ref={videoRef}
           src={value}
@@ -77,8 +77,12 @@ export function VideoUpload({ value, onChange, onRemove, disabled }: VideoUpload
         />
         {!disabled && (
           <button
-            onClick={onRemove}
-            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition z-10"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onRemove();
+            }}
+            className="absolute top-4 right-4 p-2 bg-white/90 hover:bg-brand-red hover:text-white text-brand-red rounded-xl shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-[-10px] group-hover:translate-y-0 z-20"
           >
             <X className="w-4 h-4" />
           </button>
@@ -88,19 +92,19 @@ export function VideoUpload({ value, onChange, onRemove, disabled }: VideoUpload
   }
 
   return (
-    <div className="relative border-2 border-dashed border-gray-200 rounded-lg p-8 flex flex-col items-center justify-center gap-4 bg-gray-50/50">
-      <div className="p-4 bg-white rounded-full shadow-sm">
+    <div className="relative border-2 border-dashed border-brand-green/10 rounded-2xl p-8 flex flex-col items-center justify-center gap-4 bg-white/50 backdrop-blur-sm transition-all hover:bg-white/80 hover:border-brand-green/30 group">
+      <div className="p-5 bg-white rounded-2xl shadow-sm group-hover:scale-110 transition-transform duration-300 border border-brand-green/5">
         {isUploading ? (
-          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          <Loader2 className="w-8 h-8 text-brand-green animate-spin" />
         ) : (
-          <Play className="w-8 h-8 text-primary fill-primary" />
+          <Play className="w-8 h-8 text-brand-green fill-brand-green" />
         )}
       </div>
       <div className="text-center">
-        <p className="text-sm font-medium text-black">
-          {isUploading ? "Enviando..." : "Clique para enviar vídeo de apresentação"}
+        <p className="text-[11px] font-bold text-brand-black uppercase tracking-widest">
+          {isUploading ? "Enviando..." : "Enviar Vídeo"}
         </p>
-        <p className="text-xs text-muted-foreground mt-1">MP4, WebM ou OGG (Max. 90s)</p>
+        <p className="text-[9px] text-brand-black/40 font-medium mt-1 uppercase tracking-wider">MP4, WebM ou OGG (Max. 90s)</p>
       </div>
       <input
         type="file"

@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { TeamModal } from "@/components/modals/team-modal";
 import { ConfirmModal } from "@/components/modals/confirm-modal";
@@ -113,44 +114,59 @@ export default function AdminTeam() {
     });
 
   return (
-    <section className="space-y-6 bg-white p-4 rounded-md">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <h2 className="text-xl font-bold text-black">Atribuição de Cargos</h2>
-        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-4 w-full md:w-auto">
-          <div className="relative flex-1 sm:w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
+    <div className="space-y-12">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8">
+        <div className="space-y-2">
+          <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
+            Gestão Interna
+          </span>
+          <h2 className="text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
+            Equipe & <span className="text-brand-green">Cargos</span>
+          </h2>
+        </div>
+
+        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-4 w-full lg:w-auto">
+          <div className="relative flex-1 sm:w-80">
+            <Search className="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-brand-green" />
             <Input
-              className="pl-10 h-10 bg-white border-gray-200 rounded-lg w-full"
-              placeholder="Procurar usuário"
+              placeholder="Buscar por nome ou e-mail..."
+              className="pl-12 h-14 bg-white border-brand-green/10 rounded-2xl focus:ring-brand-orange/20 focus:border-brand-orange transition-all w-full"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+
           <div className="flex gap-4 w-full sm:w-auto">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="h-10 border-gray-200 bg-white text-gray-400 gap-2 flex-1 sm:flex-none"
+                  className="h-14 px-6 border-brand-black/10 bg-white rounded-2xl text-brand-black font-black uppercase tracking-widest text-[10px] hover:bg-brand-black hover:text-white transition-all flex-1 sm:flex-none gap-3"
                 >
-                  <Filter className="h-4 w-4 text-black" />
-                  <span className="text-sm">
-                    Filtro: <span className="text-black font-medium">{filterType === "recent" ? "Mais recente" : "Mais antigo"}</span>
+                  <Filter className="h-4 w-4 text-brand-orange" />
+                  <span>
+                    {filterType === "recent" ? "Recentes" : "Antigos"}
                   </span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 bg-white">
+              <DropdownMenuContent align="end" className="w-56 glass border-white/20 p-2 rounded-2xl">
                 <DropdownMenuItem 
                   onClick={() => setFilterType("recent")}
-                  className={filterType === "recent" ? "bg-gray-100 font-bold" : ""}
+                  className={cn(
+                    "rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest transition-all",
+                    filterType === "recent" ? "bg-brand-black text-white" : "text-brand-black/60 hover:bg-brand-black/5"
+                  )}
                 >
-                  Mais recente
+                  Mais Recentes
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={() => setFilterType("old")}
-                  className={filterType === "old" ? "bg-gray-100 font-bold" : ""}
+                  className={cn(
+                    "rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest transition-all",
+                    filterType === "old" ? "bg-brand-black text-white" : "text-brand-black/60 hover:bg-brand-black/5"
+                  )}
                 >
-                  Mais antigo
+                  Mais Antigos
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -159,13 +175,15 @@ export default function AdminTeam() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-12"><Loader2 className="animate-spin text-primary w-8 h-8" /></div>
+        <div className="flex justify-center py-24 grayscale opacity-30"><Loader2 className="animate-spin text-brand-black w-12 h-12" /></div>
       ) : (
-        <RoleAssignmentList 
-          team={filteredTeam} 
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+        <div className="bg-white rounded-[2.5rem] p-8 shadow-sm">
+          <RoleAssignmentList 
+            team={filteredTeam} 
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        </div>
       )}
 
       <TeamModal
@@ -186,6 +204,6 @@ export default function AdminTeam() {
         onClose={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
         variant={confirmModal.variant}
       />
-    </section>
+    </div>
   );
 }

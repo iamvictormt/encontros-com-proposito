@@ -50,12 +50,25 @@ export function ImageUpload({ value, onChange, onRemove, disabled, aspect = 'vid
 
   if (value) {
     return (
-      <div className={cn("relative w-full rounded-lg overflow-hidden group", aspect === 'square' ? 'aspect-square' : 'aspect-video')}>
-        <Image src={value} alt="Upload" fill className="object-cover" />
+      <div className={cn(
+        "relative w-full rounded-2xl overflow-hidden group border border-brand-green/10 shadow-sm transition-all hover:shadow-md", 
+        aspect === 'square' ? 'aspect-square' : 'aspect-video'
+      )}>
+        <Image 
+          src={value} 
+          alt="Upload" 
+          fill 
+          className="object-cover transition-transform duration-500 group-hover:scale-105" 
+        />
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300" />
         {!disabled && (
           <button
-            onClick={onRemove}
-            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onRemove();
+            }}
+            className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-brand-red hover:text-white text-brand-red rounded-xl shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-[-10px] group-hover:translate-y-0"
           >
             <X className="w-4 h-4" />
           </button>
@@ -65,19 +78,22 @@ export function ImageUpload({ value, onChange, onRemove, disabled, aspect = 'vid
   }
 
   return (
-    <div className={cn("relative w-full border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center bg-gray-50/50", aspect === 'square' ? 'aspect-square' : 'aspect-video')}>
-      <div className="p-3 bg-white rounded-full shadow-sm mb-2">
+    <div className={cn(
+      "relative w-full border-2 border-dashed border-brand-green/10 rounded-2xl flex flex-col items-center justify-center bg-white/50 backdrop-blur-sm transition-all hover:bg-white/80 hover:border-brand-green/30 group", 
+      aspect === 'square' ? 'aspect-square' : 'aspect-video'
+    )}>
+      <div className="p-4 bg-white rounded-2xl shadow-sm mb-3 group-hover:scale-110 transition-transform duration-300 border border-brand-green/5">
         {isUploading ? (
-          <Loader2 className="w-6 h-6 text-primary animate-spin" />
+          <Loader2 className="w-6 h-6 text-brand-green animate-spin" />
         ) : (
-          <Upload className="w-6 h-6 text-primary" />
+          <Upload className="w-6 h-6 text-brand-green" />
         )}
       </div>
       <div className="text-center px-4">
-        <p className="text-[13px] font-medium text-black">
-          {isUploading ? "Enviando..." : "Clique para enviar imagem"}
+        <p className="text-[11px] font-bold text-brand-black uppercase tracking-widest">
+          {isUploading ? "Enviando..." : "Enviar Foto"}
         </p>
-        <p className="text-[10px] text-muted-foreground mt-0.5">PNG, JPG ou WEBP (Max. 5MB)</p>
+        <p className="text-[9px] text-brand-black/40 font-medium mt-1">PNG, JPG ou WEBP</p>
       </div>
       <input
         type="file"

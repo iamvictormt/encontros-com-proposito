@@ -15,6 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 export default function AdminBrands() {
   const [brands, setBrands] = useState<any[]>([]);
@@ -113,50 +114,66 @@ export default function AdminBrands() {
   );
 
   return (
-    <div className="space-y-6 bg-white p-4 rounded-md">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <h2 className="text-xl font-bold text-black">Marcas parceiras</h2>
-        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-4 w-full md:w-auto">
-          <div className="relative flex-1 sm:w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
+    <div className="space-y-12">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8">
+        <div className="space-y-2">
+          <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
+            Gestão de Marcas
+          </span>
+          <h2 className="text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
+            Marcas <span className="text-brand-orange">Parceiras</span>
+          </h2>
+        </div>
+
+        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-4 w-full lg:w-auto">
+          <div className="relative flex-1 sm:w-80">
+            <Search className="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-brand-green" />
             <Input
-              className="pl-10 h-10 bg-white border-gray-200 rounded-lg w-full"
-              placeholder="Procurar"
+              placeholder="Buscar marcas..."
+              className="pl-12 h-14 bg-white border-brand-green/10 rounded-2xl focus:ring-brand-orange/20 focus:border-brand-orange transition-all w-full"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <div className="flex gap-2">
+
+          <div className="flex gap-4 w-full sm:w-auto">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="h-10 border-gray-200 bg-white text-gray-400 gap-2 flex-1 sm:flex-none"
+                  className="h-14 px-6 border-brand-black/10 bg-white rounded-2xl text-brand-black font-black uppercase tracking-widest text-[10px] hover:bg-brand-black hover:text-white transition-all flex-1 sm:flex-none gap-3"
                 >
-                  <Filter className="h-4 w-4 text-black" />
-                  <span className="text-sm">
-                    Filtro: <span className="text-black font-medium">{filterType === "recent" ? "Mais recente" : "Mais antigo"}</span>
+                  <Filter className="h-4 w-4 text-brand-orange" />
+                  <span>
+                    {filterType === "recent" ? "Recentes" : "Antigas"}
                   </span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 bg-white">
+              <DropdownMenuContent align="end" className="w-56 glass border-white/20 p-2 rounded-2xl">
                 <DropdownMenuItem 
                   onClick={() => setFilterType("recent")}
-                  className={filterType === "recent" ? "bg-gray-100 font-bold" : ""}
+                  className={cn(
+                    "rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest transition-all",
+                    filterType === "recent" ? "bg-brand-black text-white" : "text-brand-black/60 hover:bg-brand-black/5"
+                  )}
                 >
-                  Mais recente
+                  Mais Recentes
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={() => setFilterType("old")}
-                  className={filterType === "old" ? "bg-gray-100 font-bold" : ""}
+                  className={cn(
+                    "rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest transition-all",
+                    filterType === "old" ? "bg-brand-black text-white" : "text-brand-black/60 hover:bg-brand-black/5"
+                  )}
                 >
-                  Mais antigo
+                  Mais Antigas
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
             <Button 
               onClick={() => { setSelectedBrand(null); setIsModalOpen(true); }}
-              className="h-10 bg-secondary hover:bg-secondary/90 text-white gap-2 flex-1"
+              className="h-14 px-8 bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-lg shadow-brand-green/20 flex-1 sm:flex-none gap-3"
             >
               <Plus className="h-4 w-4" />
               <span>Nova Marca</span>
@@ -166,15 +183,27 @@ export default function AdminBrands() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-12"><Loader2 className="animate-spin text-primary w-8 h-8" /></div>
+        <div className="flex justify-center py-24 grayscale opacity-30"><Loader2 className="animate-spin text-brand-black w-12 h-12" /></div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-12">
           <BrandContentTable 
             brands={paginatedBrands} 
             onView={handleView}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />
+
+          {paginatedBrands.length === 0 && (
+            <div className="text-center py-24 glass rounded-[2.5rem] border-dashed border-brand-green/20">
+              <div className="text-6xl mb-6 grayscale opacity-50">🏷️</div>
+              <h3 className="text-2xl font-black text-brand-black mb-2 uppercase tracking-tight">
+                Nenhuma marca encontrada
+              </h3>
+              <p className="text-gray-500 max-w-md mx-auto text-sm leading-relaxed px-4 font-medium">
+                Não encontramos registros com esses critérios de busca.
+              </p>
+            </div>
+          )}
 
           <AdminPagination 
             currentPage={currentPage}
