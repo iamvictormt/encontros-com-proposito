@@ -12,6 +12,7 @@ import {
   PackageOpen,
   ShoppingCart,
   LogOut,
+  CreditCard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
@@ -38,6 +39,7 @@ export const menuSections = [
       { icon: ShoppingCart, label: "Loja & Produtos", href: "/admin/products" },
       { icon: PieChart, label: "Relatórios", href: "/admin/reports" },
       { icon: Users, label: "Equipe & Cargos", href: "/admin/team" },
+      { icon: CreditCard, label: "Cartões Físicos", href: "/admin/card-requests" },
     ],
   },
   {

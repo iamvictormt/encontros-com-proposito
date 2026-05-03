@@ -75,8 +75,17 @@ export default async function MemberCard() {
     await sql`UPDATE cards SET qr_code_token = ${qrCodeToken} WHERE id = ${card.id}`;
   }
 
+  const physicalRequests = await sql`
+    SELECT status FROM physical_card_requests 
+    WHERE card_id = ${card.id} AND status != 'CANCELADO'
+    ORDER BY created_at DESC LIMIT 1
+  `;
+
   return (
     <MemberCardPage 
+      cardId={card.id}
+      hasPhysicalRequest={physicalRequests.length > 0}
+      physicalRequestStatus={physicalRequests[0]?.status}
       cardType={card.type as "GREEN" | "PINK"}
       name={card.name}
       birthDate={card.birth_date ? new Date(card.birth_date).toLocaleDateString('pt-BR') : undefined}

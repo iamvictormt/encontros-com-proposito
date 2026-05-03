@@ -180,6 +180,27 @@ async function setupDatabase() {
       );
     `;
 
+    // Physical Card Requests table
+    await sql`
+      CREATE TABLE IF NOT EXISTS physical_card_requests (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+        card_id UUID REFERENCES cards(id) ON DELETE CASCADE,
+        full_name TEXT NOT NULL,
+        cep TEXT NOT NULL,
+        address TEXT NOT NULL,
+        number TEXT NOT NULL,
+        complement TEXT,
+        neighborhood TEXT NOT NULL,
+        city TEXT NOT NULL,
+        state TEXT NOT NULL,
+        status TEXT DEFAULT 'PENDENTE', -- 'PENDENTE', 'PAGO', 'ENVIADO', 'CANCELADO'
+        amount DECIMAL(10, 2) DEFAULT 50.00,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
     console.log('Database setup completed successfully.');
   } catch (error) {
     console.error('Error setting up database:', error);
