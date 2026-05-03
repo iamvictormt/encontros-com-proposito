@@ -19,7 +19,7 @@ export async function GET() {
     }
 
     const results = await sql`
-      SELECT id, full_name, email, phone, is_admin
+      SELECT id, full_name, email, phone, birth_date, is_admin
       FROM users
       WHERE id = ${payload.userId}
     `;
@@ -37,6 +37,7 @@ export async function GET() {
           fullName: user.full_name,
           email: user.email,
           phone: user.phone,
+          birthDate: user.birth_date,
           isAdmin: user.is_admin,
         },
       },

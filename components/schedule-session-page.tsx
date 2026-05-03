@@ -60,7 +60,7 @@ export function ScheduleSessionPage() {
              <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
               Reservas & Consultoria
             </span>
-            <h1 className="text-4xl md:text-6xl font-black text-brand-black uppercase tracking-tighter leading-none">
+            <h1 className="text-4xl md:text-6xl font-black text-brand-black uppercase tracking-tighter leading-none mt-4">
               Agende sua <span className="text-brand-orange">Sessão</span>
             </h1>
             <p className="text-gray-500 font-medium max-w-xl mx-auto text-lg">

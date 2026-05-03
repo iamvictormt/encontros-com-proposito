@@ -2,6 +2,7 @@ import { neon } from '@neondatabase/serverless';
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CheckCircle2, MapPin, Calendar, Award, Users } from "lucide-react";
+import { cn } from '@/lib/utils';
 
 export default async function PublicProfilePage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;

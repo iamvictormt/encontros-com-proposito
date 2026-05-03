@@ -81,7 +81,7 @@ const FilterContent = ({
           >
             <span className="text-[11px] font-black uppercase tracking-widest">{cat.label}</span>
             {selectedCategory === cat.id && (
-              <div className="w-1.5 h-1.5 rounded-full bg-brand-orange shadow-[0_0_8px_#F18D42]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-brand-orange shadow-[0_0_8px_#FF1D55]" />
             )}
           </button>
         ))}

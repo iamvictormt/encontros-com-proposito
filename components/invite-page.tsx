@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Mail, Users, ShieldCheck, Share2, CheckCircle2, Share } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 export function InvitePage() {
   const handleCopyToken = () => {
@@ -42,7 +43,7 @@ export function InvitePage() {
            <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
             Clube de Vantagens
           </span>
-          <h1 className="text-4xl md:text-6xl font-black text-brand-black uppercase tracking-tighter leading-none">
+          <h1 className="text-4xl md:text-6xl font-black text-brand-black uppercase tracking-tighter leading-none mt-4">
             Convite com <span className="text-brand-orange">Token</span> Único
           </h1>
           <p className="text-gray-500 font-medium max-w-xl mx-auto text-lg">

@@ -40,7 +40,7 @@ export function SiteHeader() {
                 >
                   {link.label}
                   {isActive && (
-                    <span className="absolute -bottom-2 left-0 h-0.5 w-full bg-brand-orange rounded-full shadow-[0_0_8px_rgba(241,141,66,0.5)]" />
+                    <span className="absolute -bottom-2 left-0 h-0.5 w-full bg-brand-orange rounded-full shadow-[0_0_8px_rgba(255,29,85,0.5)]" />
                   )}
                 </Link>
               );

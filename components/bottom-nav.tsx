@@ -35,7 +35,7 @@ export function BottomNav() {
               isActive ? "text-brand-orange" : "text-white/30 hover:text-white"
             )}
           >
-            <Icon className={cn("h-4 w-4 sm:h-5 sm:w-5 transition-all duration-500", isActive && "scale-110 drop-shadow-[0_0_8px_rgba(241,141,66,0.4)]")} />
+            <Icon className={cn("h-4 w-4 sm:h-5 sm:w-5 transition-all duration-500", isActive && "scale-110 drop-shadow-[0_0_8px_rgba(255,29,85,0.4)]")} />
             <span className={cn(
               "text-[7px] sm:text-[8px] font-black uppercase tracking-[0.15em] sm:tracking-[0.25em] transition-all",
               isActive ? "opacity-100" : "opacity-40"
@@ -43,7 +43,7 @@ export function BottomNav() {
               {link.label}
             </span>
             {isActive && (
-              <span className="absolute -bottom-1 sm:bottom-0 left-1/2 -translate-x-1/2 w-4 sm:w-8 h-0.5 sm:h-1 bg-brand-orange rounded-full shadow-[0_0_15px_#F18D42]" />
+              <span className="absolute -bottom-1 sm:bottom-0 left-1/2 -translate-x-1/2 w-4 sm:w-8 h-0.5 sm:h-1 bg-brand-orange rounded-full shadow-[0_0_15px_#FF1D55]" />
             )}
           </Link>
         );

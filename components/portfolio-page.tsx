@@ -38,7 +38,7 @@ export function PortfolioPage() {
                <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
                 Nossa História & Propósito
               </span>
-              <h1 className="text-5xl md:text-7xl font-black text-brand-black uppercase tracking-tighter leading-[0.85]">
+              <h1 className="text-5xl md:text-7xl font-black text-brand-black uppercase tracking-tighter leading-[0.85] mt-4">
                 Olá, Nós somos <br/>
                 <span className="text-brand-orange">João Carlos</span> <br/>
                 <span className="text-brand-green">&</span> <span className="text-brand-red">Labernarde</span>

@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
 
 export function ActivateCardClient() {
   const router = useRouter();
@@ -82,7 +83,7 @@ export function ActivateCardClient() {
           <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
             Passaporte MeetOff
           </span>
-          <h2 className="text-3xl md:text-5xl font-black text-brand-black uppercase tracking-tighter leading-none">
+          <h2 className="text-3xl md:text-5xl font-black text-brand-black uppercase tracking-tighter leading-none mt-4">
             {step === 1 ? "Ativar" : "Finalizar"} <span className="text-brand-orange">Cartão</span>
           </h2>
           <p className="text-gray-500 font-medium text-sm">

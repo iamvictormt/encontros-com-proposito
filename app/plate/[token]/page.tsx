@@ -58,7 +58,7 @@ export default async function PlatePage({ params }: { params: { token: string } 
             <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em] relative">
               Local Oficial MeetOff
             </span>
-            <h1 className="text-white text-5xl font-black italic tracking-tighter relative">Meet<span className="text-brand-orange">Off</span></h1>
+            <h1 className="text-white text-5xl font-black italic tracking-tighter relative mt-4">Meet<span className="text-brand-orange">Off</span></h1>
           </div>
           
           <div className="p-10 md:p-14 text-center">

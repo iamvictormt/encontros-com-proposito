@@ -56,7 +56,7 @@ export function Login() {
                 <Button
                   onClick={handleLogin}
                   variant="outline"
-                  className="w-full bg-[#8A0204] border-[#8A0204] hover:bg-[#6a0103] text-white font-medium py-5 sm:py-6 text-sm sm:text-base rounded-md hover:text-white"
+                  className="w-full bg-[#FF1D55] border-[#FF1D55] hover:bg-[#d91848] text-white font-medium py-5 sm:py-6 text-sm sm:text-base rounded-md hover:text-white"
                 >
                   {"Entrar"}
                 </Button>
@@ -64,7 +64,7 @@ export function Login() {
                 <Button
                   onClick={handleCreateAccount}
                   variant="outline"
-                  className="w-full bg-[#1F4C47] border-[#1F4C47] hover:bg-[#163a36] text-white font-medium py-5 sm:py-6 text-sm sm:text-base rounded-md hover:text-white"
+                  className="w-full bg-[#0A4742] border-[#0A4742] hover:bg-[#083a36] text-white font-medium py-5 sm:py-6 text-sm sm:text-base rounded-md hover:text-white"
                 >
                   {"Criar uma nova conta"}
                 </Button>
@@ -72,7 +72,7 @@ export function Login() {
                 <Button
                   onClick={handleGuestLogin}
                   variant="outline"
-                  className="w-full border-[#F18D42] text-[#F18D42] hover:bg-[#F18D42] hover:text-white font-medium py-5 sm:py-6 text-sm sm:text-base bg-transparent rounded-md"
+                  className="w-full border-[#FF1D55] text-[#FF1D55] hover:bg-[#FF1D55] hover:text-white font-medium py-5 sm:py-6 text-sm sm:text-base bg-transparent rounded-md"
                 >
                   {"Entrar como convidado"}
                 </Button>

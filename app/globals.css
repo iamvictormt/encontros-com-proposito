@@ -12,53 +12,54 @@ button,
 :root {
   /* Brand colors */
   --black: #000000;
-  --green: #1F4C47;
-  --red: #8A0204;
-  --orange: #F18D42;
+  --white: #FFFFFF;
+  --green: #0A4742;
+  --red: #FF1D55;
+  --orange: #FF1D55;
   
   /* Theme mapping */
-  --background: #fcfcfa;
-  --foreground: #1F4C47;
-  --card: #fcfcfa;
-  --card-foreground: #1F4C47;
-  --popover: #fcfcfa;
-  --popover-foreground: #1F4C47;
-  --primary: #8A0204;
-  --primary-foreground: #fcfcfa;
-  --secondary: #1F4C47;
-  --secondary-foreground: #fcfcfa;
-  --muted: #e8e8e6;
-  --muted-foreground: #6b6b68;
-  --accent: #F18D42;
-  --accent-foreground: #fcfcfa;
-  --destructive: #8A0204;
-  --destructive-foreground: #fcfcfa;
-  --border: #e0e0dd;
-  --input: #e0e0dd;
-  --ring: #F18D42;
+  --background: #FFFFFF;
+  --foreground: #000000;
+  --card: #FFFFFF;
+  --card-foreground: #000000;
+  --popover: #FFFFFF;
+  --popover-foreground: #000000;
+  --primary: #FF1D55;
+  --primary-foreground: #FFFFFF;
+  --secondary: #0A4742;
+  --secondary-foreground: #FFFFFF;
+  --muted: #f4f4f4;
+  --muted-foreground: #71717a;
+  --accent: #FF1D55;
+  --accent-foreground: #FFFFFF;
+  --destructive: #FF1D55;
+  --destructive-foreground: #FFFFFF;
+  --border: #e4e4e7;
+  --input: #e4e4e7;
+  --ring: #FF1D55;
   --radius: 1rem;
 }
 
 .dark {
   --background: #000000;
-  --foreground: #fcfcfa;
+  --foreground: #FFFFFF;
   --card: #0a0a0a;
-  --card-foreground: #fcfcfa;
+  --card-foreground: #FFFFFF;
   --popover: #0a0a0a;
-  --popover-foreground: #fcfcfa;
-  --primary: #F18D42;
+  --popover-foreground: #FFFFFF;
+  --primary: #FF1D55;
   --primary-foreground: #000000;
-  --secondary: #8A0204;
-  --secondary-foreground: #fcfcfa;
+  --secondary: #0A4742;
+  --secondary-foreground: #FFFFFF;
   --muted: #1a1a1a;
   --muted-foreground: #a1a1a1;
-  --accent: #F18D42;
+  --accent: #FF1D55;
   --accent-foreground: #000000;
-  --destructive: #8A0204;
-  --destructive-foreground: #fcfcfa;
+  --destructive: #FF1D55;
+  --destructive-foreground: #FFFFFF;
   --border: #1a1a1a;
   --input: #1a1a1a;
-  --ring: #F18D42;
+  --ring: #FF1D55;
 }
 
 @theme inline {
@@ -90,6 +91,7 @@ button,
 
   /* Custom Brand Utilities */
   --color-brand-black: var(--black);
+  --color-brand-white: var(--white);
   --color-brand-green: var(--green);
   --color-brand-red: var(--red);
   --color-brand-orange: var(--orange);
@@ -115,7 +117,7 @@ button,
     @apply transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 border border-border/50;
   }
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-green via-brand-red to-brand-orange;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-green to-brand-red;
   }
 }
 

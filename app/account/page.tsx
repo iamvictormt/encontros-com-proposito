@@ -4,7 +4,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { User, Mail, Shield, CreditCard, ArrowRight } from "lucide-react";
+import { User, Mail, Shield, CreditCard, ArrowRight, Calendar } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
@@ -39,7 +39,7 @@ export default function AccountPage() {
            <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
             Dashboard Pessoal
           </span>
-          <h1 className="text-4xl md:text-6xl font-black text-brand-black uppercase tracking-tighter leading-none">
+          <h1 className="text-4xl md:text-6xl font-black text-brand-black uppercase tracking-tighter leading-none mt-4">
             Minha <span className="text-brand-orange">Conta</span>
           </h1>
           <p className="text-gray-500 font-medium max-w-xl text-lg">
@@ -60,9 +60,6 @@ export default function AccountPage() {
               </div>
               <div className="space-y-1 relative">
                 <h2 className="font-black text-2xl text-brand-black uppercase tracking-tight">{user.fullName || "Membro MeetOff"}</h2>
-                <p className="text-[10px] font-black text-brand-orange uppercase tracking-[0.2em]">
-                  {user.isAdmin ? "Administrador Master" : "Membro Black Edition"}
-                </p>
               </div>
               <div className="w-full pt-6 border-t border-brand-black/5 relative">
                 <Button variant="outline" className="w-full h-12 rounded-xl border-brand-black/10 font-black uppercase tracking-widest text-[10px] hover:bg-brand-black hover:text-white transition-all">
@@ -72,16 +69,16 @@ export default function AccountPage() {
             </div>
 
             {/* Quick Stats */}
-            <div className="premium-card bg-brand-black p-8 rounded-[2.5rem] text-white space-y-6">
+            <div className="glass p-8 rounded-[2.5rem] space-y-6">
               <h4 className="text-[10px] font-black text-brand-orange uppercase tracking-[0.3em]">Seu Impacto</h4>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <p className="text-2xl font-black tracking-tighter">12</p>
-                  <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Encontros</p>
+                  <p className="text-[9px] font-bold text-black uppercase tracking-widest">Encontros</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-2xl font-black tracking-tighter">04</p>
-                  <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Produtos</p>
+                  <p className="text-[9px] font-bold text-black uppercase tracking-widest">Produtos</p>
                 </div>
               </div>
             </div>
@@ -101,7 +98,7 @@ export default function AccountPage() {
                   </div>
                   <div className="space-y-1">
                     <div className="h-1 w-8 bg-brand-orange rounded-full" />
-                    <p className="text-[8px] font-mono text-white/40 uppercase tracking-widest">MeetOff Card</p>
+                    <p className="text-[8px] font-mono text-white/40 uppercase tracking-widest">Cartão MeetOff</p>
                   </div>
                 </div>
 
@@ -141,6 +138,18 @@ export default function AccountPage() {
                 </div>
 
                 <div className="flex items-center gap-6 group">
+                  <div className="w-14 h-14 rounded-2xl bg-brand-black/5 flex items-center justify-center text-brand-black group-hover:bg-brand-black group-hover:text-white transition-all">
+                    <Calendar size={24} />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Data de Nascimento</p>
+                    <p className="text-brand-black font-black uppercase tracking-tight">
+                      {user.birthDate ? new Date(user.birthDate).toLocaleDateString('pt-BR') : "Não informada"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-6 group">
                   <div className="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-600 group-hover:bg-green-600 group-hover:text-white transition-all">
                     <Shield size={24} />
                   </div>
@@ -148,7 +157,7 @@ export default function AccountPage() {
                     <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Status da Conta</p>
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
-                      <p className="text-green-600 font-black uppercase tracking-tight text-xs">Verificada & Ativa</p>
+                      <p className="text-green-600 font-black uppercase tracking-tight text-xs">Ativa</p>
                     </div>
                   </div>
                 </div>

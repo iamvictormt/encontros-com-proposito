@@ -20,6 +20,7 @@ export interface AuthUser {
   fullName: string;
   email: string;
   phone: string;
+  birthDate?: string;
   isAdmin: boolean;
 }
 

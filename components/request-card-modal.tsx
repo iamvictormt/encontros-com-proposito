@@ -4,19 +4,37 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/use-auth";
+import { useEffect } from "react";
 
 export function RequestCardModal() {
   const router = useRouter();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
+    email: "",
+    password: "",
     birthDate: "",
   });
+
+  useEffect(() => {
+    if (user?.email) {
+      setFormData((prev) => ({ ...prev, email: user.email }));
+    }
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +48,7 @@ export function RequestCardModal() {
       });
 
       if (res.ok) {
-        toast.success("Cartão solicitado e ativado com sucesso!");
+        toast.success("Identidade confirmada e cartão ativado!");
         setIsOpen(false);
         setTimeout(() => {
           window.location.reload();
@@ -49,43 +67,90 @@ export function RequestCardModal() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="w-full py-6 rounded-xl font-bold bg-secondary hover:bg-secondary/90">
+        <Button className="w-full h-14 rounded-2xl bg-brand-green hover:bg-brand-green/90 text-white transition-all font-black uppercase tracking-widest text-[10px] shadow-xl shadow-brand-green/20">
           Solicitar Cartão Verde
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md bg-white">
-        <DialogHeader>
-          <DialogTitle>Solicitar Cartão Verde</DialogTitle>
-          <DialogDescription>
-            Preencha seus dados para gerar sua identidade digital MeetOff.
+      <DialogContent className="sm:max-w-md bg-white rounded-[2.5rem] border-none shadow-2xl">
+        <DialogHeader className="space-y-3">
+          <DialogTitle className="text-2xl font-black uppercase tracking-tighter text-brand-black">
+            Confirmar Identidade
+          </DialogTitle>
+          <DialogDescription className="text-gray-500 font-medium text-sm">
+            Confirme seus dados de acesso para gerar sua identidade digital MeetOff.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 py-4">
+        <form onSubmit={handleSubmit} className="space-y-6 py-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Nome Completo</Label>
+            <Label
+              htmlFor="email"
+              className="text-[10px] font-black uppercase tracking-widest text-gray-400"
+            >
+              E-mail
+            </Label>
             <Input
-              id="name"
-              placeholder="Como aparecerá no cartão"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              id="email"
+              type="email"
+              placeholder="seu@email.com"
+              className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white transition-all"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="birthDate">Data de Nascimento</Label>
+            <Label
+              htmlFor="password"
+              className="text-[10px] font-black uppercase tracking-widest text-gray-400"
+            >
+              Senha
+            </Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white transition-all"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label
+              htmlFor="birthDate"
+              className="text-[10px] font-black uppercase tracking-widest text-gray-400"
+            >
+              Data de Nascimento
+            </Label>
             <Input
               id="birthDate"
               type="date"
+              className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white transition-all"
+              max={
+                new Date(new Date().setFullYear(new Date().getFullYear() - 18))
+                  .toISOString()
+                  .split("T")[0]
+              }
               value={formData.birthDate}
-              max={new Date().toISOString().split('T')[0]}
-              min="1900-01-01"
-              onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, birthDate: e.target.value })
+              }
               required
             />
           </div>
+
           <DialogFooter>
-            <Button type="submit" className="w-full bg-secondary hover:bg-secondary/90" disabled={loading}>
-              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Gerar Cartão Agora"}
+            <Button
+              type="submit"
+              className="w-full h-14 rounded-2xl bg-brand-black hover:bg-brand-black/90 text-white transition-all font-black uppercase tracking-widest text-[10px] shadow-xl shadow-brand-black/20"
+              disabled={loading}
+            >
+              {loading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                "Confirmar e Gerar Cartão"
+              )}
             </Button>
           </DialogFooter>
         </form>
