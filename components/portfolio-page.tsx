@@ -41,7 +41,7 @@ export function PortfolioPage() {
               <h1 className="text-5xl md:text-7xl font-black text-brand-black uppercase tracking-tighter leading-[0.85] mt-4">
                 Olá, Nós somos <br/>
                 <span className="text-brand-orange">João Carlos</span> <br/>
-                <span className="text-brand-green">&</span> <span className="text-brand-red">Labernarde</span>
+                <span className="text-brand-black">&</span> <span className="text-brand-red">Labernarde</span>
               </h1>
               <p className="text-gray-500 font-medium text-lg md:text-xl leading-relaxed max-w-xl">
                 Facilitadores de conexões reais e terapeutas especializados em reencontros profundos e restauração de propósitos.
@@ -105,15 +105,15 @@ export function PortfolioPage() {
             <div className="absolute top-0 right-0 w-64 h-64 bg-brand-green/5 blur-3xl -mr-32 -mt-32 rounded-full" />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
               <div className="text-center space-y-2">
-                <div className="text-6xl font-black text-brand-green tracking-tighter">10+</div>
+                <div className="text-6xl font-black text-brand-black tracking-tighter">10+</div>
                 <div className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Anos de Experiência</div>
               </div>
               <div className="text-center space-y-2 border-y md:border-y-0 md:border-x border-brand-green/10 py-8 md:py-0">
-                <div className="text-6xl font-black text-brand-orange tracking-tighter">300+</div>
+                <div className="text-6xl font-black text-brand-black tracking-tighter">300+</div>
                 <div className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Casos Transformados</div>
               </div>
               <div className="text-center space-y-2">
-                <div className="text-6xl font-black text-brand-red tracking-tighter">99%</div>
+                <div className="text-6xl font-black text-brand-black tracking-tighter">99%</div>
                 <div className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Taxa de Satisfação</div>
               </div>
             </div>
@@ -148,7 +148,7 @@ export function PortfolioPage() {
           {/* Service Areas */}
           <div className="mb-32">
             <div className="text-center mb-16 space-y-4">
-              <h2 className="text-4xl font-black text-brand-black uppercase tracking-tighter">Áreas de <span className="text-brand-green">Atuação</span></h2>
+              <h2 className="text-4xl font-black text-brand-black uppercase tracking-tighter">Áreas de <span className="text-brand-red">Atuação</span></h2>
               <p className="text-gray-500 font-medium">Soluções personalizadas para cada fase da sua jornada emocional.</p>
             </div>
             

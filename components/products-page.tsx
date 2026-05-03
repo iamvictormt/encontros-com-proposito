@@ -31,8 +31,6 @@ const deliveryOptions = [
 // Products will be fetched from API
 const API_PRODUCTS_URL = "/api/products";
 
-
-
 interface FilterContentProps {
   categories: any[];
   selectedCategory: string;
@@ -58,14 +56,16 @@ const FilterContent = ({
   setSelectedTheme,
   delivery,
   selectedDelivery,
-  setSelectedDelivery
+  setSelectedDelivery,
 }: FilterContentProps) => (
   <div className="space-y-12">
     {/* Categorias */}
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <div className="h-1 w-8 bg-brand-orange rounded-full" />
-        <h3 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">Categorias</h3>
+        <h3 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">
+          Categorias
+        </h3>
       </div>
       <div className="space-y-1">
         {categories.map((cat) => (
@@ -76,7 +76,7 @@ const FilterContent = ({
               "group flex items-center justify-between w-full text-left px-4 py-3 rounded-xl transition-all duration-300",
               selectedCategory === cat.id
                 ? "bg-brand-black text-white shadow-xl shadow-brand-black/20"
-                : "text-gray-500 hover:bg-brand-black/5 hover:text-brand-black"
+                : "text-gray-500 hover:bg-brand-black/5 hover:text-brand-black",
             )}
           >
             <span className="text-[11px] font-black uppercase tracking-widest">{cat.label}</span>
@@ -92,7 +92,9 @@ const FilterContent = ({
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <div className="h-1 w-8 bg-brand-green rounded-full" />
-        <h3 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">Preço Máximo</h3>
+        <h3 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">
+          Preço Máximo
+        </h3>
       </div>
       <div className="px-2 space-y-4">
         <Slider
@@ -116,7 +118,9 @@ const FilterContent = ({
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <div className="h-1 w-8 bg-brand-red rounded-full" />
-        <h3 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">Temas Exclusivos</h3>
+        <h3 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">
+          Temas Exclusivos
+        </h3>
       </div>
       <div className="space-y-1">
         {themes.map((theme) => (
@@ -127,11 +131,13 @@ const FilterContent = ({
               "group flex items-center justify-between w-full text-left px-4 py-3 rounded-xl transition-all duration-300",
               selectedTheme === theme.id
                 ? "bg-brand-black text-white shadow-xl shadow-brand-black/20"
-                : "text-gray-500 hover:bg-brand-black/5 hover:text-brand-black"
+                : "text-gray-500 hover:bg-brand-black/5 hover:text-brand-black",
             )}
           >
             <span className="text-[11px] font-black uppercase tracking-widest">{theme.label}</span>
-            {selectedTheme === theme.id && <div className="w-1.5 h-1.5 rounded-full bg-brand-red" />}
+            {selectedTheme === theme.id && (
+              <div className="w-1.5 h-1.5 rounded-full bg-brand-red" />
+            )}
           </button>
         ))}
       </div>
@@ -141,7 +147,9 @@ const FilterContent = ({
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <div className="h-1 w-8 bg-brand-green rounded-full" />
-        <h3 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">Tipo de Acesso</h3>
+        <h3 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">
+          Tipo de Acesso
+        </h3>
       </div>
       <div className="grid grid-cols-1 gap-2">
         {delivery.map((del) => (
@@ -152,7 +160,7 @@ const FilterContent = ({
               "px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all duration-300 text-center",
               selectedDelivery === del.id
                 ? "bg-brand-green border-brand-green text-white shadow-lg shadow-brand-green/20"
-                : "border-brand-black/10 text-gray-500 hover:border-brand-black hover:text-brand-black"
+                : "border-brand-black/10 text-gray-500 hover:border-brand-black hover:text-brand-black",
             )}
           >
             {del.label}
@@ -178,12 +186,12 @@ export function ProductsPage() {
   useEffect(() => {
     // Fetch categories
     fetch("/api/categories")
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         if (Array.isArray(data)) {
           setDynamicCategories([
             { id: "all", label: "Tudo" },
-            ...data.map(cat => ({ id: cat.name, label: cat.name }))
+            ...data.map((cat) => ({ id: cat.name, label: cat.name })),
           ]);
         }
       });
@@ -219,7 +227,11 @@ export function ProductsPage() {
     // Delivery/Type filter
     if (selectedDelivery !== "all") {
       if (selectedDelivery === "physical" && product.type !== "Físico") return false;
-      if ((selectedDelivery === "download" || selectedDelivery === "online") && product.type !== "Digital") return false;
+      if (
+        (selectedDelivery === "download" || selectedDelivery === "online") &&
+        product.type !== "Digital"
+      )
+        return false;
     }
 
     // Price filter
@@ -237,7 +249,7 @@ export function ProductsPage() {
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / itemsPerPage));
   const paginatedProducts = filteredProducts.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
 
   const filterProps = {
@@ -262,8 +274,10 @@ export function ProductsPage() {
         <div className="mx-auto max-w-7xl">
           {/* Page Header */}
           <div className="mb-16 text-center space-y-4">
-            <h4 className="text-brand-orange font-bold uppercase tracking-[0.3em] text-xs">Exclusividade</h4>
-            <h1 className="text-5xl font-black text-brand-black tracking-tighter uppercase lg:text-6xl">
+            <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
+              Exclusividade
+            </span>
+            <h1 className="text-5xl font-black text-brand-black tracking-tighter uppercase lg:text-6xl mt-4">
               Produtos <span className="text-brand-red">Autorais</span>
             </h1>
             <p className="text-gray-500 max-w-lg mx-auto font-medium">
@@ -284,18 +298,28 @@ export function ProductsPage() {
               <div className="lg:hidden mb-12">
                 <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
                   <SheetTrigger asChild>
-                    <Button variant="outline" className="w-full h-16 rounded-[2rem] border-white shadow-xl glass bg-white/60 text-brand-black font-black uppercase tracking-widest text-[10px] group transition-all active:scale-95">
+                    <Button
+                      variant="outline"
+                      className="w-full h-16 rounded-[2rem] border-white shadow-xl glass bg-white/60 text-brand-black font-black uppercase tracking-widest text-[10px] group transition-all active:scale-95"
+                    >
                       <SlidersHorizontal className="mr-3 h-4 w-4 text-brand-orange group-hover:rotate-90 transition-transform duration-500" />
                       Filtrar Coleção
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="left" className="w-[85vw] sm:w-[400px] glass border-brand-green/10 px-8 pt-16 overflow-y-auto">
+                  <SheetContent
+                    side="left"
+                    className="w-[85vw] sm:w-[400px] glass border-brand-green/10 px-8 pt-16 overflow-y-auto"
+                  >
                     <SheetHeader className="mb-12 text-left">
                       <div className="flex items-center gap-3 mb-2">
                         <div className="h-1 w-8 bg-brand-orange rounded-full" />
-                        <span className="text-[10px] font-black text-brand-black/40 uppercase tracking-[0.3em]">Explorar</span>
+                        <span className="text-[10px] font-black text-brand-black/40 uppercase tracking-[0.3em]">
+                          Explorar
+                        </span>
                       </div>
-                      <SheetTitle className="text-4xl font-black uppercase tracking-tighter text-brand-black leading-none">Filtros</SheetTitle>
+                      <SheetTitle className="text-4xl font-black uppercase tracking-tighter text-brand-black leading-none">
+                        Filtros
+                      </SheetTitle>
                     </SheetHeader>
                     <div className="pb-20">
                       <FilterContent {...filterProps} />
@@ -312,8 +336,12 @@ export function ProductsPage() {
               ) : paginatedProducts.length === 0 ? (
                 <div className="text-center py-24 glass rounded-[2.5rem] border-dashed border-brand-green/20">
                   <div className="text-6xl mb-6 grayscale opacity-30">🛍️</div>
-                  <h3 className="text-2xl font-black text-brand-black uppercase tracking-tighter">Nenhum produto encontrado</h3>
-                  <p className="text-gray-500 mt-2 font-medium">Tente ajustar seus filtros para encontrar o que procura.</p>
+                  <h3 className="text-2xl font-black text-brand-black uppercase tracking-tighter">
+                    Nenhum produto encontrado
+                  </h3>
+                  <p className="text-gray-500 mt-2 font-medium">
+                    Tente ajustar seus filtros para encontrar o que procura.
+                  </p>
                 </div>
               ) : (
                 <div className="grid gap-8 sm:grid-cols-2 xl:grid-cols-3">
@@ -328,7 +356,7 @@ export function ProductsPage() {
                             className="object-contain transition-transform duration-500 group-hover:scale-110"
                           />
                           <div className="absolute top-6 left-6">
-                             <span className="glass-dark px-3 py-1 rounded-lg text-[8px] font-black text-white uppercase tracking-widest shadow-lg">
+                            <span className="glass-dark px-3 py-1 rounded-lg text-[8px] font-black text-white uppercase tracking-widest shadow-lg">
                               {product.category}
                             </span>
                           </div>
@@ -350,7 +378,10 @@ export function ProductsPage() {
                                 </span>
                               )}
                             </div>
-                            <Button size="icon" className="w-12 h-12 rounded-2xl bg-brand-green hover:bg-brand-green/90 shadow-lg shadow-brand-green/20">
+                            <Button
+                              size="icon"
+                              className="w-12 h-12 rounded-2xl bg-brand-green hover:bg-brand-green/90 shadow-lg shadow-brand-green/20"
+                            >
                               <ArrowRight className="w-5 h-5" />
                             </Button>
                           </div>
@@ -369,8 +400,8 @@ export function ProductsPage() {
                     size="icon"
                     className="h-12 w-12 rounded-2xl border-brand-green/10 bg-white text-brand-black hover:bg-brand-green hover:text-white transition-all shadow-sm disabled:opacity-20"
                     onClick={() => {
-                      setCurrentPage(prev => Math.max(1, prev - 1));
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                      setCurrentPage((prev) => Math.max(1, prev - 1));
+                      window.scrollTo({ top: 0, behavior: "smooth" });
                     }}
                     disabled={currentPage === 1}
                   >
@@ -386,8 +417,8 @@ export function ProductsPage() {
                     size="icon"
                     className="h-12 w-12 rounded-2xl border-brand-green/10 bg-white text-brand-black hover:bg-brand-green hover:text-white transition-all shadow-sm disabled:opacity-20"
                     onClick={() => {
-                      setCurrentPage(prev => Math.min(totalPages, prev + 1));
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                      setCurrentPage((prev) => Math.min(totalPages, prev + 1));
+                      window.scrollTo({ top: 0, behavior: "smooth" });
                     }}
                     disabled={currentPage === totalPages}
                   >

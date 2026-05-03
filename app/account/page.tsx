@@ -112,7 +112,6 @@ export default function AccountPage() {
                   <Button asChild className="h-14 rounded-2xl bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-[10px] px-8 shadow-xl shadow-brand-green/20 group">
                     <Link href="/member-card" className="flex items-center gap-3">
                       Acessar Cartão Digital
-                      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-2" />
                     </Link>
                   </Button>
                 </div>

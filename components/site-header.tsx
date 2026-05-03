@@ -90,7 +90,7 @@ export function SiteHeader() {
               </Link>
               <Button 
                 asChild 
-                className="h-12 px-8 rounded-xl bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-[10px] shadow-lg shadow-brand-green/20 hidden sm:flex"
+                className="h-11 px-8 rounded-2xl bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-[10px] shadow-lg shadow-brand-green/20 hidden sm:flex"
               >
                 <Link href="/signup">Cadastrar</Link>
               </Button>

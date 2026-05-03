@@ -169,11 +169,8 @@ export function EventDetailPage() {
       <div className="flex justify-center py-20 min-h-screen bg-white">Evento não encontrado</div>
     );
 
-  const eventDate = new Date(event.date).toLocaleDateString("pt-BR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  const dateObj = new Date(event.date);
+  const eventDate = `${dateObj.getDate().toString().padStart(2, '0')} ${dateObj.toLocaleString("pt-BR", { month: "short" }).replace(".", "").toUpperCase()} ${dateObj.getFullYear()}`;
 
   return (
     <div className="min-h-screen bg-background flex flex-col font-sans">
@@ -186,7 +183,7 @@ export function EventDetailPage() {
            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
         </div>
 
-        <div className="mx-auto max-w-7xl px-4 lg:px-20">
+        <div className="mx-auto max-w-7xl">
           <div className="grid grid-cols-1 lg:grid-cols-3 -mt-32 md:-mt-48 relative z-10 mb-16 gap-6">
             {/* Card 1: Event Info */}
             <div className="glass p-10 rounded-[2.5rem] flex flex-col justify-between shadow-2xl border-white/40">
@@ -235,17 +232,17 @@ export function EventDetailPage() {
                 <h2 className="text-5xl font-black text-brand-black tracking-tighter">
                   {formatBRL(event.price)}
                 </h2>
-                <p className="text-sm text-brand-green font-bold mt-2">Vagas limitadas disponíveis</p>
+                <p className="text-sm text-brand-red font-bold mt-2">Vagas limitadas disponíveis</p>
               </div>
 
               <Button
                 onClick={handleParticipate}
                 disabled={isActionLoading}
                 className={cn(
-                  "w-full h-16 rounded-2xl font-black text-lg uppercase tracking-widest transition-all active:scale-[0.98] shadow-xl",
+                  "w-full h-16 rounded-2xl font-black text-xs sm:text-sm uppercase tracking-widest transition-all active:scale-[0.98] shadow-xl",
                   isParticipating 
-                    ? "bg-brand-green hover:bg-brand-green/90 text-white" 
-                    : "bg-brand-orange hover:bg-brand-orange/90 text-white"
+                    ? "bg-brand-red hover:bg-brand-red/90 text-white" 
+                    : "bg-brand-red hover:bg-brand-red/90 text-white"
                 )}
               >
                 {isActionLoading ? <Loader2 className="animate-spin" /> : isParticipating ? "Confirmado!" : "Garantir Ingresso"}
@@ -275,7 +272,7 @@ export function EventDetailPage() {
                         setIsCopied(true);
                         toast.success("Link copiado!");
                       }}
-                      className="bg-brand-orange hover:bg-brand-orange/90 text-white rounded-xl h-11 px-6 text-xs font-black uppercase tracking-widest"
+                      className="bg-brand-orange hover:bg-brand-orange/90 text-white rounded-xl h-11 px-6 text-[10px] font-black uppercase tracking-widest"
                     >
                       {isCopied ? "Copiado" : "Copiar"}
                     </Button>
@@ -288,7 +285,7 @@ export function EventDetailPage() {
                   </p>
                   <Button
                     variant="outline"
-                    className="w-full h-14 border-brand-black/10 bg-white text-brand-black hover:bg-brand-black hover:text-white font-black rounded-2xl transition-all flex items-center justify-center gap-3 uppercase tracking-widest text-xs"
+                    className="w-full h-14 border-brand-black/10 bg-white text-brand-black hover:bg-brand-black hover:text-white font-black rounded-2xl transition-all flex items-center justify-center gap-3 uppercase tracking-widest text-[10px]"
                     onClick={() => {
                       const url = `${window.location.origin}/events/${id}`;
                       if (navigator.share) {
@@ -463,7 +460,7 @@ export function EventDetailPage() {
 
                     <Button
                       asChild={!!group.link}
-                      className="bg-brand-green hover:bg-brand-green/90 text-white rounded-xl h-12 px-6 font-black uppercase tracking-widest text-[10px] shadow-lg shadow-brand-green/10"
+                      className="bg-brand-black hover:bg-brand-black/90 text-white rounded-xl h-12 px-6 font-black uppercase tracking-widest text-[10px] shadow-lg shadow-brand-black/10"
                     >
                       {group.link ? (
                         <a href={group.link} target="_blank" rel="noopener noreferrer">Participar</a>
@@ -546,7 +543,7 @@ export function EventDetailPage() {
                     setViewingProduct(null);
                   }}
                   className={cn(
-                    "w-full h-16 rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl transition-all",
+                    "w-full h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl transition-all",
                     selectedProducts.includes(viewingProduct.id)
                       ? "bg-brand-red/10 text-brand-red hover:bg-brand-red hover:text-white"
                       : "bg-brand-orange text-white hover:bg-brand-orange/90"

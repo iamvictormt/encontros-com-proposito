@@ -90,28 +90,21 @@ export function MemberCardPage({
       <SiteHeader />
 
       <main className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12 relative">
-        {/* Background Decorations */}
         <div className="absolute top-1/4 -left-20 w-96 h-96 bg-brand-green/10 blur-[120px] rounded-full -z-10" />
         <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-brand-orange/10 blur-[120px] rounded-full -z-10" />
 
         <div className="w-full max-w-2xl space-y-12 relative">
           <div className="text-center space-y-4">
-            <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
-              Seu Acesso Exclusivo
-            </span>
             <h1 className="text-3xl sm:text-4xl md:text-6xl font-black text-brand-black uppercase tracking-tighter leading-none mt-4">
               Cartão <span className="text-brand-orange">Membro</span> MeetOff
             </h1>
-            <p className="text-gray-500 font-medium max-w-md mx-auto text-sm">
-              Seu passaporte digital para o ecossistema mais exclusivo de conexões e eventos premium.
-            </p>
           </div>
 
           <div ref={cardRef} className="grid gap-12 lg:gap-16 bg-transparent p-4">
             {/* Front Card */}
             <div className="group perspective-1000">
               <div
-                className="relative w-full aspect-[1.58] rounded-[2.5rem] overflow-hidden transition-all duration-700 bg-cover bg-center shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] group-hover:scale-[1.02] group-hover:-rotate-1"
+                className="relative w-full aspect-[1.58] rounded-[2.5rem] overflow-hidden transition-all duration-700 bg-cover bg-center group-hover:scale-[1.02] group-hover:-rotate-1"
                 style={{ backgroundImage: `url('${frontBg}')` }}
               >
                 {/* Dynamic Data Overlay */}
@@ -139,7 +132,7 @@ export function MemberCardPage({
             {/* Back Card */}
             <div className="group perspective-1000">
               <div
-                className="relative w-full aspect-[1.58] rounded-[2.5rem] overflow-hidden transition-all duration-700 bg-cover bg-center shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] group-hover:scale-[1.02] group-hover:rotate-1"
+                className="relative w-full aspect-[1.58] rounded-[2.5rem] overflow-hidden transition-all duration-700 bg-cover bg-center group-hover:scale-[1.02] group-hover:rotate-1"
                 style={{ backgroundImage: `url('${backBg}')` }}
               >
                 <div className="absolute inset-0 p-6 sm:p-12 flex flex-col justify-end">
@@ -192,7 +185,7 @@ export function MemberCardPage({
               ) : (
                 <>
                   <Download className="w-4 h-4" />
-                  Baixar Identidade Digital
+                  Baixar Versão Digital
                 </>
               )}
             </Button>

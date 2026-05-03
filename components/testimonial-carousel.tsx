@@ -156,7 +156,7 @@ export function TestimonialCarousel({
 
         <button
           onClick={handleNextReview}
-          className="group flex flex-col items-center gap-3 text-gray-400 hover:text-brand-green transition-all duration-500 cursor-pointer"
+          className="group flex flex-col items-center gap-3 text-gray-400 hover:text-brand-orange transition-all duration-500 cursor-pointer"
           aria-label="Next review"
         >
           <div className="w-20 h-20 rounded-full border border-brand-black/5 flex items-center justify-center glass group-hover:bg-brand-black group-hover:text-white group-hover:border-brand-black transition-all duration-500 shadow-2xl group-active:scale-90">

@@ -77,7 +77,7 @@ export function EventsPage() {
       theme: `Tema: ${e.tags?.[0] || "Geral"}`,
       location: e.location,
       title: e.title.toUpperCase(),
-      type_event: e.type_event || 'Presencial',
+      type_event: e.type_event || "Presencial",
     }));
 
   const nextSlide = () => {
@@ -93,21 +93,23 @@ export function EventsPage() {
   };
 
   const filteredEvents = events
-    .filter(
-      (e) => {
-        const matchesSearch = e.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          e.location.toLowerCase().includes(searchTerm.toLowerCase());
-        
-        const matchesType = typeFilters.length === 0 || typeFilters.includes(e.type_event || 'Presencial');
-        const matchesAge = ageFilters.length === 0 || ageFilters.includes(e.age_range);
-        const matchesPrice = priceFilters.length === 0 || 
-          (priceFilters.includes("free") && parseFloat(e.price) === 0) || 
-          (priceFilters.includes("paid") && parseFloat(e.price) > 0);
-        const matchesAudience = audienceFilters.length === 0 || audienceFilters.includes(e.target_audience);
+    .filter((e) => {
+      const matchesSearch =
+        e.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        e.location.toLowerCase().includes(searchTerm.toLowerCase());
 
-        return matchesSearch && matchesType && matchesAge && matchesPrice && matchesAudience;
-      }
-    )
+      const matchesType =
+        typeFilters.length === 0 || typeFilters.includes(e.type_event || "Presencial");
+      const matchesAge = ageFilters.length === 0 || ageFilters.includes(e.age_range);
+      const matchesPrice =
+        priceFilters.length === 0 ||
+        (priceFilters.includes("free") && parseFloat(e.price) === 0) ||
+        (priceFilters.includes("paid") && parseFloat(e.price) > 0);
+      const matchesAudience =
+        audienceFilters.length === 0 || audienceFilters.includes(e.target_audience);
+
+      return matchesSearch && matchesType && matchesAge && matchesPrice && matchesAudience;
+    })
     .sort((a, b) => {
       const dateA = new Date(a.date).getTime();
       const dateB = new Date(b.date).getTime();
@@ -140,7 +142,7 @@ export function EventsPage() {
                 style={{ transform: `translateX(-${currentSlide * 100}%)` }}
               >
                 {heroSlides.map((slide, index) => (
-                   <div key={index} className="relative min-w-full h-full group">
+                  <div key={index} className="relative min-w-full h-full group">
                     <Image
                       src={slide.image || "/placeholder.svg"}
                       alt={slide.title}
@@ -166,14 +168,16 @@ export function EventsPage() {
                         </h1>
 
                         <div className="flex flex-wrap items-center gap-4 animate-in fade-in slide-in-from-bottom-12 duration-700 delay-200">
-                          <Button size="lg" className="bg-brand-red hover:bg-brand-red/90 text-white font-bold px-8 h-14 rounded-2xl shadow-lg shadow-brand-red/20" asChild>
+                          <Button
+                            className="bg-brand-red hover:bg-brand-red/90 text-white font-black uppercase tracking-widest text-[10px] px-8 h-14 rounded-2xl shadow-lg shadow-brand-red/20"
+                            asChild
+                          >
                             <Link href={`/events/${slide.id}`}>Explorar Evento</Link>
                           </Button>
 
                           <Button
-                            size="lg"
                             variant="ghost"
-                            className="bg-white/10 text-white hover:bg-white/20 backdrop-blur-md px-6 h-14 rounded-2xl font-bold"
+                            className="bg-white/10 text-white hover:bg-white/20 backdrop-blur-md px-6 h-14 rounded-2xl font-black uppercase tracking-widest text-[10px]"
                             onClick={() => {
                               const url = `${window.location.origin}/events/${slide.id}`;
                               navigator.clipboard.writeText(url);
@@ -182,9 +186,13 @@ export function EventsPage() {
                             }}
                           >
                             {copiedId === slide.id ? (
-                              <><Check className="h-5 w-5 mr-2 text-brand-orange" /> Copiado</>
+                              <>
+                                <Check className="h-5 w-5 mr-2 text-brand-orange" /> Copiado
+                              </>
                             ) : (
-                              <><Share2 className="h-5 w-5 mr-2" /> Convidar</>
+                              <>
+                                <Share2 className="h-5 w-5 mr-2" /> Convidar
+                              </>
                             )}
                           </Button>
                         </div>
@@ -234,9 +242,11 @@ export function EventsPage() {
         <div className="mx-auto max-w-7xl">
           <div className="mb-12 flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-end">
             <div className="space-y-2">
-              <h4 className="text-brand-orange font-bold uppercase tracking-[0.2em] text-xs">Descubra</h4>
-              <h2 className="text-4xl font-black text-brand-black lg:text-5xl tracking-tighter uppercase">
-                Próximos <span className="text-brand-green">Eventos</span>
+              <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
+                Descubra
+              </span>
+              <h2 className="text-4xl font-black text-brand-black lg:text-5xl tracking-tighter uppercase mt-4">
+                Próximos <span className="text-brand-red">Eventos</span>
               </h2>
             </div>
 
@@ -260,21 +270,30 @@ export function EventsPage() {
                     Refinar Busca
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[85vw] sm:w-[400px] glass border-brand-green/10 px-8 pt-16 overflow-y-auto">
+                <SheetContent
+                  side="right"
+                  className="w-[85vw] sm:w-[400px] glass border-brand-green/10 px-8 pt-16 overflow-y-auto"
+                >
                   <SheetHeader className="mb-12 text-left">
                     <div className="flex items-center gap-3 mb-2">
                       <div className="h-1 w-8 bg-brand-orange rounded-full" />
-                      <span className="text-[10px] font-black text-brand-black/40 uppercase tracking-[0.3em]">Filtros Avançados</span>
+                      <span className="text-[10px] font-black text-brand-black/40 uppercase tracking-[0.3em]">
+                        Filtros Avançados
+                      </span>
                     </div>
-                    <SheetTitle className="text-4xl font-black uppercase tracking-tighter text-brand-black leading-none">Eventos</SheetTitle>
+                    <SheetTitle className="text-4xl font-black uppercase tracking-tighter text-brand-black leading-none">
+                      Eventos
+                    </SheetTitle>
                   </SheetHeader>
-                  
+
                   <div className="space-y-12 pb-20">
                     {/* Formato */}
                     <div className="space-y-6">
                       <div className="flex items-center gap-3">
                         <div className="h-1 w-6 bg-brand-green rounded-full" />
-                        <h3 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">Formato</h3>
+                        <h3 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">
+                          Formato
+                        </h3>
                       </div>
                       <div className="grid grid-cols-1 gap-2">
                         {["Presencial", "Online"].map((type) => (
@@ -282,18 +301,24 @@ export function EventsPage() {
                             key={type}
                             onClick={() => {
                               setTypeFilters((prev) =>
-                                prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+                                prev.includes(type)
+                                  ? prev.filter((t) => t !== type)
+                                  : [...prev, type],
                               );
                             }}
                             className={cn(
                               "flex items-center justify-between px-5 py-4 rounded-2xl transition-all duration-300 border text-left",
                               typeFilters.includes(type)
                                 ? "bg-brand-black border-brand-black text-white shadow-xl shadow-brand-black/20"
-                                : "border-brand-black/5 text-gray-500 hover:bg-brand-black/5 hover:text-brand-black"
+                                : "border-brand-black/5 text-gray-500 hover:bg-brand-black/5 hover:text-brand-black",
                             )}
                           >
-                            <span className="text-[11px] font-black uppercase tracking-widest">{type}</span>
-                            {typeFilters.includes(type) && <Check size={14} className="text-brand-orange" />}
+                            <span className="text-[11px] font-black uppercase tracking-widest">
+                              {type}
+                            </span>
+                            {typeFilters.includes(type) && (
+                              <Check size={14} className="text-brand-orange" />
+                            )}
                           </button>
                         ))}
                       </div>
@@ -303,25 +328,29 @@ export function EventsPage() {
                     <div className="space-y-6">
                       <div className="flex items-center gap-3">
                         <div className="h-1 w-6 bg-brand-red rounded-full" />
-                        <h3 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">Preço</h3>
+                        <h3 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">
+                          Preço
+                        </h3>
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         {[
                           { id: "free", label: "Gratuito" },
-                          { id: "paid", label: "Pago" }
+                          { id: "paid", label: "Pago" },
                         ].map((price) => (
                           <button
                             key={price.id}
                             onClick={() => {
                               setPriceFilters((prev) =>
-                                prev.includes(price.id) ? prev.filter((t) => t !== price.id) : [...prev, price.id]
+                                prev.includes(price.id)
+                                  ? prev.filter((t) => t !== price.id)
+                                  : [...prev, price.id],
                               );
                             }}
                             className={cn(
                               "px-4 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all duration-300 text-center",
                               priceFilters.includes(price.id)
                                 ? "bg-brand-red border-brand-red text-white shadow-lg shadow-brand-red/20"
-                                : "border-brand-black/5 text-gray-500 hover:border-brand-black hover:text-brand-black"
+                                : "border-brand-black/5 text-gray-500 hover:border-brand-black hover:text-brand-black",
                             )}
                           >
                             {price.label}
@@ -334,35 +363,47 @@ export function EventsPage() {
                     <div className="space-y-6">
                       <div className="flex items-center gap-3">
                         <div className="h-1 w-6 bg-brand-orange rounded-full" />
-                        <h3 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">Faixa Etária</h3>
+                        <h3 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">
+                          Faixa Etária
+                        </h3>
                       </div>
                       <div className="grid grid-cols-1 gap-2">
-                        {["18-25 anos", "26-35 anos", "36-45 anos", "46-55 anos", "55+ anos"].map((age) => (
-                          <button
-                            key={age}
-                            onClick={() => {
-                              setAgeFilters((prev) =>
-                                prev.includes(age) ? prev.filter((t) => t !== age) : [...prev, age]
-                              );
-                            }}
-                            className={cn(
-                              "flex items-center justify-between px-5 py-4 rounded-2xl transition-all duration-300 border text-left",
-                              ageFilters.includes(age)
-                                ? "bg-brand-black border-brand-black text-white shadow-xl shadow-brand-black/20"
-                                : "border-brand-black/5 text-gray-500 hover:bg-brand-black/5 hover:text-brand-black"
-                            )}
-                          >
-                            <span className="text-[11px] font-black uppercase tracking-widest">{age}</span>
-                            {ageFilters.includes(age) && <Check size={14} className="text-brand-orange" />}
-                          </button>
-                        ))}
+                        {["18-25 anos", "26-35 anos", "36-45 anos", "46-55 anos", "55+ anos"].map(
+                          (age) => (
+                            <button
+                              key={age}
+                              onClick={() => {
+                                setAgeFilters((prev) =>
+                                  prev.includes(age)
+                                    ? prev.filter((t) => t !== age)
+                                    : [...prev, age],
+                                );
+                              }}
+                              className={cn(
+                                "flex items-center justify-between px-5 py-4 rounded-2xl transition-all duration-300 border text-left",
+                                ageFilters.includes(age)
+                                  ? "bg-brand-black border-brand-black text-white shadow-xl shadow-brand-black/20"
+                                  : "border-brand-black/5 text-gray-500 hover:bg-brand-black/5 hover:text-brand-black",
+                              )}
+                            >
+                              <span className="text-[11px] font-black uppercase tracking-widest">
+                                {age}
+                              </span>
+                              {ageFilters.includes(age) && (
+                                <Check size={14} className="text-brand-orange" />
+                              )}
+                            </button>
+                          ),
+                        )}
                       </div>
                     </div>
 
-                    <Button 
-                      className="w-full h-16 rounded-2xl bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-[11px] shadow-xl shadow-brand-green/20 mt-12"
+                    <Button
+                      className="w-full h-14 rounded-2xl bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-[10px] shadow-xl shadow-brand-green/20 mt-12"
                       onClick={() => {
-                        const sheetClose = document.querySelector('[data-radix-collection-item]') as HTMLElement;
+                        const sheetClose = document.querySelector(
+                          "[data-radix-collection-item]",
+                        ) as HTMLElement;
                         sheetClose?.click();
                       }}
                     >
@@ -377,7 +418,9 @@ export function EventsPage() {
           {isLoading ? null : paginatedEvents.length === 0 ? (
             <div className="text-center py-24 glass rounded-[2.5rem] border-dashed border-brand-green/20 mt-8">
               <div className="text-6xl mb-6 grayscale opacity-50">📅</div>
-              <h3 className="text-2xl font-black text-brand-black mb-2 uppercase tracking-tight">Nenhum evento encontrado</h3>
+              <h3 className="text-2xl font-black text-brand-black mb-2 uppercase tracking-tight">
+                Nenhum evento encontrado
+              </h3>
               <p className="text-gray-500 max-w-md mx-auto text-sm leading-relaxed px-4">
                 {events.length === 0
                   ? "Opa! No momento não temos eventos agendados. Fique atento às nossas redes sociais!"
@@ -386,7 +429,7 @@ export function EventsPage() {
               {events.length > 0 && (
                 <Button
                   variant="outline"
-                  className="mt-8 px-8 h-12 rounded-xl border-brand-orange text-brand-orange font-bold hover:bg-brand-orange hover:text-white transition-all"
+                  className="mt-8 px-8 h-14 rounded-2xl border-brand-orange text-brand-orange font-black uppercase tracking-widest text-[10px] hover:bg-brand-orange hover:text-white transition-all"
                   onClick={() => {
                     setSearchTerm("");
                     setTypeFilters([]);
@@ -403,7 +446,10 @@ export function EventsPage() {
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {paginatedEvents.map((event) => {
                 const date = new Date(event.date);
-                const month = date.toLocaleString("pt-BR", { month: "short" }).replace(".", "").toUpperCase();
+                const month = date
+                  .toLocaleString("pt-BR", { month: "short" })
+                  .replace(".", "")
+                  .toUpperCase();
                 const day = date.getDate();
 
                 return (
@@ -424,8 +470,12 @@ export function EventsPage() {
 
                       <div className="absolute left-6 top-6 z-10">
                         <div className="flex flex-col items-center justify-center h-16 w-16 glass rounded-2xl shadow-lg border-white/40">
-                          <span className="text-[10px] font-black text-brand-red uppercase tracking-widest">{month}</span>
-                          <span className="text-2xl font-black text-brand-black leading-none">{day}</span>
+                          <span className="text-[10px] font-black text-brand-red uppercase tracking-widest">
+                            {month}
+                          </span>
+                          <span className="text-2xl font-black text-brand-black leading-none">
+                            {day}
+                          </span>
                         </div>
                       </div>
 
@@ -433,7 +483,7 @@ export function EventsPage() {
                         <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow-xl hover:bg-brand-orange hover:text-white transition-colors cursor-pointer text-brand-black">
                           <MapPin className="h-4 w-4" />
                         </button>
-                        <button 
+                        <button
                           className="w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow-xl hover:bg-brand-red hover:text-white transition-colors cursor-pointer text-brand-black"
                           onClick={(e) => {
                             e.preventDefault();
@@ -470,7 +520,10 @@ export function EventsPage() {
                       </div>
 
                       <div className="mt-auto pt-4 border-t border-brand-green/5 flex gap-3">
-                        <Button className="flex-1 h-12 bg-brand-green hover:bg-brand-green/90 text-white font-bold rounded-xl shadow-lg shadow-brand-green/10" asChild>
+                        <Button
+                          className="flex-1 bg-brand-black hover:bg-brand-black/80 text-white font-black uppercase tracking-widest text-[10px] px-8 h-14 rounded-2xl shadow-lg shadow-brand-black/20"
+                          asChild
+                        >
                           <Link href={`/events/${event.id}`}>Ver Detalhes</Link>
                         </Button>
                       </div>
@@ -489,7 +542,7 @@ export function EventsPage() {
                 className="h-12 w-12 rounded-2xl border-brand-green/10 bg-white text-brand-black hover:bg-brand-green hover:text-white transition-all shadow-sm"
                 onClick={() => {
                   setCurrentPage((prev) => Math.max(1, prev - 1));
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                  window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 disabled={currentPage === 1}
               >
@@ -506,7 +559,7 @@ export function EventsPage() {
                 className="h-12 w-12 rounded-2xl border-brand-green/10 bg-white text-brand-black hover:bg-brand-green hover:text-white transition-all shadow-sm"
                 onClick={() => {
                   setCurrentPage((prev) => Math.min(totalPages, prev + 1));
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                  window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 disabled={currentPage === totalPages}
               >
