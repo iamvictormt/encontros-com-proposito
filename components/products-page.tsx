@@ -270,17 +270,17 @@ export function ProductsPage() {
     <div className="min-h-screen bg-background flex flex-col">
       <SiteHeader />
 
-      <main className="flex-1 px-4 py-12 lg:px-20">
+      <main className="flex-1 px-4 sm:px-8 py-10 sm:py-12 lg:px-20">
         <div className="mx-auto max-w-7xl">
           {/* Page Header */}
-          <div className="mb-16 text-center space-y-4">
+          <div className="mb-10 sm:mb-16 text-center space-y-4">
             <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
               Exclusividade
             </span>
-            <h1 className="text-5xl font-black text-brand-black tracking-tighter uppercase lg:text-6xl mt-4">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-brand-black tracking-tighter uppercase mt-4">
               Produtos <span className="text-brand-red">Autorais</span>
             </h1>
-            <p className="text-gray-500 max-w-lg mx-auto font-medium">
+            <p className="text-gray-500 max-w-lg mx-auto font-medium text-base sm:text-lg">
               Itens exclusivos desenvolvidos para eternizar suas experiências em nossos encontros.
             </p>
           </div>
@@ -334,12 +334,12 @@ export function ProductsPage() {
                   <div className="h-12 w-12 animate-spin rounded-full border-4 border-solid border-brand-red border-r-transparent"></div>
                 </div>
               ) : paginatedProducts.length === 0 ? (
-                <div className="text-center py-24 glass rounded-[2.5rem] border-dashed border-brand-green/20">
-                  <div className="text-6xl mb-6 grayscale opacity-30">🛍️</div>
-                  <h3 className="text-2xl font-black text-brand-black uppercase tracking-tighter">
+                <div className="text-center py-20 sm:py-24 glass rounded-[2.5rem] border-dashed border-brand-green/20">
+                  <div className="text-5xl sm:text-6xl mb-6 grayscale opacity-30">🛍️</div>
+                  <h3 className="text-xl sm:text-2xl font-black text-brand-black uppercase tracking-tighter">
                     Nenhum produto encontrado
                   </h3>
-                  <p className="text-gray-500 mt-2 font-medium">
+                  <p className="text-sm sm:text-base text-gray-500 mt-2 font-medium px-4">
                     Tente ajustar seus filtros para encontrar o que procura.
                   </p>
                 </div>
@@ -362,8 +362,8 @@ export function ProductsPage() {
                           </div>
                         </div>
 
-                        <div className="p-8 flex flex-col flex-1">
-                          <h3 className="mb-4 text-xl font-black text-brand-black leading-tight uppercase tracking-tight group-hover:text-brand-orange transition-colors">
+                        <div className="p-6 sm:p-8 flex flex-col flex-1">
+                          <h3 className="mb-4 text-lg sm:text-xl font-black text-brand-black leading-tight uppercase tracking-tight group-hover:text-brand-orange transition-colors">
                             {product.name}
                           </h3>
 

@@ -32,6 +32,7 @@ class APIClient {
       const response = await fetch(`${this.baseURL}${endpoint}`, {
         ...fetchOptions,
         signal: controller.signal,
+        cache: "no-store",
         headers: {
           "Content-Type": "application/json",
           ...fetchOptions.headers,

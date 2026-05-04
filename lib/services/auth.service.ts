@@ -13,6 +13,7 @@ export interface RegisterData {
   email: string;
   phone: string;
   password: string;
+  birthDate: string;
 }
 
 export interface AuthUser {
@@ -61,8 +62,13 @@ class AuthService {
     return response;
   }
 
-  async resetPassword(data: any): Promise<{ message: string }> {
-    const response = await apiClient.post<{ message: string }>("/api/auth/reset-password", data);
+  async resetPassword(data: any): Promise<AuthResponse> {
+    const response = await apiClient.post<AuthResponse>("/api/auth/reset-password", data);
+    return response;
+  }
+
+  async updateProfile(data: any): Promise<AuthUser> {
+    const response = await apiClient.put<AuthUser>("/api/admin/settings", data);
     return response;
   }
 }

@@ -47,16 +47,16 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
   const isPink = card.type === "PINK";
 
   return (
-    <div className="min-h-screen flex flex-col bg-background font-sans overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-background font-sans">
       <SiteHeader />
 
-      <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-16 lg:px-20 relative">
+      <main className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12 relative overflow-x-clip">
         {/* Background Decorations */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-brand-orange/5 blur-[120px] rounded-full -mr-48 -mt-48" />
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-green/5 blur-[120px] rounded-full -ml-48 -mb-48" />
 
         {/* Profile Card Header */}
-        <div className="glass rounded-[3.5rem] border-white/40 shadow-2xl overflow-hidden mb-12 relative group">
+        <div className="glass rounded-[3.5rem] border-white/40 shadow-2xl overflow-hidden mb-12 relative group max-w-5xl w-full">
           <div className={`h-64 relative transition-all duration-700 ${isPink ? 'bg-brand-red' : 'bg-brand-green'}`}>
             <div className="absolute inset-0 opacity-10 bg-[url('/meetoff-pattern.png')] bg-repeat" />
             <div className="absolute inset-0 flex items-center justify-center p-12">

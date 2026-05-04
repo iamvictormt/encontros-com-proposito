@@ -180,10 +180,9 @@ export function EventDetailPage() {
         {/* Hero Section */}
         <div className="relative h-[400px] md:h-[550px] w-full">
            <EventHeroCarousel images={event.images ? JSON.parse(event.images) : [event.image]} />
-           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
         </div>
 
-        <div className="mx-auto max-w-7xl">
+        <div className="mx-auto md:max-w-7xl px-4 sm:px-8 py-10 sm:py-16 lg:px-20 relative">
           <div className="grid grid-cols-1 lg:grid-cols-3 -mt-32 md:-mt-48 relative z-10 mb-16 gap-6">
             {/* Card 1: Event Info */}
             <div className="glass p-10 rounded-[2.5rem] flex flex-col justify-between shadow-2xl border-white/40">
@@ -424,53 +423,88 @@ export function EventDetailPage() {
             </div>
 
             {/* Groups Section */}
-            <div className="glass p-10 rounded-[2.5rem] border-white/40 shadow-xl">
-              <div className="mb-10">
-                <h2 className="text-2xl font-black text-brand-black uppercase tracking-tighter mb-2">Grupos de Networking</h2>
-                <p className="text-sm text-gray-500 font-bold uppercase tracking-widest">Encontre companhia para sua jornada</p>
+            <div className="glass p-8 sm:p-10 rounded-[2.5rem] border-white/40 shadow-xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-green/5 blur-3xl -mr-16 -mt-16 rounded-full" />
+              
+              <div className="mb-10 relative">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="h-1 w-8 bg-brand-green rounded-full" />
+                  <h2 className="text-2xl font-black text-brand-black uppercase tracking-tighter">Networking</h2>
+                </div>
+                <p className="text-xs text-gray-500 font-bold uppercase tracking-widest leading-relaxed">
+                  Conecte-se com pessoas que compartilham seu propósito
+                </p>
               </div>
 
-              <div className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6 relative">
                 {(typeof event.groups === "string" ? JSON.parse(event.groups) : event.groups || []).map((group: any, i: number) => (
                   <div
                     key={i}
-                    className="flex items-center gap-6 p-4 rounded-2xl bg-white/50 border border-white/20 hover:bg-white hover:shadow-xl transition-all duration-300"
+                    className="group/item flex flex-col p-6 rounded-[2rem] bg-white/40 backdrop-blur-md border border-white/40 hover:bg-white hover:shadow-2xl hover:scale-[1.02] transition-all duration-500"
                   >
-                    <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-brand-green/5 shrink-0 border-2 border-white shadow-md">
-                      {group.image ? (
-                        <Image src={group.image} alt={group.name} fill className="object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Users className="w-8 h-8 text-brand-green/20" />
-                        </div>
-                      )}
-                    </div>
+                    <div className="flex items-center gap-5 mb-6">
+                      <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-brand-green/5 shrink-0 border-2 border-white shadow-lg transition-transform duration-500 group-hover/item:rotate-3">
+                        {group.image ? (
+                          <Image src={group.image} alt={group.name} fill className="object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Users className="w-8 h-8 text-brand-green/20" />
+                          </div>
+                        )}
+                      </div>
 
-                    <div className="flex-1">
-                      <h3 className="font-black text-brand-black text-lg uppercase tracking-tight leading-none mb-2">{group.name}</h3>
-                      <div className="flex flex-wrap gap-2">
-                        <span className="glass-dark px-2 py-0.5 rounded text-[8px] font-black text-white uppercase tracking-widest">
+                      <div className="flex-1 min-w-0">
+                        <span className="inline-block glass-dark px-2 py-0.5 rounded text-[7px] font-black text-white uppercase tracking-widest mb-1.5">
                           {group.category || "Geral"}
                         </span>
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                          {group.capacity} Vagas
-                        </span>
+                        <h3 className="font-black text-brand-black text-base uppercase tracking-tight leading-none truncate group-hover/item:text-brand-green transition-colors">
+                          {group.name}
+                        </h3>
                       </div>
                     </div>
 
-                    <Button
-                      asChild={!!group.link}
-                      className="bg-brand-black hover:bg-brand-black/90 text-white rounded-xl h-12 px-6 font-black uppercase tracking-widest text-[10px] shadow-lg shadow-brand-black/10"
-                    >
-                      {group.link ? (
-                        <a href={group.link} target="_blank" rel="noopener noreferrer">Participar</a>
-                      ) : (
-                        <span>Participar</span>
-                      )}
-                    </Button>
+                    <div className="flex items-center justify-between mt-auto pt-5 border-t border-brand-black/5">
+                      <div className="flex flex-col gap-1">
+                        <div className="flex -space-x-2.5 mb-1">
+                          {[1, 2, 3, 4].map((n) => (
+                            <div 
+                              key={n} 
+                              className="w-7 h-7 rounded-full border-2 border-white bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden"
+                            >
+                              {n === 4 ? (
+                                <span className="text-[7px] font-black text-gray-400">+{Math.floor(Math.random() * 20) + 5}</span>
+                              ) : (
+                                <div className="w-full h-full bg-brand-black/5" />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                        <span className="text-[9px] font-black text-brand-green uppercase tracking-widest">
+                          {group.capacity} Vagas Restantes
+                        </span>
+                      </div>
+
+                      <Button
+                        asChild={!!group.link}
+                        className="bg-brand-black hover:bg-brand-green text-white rounded-xl h-11 px-6 font-black uppercase tracking-widest text-[9px] shadow-lg shadow-brand-black/10 transition-all active:scale-95"
+                      >
+                        {group.link ? (
+                          <a href={group.link} target="_blank" rel="noopener noreferrer">Entrar</a>
+                        ) : (
+                          <span>Entrar</span>
+                        )}
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
+
+              {((typeof event.groups === "string" ? JSON.parse(event.groups) : event.groups || []).length === 0) && (
+                <div className="text-center py-10 opacity-30">
+                  <Users className="w-12 h-12 mx-auto mb-4 text-brand-green" />
+                  <p className="text-[10px] font-black uppercase tracking-widest">Nenhum grupo disponível</p>
+                </div>
+              )}
             </div>
           </div>
 

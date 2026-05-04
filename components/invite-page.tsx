@@ -31,10 +31,10 @@ export function InvitePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background font-sans overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-background font-sans">
       <SiteHeader />
 
-      <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-16 lg:px-20 relative">
+      <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-16 lg:px-20 relative overflow-x-clip">
         {/* Decorative elements */}
         <div className="absolute top-1/4 -right-20 w-96 h-96 bg-brand-orange/5 blur-[120px] rounded-full -z-10" />
         <div className="absolute bottom-1/4 -left-20 w-96 h-96 bg-brand-green/5 blur-[120px] rounded-full -z-10" />

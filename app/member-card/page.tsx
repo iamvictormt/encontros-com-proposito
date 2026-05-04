@@ -26,10 +26,10 @@ export default async function MemberCard() {
 
   if (cards.length === 0) {
     return (
-      <div className="min-h-screen flex flex-col bg-background font-sans overflow-x-hidden">
+      <div className="min-h-screen flex flex-col bg-background font-sans">
         <SiteHeader />
         
-        <main className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12 relative">
+        <main className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12 relative overflow-x-clip">
           <div className="absolute top-1/4 -left-20 w-96 h-96 bg-brand-green/10 blur-[120px] rounded-full -z-10" />
           <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-brand-orange/10 blur-[120px] rounded-full -z-10" />
 

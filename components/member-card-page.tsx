@@ -105,16 +105,16 @@ export function MemberCardPage({
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background font-sans overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-background font-sans">
       <SiteHeader />
 
-      <main className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12 relative">
+      <main className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12 relative overflow-x-clip">
         <div className="absolute top-1/4 -left-20 w-96 h-96 bg-brand-green/10 blur-[120px] rounded-full -z-10" />
         <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-brand-orange/10 blur-[120px] rounded-full -z-10" />
 
         <div className="w-full max-w-2xl space-y-12 relative">
           <div className="text-center space-y-4">
-            <h1 className="text-3xl sm:text-4xl md:text-6xl font-black text-brand-black uppercase tracking-tighter leading-none mt-4">
+            <h1 className="text-2xl sm:text-5xl md:text-6xl font-black text-brand-black uppercase tracking-tighter leading-none mt-4">
               Cartão <span className="text-brand-orange">Membro</span> MeetOff
             </h1>
           </div>
@@ -132,7 +132,7 @@ export function MemberCardPage({
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full">
               <Button 
                 variant="outline" 
-                className="h-14 rounded-2xl border-brand-black/10 bg-white hover:bg-brand-black hover:text-white transition-all font-black uppercase tracking-widest text-[10px] px-8 gap-2"
+                className="h-14 w-full sm:w-auto rounded-2xl border-brand-black/10 bg-white hover:bg-brand-black hover:text-white transition-all font-black uppercase tracking-widest text-[10px] px-8 gap-2"
                 onClick={handleDownloadImage}
                 disabled={isGenerating}
               >

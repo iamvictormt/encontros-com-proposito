@@ -1,13 +1,18 @@
 import { NextResponse } from "next/server";
 import { sql } from "@/lib/db";
 import { hashPassword, signJWT, validatePhone } from "@/lib/auth-utils";
+import { validateMinAge } from "@/lib/utils/validators";
 
 export async function POST(request: Request) {
   try {
-    const { fullName, email, phone, password } = await request.json();
+    const { fullName, email, phone, password, birthDate } = await request.json();
 
-    if (!fullName || (!email && !phone) || !password) {
+    if (!fullName || (!email && !phone) || !password || !birthDate) {
       return NextResponse.json({ message: "Todos os campos são obrigatórios" }, { status: 400 });
+    }
+
+    if (!validateMinAge(birthDate)) {
+      return NextResponse.json({ message: "Você deve ter pelo menos 18 anos" }, { status: 400 });
     }
 
     if (phone && !validatePhone(phone)) {
@@ -18,25 +23,26 @@ export async function POST(request: Request) {
     const userPhone = phone && phone.trim() !== "" ? phone.trim() : null;
 
     // Check if email or phone already exists
-    let existingUser = [];
-    if (userEmail && userPhone) {
-      existingUser = await sql`SELECT id FROM users WHERE email = ${userEmail} OR phone = ${userPhone}`;
-    } else if (userEmail) {
-      existingUser = await sql`SELECT id FROM users WHERE email = ${userEmail}`;
-    } else if (userPhone) {
-      existingUser = await sql`SELECT id FROM users WHERE phone = ${userPhone}`;
+    if (userEmail) {
+      const existingEmail = await sql`SELECT id FROM users WHERE email = ${userEmail}`;
+      if (existingEmail.length > 0) {
+        return NextResponse.json({ message: "Este e-mail já está em uso" }, { status: 409 });
+      }
     }
 
-    if (existingUser.length > 0) {
-      return NextResponse.json({ message: "E-mail ou Telefone já cadastrado" }, { status: 409 });
+    if (userPhone) {
+      const existingPhone = await sql`SELECT id FROM users WHERE phone = ${userPhone}`;
+      if (existingPhone.length > 0) {
+        return NextResponse.json({ message: "Este telefone já está em uso" }, { status: 409 });
+      }
     }
 
     const hashedPassword = await hashPassword(password);
 
     const newUser = await sql`
-      INSERT INTO users (full_name, email, phone, password_hash)
-      VALUES (${fullName}, ${userEmail}, ${userPhone}, ${hashedPassword})
-      RETURNING id, full_name, email, phone, is_admin
+      INSERT INTO users (full_name, email, phone, password_hash, birth_date)
+      VALUES (${fullName}, ${userEmail}, ${userPhone}, ${hashedPassword}, ${birthDate})
+      RETURNING id, full_name, email, phone, birth_date, is_admin
     `;
 
     const user = newUser[0];

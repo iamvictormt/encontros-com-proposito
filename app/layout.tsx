@@ -7,6 +7,7 @@ import { Toaster as SonnerToaster } from "sonner";
 import { Toaster } from "@/components/ui/toaster";
 
 import { LoadingProvider } from "@/providers/loading-provider";
+import { AuthProvider } from "@/providers/auth-provider";
 import { BottomNav } from "@/components/bottom-nav";
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -39,11 +40,13 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={`font-sans antialiased`}>
         <LoadingProvider>
-          {children}
-          <BottomNav />
-          <Analytics />
-          <Toaster />
-          <SonnerToaster position="top-center" richColors />
+          <AuthProvider>
+            {children}
+            <BottomNav />
+            <Analytics />
+            <Toaster />
+            <SonnerToaster position="top-center" richColors />
+          </AuthProvider>
         </LoadingProvider>
       </body>
     </html>

@@ -48,3 +48,21 @@ export function detectInputType(value: string): "phone" | "email" | "unknown" {
   if (/^[\d(]/.test(value)) return "phone";
   return "email";
 }
+/**
+ * Valida se a data de nascimento corresponde a maioridade (18 anos)
+ */
+export function validateMinAge(birthDate: string, minAge: number = 18): boolean {
+  if (!birthDate) return false;
+  
+  const today = new Date();
+  const birth = new Date(birthDate);
+  
+  let age = today.getFullYear() - birth.getFullYear();
+  const m = today.getMonth() - birth.getMonth();
+  
+  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+  
+  return age >= minAge;
+}

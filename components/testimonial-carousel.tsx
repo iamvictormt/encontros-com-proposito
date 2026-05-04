@@ -42,7 +42,7 @@ export function TestimonialCarousel({
         <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-brand-green/20 blur-[120px] rounded-full" />
       </div>
 
-      <div className="relative h-[420px] md:h-[480px] w-full overflow-hidden sm:overflow-visible mb-12">
+      <div className="relative h-[480px] sm:h-[420px] md:h-[480px] w-full overflow-hidden sm:overflow-visible mb-12">
         <div className="relative w-full h-full max-w-7xl mx-auto">
           {reviews.map((review, index) => {
             const position = (index - currentReviewIndex + reviews.length) % reviews.length;
@@ -61,16 +61,16 @@ export function TestimonialCarousel({
 
                   // VARIANT DEFAULT (Center Flanked)
                   variant === "default" &&
-                    "w-[92%] sm:w-[80%] md:w-[70%] lg:w-[60%] -translate-x-1/2 rounded-[3.5rem] p-10 md:p-16 border-white/40",
+                    "w-full sm:w-[80%] md:w-[70%] lg:w-[60%] -translate-x-1/2 rounded-[2.5rem] sm:rounded-[3.5rem] p-8 sm:p-10 md:p-16 border-white/40",
                   variant === "default" &&
                     position === 0 &&
-                    "z-30 left-1/2 opacity-100 scale-100 glass shadow-[0_40px_80px_-15px_rgba(0,0,0,0.25)]",
+                    "z-30 left-1/2 opacity-100 scale-100 glass md:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.25)]",
                   variant === "default" &&
                     position === 1 &&
-                    "z-20 left-[130%] sm:left-[100%] md:left-[95%] opacity-20 scale-[0.85] blur-[2px] shadow-none cursor-pointer grayscale",
+                    "z-20 left-[150%] sm:left-[100%] md:left-[95%] opacity-0 sm:opacity-20 scale-[0.85] blur-[2px] md:shadow-none cursor-pointer grayscale",
                   variant === "default" &&
                     position === reviews.length - 1 &&
-                    "z-20 left-[-30%] sm:left-[0%] md:left-[5%] opacity-20 scale-[0.85] blur-[2px] shadow-none cursor-pointer grayscale",
+                    "z-20 left-[-50%] sm:left-[0%] md:left-[5%] opacity-0 sm:opacity-20 scale-[0.85] blur-[2px] md:shadow-none cursor-pointer grayscale",
                   variant === "default" &&
                     position !== 0 &&
                     position !== 1 &&
@@ -78,16 +78,16 @@ export function TestimonialCarousel({
                     "opacity-0 pointer-events-none scale-50 left-1/2 z-0",
 
                   // VARIANT STACKED (Right Stacked)
-                  variant === "stacked" && "w-[85%] sm:w-[90%] rounded-[3rem] p-10 border-white/20 glass",
+                  variant === "stacked" && "w-full sm:w-[90%] rounded-[2.5rem] sm:rounded-[3rem] p-8 sm:p-10 border-white/20 glass",
                   variant === "stacked" &&
                     position === 0 &&
-                    "z-30 left-0 opacity-100 scale-100 shadow-[0_20px_50px_rgba(0,0,0,0.15)]",
+                    "z-30 left-0 opacity-100 scale-100 md:shadow-[0_20px_50px_rgba(0,0,0,0.15)]",
                   variant === "stacked" &&
                     position === 1 &&
-                    "z-20 left-[8%] sm:left-[10%] opacity-60 scale-[0.92] shadow-sm cursor-pointer blur-[1px]",
+                    "z-20 left-4 sm:left-[10%] opacity-40 sm:opacity-60 scale-[0.92] md:shadow-sm cursor-pointer blur-[1px]",
                   variant === "stacked" &&
                     position === 2 &&
-                    "z-10 left-[16%] sm:left-[20%] opacity-30 scale-[0.84] shadow-sm cursor-pointer blur-[2px]",
+                    "z-10 left-8 sm:left-[20%] opacity-20 sm:opacity-30 scale-[0.84] md:shadow-sm cursor-pointer blur-[2px]",
                   variant === "stacked" &&
                     position > 2 &&
                     "opacity-0 pointer-events-none scale-[0.70] left-[24%] z-0",
@@ -121,11 +121,11 @@ export function TestimonialCarousel({
                 </div>
 
                 {/* AUTHOR FOOTER */}
-                <div className="mt-auto flex items-center gap-6">
+                <div className="mt-auto flex items-center gap-4 sm:gap-6">
                    <div className="h-px flex-1 bg-brand-black/5" />
                    <div className="text-right">
-                      <p className="text-[10px] font-black text-brand-orange uppercase tracking-[0.3em] mb-1">Membro da comunidade</p>
-                      <p className="text-xl md:text-2xl font-black text-brand-black uppercase tracking-tighter">{review.author}</p>
+                      <p className="text-[8px] sm:text-[10px] font-black text-brand-orange uppercase tracking-[0.3em] mb-1">Comunidade</p>
+                      <p className="text-lg sm:text-xl md:text-2xl font-black text-brand-black uppercase tracking-tighter leading-none">{review.author}</p>
                    </div>
                 </div>
               </div>
@@ -137,10 +137,10 @@ export function TestimonialCarousel({
       {/* NAVIGATION CONTROLS */}
       <div
         className={cn(
-          "flex items-center gap-16 relative z-40",
+          "flex items-center gap-8 sm:gap-16 relative z-40",
           arrowsPosition === "center" && "justify-center",
           arrowsPosition === "left" && "justify-start",
-          arrowsPosition === "right" && "justify-end",
+          arrowsPosition === "right" && "justify-center sm:justify-end",
         )}
       >
         <button
@@ -148,10 +148,10 @@ export function TestimonialCarousel({
           className="group flex flex-col items-center gap-3 text-gray-400 hover:text-brand-orange transition-all duration-500 cursor-pointer"
           aria-label="Previous review"
         >
-          <div className="w-16 h-16 rounded-full border border-brand-black/5 flex items-center justify-center glass group-hover:bg-brand-black group-hover:text-white group-hover:border-brand-black transition-all duration-500 shadow-xl group-active:scale-90">
-             <MoveLeft className="h-6 w-6 group-hover:-translate-x-1 transition-transform" />
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border border-brand-black/5 flex items-center justify-center glass group-hover:bg-brand-black group-hover:text-white group-hover:border-brand-black transition-all duration-500 md:shadow-xl group-active:scale-90">
+             <MoveLeft className="h-5 w-5 sm:h-6 sm:w-6 group-hover:-translate-x-1 transition-transform" />
           </div>
-          <span className="text-[9px] font-black uppercase tracking-[0.3em] opacity-0 group-hover:opacity-100 transition-opacity">Anterior</span>
+          <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.3em] opacity-0 group-hover:opacity-100 transition-opacity">Anterior</span>
         </button>
 
         <button
@@ -159,10 +159,10 @@ export function TestimonialCarousel({
           className="group flex flex-col items-center gap-3 text-gray-400 hover:text-brand-orange transition-all duration-500 cursor-pointer"
           aria-label="Next review"
         >
-          <div className="w-20 h-20 rounded-full border border-brand-black/5 flex items-center justify-center glass group-hover:bg-brand-black group-hover:text-white group-hover:border-brand-black transition-all duration-500 shadow-2xl group-active:scale-90">
-             <MoveRight className="h-8 w-8 group-hover:translate-x-1 transition-transform" />
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border border-brand-black/5 flex items-center justify-center glass group-hover:bg-brand-black group-hover:text-white group-hover:border-brand-black transition-all duration-500 md:shadow-2xl group-active:scale-90">
+             <MoveRight className="h-6 w-6 sm:h-8 sm:w-8 group-hover:translate-x-1 transition-transform" />
           </div>
-          <span className="text-[9px] font-black uppercase tracking-[0.3em] opacity-0 group-hover:opacity-100 transition-opacity">Próximo</span>
+          <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.3em] opacity-0 group-hover:opacity-100 transition-opacity">Próximo</span>
         </button>
       </div>
     </div>

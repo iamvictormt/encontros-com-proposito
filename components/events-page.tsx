@@ -134,7 +134,7 @@ export function EventsPage() {
 
       {/* Hero Banner with Carousel */}
       {heroSlides.length > 0 && (
-        <section className="relative h-[500px] sm:h-[650px] w-full overflow-hidden px-4 py-6 lg:px-20">
+        <section className="relative h-[450px] sm:h-[650px] w-full overflow-hidden px-4 sm:px-8 py-4 sm:py-6 lg:px-20">
           <div className="mx-auto max-w-7xl h-full">
             <div className="relative h-full overflow-hidden rounded-3xl">
               <div
@@ -152,7 +152,7 @@ export function EventsPage() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/40 to-transparent" />
 
-                    <div className="absolute inset-0 flex flex-col justify-end p-8 sm:p-16">
+                    <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-16">
                       <div className="max-w-3xl space-y-6">
                         <div className="flex flex-wrap gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
                           <span className="flex items-center gap-1.5 rounded-full glass px-4 py-1.5 text-xs font-bold text-brand-black uppercase tracking-wider">
@@ -163,7 +163,7 @@ export function EventsPage() {
                           </span>
                         </div>
 
-                        <h1 className="text-4xl sm:text-6xl font-black leading-tight text-white lg:text-7xl tracking-tighter uppercase animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+                        <h1 className="text-3xl sm:text-6xl font-black leading-tight text-white lg:text-7xl tracking-tighter uppercase animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
                           {slide.title}
                         </h1>
 
@@ -177,7 +177,7 @@ export function EventsPage() {
 
                           <Button
                             variant="ghost"
-                            className="bg-white/10 text-white hover:bg-white/20 backdrop-blur-md px-6 h-14 rounded-2xl font-black uppercase tracking-widest text-[10px]"
+                            className="bg-white/10 text-white hover:bg-white/20 backdrop-blur-md px-4 sm:px-6 h-14 rounded-2xl font-black uppercase tracking-widest text-[10px]"
                             onClick={() => {
                               const url = `${window.location.origin}/events/${slide.id}`;
                               navigator.clipboard.writeText(url);
@@ -203,7 +203,7 @@ export function EventsPage() {
               </div>
 
               {/* Navigation Indicators */}
-              <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+              <div className="md:flex hidden absolute bottom-10 left-1/2 -translate-x-1/2 gap-3 z-20">
                 {heroSlides.map((_, index) => (
                   <button
                     key={index}
@@ -238,14 +238,14 @@ export function EventsPage() {
       )}
 
       {/* Events Section */}
-      <section className="px-4 py-16 lg:px-20 relative">
+      <section className="px-4 sm:px-8 py-10 sm:py-16 lg:px-20 relative">
         <div className="mx-auto max-w-7xl">
           <div className="mb-12 flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-end">
-            <div className="space-y-2">
+            <div className="space-y-2 text-center lg:text-left w-full">
               <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
                 Descubra
               </span>
-              <h2 className="text-4xl font-black text-brand-black lg:text-5xl tracking-tighter uppercase mt-4">
+              <h2 className="text-2xl sm:text-4xl font-black text-brand-black lg:text-5xl tracking-tighter uppercase mt-4">
                 Próximos <span className="text-brand-red">Eventos</span>
               </h2>
             </div>
@@ -506,7 +506,7 @@ export function EventsPage() {
                       </div>
                     </div>
 
-                    <div className="p-8 flex flex-col flex-1">
+                    <div className="p-6 sm:p-8 flex flex-col flex-1">
                       <div className="mb-6 space-y-2">
                         <h3 className="text-xl font-black text-brand-black leading-tight line-clamp-2 uppercase tracking-tight group-hover:text-brand-orange transition-colors">
                           {event.title}

@@ -198,25 +198,25 @@ export function PartnersPage() {
     <div className="flex min-h-screen flex-col bg-background">
       <SiteHeader />
 
-      <main className="flex-1 px-4 py-16 lg:px-20">
+      <main className="flex-1 px-4 sm:px-8 py-10 sm:py-16 lg:px-20">
         <div className="mx-auto max-w-7xl">
           {/* Header Section */}
-          <div className="text-center mb-16 space-y-4">
+          <div className="text-center mb-10 sm:mb-16 space-y-4">
              <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
               B2B & Partnerships
             </span>
-            <h1 className="text-4xl md:text-6xl font-black text-brand-black uppercase tracking-tighter leading-none mt-4">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-brand-black uppercase tracking-tighter leading-none mt-4">
               Impulsione seu <span className="text-brand-orange">Negócio</span>
             </h1>
-            <p className="text-gray-500 font-medium max-w-2xl mx-auto text-lg">
+            <p className="text-gray-500 font-medium max-w-2xl mx-auto text-base sm:text-lg text-pretty">
               Cadastre sua empresa em nossa rede exclusiva e conecte-se a eventos premium, pontos de encontro e oportunidades de vendas.
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-12 gap-16 items-start">
+          <div className="grid lg:grid-cols-12 gap-8 sm:gap-16 items-start">
             {/* Form Section */}
             <div className="lg:col-span-7">
-              <div className="glass p-8 md:p-12 rounded-[3rem] border-white/40 shadow-2xl relative overflow-hidden">
+              <div className="glass p-6 sm:p-10 md:p-12 rounded-[2.5rem] sm:rounded-[3rem] border-white/40 shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-brand-orange/10 blur-3xl -mr-16 -mt-16 rounded-full" />
                 
                 <form onSubmit={handleSubmit} className="space-y-8 relative">
@@ -405,13 +405,13 @@ export function PartnersPage() {
                     { icon: Megaphone, title: "Visibilidade Premium", desc: "Destaque garantido em nossos canais oficiais e eventos sazonais.", color: "bg-brand-red" },
                     { icon: Share2, title: "Networking B2B", desc: "Interaja com outros CEOs e fundadores parceiros da MeetOff.", color: "bg-brand-black" }
                   ].map((benefit, i) => (
-                    <div key={i} className="glass p-6 rounded-[2rem] border-white/40 shadow-lg flex gap-6 group hover:scale-[1.02] transition-transform">
-                      <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 text-white shadow-lg shadow-black/5", benefit.color)}>
-                        <benefit.icon className="w-6 h-6" />
+                    <div key={i} className="glass p-5 sm:p-6 rounded-[2rem] border-white/40 shadow-lg flex gap-4 sm:gap-6 group hover:scale-[1.02] transition-transform">
+                      <div className={cn("w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center shrink-0 text-white shadow-lg shadow-black/5", benefit.color)}>
+                        <benefit.icon className="w-5 h-5 sm:w-6 sm:h-6" />
                       </div>
                       <div className="space-y-1">
-                        <h3 className="font-black text-brand-black uppercase tracking-tight">{benefit.title}</h3>
-                        <p className="text-sm text-gray-500 font-medium leading-relaxed">{benefit.desc}</p>
+                        <h3 className="font-black text-sm sm:text-base text-brand-black uppercase tracking-tight">{benefit.title}</h3>
+                        <p className="text-[11px] sm:text-sm text-gray-500 font-medium leading-relaxed">{benefit.desc}</p>
                       </div>
                     </div>
                   ))}
@@ -444,10 +444,10 @@ export function PartnersPage() {
           {/* Featured Partners Section */}
           {partners.length > 0 && (
             <div className="mt-32">
-              <div className="flex items-end justify-between mb-12">
-                <div className="space-y-2">
+              <div className="flex flex-col sm:flex-row items-center sm:items-end justify-between mb-12 gap-6">
+                <div className="space-y-2 text-center sm:text-left">
                   <h4 className="text-brand-orange font-bold uppercase tracking-[0.3em] text-[10px]">Showcase</h4>
-                  <h2 className="text-4xl font-black text-brand-black uppercase tracking-tighter">Parceiros em <span className="text-brand-red">Destaque</span></h2>
+                  <h2 className="text-2xl sm:text-4xl font-black text-brand-black uppercase tracking-tighter">Parceiros em <span className="text-brand-red">Destaque</span></h2>
                 </div>
                 <Button variant="link" className="text-brand-black font-black uppercase tracking-widest text-[10px] hover:text-brand-orange gap-2">
                   Ver Diretório Completo <ArrowRight className="w-4 h-4" />
@@ -470,14 +470,14 @@ export function PartnersPage() {
                         </Badge>
                       </div>
                     </div>
-                    <div className="p-8 space-y-6">
+                    <div className="p-6 sm:p-8 space-y-6">
                       <div className="space-y-1">
-                        <h3 className="text-xl font-black text-brand-black uppercase tracking-tight group-hover:text-brand-orange transition-colors">{partner.name}</h3>
-                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                        <h3 className="text-lg sm:text-xl font-black text-brand-black uppercase tracking-tight group-hover:text-brand-orange transition-colors">{partner.name}</h3>
+                        <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
                           <Target className="w-3 h-3" /> {partner.location}
                         </p>
                       </div>
-                      <p className="text-sm text-gray-500 font-medium line-clamp-2 leading-relaxed">
+                      <p className="text-xs sm:text-sm text-gray-500 font-medium line-clamp-2 leading-relaxed">
                         {partner.products}
                       </p>
                       <Button className="w-full h-12 rounded-xl bg-brand-green/5 hover:bg-brand-green text-brand-green hover:text-white font-black uppercase tracking-widest text-[10px] border border-brand-green/10 transition-all">

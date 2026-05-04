@@ -15,6 +15,7 @@ import {
   validatePhone,
   validateEmail,
   detectInputType,
+  validateMinAge,
 } from "@/lib/utils/validators";
 import { Logo } from "./logo";
 import { useAuth } from "@/hooks/use-auth";
@@ -28,6 +29,7 @@ export function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [birthDate, setBirthDate] = useState("");
   const [year, setYear] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [emailPhoneError, setEmailPhoneError] = useState("");
@@ -103,6 +105,15 @@ export function SignupForm() {
       return;
     }
 
+    if (!birthDate || !validateMinAge(birthDate)) {
+      toast({
+        variant: "error",
+        title: "Idade mínima",
+        description: "Você deve ter pelo menos 18 anos para se cadastrar.",
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -113,6 +124,7 @@ export function SignupForm() {
         email: isEmail ? email : "",
         phone: isEmail ? "" : unformatPhone(email),
         password,
+        birthDate,
       });
 
       toast({
@@ -202,6 +214,20 @@ export function SignupForm() {
                   required
                 />
                 {emailPhoneError && <p className="text-[10px] text-brand-red font-bold uppercase tracking-wide px-1">{emailPhoneError}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="birthDate" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                  Data de Nascimento
+                </label>
+                <Input
+                  id="birthDate"
+                  type="date"
+                  value={birthDate}
+                  onChange={(e) => setBirthDate(e.target.value)}
+                  className="w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-6"
+                  required
+                />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

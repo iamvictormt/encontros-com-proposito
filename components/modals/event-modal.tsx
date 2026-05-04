@@ -412,7 +412,7 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
                           <button
                             type="button"
                             onClick={() => {
-                              const newTags = formData.tags.filter((_, i) => i !== index);
+                              const newTags = formData.tags.filter((_: any, i: any) => i !== index);
                               setFormData({ ...formData, tags: newTags });
                             }}
                             className="hover:text-brand-orange transition-colors"

@@ -7,40 +7,58 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
+import { authService } from "@/lib/services/auth.service";
+import { formatPhone, unformatPhone, validateMinAge } from "@/lib/utils/validators";
+
+import { ChangePasswordModal } from "@/components/modals/change-password-modal";
 
 export default function AdminSettings() {
-  const { user } = useAuth();
+  const { user, refreshAuth } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    cpf: "",
-    password: "",
+    phone: "",
+    birthDate: "",
   });
 
   useEffect(() => {
     if (user) {
+      let formattedDate = "";
+      if (user.birthDate) {
+        const date = new Date(user.birthDate);
+        formattedDate = date.toISOString().split("T")[0];
+      }
+
       setFormData({
         fullName: user.fullName || "",
         email: user.email || "",
-        cpf: user.cpf || "",
-        password: "",
+        phone: user.phone ? formatPhone(user.phone) : "",
+        birthDate: formattedDate,
       });
     }
   }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (formData.birthDate && !validateMinAge(formData.birthDate)) {
+      toast.error("Você deve ter pelo menos 18 anos.");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const res = await fetch("/api/admin/settings", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const dataToSave = {
+        ...formData,
+        phone: unformatPhone(formData.phone)
+      };
 
-      if (!res.ok) throw new Error();
+      await authService.updateProfile(dataToSave);
+      
+      await refreshAuth();
       toast.success("Perfil atualizado com sucesso!");
     } catch (error) {
       toast.error("Erro ao atualizar perfil");
@@ -100,36 +118,45 @@ export default function AdminSettings() {
 
             <div className="space-y-3">
               <Label 
-                htmlFor="cpf"
+                htmlFor="phone"
                 className="text-[10px] font-black uppercase tracking-widest text-brand-black/40 ml-1"
               >
-                CPF
+                Telefone
               </Label>
               <Input 
-                id="cpf" 
-                placeholder="000.000.000-00"
+                id="phone" 
+                placeholder="(11) 99999-9999"
                 className="h-14 rounded-2xl border-brand-black/5 bg-brand-black/5 focus:bg-white focus:ring-brand-orange/20 focus:border-brand-orange transition-all px-6 font-bold"
-                value={formData.cpf} 
-                onChange={e => setFormData({...formData, cpf: e.target.value})} 
+                value={formData.phone} 
+                onChange={e => setFormData({...formData, phone: formatPhone(e.target.value)})} 
               />
             </div>
 
             <div className="space-y-3">
               <Label 
-                htmlFor="password"
+                htmlFor="birthDate"
                 className="text-[10px] font-black uppercase tracking-widest text-brand-black/40 ml-1"
               >
-                Nova Senha
+                Data de Nascimento
               </Label>
               <Input 
-                id="password" 
-                type="password" 
-                placeholder="••••••••"
+                id="birthDate" 
+                type="date"
                 className="h-14 rounded-2xl border-brand-black/5 bg-brand-black/5 focus:bg-white focus:ring-brand-orange/20 focus:border-brand-orange transition-all px-6 font-bold"
-                value={formData.password} 
-                onChange={e => setFormData({...formData, password: e.target.value})} 
+                value={formData.birthDate} 
+                onChange={e => setFormData({...formData, birthDate: e.target.value})} 
               />
-              <p className="text-[9px] font-medium text-brand-black/30 ml-1 italic">Deixe em branco para manter a senha atual.</p>
+            </div>
+
+            <div className="space-y-3 flex flex-col justify-end">
+              <Button
+                type="button"
+                onClick={() => setIsChangePasswordOpen(true)}
+                variant="outline"
+                className="h-14 rounded-2xl border-brand-black/10 font-black uppercase tracking-widest text-[10px] hover:bg-brand-orange hover:text-white hover:border-brand-orange transition-all"
+              >
+                Alterar Senha de Acesso
+              </Button>
             </div>
           </div>
 
@@ -149,6 +176,11 @@ export default function AdminSettings() {
           </div>
         </form>
       </div>
+
+      <ChangePasswordModal 
+        isOpen={isChangePasswordOpen} 
+        onClose={() => setIsChangePasswordOpen(false)} 
+      />
     </div>
   );
 }

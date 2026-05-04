@@ -46,13 +46,11 @@ export async function sendPasswordResetEmail(email: string, code: string) {
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
           max-width: 600px;
           margin: 0 auto;
-          padding: 40px 20px;
-          background-color: #f9f9f9;
         }
         .card {
           background-color: #ffffff;
           border-radius: 32px;
-          padding: 48px;
+          padding: 20px;
           box-shadow: 0 20px 40px rgba(0,0,0,0.05);
           text-align: center;
           border: 1px solid #eeeeee;
@@ -90,7 +88,7 @@ export async function sendPasswordResetEmail(email: string, code: string) {
         }
         .code {
           font-family: 'Courier New', Courier, monospace;
-          font-size: 20px;
+          font-size: 30px;
           font-weight: 900;
           color: #0A4742;
           letter-spacing: 12px;
