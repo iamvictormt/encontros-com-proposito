@@ -37,6 +37,8 @@ async function setupDatabase() {
     await sql`ALTER TABLE users DROP COLUMN IF EXISTS cpf`;
     await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar TEXT`;
     await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_password_token TEXT`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_password_expires TIMESTAMP WITH TIME ZONE`;
 
     // Cards table
     await sql`

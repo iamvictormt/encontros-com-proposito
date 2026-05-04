@@ -55,6 +55,16 @@ class AuthService {
       return null;
     }
   }
+
+  async forgotPassword(email: string): Promise<{ message: string }> {
+    const response = await apiClient.post<{ message: string }>("/api/auth/forgot-password", { email });
+    return response;
+  }
+
+  async resetPassword(data: any): Promise<{ message: string }> {
+    const response = await apiClient.post<{ message: string }>("/api/auth/reset-password", data);
+    return response;
+  }
 }
 
 // Create singleton instance

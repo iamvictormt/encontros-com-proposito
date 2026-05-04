@@ -24,6 +24,7 @@ import {
   detectInputType,
 } from "@/lib/utils/validators";
 import { cn } from "@/lib/utils";
+import { ForgotPasswordModal } from "./modals/forgot-password-modal";
 
 const carouselSlides = [
   {
@@ -64,6 +65,7 @@ export function LoginForm() {
   const [showSuccessVideo, setShowSuccessVideo] = useState(false);
   const [userData, setUserData] = useState<any>(null);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
 
   useEffect(() => {
     const currentYear = new Date().getFullYear().toString();
@@ -300,9 +302,13 @@ export function LoginForm() {
                       Manter conectado
                     </label>
                   </div>
-                  <Link href="/forgot-password" className="text-xs font-bold text-brand-orange uppercase tracking-wide hover:underline">
+                  <button 
+                    type="button"
+                    onClick={() => setIsForgotPasswordOpen(true)}
+                    className="text-xs font-bold text-brand-orange uppercase tracking-wide hover:underline cursor-pointer"
+                  >
                     Esqueceu a senha?
-                  </Link>
+                  </button>
                 </div>
 
                 <Button
@@ -378,6 +384,10 @@ export function LoginForm() {
           </div>
         </div>
       </div>
+      <ForgotPasswordModal 
+        isOpen={isForgotPasswordOpen} 
+        onClose={() => setIsForgotPasswordOpen(false)} 
+      />
     </>
   );
 }
