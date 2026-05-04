@@ -60,7 +60,7 @@ export function VenueModal({ isOpen, onClose, onSuccess, venue, isReadOnly }: Ve
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-white rounded-[2.5rem] border-none shadow-2xl p-6 sm:p-10 max-w-xl w-[95vw] max-h-[90vh] overflow-y-auto scrollbar-hide">
         <DialogHeader className="space-y-3 mb-8">
-          <DialogTitle className="text-3xl font-black uppercase tracking-tighter text-brand-black">
+          <DialogTitle className="text-2xl sm:text-3xl font-black uppercase tracking-tighter text-brand-black">
             {isReadOnly ? "Detalhes do Local" : venue ? "Editar Local" : "Novo Local"}
           </DialogTitle>
           <p className="text-gray-500 font-medium text-sm">

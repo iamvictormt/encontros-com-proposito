@@ -120,7 +120,7 @@ export default function AdminTeam() {
           <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
             Gestão Interna
           </span>
-          <h2 className="text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
+          <h2 className="text-2xl sm:text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
             Equipe & <span className="text-brand-green">Cargos</span>
           </h2>
         </div>
@@ -177,13 +177,12 @@ export default function AdminTeam() {
       {isLoading ? (
         <div className="flex justify-center py-24 grayscale opacity-30"><Loader2 className="animate-spin text-brand-black w-12 h-12" /></div>
       ) : (
-        <div className="bg-white rounded-[2.5rem] p-8 shadow-sm">
           <RoleAssignmentList 
             team={filteredTeam} 
             onEdit={handleEdit}
             onDelete={handleDelete}
           />
-        </div>
+ 
       )}
 
       <TeamModal

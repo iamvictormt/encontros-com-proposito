@@ -167,7 +167,7 @@ export default function CardRequestsPage() {
           <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
             Gestão de Envios
           </span>
-          <h2 className="text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
+          <h2 className="text-2xl sm:text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
             Cartões <span className="text-brand-orange">Físicos</span>
           </h2>
         </div>
@@ -240,7 +240,7 @@ export default function CardRequestsPage() {
           {paginatedRequests.length === 0 && (
             <div className="text-center py-24 glass rounded-[2.5rem] border-dashed border-brand-green/20">
               <div className="text-6xl mb-6 grayscale opacity-50">💳</div>
-              <h3 className="text-2xl font-black text-brand-black mb-2 uppercase tracking-tight">
+              <h3 className="text-xl sm:text-2xl font-black text-brand-black mb-2 uppercase tracking-tight">
                 Nenhuma solicitação encontrada
               </h3>
               <p className="text-gray-500 max-w-md mx-auto text-sm leading-relaxed px-4 font-medium">

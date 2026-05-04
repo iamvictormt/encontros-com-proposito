@@ -164,7 +164,7 @@ export function ProductModal({ isOpen, onClose, onSuccess, product, isReadOnly }
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[1000px] w-[95vw] max-h-[90vh] overflow-y-auto bg-white rounded-[2.5rem] border-none shadow-2xl p-6 sm:p-10 scrollbar-hide">
         <DialogHeader className="mb-8">
-          <DialogTitle className="text-3xl font-black uppercase tracking-tighter text-brand-black">
+          <DialogTitle className="text-2xl sm:text-3xl font-black uppercase tracking-tighter text-brand-black">
             {isReadOnly ? "Detalhes do Produto" : product ? "Editar Produto" : "Novo Produto"}
           </DialogTitle>
           <p className="text-gray-500 font-medium text-sm">

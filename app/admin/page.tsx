@@ -79,7 +79,7 @@ export default function AdminOverview() {
             <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
               Eventos
             </span>
-            <h2 className="text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
+            <h2 className="text-2xl sm:text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
               Criação e <span className="text-brand-red">Moderação</span>
             </h2>
           </div>
@@ -109,7 +109,7 @@ export default function AdminOverview() {
             <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
               Parceiros
             </span>
-            <h2 className="text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
+            <h2 className="text-2xl sm:text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
               Aprovação de <span className="text-brand-green">Locais</span>
             </h2>
           </div>
@@ -134,7 +134,7 @@ export default function AdminOverview() {
             <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
               Marcas
             </span>
-            <h2 className="text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
+            <h2 className="text-2xl sm:text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
               Marcas <span className="text-brand-orange">Parceiras</span>
             </h2>
           </div>
@@ -155,7 +155,7 @@ export default function AdminOverview() {
             <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
               Equipe
             </span>
-            <h2 className="text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
+            <h2 className="text-2xl sm:text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
               Gestão de <span className="text-brand-green">Cargos</span>
             </h2>
           </div>
@@ -167,9 +167,8 @@ export default function AdminOverview() {
             <Link href="/admin/team">Ver toda a equipe</Link>
           </Button>
         </div>
-        <div className="bg-white rounded-[2.5rem] p-8 shadow-sm">
           <RoleAssignmentList team={data?.team} />
-        </div>
+
       </section>
     </div>
   );

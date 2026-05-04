@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils/format";
-import { Truck, Printer, Eye, MapPin, CheckCircle, XCircle, MoreVertical } from "lucide-react";
+import { Truck, Printer, Eye, MapPin, CheckCircle, XCircle, MoreVertical, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -43,7 +43,7 @@ export function CardRequestContentTable({
   const getStatusConfig = (status: string) => {
     switch (status) {
       case 'PENDENTE': return { label: 'Pendente', color: 'text-yellow-600', bg: 'bg-yellow-50', border: 'border-yellow-200' };
-      case 'PAGO': return { label: 'Pago / Preparar', color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-200' };
+      case 'PAGO': return { label: 'Pago', color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-200' };
       case 'EM_PRODUCAO': return { label: 'Em Produção', color: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-200' };
       case 'ENVIADO': return { label: 'Enviado', color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200' };
       case 'ENTREGUE': return { label: 'Entregue', color: 'text-brand-green', bg: 'bg-brand-green/10', border: 'border-brand-green/20' };
@@ -99,11 +99,11 @@ export function CardRequestContentTable({
 
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-brand-black/5 flex items-center justify-center text-brand-black/40">
-                  <Truck size={14} />
+                  <Info size={14} />
                 </div>
                 <div>
                   <p className="text-[8px] font-black uppercase tracking-widest text-brand-black/30 leading-none mb-1">Status</p>
-                  {status.label}
+                  <p className="text-[10px] font-bold text-brand-black">{status.label}</p>
                 </div>
               </div>
             </div>

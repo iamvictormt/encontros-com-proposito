@@ -55,7 +55,7 @@ export default function AdminSettings() {
         <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
           Configurações
         </span>
-        <h2 className="text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
+        <h2 className="text-2xl sm:text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
           Meu <span className="text-brand-orange">Perfil</span>
         </h2>
       </div>

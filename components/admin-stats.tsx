@@ -9,15 +9,15 @@ interface StatCardProps {
 export function StatCard({ label, value, isValue }: StatCardProps) {
   return (
     <Card className="flex-1 premium-card bg-white rounded-[2rem] border-none">
-      <CardContent className="p-8">
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-black/40 mb-3">{label}</p>
+      <CardContent className="p-5 sm:p-8">
+        <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider sm:tracking-[0.2em] text-brand-black/40 mb-3 line-clamp-2" title={label}>{label}</p>
         <div className="flex items-baseline gap-1">
           {isValue && <span className="text-lg font-black text-brand-orange">R$</span>}
-          <p className="text-5xl font-black text-brand-black tracking-tighter">
+          <p className="text-3xl sm:text-5xl font-black text-brand-black tracking-tighter">
             {value}
           </p>
         </div>
-        <div className="h-1 w-12 bg-brand-orange rounded-full mt-6 shadow-[0_0_8px_#FF1D55]" />
+        <div className="h-1 w-12 bg-brand-orange rounded-full mt-4 sm:mt-6 shadow-[0_0_8px_#FF1D55]" />
       </CardContent>
     </Card>
   );
@@ -34,7 +34,7 @@ export function AdminStats({ stats }: { stats?: StatCardProps[] }) {
   const displayStats = stats || defaultStats;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+    <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
       {displayStats.map((stat, i) => (
         <StatCard key={i} {...stat} />
       ))}

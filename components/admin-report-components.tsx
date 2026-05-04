@@ -15,13 +15,13 @@ interface StatBoxProps {
 
 export function StatBox({ label, value, prefix, className = "" }: StatBoxProps) {
   return (
-    <div className={`premium-card bg-white p-8 rounded-[2rem] flex flex-col border-none ${className}`}>
-      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-black/40 mb-3">{label}</span>
+    <div className={`premium-card bg-white p-5 sm:p-8 rounded-[2rem] flex flex-col border-none ${className}`}>
+      <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider sm:tracking-[0.2em] text-brand-black/40 mb-3 line-clamp-2" title={label}>{label}</span>
       <div className="flex items-baseline gap-1">
         {prefix && <span className="text-lg font-black text-brand-orange">{prefix}</span>}
-        <span className="text-5xl font-black text-brand-black tracking-tighter">{value}</span>
+        <span className="text-3xl sm:text-5xl font-black text-brand-black tracking-tighter">{value}</span>
       </div>
-      <div className="h-1 w-12 bg-brand-orange rounded-full mt-6 shadow-[0_0_8px_#FF1D55]" />
+      <div className="h-1 w-12 bg-brand-orange rounded-full mt-4 sm:mt-6 shadow-[0_0_8px_#FF1D55]" />
     </div>
   );
 }
@@ -75,7 +75,7 @@ export function SatisfactionGauge({ percentage }: { percentage: number }) {
           <span>0%</span>
           <span>100%</span>
         </div>
-        <div className="text-3xl font-bold text-black">{percentage}%</div>
+        <div className="text-2xl sm:text-3xl font-bold text-black">{percentage}%</div>
         <p className="text-[10px] text-gray-400 mt-1">Baseado em avaliações positivas</p>
       </div>
     </div>

@@ -86,7 +86,7 @@ export default function AdminReports() {
             Estatísticas de Desempenho
           </h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
           <StatBox label="Total de Vendas" value="45.058" prefix="R$" />
           <StatBox label="Eventos Criados" value="28" />
           <StatBox label="Convites Aceitos" value="342" />
@@ -100,7 +100,7 @@ export default function AdminReports() {
             <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
               Relatórios Detalhados
             </span>
-            <h2 className="text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
+            <h2 className="text-2xl sm:text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
               Análise de <span className="text-brand-orange">Crescimento</span>
             </h2>
           </div>
@@ -112,7 +112,7 @@ export default function AdminReports() {
             <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-8 px-0 pt-0">
               <div className="flex items-center gap-3">
                 <div className="h-8 w-1.5 bg-brand-green rounded-full" />
-                <CardTitle className="text-xl font-black uppercase tracking-tighter text-brand-black">
+                <CardTitle className="text-lg sm:text-xl font-black uppercase tracking-tighter text-brand-black">
                   Lucro de Vendas
                 </CardTitle>
               </div>
@@ -188,7 +188,7 @@ export default function AdminReports() {
           {/* Satisfaction Gauge */}
           <Card className="border-none shadow-sm rounded-[2.5rem] bg-white flex flex-col p-8">
             <CardHeader className="px-0 pt-0">
-              <CardTitle className="text-xl font-black uppercase tracking-tighter text-brand-black">Satisfação</CardTitle>
+              <CardTitle className="text-lg sm:text-xl font-black uppercase tracking-tighter text-brand-black">Satisfação</CardTitle>
               <p className="text-[10px] font-black uppercase tracking-widest text-brand-black/40 mt-1">Feedback dos Clientes</p>
             </CardHeader>
             <CardContent className="flex-1 flex items-center justify-center p-0">
@@ -202,7 +202,7 @@ export default function AdminReports() {
         <section className="space-y-8">
           <div className="flex items-center gap-3">
             <div className="h-8 w-1.5 bg-brand-red rounded-full" />
-            <h2 className="text-2xl font-black uppercase tracking-tighter text-brand-black">Produtos em Destaque</h2>
+            <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tighter text-brand-black">Produtos em Destaque</h2>
           </div>
           <div className="bg-white rounded-[2.5rem] overflow-hidden p-4 sm:p-8 shadow-sm">
             <div className="space-y-4">
@@ -220,7 +220,7 @@ export default function AdminReports() {
         <section className="space-y-8">
           <div className="flex items-center gap-3">
             <div className="h-8 w-1.5 bg-brand-orange rounded-full" />
-            <h2 className="text-2xl font-black uppercase tracking-tighter text-brand-black">Canais de Conversão</h2>
+            <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tighter text-brand-black">Canais de Conversão</h2>
           </div>
           <div className="bg-white rounded-[2.5rem] overflow-hidden p-4 sm:p-8 shadow-sm">
             <div className="space-y-4">

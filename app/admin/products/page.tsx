@@ -134,7 +134,7 @@ export default function AdminProducts() {
             Status da Loja
           </h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
           {stats.map((stat, i) => (
             <StatCard key={i} {...stat} />
           ))}
@@ -147,7 +147,7 @@ export default function AdminProducts() {
             <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
               Gestão Comercial
             </span>
-            <h2 className="text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
+            <h2 className="text-2xl sm:text-4xl font-black text-brand-black tracking-tighter uppercase mt-4">
               Loja & <span className="text-brand-red">Produtos</span>
             </h2>
           </div>
@@ -281,7 +281,7 @@ export default function AdminProducts() {
             {paginatedProducts.length === 0 && (
               <div className="text-center py-24 glass rounded-[2.5rem] border-dashed border-brand-green/20">
                 <div className="text-6xl mb-6 grayscale opacity-50">🛍️</div>
-                <h3 className="text-2xl font-black text-brand-black mb-2 uppercase tracking-tight">
+                <h3 className="text-xl sm:text-2xl font-black text-brand-black mb-2 uppercase tracking-tight">
                   Nenhum produto encontrado
                 </h3>
                 <p className="text-gray-500 max-w-md mx-auto text-sm leading-relaxed px-4 font-medium">
