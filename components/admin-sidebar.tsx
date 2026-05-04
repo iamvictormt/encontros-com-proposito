@@ -17,17 +17,8 @@ import {
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 import { useAuth } from "@/hooks/use-auth";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { ConfirmModal } from "@/components/modals/confirm-modal";
+import { useState } from "react";
 
 export const menuSections = [
   {
@@ -51,6 +42,7 @@ export const menuSections = [
 export function AdminSidebar() {
   const pathname = usePathname();
   const { logout } = useAuth();
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   return (
     <aside className="w-80 glass border-r border-white/20 flex-col h-[calc(100vh-2rem)] sticky top-4 left-4 m-4 rounded-[2.5rem] hidden lg:flex shadow-2xl z-50">
@@ -98,32 +90,24 @@ export function AdminSidebar() {
         </div>
 
         <div className="pt-6 border-t border-brand-green/5 mt-auto">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <button className="flex items-center gap-4 px-4 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 text-brand-black/50 hover:bg-brand-red hover:text-white hover:shadow-xl hover:shadow-brand-red/20 w-full cursor-pointer group">
-                <LogOut className="w-5 h-5 transition-transform duration-300 group-hover:rotate-12" />
-                <span>Sair do Painel</span>
-              </button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Deseja realmente sair?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Sua sessão será encerrada e você precisará fazer login novamente para acessar o
-                  painel administrativo.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={logout}
-                  className="bg-red-600 hover:bg-red-700 text-white"
-                >
-                  Sair
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <button 
+            onClick={() => setIsLogoutModalOpen(true)}
+            className="flex items-center gap-4 px-4 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 text-brand-black/50 hover:bg-brand-red hover:text-white hover:shadow-xl hover:shadow-brand-red/20 w-full cursor-pointer group"
+          >
+            <LogOut className="w-5 h-5 transition-transform duration-300 group-hover:rotate-12" />
+            <span>Sair do Painel</span>
+          </button>
+
+          <ConfirmModal 
+            isOpen={isLogoutModalOpen}
+            onClose={() => setIsLogoutModalOpen(false)}
+            onConfirm={logout}
+            title="Deseja realmente sair?"
+            description="Sua sessão será encerrada e você precisará fazer login novamente para acessar o painel administrativo."
+            confirmText="Sair do Painel"
+            cancelText="Voltar"
+            variant="destructive"
+          />
         </div>
       </nav>
     </aside>

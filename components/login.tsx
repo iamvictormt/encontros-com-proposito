@@ -36,105 +36,100 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-white">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-background font-sans selection:bg-brand-orange/20">
       {/* Left Column - Login Form */}
-      <div className="w-full lg:w-1/2 flex flex-col p-6 sm:p-8 md:p-12 lg:p-16 lg:relative">
-        <div className="lg:absolute lg:top-6 lg:left-20 mb-8 lg:mb-0">
+      <div className="w-full lg:w-1/2 flex flex-col p-8 sm:p-12 lg:p-20 relative">
+        <div className="mb-12">
           <Logo className="justify-center flex md:block" />
         </div>
 
-        <div className="flex-1 flex items-center justify-center">
-          <div className="w-full max-w-md space-y-6 sm:space-y-10">
-            {/* Main Content */}
-            <div className="space-y-5 sm:space-y-6 pt-3 sm:pt-4">
-              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-black text-center">
-                {"Conecte-se com propósito."}
+        <div className="flex-1 flex flex-col justify-center">
+          <div className="w-full max-w-md space-y-12">
+            <div className="space-y-4">
+              <h2 className="text-4xl lg:text-5xl font-black text-brand-black tracking-tighter uppercase leading-none text-pretty">
+                Conecte-se com <br/><span className="text-brand-orange">propósito.</span>
               </h2>
+              <p className="text-gray-500 font-medium text-sm leading-relaxed max-w-sm">
+                Acesse a plataforma exclusiva para membros e gerencie seus eventos, cartões e conexões.
+              </p>
+            </div>
 
-              {/* Action Buttons */}
-              <div className="space-y-3">
-                <Button
-                  onClick={handleLogin}
-                  variant="outline"
-                  className="w-full bg-[#FF1D55] border-[#FF1D55] hover:bg-[#d91848] text-white font-medium py-5 sm:py-6 text-sm sm:text-base rounded-md hover:text-white"
-                >
-                  {"Entrar"}
-                </Button>
+            <div className="space-y-4">
+              <Button
+                onClick={handleLogin}
+                className="w-full h-16 bg-brand-red hover:bg-brand-red/90 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl shadow-brand-red/20 transition-all hover:scale-[1.02] active:scale-[0.98] gap-3"
+              >
+                Entrar na Conta
+              </Button>
 
-                <Button
-                  onClick={handleCreateAccount}
-                  variant="outline"
-                  className="w-full bg-[#0A4742] border-[#0A4742] hover:bg-[#083a36] text-white font-medium py-5 sm:py-6 text-sm sm:text-base rounded-md hover:text-white"
-                >
-                  {"Criar uma nova conta"}
-                </Button>
+              <Button
+                onClick={handleCreateAccount}
+                className="w-full h-16 bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl shadow-brand-green/20 transition-all hover:scale-[1.02] active:scale-[0.98] gap-3"
+              >
+                Criar Nova Conta
+              </Button>
 
-                <Button
-                  onClick={handleGuestLogin}
-                  variant="outline"
-                  className="w-full border-[#FF1D55] text-[#FF1D55] hover:bg-[#FF1D55] hover:text-white font-medium py-5 sm:py-6 text-sm sm:text-base bg-transparent rounded-md"
-                >
-                  {"Entrar como convidado"}
-                </Button>
-              </div>
+              <Button
+                onClick={handleGuestLogin}
+                variant="outline"
+                className="w-full h-16 border-2 border-brand-red/20 text-brand-red hover:bg-brand-red hover:text-white font-black uppercase tracking-widest text-[11px] rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] bg-white"
+              >
+                Entrar como Convidado
+              </Button>
+            </div>
 
-              {/* Invite Code Section */}
-              <div className="space-y-3 pt-2 sm:pt-4">
-                <p className="text-xs sm:text-sm font-medium text-foreground">
-                  {"Já tem um código de convite?"}
-                </p>
-                <Input
-                  type="text"
-                  placeholder="Inserir"
-                  value={inviteCode}
-                  onChange={(e) => setInviteCode(e.target.value)}
-                  className="w-full rounded-md h-11 sm:h-12 text-sm sm:text-base"
-                />
+            <div className="pt-8 space-y-4 border-t border-brand-black/5">
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] font-black text-brand-black/40 uppercase tracking-widest px-1">
+                  Já tem um código de convite?
+                </label>
+                <div className="relative group">
+                  <Input
+                    type="text"
+                    placeholder="DIGITE SEU CÓDIGO AQUI"
+                    value={inviteCode}
+                    onChange={(e) => setInviteCode(e.target.value)}
+                    className="w-full h-14 bg-white border-brand-green/10 rounded-2xl text-[12px] font-bold tracking-widest px-6 focus:ring-brand-orange/20 focus:border-brand-orange transition-all placeholder:text-gray-300"
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="lg:absolute lg:bottom-16 lg:left-20 lg:right-16 mt-8 lg:mt-0">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 text-sm">
-            <span className="text-gray-500">{`©MeetOff, ${year}`}</span>
-            <a href="#" className="text-black hover:text-black underline">
-              {"Termos e Política de privacidade"}
-            </a>
+        <div className="mt-20 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+          <span>© MeetOff {year}</span>
+          <div className="flex gap-6">
+            <a href="#" className="hover:text-brand-black transition-colors">Termos</a>
+            <a href="#" className="hover:text-brand-black transition-colors">Privacidade</a>
           </div>
         </div>
       </div>
 
       {/* Right Column - Hero Image */}
-      <div className="hidden lg:block lg:w-1/2 relative lg:min-h-screen flex-1 order-last">
-        <div className="absolute inset-0 w-full h-full">
+      <div className="hidden lg:block lg:w-1/2 relative p-8">
+        <div className="relative w-full h-full rounded-[3.5rem] overflow-hidden shadow-2xl group">
           <Image
             src="/images/homem-e-mulher.jpg"
             alt="Casal feliz representando conexões com propósito"
             fill
-            className="object-cover"
+            className="object-cover transition-transform duration-[2000ms] group-hover:scale-110"
             priority
           />
-        </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-brand-black/80 via-brand-black/20 to-transparent" />
 
-        {/* Overlay Text */}
-        <div className="absolute bottom-0 left-0 right-0 p-12 z-20">
-          <div className="backdrop-blur-md bg-black/20 rounded-xl p-8 border border-white/20">
-            <div className="text-white space-y-4">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl text-pretty">
-                {"João Carlos & Labernarde"}
-              </h2>
-              <p className="text-xs sm:text-sm md:text-base leading-relaxed text-pretty">
-                {
-                  "terapeuta, mentor e criador de experiências com propósito. Vivo para ajudar pessoas a se reconectarem de forma real, segura e afetiva por meio de encontros presenciais, retiros e projetos que unem tecnologia e emoção."
-                }
-                <br />
-                <br />
-
-                {"Criei plataformas como"}
-                <span className="font-semibold">{" MeetOff, FindB, Check-in Love"}</span>
-                {" para transformar relacionamentos, terapias e presentes em conexões verdadeiras."}
-              </p>
+          <div className="absolute bottom-0 left-0 right-0 p-12">
+            <div className="glass-dark p-12 rounded-[2.5rem] border-white/20 shadow-2xl">
+              <div className="space-y-6">
+                <h2 className="text-4xl font-black text-white uppercase tracking-tighter leading-none text-pretty">
+                  João Carlos <br /> 
+                  <span className="text-brand-orange">& Labernarde</span>
+                </h2>
+                
+                <p className="text-lg font-medium text-white/80 leading-relaxed text-pretty">
+                  Terapeuta, mentor e criador de experiências com propósito. Vivo para ajudar pessoas a se reconectarem de forma real, segura e afetiva por meio de encontros presenciais, retiros e projetos que unem tecnologia e emoção.
+                </p>
+              </div>
             </div>
           </div>
         </div>

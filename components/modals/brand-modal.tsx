@@ -59,7 +59,7 @@ export function BrandModal({ isOpen, onClose, onSuccess, brand, isReadOnly }: Br
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-white rounded-[2.5rem] border-none shadow-2xl p-8 sm:p-12 max-w-2xl">
+      <DialogContent className="bg-white rounded-[2.5rem] border-none shadow-2xl p-6 sm:p-10 max-w-xl w-[95vw] max-h-[90vh] overflow-y-auto scrollbar-hide">
         <DialogHeader className="space-y-3 mb-8">
           <DialogTitle className="text-3xl font-black uppercase tracking-tighter text-brand-black">
             {isReadOnly ? "Detalhes da Marca" : brand ? "Editar Marca" : "Nova Marca"}

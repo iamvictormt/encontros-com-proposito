@@ -58,14 +58,6 @@ export function VenueApprovalCard({
               <span className="text-[10px] font-black uppercase tracking-widest text-brand-black/40 bg-brand-black/5 px-3 py-1 rounded-full">
                 {type}
               </span>
-              {status && (
-                <span className={cn(
-                  "text-[9px] font-black uppercase tracking-widest",
-                  status === "Aprovado" ? "text-brand-green" : status === "Pendente" ? "text-brand-orange" : "text-brand-red"
-                )}>
-                  ● {status}
-                </span>
-              )}
             </div>
           </div>
 
