@@ -15,6 +15,11 @@ export async function middleware(request: NextRequest) {
   const isPublicPath =
     pathname === "/login" ||
     pathname === "/signup" ||
+    pathname === "/privacy" ||
+    pathname === "/terms-conditions" ||
+    pathname === "/consent" ||
+    pathname === "/security" ||
+    pathname === "/cookies" ||
     pathname.startsWith("/api/auth") ||
     pathname === "/api/events" ||
     pathname === "/api/products" ||

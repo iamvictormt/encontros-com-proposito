@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Logo } from "./logo";
 import { useAuth } from "@/hooks/use-auth";
+import Link from "next/link";
 
 export function Login() {
   const [inviteCode, setInviteCode] = useState("");
@@ -99,9 +100,11 @@ export function Login() {
 
         <div className="mt-20 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
           <span>© MeetOff {year}</span>
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-brand-black transition-colors">Termos</a>
-            <a href="#" className="hover:text-brand-black transition-colors">Privacidade</a>
+          <div className="flex gap-4 sm:gap-6 flex-wrap justify-center">
+            <Link href="/privacy" className="hover:text-brand-black transition-colors">Políticas e Termos</Link>
+            <Link href="/consent" className="hover:text-brand-black transition-colors">Consentimento</Link>
+            <Link href="/security" className="hover:text-brand-black transition-colors">Segurança</Link>
+            <Link href="/cookies" className="hover:text-brand-black transition-colors">Cookies</Link>
           </div>
         </div>
       </div>

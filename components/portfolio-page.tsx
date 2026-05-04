@@ -119,7 +119,7 @@ export function PortfolioPage() {
             </div>
           </div>
 
-          <div id="about" className="grid lg:grid-cols-12 gap-8 sm:gap-16 mb-20 sm:mb-32 items-start">
+          <div id="about" className="grid lg:grid-cols-12 gap-8 sm:gap-16 mb-20 sm:mb-32 items-start scroll-mt-32">
             <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24 text-center lg:text-left">
               <div className="h-1 w-20 bg-brand-red rounded-full mx-auto lg:mx-0" />
               <h2 className="text-3xl sm:text-4xl font-black text-brand-black uppercase tracking-tighter leading-none">
