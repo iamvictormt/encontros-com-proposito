@@ -12,12 +12,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ShieldCheck, Target, CalendarDays, Megaphone, Share2, X, Loader2, ArrowLeft, ArrowRight } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { ShieldCheck, Target, CalendarDays, Megaphone, Share2, X, Loader2, ArrowLeft, ArrowRight, MapPin, Store, Phone, Star } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { ImageUpload } from "./image-upload";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface Partner {
   name: string;
@@ -30,6 +38,7 @@ interface Partner {
 export function PartnersPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [partners, setPartners] = useState<Partner[]>([]);
+  const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     responsible_name: "",
@@ -449,9 +458,11 @@ export function PartnersPage() {
                   <h4 className="text-brand-orange font-bold uppercase tracking-[0.3em] text-[10px]">Showcase</h4>
                   <h2 className="text-2xl sm:text-4xl font-black text-brand-black uppercase tracking-tighter">Parceiros em <span className="text-brand-red">Destaque</span></h2>
                 </div>
-                <Button variant="link" className="text-brand-black font-black uppercase tracking-widest text-[10px] hover:text-brand-orange gap-2">
-                  Ver Diretório Completo <ArrowRight className="w-4 h-4" />
-                </Button>
+                <Link href="/directory">
+                  <Button variant="link" className="text-brand-black font-black uppercase tracking-widest text-[10px] hover:text-brand-orange gap-2">
+                    Ver Diretório Completo <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </Link>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -474,13 +485,16 @@ export function PartnersPage() {
                       <div className="space-y-1">
                         <h3 className="text-lg sm:text-xl font-black text-brand-black uppercase tracking-tight group-hover:text-brand-orange transition-colors">{partner.name}</h3>
                         <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                          <Target className="w-3 h-3" /> {partner.location}
+                          <MapPin className="w-3 h-3" /> {partner.location}
                         </p>
                       </div>
                       <p className="text-xs sm:text-sm text-gray-500 font-medium line-clamp-2 leading-relaxed">
                         {partner.products}
                       </p>
-                      <Button className="w-full h-12 rounded-xl bg-brand-green/5 hover:bg-brand-green text-brand-green hover:text-white font-black uppercase tracking-widest text-[10px] border border-brand-green/10 transition-all">
+                      <Button 
+                        onClick={() => setSelectedPartner(partner)}
+                        className="w-full h-12 rounded-xl bg-brand-green/5 hover:bg-brand-green text-brand-green hover:text-white font-black uppercase tracking-widest text-[10px] border border-brand-green/10 transition-all"
+                      >
                         Conhecer Perfil
                       </Button>
                     </div>
@@ -490,6 +504,75 @@ export function PartnersPage() {
             </div>
           )}
         </div>
+
+        {/* Partner Profile Modal */}
+        <Dialog open={!!selectedPartner} onOpenChange={(open) => !open && setSelectedPartner(null)}>
+          <DialogContent className="sm:max-w-2xl bg-white rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden">
+            {selectedPartner && (
+              <div className="flex flex-col">
+                <DialogHeader className="sr-only">
+                  <DialogTitle>{selectedPartner.name}</DialogTitle>
+                  <DialogDescription>Detalhes do perfil da empresa {selectedPartner.name}</DialogDescription>
+                </DialogHeader>
+                
+                <div className="h-48 sm:h-64 relative">
+                  <Image 
+                    src={selectedPartner.image || "https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=800"}
+                    alt={selectedPartner.name}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  <div className="absolute bottom-6 left-8 right-8">
+                    <Badge className="bg-brand-orange text-white border-none rounded-lg px-3 py-1 font-black text-[9px] uppercase tracking-widest mb-2">
+                      {selectedPartner.type.split(" - ")[0]}
+                    </Badge>
+                    <h2 className="text-2xl sm:text-4xl font-black text-white uppercase tracking-tighter leading-none">
+                      {selectedPartner.name}
+                    </h2>
+                  </div>
+                </div>
+
+                <div className="p-8 sm:p-12 space-y-8">
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                        <MapPin size={12} className="text-brand-orange" /> Localização
+                      </span>
+                      <p className="text-sm font-bold text-brand-black uppercase">{selectedPartner.location}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                        <Store size={12} className="text-brand-green" /> Tipo de Negócio
+                      </span>
+                      <p className="text-sm font-bold text-brand-black uppercase">{selectedPartner.type}</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="h-1 w-8 bg-brand-red rounded-full" />
+                      <h3 className="text-lg font-black text-brand-black uppercase tracking-tighter">Sobre o Parceiro</h3>
+                    </div>
+                    <p className="text-gray-500 font-medium text-sm leading-relaxed">
+                      {selectedPartner.products}
+                    </p>
+                  </div>
+
+                  <div className="pt-6 border-t border-brand-black/5 flex flex-col sm:flex-row gap-4">
+                    <Button 
+                      className="flex-1 h-14 rounded-2xl bg-brand-black hover:bg-brand-black/90 text-white font-black uppercase tracking-widest text-[10px] shadow-xl shadow-brand-black/20"
+                      onClick={() => setSelectedPartner(null)}
+                    >
+                      Fechar Perfil
+                    </Button>
+
+                  </div>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </main>
 
 

@@ -122,3 +122,18 @@ button,
   }
 }
 
+@layer base {
+  input[type="date"] {
+    min-width: 0;
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    position: relative;
+  }
+}
+
+@media (max-width: 640px) {
+  input[type="date"] {
+    font-size: 16px !important;
+  }
+}

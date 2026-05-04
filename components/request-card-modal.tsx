@@ -46,7 +46,8 @@ export function RequestCardModal() {
     setLoading(true);
 
     try {
-      const birthDateToSend = user?.birthDate || formData.birthDate;
+      const rawBirthDate = user?.birthDate || formData.birthDate;
+      const birthDateToSend = rawBirthDate ? rawBirthDate.split('T')[0] : "";
 
       if (!validateMinAge(birthDateToSend)) {
         toast.error("Idade mínima: 18 anos.");

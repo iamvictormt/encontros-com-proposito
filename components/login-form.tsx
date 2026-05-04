@@ -119,7 +119,7 @@ export function LoginForm() {
         setEmailPhoneError("");
       }
     } else if (inputType === "email") {
-      if (!validateEmail(email)) {
+      if (!validateEmail(email.trim().toLowerCase())) {
         setEmailPhoneError("Email inválido");
       } else {
         setEmailPhoneError("");
@@ -144,7 +144,7 @@ export function LoginForm() {
 
     try {
       const inputType = detectInputType(email);
-      const loginIdentifier = inputType === "phone" ? unformatPhone(email) : email;
+      const loginIdentifier = inputType === "phone" ? unformatPhone(email) : email.trim().toLowerCase();
 
       const response = await authService.login({
         emailOrPhone: loginIdentifier,
@@ -264,7 +264,7 @@ export function LoginForm() {
                     onChange={handleEmailPhoneChange}
                     onBlur={handleEmailPhoneBlur}
                     className={cn(
-                      "w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-6",
+                      "w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-4 sm:px-6",
                       emailPhoneError && "border-brand-red focus:border-brand-red"
                     )}
                     required
@@ -282,7 +282,7 @@ export function LoginForm() {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-6"
+                    className="w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-4 sm:px-6"
                     required
                   />
                 </div>

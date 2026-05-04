@@ -42,7 +42,7 @@ export function TestimonialCarousel({
         <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-brand-green/20 blur-[120px] rounded-full" />
       </div>
 
-      <div className="relative h-[480px] sm:h-[420px] md:h-[480px] w-full overflow-hidden sm:overflow-visible mb-12">
+      <div className="relative h-[480px] sm:h-[420px] md:h-[480px] w-full overflow-hidden sm:overflow-visible md:mb-12">
         <div className="relative w-full h-full max-w-7xl mx-auto">
           {reviews.map((review, index) => {
             const position = (index - currentReviewIndex + reviews.length) % reviews.length;

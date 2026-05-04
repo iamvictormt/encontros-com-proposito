@@ -61,6 +61,7 @@ export function SiteFooter() {
           <Link href="/privacy" className="hover:text-brand-black transition-colors uppercase tracking-[0.2em]">Políticas e Termos</Link>
           <Link href="/consent" className="hover:text-brand-black transition-colors uppercase tracking-[0.2em]">Consentimento</Link>
           <Link href="/security" className="hover:text-brand-black transition-colors uppercase tracking-[0.2em]">Segurança</Link>
+          <Link href="/faq" className="hover:text-brand-black transition-colors uppercase tracking-[0.2em]">FAQ</Link>
           <Link href="/cookies" className="hover:text-brand-black transition-colors uppercase tracking-[0.2em]">Cookies</Link>
         </div>
       </div>

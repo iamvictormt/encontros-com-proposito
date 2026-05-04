@@ -39,8 +39,8 @@ export function PhysicalCardRequestModal({ cardId, alreadyRequested = false }: P
   });
 
   useEffect(() => {
-    if (user?.full_name) {
-      setFormData((prev) => ({ ...prev, fullName: user.full_name }));
+    if (user?.fullName) {
+      setFormData((prev) => ({ ...prev, fullName: user.fullName }));
     }
   }, [user]);
 

@@ -132,7 +132,7 @@ export function SignupForm() {
 
       await authService.register({
         fullName,
-        email: isEmail ? email : "",
+        email: isEmail ? email.trim().toLowerCase() : "",
         phone: isEmail ? "" : unformatPhone(email),
         password,
         birthDate,
@@ -202,7 +202,7 @@ export function SignupForm() {
                   placeholder="Seu nome"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-6"
+                  className="w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-4 sm:px-6"
                   required
                 />
               </div>
@@ -236,7 +236,7 @@ export function SignupForm() {
                   type="date"
                   value={birthDate}
                   onChange={(e) => setBirthDate(e.target.value)}
-                  className="w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-6"
+                  className="w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-4 sm:px-6"
                   required
                 />
               </div>
@@ -252,7 +252,7 @@ export function SignupForm() {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-6"
+                    className="w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-4 sm:px-6"
                     required
                   />
                 </div>

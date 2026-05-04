@@ -181,7 +181,7 @@ export function ProductDetailPage() {
 
               {images.length > 1 && (
                 <div className="flex gap-4 justify-center">
-                  {images.map((image, index) => (
+                  {images.map((image: string, index: number) => (
                     <button
                       key={index}
                       onClick={() => setSelectedImageIndex(index)}
@@ -358,9 +358,8 @@ export function ProductDetailPage() {
                 <div className="h-1 w-12 bg-brand-green rounded-full" />
                 <h2 className="text-2xl font-black text-brand-black uppercase tracking-tighter">Feedback da Comunidade</h2>
               </div>
-              <div className="glass rounded-[3.5rem] p-12 border-white/40 shadow-xl min-h-[400px] flex items-center">
                 <TestimonialCarousel reviews={reviews} variant="stacked" arrowsPosition="right" />
-              </div>
+
             </div>
           </div>
 
