@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useImperativeHandle, forwardRef } from "react";
+import { useRef, useImperativeHandle, forwardRef, useState, useEffect } from "react";
 
 interface MemberCardVisualProps {
   cardType?: "GREEN" | "PINK";
@@ -21,10 +21,15 @@ export const MemberCardVisual = forwardRef<HTMLDivElement, MemberCardVisualProps
   const frontBg = isPink ? "/cartao-rosa-frente.svg" : "/cartao-verde-frente.svg";
   const backBg = isPink ? "/cartao-rosa-verso.svg" : "/cartao-verde-verso.svg";
   
-  const shareUrl = typeof window !== "undefined" 
-    ? `${window.location.origin}/profile/${qrCodeToken || "MeetOff"}`
-    : `https://meetoff.com.br/profile/${qrCodeToken || "MeetOff"}`;
+  const [origin, setOrigin] = useState("https://meetoff.com.br");
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setOrigin(window.location.origin);
+    }
+  }, []);
+
+  const shareUrl = `${origin}/profile/${qrCodeToken || "MeetOff"}`;
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(shareUrl)}&color=ffffff&bgcolor=000000&qzone=1`;
 
   return (

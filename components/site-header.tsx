@@ -63,19 +63,10 @@ export function SiteHeader() {
             </div>
           ) : isLoggedIn ? (
             <div className="flex items-center gap-4">
-              <Link href="/account" className="hidden sm:flex items-center gap-3 group">
-                <div className="text-right">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 group-hover:text-brand-orange transition-colors">Olá, {user?.name?.split(' ')[0]}</p>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-brand-black">Minha Conta</p>
-                </div>
-                <div className="h-10 w-10 rounded-xl bg-brand-green/10 border border-brand-green/10 flex items-center justify-center text-brand-green group-hover:bg-brand-green group-hover:text-white transition-all">
-                  <User size={18} />
-                </div>
-              </Link>
               <Button
                 variant="ghost"
                 onClick={() => logout()}
-                className="h-10 w-10 rounded-xl hover:bg-brand-red/10 hover:text-brand-red transition-all hidden sm:flex items-center justify-center p-0"
+                className="h-10 w-10 rounded-xl hover:bg-brand-red/10 hover:text-brand-red transition-all flex items-center justify-center p-0"
               >
                 <LogOut size={18} />
               </Button>

@@ -115,7 +115,7 @@ export function PhysicalCardRequestModal({ cardId, alreadyRequested = false }: P
         <Button 
           variant="outline" 
           disabled={alreadyRequested}
-          className="h-14 rounded-2xl border-brand-black/10 bg-white hover:bg-brand-black hover:text-white transition-all font-black uppercase tracking-widest text-[10px] px-8 gap-2 disabled:opacity-50"
+          className="h-14 w-full sm:w-auto rounded-2xl border-brand-black/10 bg-white hover:bg-brand-black hover:text-white transition-all font-black uppercase tracking-widest text-[10px] px-8 gap-2 disabled:opacity-50"
         >
           <CreditCard className="w-4 h-4" />
           {alreadyRequested ? "Cartão Físico Solicitado" : "Solicitar Cartão Físico"}
@@ -140,7 +140,7 @@ export function PhysicalCardRequestModal({ cardId, alreadyRequested = false }: P
             <DialogDescription className="text-gray-500 font-medium text-sm">
               {step === 1 
                 ? "Informe para onde devemos enviar seu cartão físico personalizado." 
-                : "Para emitir e enviar seu cartão físico, há uma taxa única de R$ 50,00."}
+                : "Para emitir e enviar seu cartão físico, há uma taxa única de R$ 120,30."}
             </DialogDescription>
           </DialogHeader>
 
@@ -234,7 +234,7 @@ export function PhysicalCardRequestModal({ cardId, alreadyRequested = false }: P
                 </div>
                 <div className="flex justify-between items-center pt-2">
                   <span className="text-sm font-black text-brand-black uppercase tracking-widest">Total</span>
-                  <span className="text-2xl font-black text-brand-orange">R$ 50,00</span>
+                  <span className="text-2xl font-black text-brand-orange">R$ 120,30</span>
                 </div>
               </div>
 

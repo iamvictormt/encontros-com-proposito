@@ -4,7 +4,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { User, Mail, Shield, CreditCard, ArrowRight, Calendar } from "lucide-react";
+import { User, Mail, Shield, CreditCard, ArrowRight, Calendar, LogOut } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -12,7 +12,7 @@ import { EditProfileModal } from "@/components/modals/edit-profile-modal";
 import { ChangePasswordModal } from "@/components/modals/change-password-modal";
 
 export default function AccountPage() {
-  const { user, isLoggedIn, isLoading } = useAuth();
+  const { user, isLoggedIn, isLoading, logout } = useAuth();
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
@@ -72,6 +72,14 @@ export default function AccountPage() {
                   className="w-full h-12 sm:h-14 rounded-xl border-brand-black/10 font-black uppercase tracking-widest text-[10px] hover:bg-brand-black hover:text-white transition-all"
                 >
                   Editar Perfil
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  onClick={() => logout()}
+                  className="w-full h-12 sm:h-14 rounded-xl text-brand-red font-black uppercase tracking-widest text-[10px] hover:bg-brand-red/5 transition-all flex items-center justify-center gap-2"
+                >
+                  <LogOut size={16} />
+                  Sair da Conta
                 </Button>
               </div>
             </div>

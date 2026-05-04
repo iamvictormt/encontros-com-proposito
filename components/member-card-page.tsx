@@ -32,9 +32,9 @@ export function MemberCardPage({
   const getStatusLabel = (status?: string) => {
     switch (status) {
       case 'PENDENTE': return "Pendente de pagamento";
-      case 'PAGO': return "Pago - Preparando envio";
+      case 'PAGO': return "Pago";
       case 'EM_PRODUCAO': return "Em produção";
-      case 'ENVIADO': return "Enviado / Em transporte";
+      case 'ENVIADO': return "Em transporte";
       case 'ENTREGUE': return "Entregue";
       default: return status || "";
     }

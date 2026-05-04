@@ -18,6 +18,7 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect } from "react";
+import { validateMinAge } from "@/lib/utils/validators";
 
 export function RequestCardModal() {
   const router = useRouter();
@@ -32,7 +33,11 @@ export function RequestCardModal() {
 
   useEffect(() => {
     if (user?.email) {
-      setFormData((prev) => ({ ...prev, email: user.email }));
+      setFormData((prev) => ({ 
+        ...prev, 
+        email: user.email,
+        birthDate: user.birthDate ? user.birthDate.split('T')[0] : prev.birthDate
+      }));
     }
   }, [user]);
 
@@ -41,10 +46,22 @@ export function RequestCardModal() {
     setLoading(true);
 
     try {
+      const birthDateToSend = user?.birthDate || formData.birthDate;
+
+      if (!validateMinAge(birthDateToSend)) {
+        toast.error("Idade mínima: 18 anos.");
+        setLoading(false);
+        return;
+      }
+
       const res = await fetch("/api/cards/request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          email: user?.email,
+          birthDate: birthDateToSend
+        }),
       });
 
       if (res.ok) {
@@ -77,7 +94,7 @@ export function RequestCardModal() {
             Confirmar Identidade
           </DialogTitle>
           <DialogDescription className="text-gray-500 font-medium text-sm">
-            Confirme seus dados de acesso para gerar sua identidade digital MeetOff.
+            Confirme sua senha para gerar sua identidade digital MeetOff.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6 py-4">
@@ -92,18 +109,20 @@ export function RequestCardModal() {
               id="email"
               type="email"
               placeholder="seu@email.com"
-              className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white transition-all"
+              className="h-12 rounded-xl border-brand-black/5 bg-gray-100/50 text-gray-400 cursor-not-allowed font-bold"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              readOnly
+              disabled
               required
             />
           </div>
+          
           <div className="space-y-2">
             <Label
               htmlFor="password"
               className="text-[10px] font-black uppercase tracking-widest text-gray-400"
             >
-              Senha
+              Confirme sua Senha
             </Label>
             <Input
               id="password"
@@ -116,29 +135,34 @@ export function RequestCardModal() {
             />
           </div>
 
-          <div className="space-y-2">
-            <Label
-              htmlFor="birthDate"
-              className="text-[10px] font-black uppercase tracking-widest text-gray-400"
-            >
-              Data de Nascimento
-            </Label>
-            <Input
-              id="birthDate"
-              type="date"
-              className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white transition-all"
-              max={
-                new Date(new Date().setFullYear(new Date().getFullYear() - 18))
-                  .toISOString()
-                  .split("T")[0]
-              }
-              value={formData.birthDate}
-              onChange={(e) =>
-                setFormData({ ...formData, birthDate: e.target.value })
-              }
-              required
-            />
-          </div>
+          {!user?.birthDate && (
+            <div className="space-y-2">
+              <Label
+                htmlFor="birthDate"
+                className="text-[10px] font-black uppercase tracking-widest text-brand-red"
+              >
+                Data de Nascimento (Obrigatório)
+              </Label>
+              <Input
+                id="birthDate"
+                type="date"
+                className="h-12 rounded-xl border-brand-red/20 bg-brand-red/5 focus:bg-white transition-all"
+                max={
+                  new Date(new Date().setFullYear(new Date().getFullYear() - 18))
+                    .toISOString()
+                    .split("T")[0]
+                }
+                value={formData.birthDate}
+                onChange={(e) =>
+                  setFormData({ ...formData, birthDate: e.target.value })
+                }
+                required
+              />
+              <p className="text-[9px] text-brand-red font-bold uppercase tracking-tight italic">
+                * Você deve ter pelo menos 18 anos para solicitar o cartão.
+              </p>
+            </div>
+          )}
 
           <DialogFooter>
             <Button

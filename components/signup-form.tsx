@@ -5,6 +5,7 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -32,6 +33,7 @@ export function SignupForm() {
   const [birthDate, setBirthDate] = useState("");
   const [year, setYear] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [emailPhoneError, setEmailPhoneError] = useState("");
   const { isLoggedIn, isLoading: authLoading } = useAuth();
   const router = useRouter();
@@ -110,6 +112,15 @@ export function SignupForm() {
         variant: "error",
         title: "Idade mínima",
         description: "Você deve ter pelo menos 18 anos para se cadastrar.",
+      });
+      return;
+    }
+
+    if (!termsAccepted) {
+      toast({
+        variant: "error",
+        title: "Termos e Políticas",
+        description: "Você precisa aceitar os termos e políticas para continuar.",
       });
       return;
     }
@@ -260,6 +271,34 @@ export function SignupForm() {
                     required
                   />
                 </div>
+              </div>
+
+              <div className="flex items-start gap-3 px-1 py-2">
+                <Checkbox
+                  id="terms"
+                  checked={termsAccepted}
+                  onCheckedChange={(checked) => setTermsAccepted(!!checked)}
+                  className="mt-1 border-brand-green/20 data-[state=checked]:bg-brand-orange data-[state=checked]:border-brand-orange"
+                  required
+                />
+                <label
+                  htmlFor="terms"
+                  className="text-[11px] font-medium text-gray-500 leading-relaxed cursor-pointer select-none"
+                >
+                  Eu li e concordo integralmente com as{" "}
+                  <Link href="/privacy" className="text-brand-orange font-bold hover:underline">
+                    Políticas e Termos de Uso
+                  </Link>
+                  ,{" "}
+                  <Link href="/consent" className="text-brand-orange font-bold hover:underline">
+                    Consentimento de Grupos
+                  </Link>{" "}
+                  e{" "}
+                  <Link href="/cookies" className="text-brand-orange font-bold hover:underline">
+                    Política de Cookies
+                  </Link>{" "}
+                  da Meetoff Brasil.
+                </label>
               </div>
 
               <Button
