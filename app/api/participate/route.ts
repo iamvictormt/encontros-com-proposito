@@ -11,6 +11,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Faça login para participar" }, { status: 401 });
   }
 
+  // Check subscription status
+  const user = await sql`SELECT subscription_status FROM users WHERE id = ${payload.userId}`;
+  if (user.length === 0 || user[0].subscription_status !== 'active') {
+    return NextResponse.json({ 
+      message: "Assinatura ativa necessária para participar de eventos",
+      requireSubscription: true 
+    }, { status: 403 });
+  }
+
   try {
     const { eventId, selectedProducts = [] } = await request.json();
 

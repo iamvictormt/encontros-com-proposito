@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "./logo";
 import { useAuth } from "@/hooks/use-auth";
-import { LogOut, User, Home, FolderOpen, Building2, CreditCard, ShoppingCart } from "lucide-react";
+import { LogOut, User, Home, FolderOpen, Building2, CreditCard, ShoppingCart, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function SiteHeader() {
@@ -18,6 +18,7 @@ export function SiteHeader() {
     { href: "/portfolio", label: "Portfólio", icon: FolderOpen },
     { href: "/partners", label: "Empresas e Parcerias", icon: Building2 },
     { href: "/member-card", label: "Cartão MeetOff", icon: CreditCard },
+    { href: "/subscriptions", label: "Assinatura", icon: Crown },
   ];
 
   return (

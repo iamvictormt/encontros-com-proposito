@@ -141,6 +141,12 @@ export function EventDetailPage() {
       return;
     }
 
+    if (user?.subscriptionStatus !== "active") {
+      toast.error("Assinatura ativa necessária para participar de eventos");
+      router.push("/subscriptions");
+      return;
+    }
+
     setIsActionLoading(true);
     try {
       const res = await fetch("/api/participate", {
@@ -154,7 +160,12 @@ export function EventDetailPage() {
         toast.success(data.message);
         setIsParticipating(true);
       } else {
-        toast.error(data.message);
+        if (data.requireSubscription) {
+          toast.error(data.message);
+          router.push("/subscriptions");
+        } else {
+          toast.error(data.message);
+        }
       }
     } catch (error) {
       toast.error("Erro ao confirmar participação");
@@ -241,10 +252,20 @@ export function EventDetailPage() {
                   "w-full h-16 rounded-2xl font-black text-xs sm:text-sm uppercase tracking-widest transition-all active:scale-[0.98] shadow-xl",
                   isParticipating 
                     ? "bg-brand-red hover:bg-brand-red/90 text-white" 
-                    : "bg-brand-red hover:bg-brand-red/90 text-white"
+                    : user?.subscriptionStatus === "active" 
+                      ? "bg-brand-red hover:bg-brand-red/90 text-white"
+                      : "bg-brand-black hover:bg-brand-black/90 text-white"
                 )}
               >
-                {isActionLoading ? <Loader2 className="animate-spin" /> : isParticipating ? "Confirmado!" : "Garantir Ingresso"}
+                {isActionLoading ? (
+                  <Loader2 className="animate-spin" />
+                ) : isParticipating ? (
+                  "Confirmado!"
+                ) : user?.subscriptionStatus === "active" ? (
+                  "Garantir Ingresso"
+                ) : (
+                  "Assinar para Participar"
+                )}
               </Button>
               
               <p className="mt-4 text-[10px] text-gray-400 font-bold uppercase tracking-widest">
@@ -257,25 +278,39 @@ export function EventDetailPage() {
               <div className="space-y-6">
                 <div>
                   <h2 className="text-lg font-black text-brand-black uppercase tracking-tighter mb-4">Convidar amigos</h2>
-                  <div className="flex items-center glass-dark rounded-2xl p-1.5 shadow-inner border-white/5">
-                    <Input
-                      type="text"
-                      value={typeof window !== "undefined" ? `${window.location.origin}/events/${id}` : ""}
-                      readOnly
-                      className="border-none focus-visible:ring-0 shadow-none bg-transparent flex-1 text-xs font-bold text-white/70 truncate px-4"
-                    />
-                    <Button
-                      onClick={() => {
-                        const url = `${window.location.origin}/events/${id}`;
-                        navigator.clipboard.writeText(url);
-                        setIsCopied(true);
-                        toast.success("Link copiado!");
-                      }}
-                      className="bg-brand-orange hover:bg-brand-orange/90 text-white rounded-xl h-11 px-6 text-[10px] font-black uppercase tracking-widest"
-                    >
-                      {isCopied ? "Copiado" : "Copiar"}
-                    </Button>
-                  </div>
+                  {user?.subscriptionStatus === "active" ? (
+                    <div className="flex items-center glass-dark rounded-2xl p-1.5 shadow-inner border-white/5">
+                      <Input
+                        type="text"
+                        value={typeof window !== "undefined" ? `${window.location.origin}/events/${id}` : ""}
+                        readOnly
+                        className="border-none focus-visible:ring-0 shadow-none bg-transparent flex-1 text-xs font-bold text-white/70 truncate px-4"
+                      />
+                      <Button
+                        onClick={() => {
+                          const url = `${window.location.origin}/events/${id}`;
+                          navigator.clipboard.writeText(url);
+                          setIsCopied(true);
+                          toast.success("Link copiado!");
+                        }}
+                        className="bg-brand-orange hover:bg-brand-orange/90 text-white rounded-xl h-11 px-6 text-[10px] font-black uppercase tracking-widest"
+                      >
+                        {isCopied ? "Copiado" : "Copiar"}
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="bg-brand-black/5 rounded-2xl p-6 text-center border-dashed border-2 border-brand-black/10">
+                       <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-relaxed">
+                        Assine um plano para liberar o link de convite e networking
+                      </p>
+                      <Button 
+                        onClick={() => router.push("/subscriptions")}
+                        className="mt-4 bg-brand-black text-white rounded-xl h-10 px-4 text-[9px] font-black uppercase tracking-widest w-full"
+                      >
+                        Ver Planos
+                      </Button>
+                    </div>
+                  )}
                 </div>
 
                 <div className="pt-4 border-t border-brand-black/5">
@@ -284,7 +319,8 @@ export function EventDetailPage() {
                   </p>
                   <Button
                     variant="outline"
-                    className="w-full h-14 border-brand-black/10 bg-white text-brand-black hover:bg-brand-black hover:text-white font-black rounded-2xl transition-all flex items-center justify-center gap-3 uppercase tracking-widest text-[10px]"
+                    disabled={user?.subscriptionStatus !== "active"}
+                    className="w-full h-14 border-brand-black/10 bg-white text-brand-black hover:bg-brand-black hover:text-white font-black rounded-2xl transition-all flex items-center justify-center gap-3 uppercase tracking-widest text-[10px] disabled:opacity-50"
                     onClick={() => {
                       const url = `${window.location.origin}/events/${id}`;
                       if (navigator.share) {

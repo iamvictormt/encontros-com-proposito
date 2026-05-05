@@ -23,6 +23,9 @@ export interface AuthUser {
   phone: string;
   birthDate?: string;
   isAdmin: boolean;
+  subscriptionStatus?: string;
+  subscriptionPlan?: string;
+  subscriptionExpiry?: string;
 }
 
 export interface AuthResponse {

@@ -21,7 +21,8 @@ export async function GET() {
     }
 
     const results = await sql`
-      SELECT id, full_name, email, phone, birth_date, is_admin
+      SELECT id, full_name, email, phone, birth_date, is_admin, 
+             subscription_status, subscription_plan, subscription_expiry
       FROM users
       WHERE id = ${payload.userId}
     `;
@@ -41,6 +42,9 @@ export async function GET() {
           phone: user.phone,
           birthDate: user.birth_date,
           isAdmin: user.is_admin,
+          subscriptionStatus: user.subscription_status,
+          subscriptionPlan: user.subscription_plan,
+          subscriptionExpiry: user.subscription_expiry,
         },
       },
       { status: 200 },
