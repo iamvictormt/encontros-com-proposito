@@ -51,7 +51,8 @@ export async function POST(request: Request) {
       await sql`
         UPDATE users 
         SET subscription_status = ${dbStatus},
-            subscription_expiry = ${subscription.next_payment_date || null}
+            subscription_expiry = ${subscription.next_payment_date || null},
+            mp_preapproval_id = ${dataId}
         WHERE id = ${userId}
       `;
     }

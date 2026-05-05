@@ -10,13 +10,13 @@ export const mpClient = new MercadoPagoConfig({
 
 export const SUBSCRIPTION_PLANS = {
   USER: {
-    name: "MeetOff Usuários (TESTE REAL)",
-    amount: 1.00,
+    name: "MeetOff Usuários",
+    amount: 170.30,
     description: "Assinatura Mensal MeetOff para Usuários",
   },
   PARTNER: {
-    name: "MeetOff Empresas/Parceiros (TESTE REAL)",
-    amount: 1.00,
+    name: "MeetOff Empresas/Parceiros",
+    amount: 232.70,
     description: "Assinatura Mensal MeetOff para Empresas e Parceiros",
   },
 };
@@ -72,6 +72,22 @@ export class MercadoPagoService {
       return await preApproval.get({ id: preApprovalId });
     } catch (error) {
       console.error("Error getting MP subscription:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Cancel subscription
+   */
+  static async cancelSubscription(preApprovalId: string) {
+    const preApproval = new PreApproval(mpClient);
+    try {
+      return await preApproval.update({
+        id: preApprovalId,
+        body: { status: "cancelled" }
+      });
+    } catch (error) {
+      console.error("Error cancelling MP subscription:", error);
       throw error;
     }
   }
