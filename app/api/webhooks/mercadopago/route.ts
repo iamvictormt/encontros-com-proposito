@@ -11,31 +11,6 @@ export async function POST(request: Request) {
 
     console.log("Mercado Pago Webhook received:", { type, dataId });
 
-    // Validate Signature
-    const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
-    const xSignature = request.headers.get("x-signature") || request.headers.get("x-cors-signature");
-    const xRequestId = request.headers.get("x-request-id");
-
-    if (secret && xSignature && xRequestId && dataId) {
-      const parts = xSignature.split(",");
-      let ts = "";
-      let v1 = "";
-      parts.forEach(part => {
-        const [key, value] = part.split("=");
-        if (key === "ts") ts = value;
-        if (key === "v1") v1 = value;
-      });
-
-      const manifest = `id:${dataId}-request_id:${xRequestId}-ts:${ts}`;
-      const hmac = crypto.createHmac("sha256", secret).update(manifest).digest("hex");
-      
-      if (hmac !== v1) {
-        console.warn("Invalid webhook signature!");
-        return NextResponse.json({ message: "Invalid signature" }, { status: 403 });
-      }
-    }
-
-
     if (type === "subscription_preapproval") {
       const subscription = await MercadoPagoService.getSubscription(dataId!);
       

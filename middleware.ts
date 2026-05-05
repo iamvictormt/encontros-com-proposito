@@ -21,6 +21,7 @@ export async function middleware(request: NextRequest) {
     pathname === "/security" ||
     pathname === "/cookies" ||
     pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/webhooks") ||
     pathname === "/api/events" ||
     pathname === "/api/products" ||
     pathname === "/api/venues" ||
