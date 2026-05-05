@@ -36,7 +36,9 @@ export function SubscriptionPlans() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { user, refreshAuth } = useAuth();
 
+  const expiryDate = user?.subscriptionExpiry ? new Date(user.subscriptionExpiry) : new Date(0);
   const isSubscribed = user?.subscriptionStatus === 'active';
+  const isCanceledButValid = user?.subscriptionStatus === 'canceled' && expiryDate > new Date();
 
   const handleSubscribe = async (planType: "USER" | "PARTNER") => {
     if (!user) {
@@ -88,6 +90,34 @@ export function SubscriptionPlans() {
       setIsCancelling(false);
     }
   };
+
+  if (isCanceledButValid) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-12">
+        <div className="relative glass p-10 rounded-[3rem] border-gray-200 shadow-2xl flex flex-col bg-white/80 backdrop-blur-xl text-center">
+          <div className="bg-gray-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <AlertTriangle className="w-10 h-10 text-gray-500" />
+          </div>
+          <h3 className="text-3xl font-black text-brand-black uppercase tracking-tighter mb-4">
+            Assinatura em Cancelamento
+          </h3>
+          <p className="text-gray-500 font-bold uppercase text-xs tracking-widest mb-10 leading-relaxed">
+            Você cancelou a sua assinatura, mas ainda poderá usufruir dos benefícios até:
+            <br />
+            <span className="text-brand-red text-lg mt-2 block">
+              {expiryDate.toLocaleDateString("pt-BR", { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+            </span>
+          </p>
+          
+          <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+            <p className="text-center text-gray-400 text-xs font-bold uppercase">
+              Você poderá assinar um novo plano apenas após esta data.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (isSubscribed) {
     return (

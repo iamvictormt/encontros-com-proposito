@@ -5,7 +5,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "./logo";
 import { useAuth } from "@/hooks/use-auth";
-import { LogOut, User, Home, FolderOpen, Building2, CreditCard, ShoppingCart, Crown } from "lucide-react";
+import {
+  LogOut,
+  User,
+  Home,
+  FolderOpen,
+  Building2,
+  CreditCard,
+  ShoppingCart,
+  Crown,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function SiteHeader() {
@@ -17,8 +26,12 @@ export function SiteHeader() {
     { href: "/products", label: "Produtos Autorais", icon: ShoppingCart },
     { href: "/portfolio", label: "Portfólio", icon: FolderOpen },
     { href: "/partners", label: "Empresas e Parcerias", icon: Building2 },
-    { href: "/member-card", label: "Cartão MeetOff", icon: CreditCard },
-    { href: "/subscriptions", label: "Assinatura", icon: Crown },
+    ...(isLoggedIn
+      ? [
+          { href: "/member-card", label: "Cartão MeetOff", icon: CreditCard },
+          { href: "/subscriptions", label: "Assinatura", icon: Crown },
+        ]
+      : []),
   ];
 
   return (
@@ -26,7 +39,7 @@ export function SiteHeader() {
       <div className="mx-auto max-w-7xl flex h-24 items-center justify-between">
         <div className="flex items-center gap-12">
           <Logo href="/events" />
-          
+
           <nav className="hidden items-center gap-10 lg:flex">
             {navLinks.map((link) => {
               const isActive = pathname.startsWith(link.href);
@@ -36,7 +49,7 @@ export function SiteHeader() {
                   href={link.href}
                   className={cn(
                     "relative py-1 text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 hover:text-brand-orange",
-                    isActive ? "text-brand-orange" : "text-brand-black/70"
+                    isActive ? "text-brand-orange" : "text-brand-black/70",
                   )}
                 >
                   {link.label}
@@ -47,8 +60,8 @@ export function SiteHeader() {
               );
             })}
             {user?.isAdmin && (
-              <Link 
-                href="/admin" 
+              <Link
+                href="/admin"
                 className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-green hover:text-brand-green/80 transition-colors bg-brand-green/5 px-4 py-1.5 rounded-full"
               >
                 Admin
@@ -74,14 +87,14 @@ export function SiteHeader() {
             </div>
           ) : (
             <div className="flex items-center gap-4">
-              <Link 
-                href="/login" 
+              <Link
+                href="/login"
                 className="hidden sm:inline-block text-[10px] font-black uppercase tracking-widest text-brand-black hover:text-brand-orange transition-colors"
               >
                 Login
               </Link>
-              <Button 
-                asChild 
+              <Button
+                asChild
                 className="h-11 px-8 rounded-2xl bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-[10px] shadow-lg shadow-brand-green/20 hidden sm:flex"
               >
                 <Link href="/signup">Cadastrar</Link>

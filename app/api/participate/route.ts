@@ -12,8 +12,13 @@ export async function POST(request: Request) {
   }
 
   // Check subscription status
-  const user = await sql`SELECT subscription_status FROM users WHERE id = ${payload.userId}`;
-  if (user.length === 0 || user[0].subscription_status !== 'active') {
+  const user = await sql`SELECT subscription_status, subscription_expiry FROM users WHERE id = ${payload.userId}`;
+  
+  const expiryDate = user.length > 0 && user[0].subscription_expiry ? new Date(user[0].subscription_expiry) : new Date(0);
+  const isSubscribed = user.length > 0 && user[0].subscription_status === 'active';
+  const isCanceledButValid = user.length > 0 && user[0].subscription_status === 'canceled' && expiryDate > new Date();
+
+  if (!isSubscribed && !isCanceledButValid) {
     return NextResponse.json({ 
       message: "Assinatura ativa necessária para participar de eventos",
       requireSubscription: true 

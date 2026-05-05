@@ -183,6 +183,9 @@ export function EventDetailPage() {
   const dateObj = new Date(event.date);
   const eventDate = `${dateObj.getDate().toString().padStart(2, '0')} ${dateObj.toLocaleString("pt-BR", { month: "short" }).replace(".", "").toUpperCase()} ${dateObj.getFullYear()}`;
 
+  const expiryDate = user?.subscriptionExpiry ? new Date(user.subscriptionExpiry) : new Date(0);
+  const hasValidSubscription = user?.subscriptionStatus === 'active' || (user?.subscriptionStatus === 'canceled' && expiryDate > new Date());
+
   return (
     <div className="min-h-screen bg-background flex flex-col font-sans">
       <SiteHeader />
@@ -252,7 +255,7 @@ export function EventDetailPage() {
                   "w-full h-16 rounded-2xl font-black text-xs sm:text-sm uppercase tracking-widest transition-all active:scale-[0.98] shadow-xl",
                   isParticipating 
                     ? "bg-brand-red hover:bg-brand-red/90 text-white" 
-                    : user?.subscriptionStatus === "active" 
+                    : hasValidSubscription 
                       ? "bg-brand-red hover:bg-brand-red/90 text-white"
                       : "bg-brand-black hover:bg-brand-black/90 text-white"
                 )}
@@ -261,7 +264,7 @@ export function EventDetailPage() {
                   <Loader2 className="animate-spin" />
                 ) : isParticipating ? (
                   "Confirmado!"
-                ) : user?.subscriptionStatus === "active" ? (
+                ) : hasValidSubscription ? (
                   "Garantir Ingresso"
                 ) : (
                   "Assinar para Participar"
@@ -278,7 +281,7 @@ export function EventDetailPage() {
               <div className="space-y-6">
                 <div>
                   <h2 className="text-lg font-black text-brand-black uppercase tracking-tighter mb-4">Convidar amigos</h2>
-                  {user?.subscriptionStatus === "active" ? (
+                  {hasValidSubscription ? (
                     <div className="flex items-center glass-dark rounded-2xl p-1.5 shadow-inner border-white/5">
                       <Input
                         type="text"
