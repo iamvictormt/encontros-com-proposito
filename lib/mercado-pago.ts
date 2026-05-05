@@ -1,4 +1,4 @@
-import { MercadoPagoConfig, PreApproval, PreApprovalPlan } from "mercadopago";
+import { MercadoPagoConfig, PreApproval } from "mercadopago";
 
 if (!process.env.MERCADOPAGO_ACCESS_TOKEN) {
   console.warn("MERCADOPAGO_ACCESS_TOKEN is not defined in .env");
@@ -10,15 +10,13 @@ export const mpClient = new MercadoPagoConfig({
 
 export const SUBSCRIPTION_PLANS = {
   USER: {
-    id: "user_monthly",
-    name: "MeetOff Usuários",
-    amount: 170.30,
+    name: "MeetOff Usuários (TESTE REAL)",
+    amount: 1.00,
     description: "Assinatura Mensal MeetOff para Usuários",
   },
   PARTNER: {
-    id: "partner_monthly",
-    name: "MeetOff Empresas/Parceiros",
-    amount: 232.70,
+    name: "MeetOff Empresas/Parceiros (TESTE REAL)",
+    amount: 1.00,
     description: "Assinatura Mensal MeetOff para Empresas e Parceiros",
   },
 };
@@ -28,29 +26,38 @@ export class MercadoPagoService {
    * Create a pre-approval (subscription)
    */
   static async createSubscription(userId: string, userEmail: string, planType: 'USER' | 'PARTNER') {
-    const plan = SUBSCRIPTION_PLANS[planType];
+    const planData = SUBSCRIPTION_PLANS[planType];
     const preApproval = new PreApproval(mpClient);
 
     const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://meet-off.vercel.app").replace(/\/$/, "");
-    
-    const body = {
-      back_url: `${baseUrl}/subscriptions`,
-      reason: plan.name,
-      auto_recurring: {
-        frequency: 1,
-        frequency_type: "months",
-        transaction_amount: plan.amount,
-        currency_id: "BRL",
-      },
-      payer_email: userEmail,
-      external_reference: userId,
-      status: "pending",
-    };
 
     try {
-      const response = await preApproval.create({ body });
-      return response;
-    } catch (error) {
+      const response = await preApproval.create({
+        body: {
+          reason: planData.name,
+          auto_recurring: {
+            frequency: 1,
+            frequency_type: "months",
+            transaction_amount: planData.amount,
+            currency_id: "BRL",
+          },
+          back_url: `${baseUrl}/subscriptions`,
+          payer_email: userEmail.trim().toLowerCase(),
+          external_reference: userId,
+        }
+      });
+
+      // Priorizamos o sandbox_init_point se estivermos em modo de teste
+      const res = response as any;
+      const initPoint = (process.env.MERCADOPAGO_ACCESS_TOKEN?.startsWith("TEST-") && res.sandbox_init_point)
+        ? res.sandbox_init_point
+        : res.init_point;
+
+      return {
+        init_point: initPoint,
+        id: response.id
+      };
+    } catch (error: any) {
       console.error("Error creating MP subscription:", error);
       throw error;
     }
