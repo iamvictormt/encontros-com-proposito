@@ -11,12 +11,12 @@ export const mpClient = new MercadoPagoConfig({
 export const SUBSCRIPTION_PLANS = {
   USER: {
     name: "MeetOff Usuários",
-    amount: 170.30,
+    amount: 1,
     description: "Assinatura Mensal MeetOff para Usuários",
   },
   PARTNER: {
     name: "MeetOff Empresas/Parceiros",
-    amount: 232.70,
+    amount: 1,
     description: "Assinatura Mensal MeetOff para Empresas e Parceiros",
   },
 };
