@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Logo } from "./logo";
 import { useState } from "react";
 
 export function AdminBottomNav() {
@@ -24,71 +23,69 @@ export function AdminBottomNav() {
   const [isMoreOpen, setIsMoreOpen] = useState(false);
 
   const navLinks = [
-    { href: "/admin", label: "Início", icon: LayoutGrid, exact: true },
-    { href: "/admin/events", label: "Eventos", icon: CalendarDays },
-    { href: "/admin/venues", label: "Locais", icon: Building2 },
-    { href: "/admin/brands", label: "Marcas", icon: PackageOpen },
-    { href: "/admin/products", label: "Loja", icon: ShoppingCart },
+    { href: "/admin", label: "Geral", icon: LayoutGrid, exact: true },
+    { href: "/admin/events", label: "Events", icon: CalendarDays },
+    { href: "/admin/venues", label: "Venues", icon: Building2 },
+    { href: "/admin/products", label: "Shop", icon: ShoppingCart },
   ];
 
   const moreLinks = [
-    { href: "/admin/card-requests", label: "Cartões Físicos", icon: CreditCard },
+    { href: "/admin/card-requests", label: "Cartões", icon: CreditCard },
     { href: "/admin/verifications", label: "Verificações", icon: Users },
-    { href: "/admin/reports", label: "Relatórios", icon: PieChart },
-    { href: "/admin/team", label: "Equipe", icon: Users },
-    { href: "/admin/settings", label: "Configurações", icon: Settings },
+    { href: "/admin/reports", label: "Analytics", icon: PieChart },
+    { href: "/admin/settings", label: "Config", icon: Settings },
   ];
 
   return (
     <>
-      <nav className="fixed bottom-6 left-4 right-4 z-50 flex h-16 items-center justify-between rounded-[2rem] glass-dark px-2 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] lg:hidden border border-white/20 backdrop-blur-2xl">
-        {navLinks.map((link) => {
-          const isActive = link.exact 
-            ? pathname === link.href 
-            : pathname.startsWith(link.href);
-          const Icon = link.icon;
-          return (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "flex flex-1 flex-col items-center justify-center gap-1 transition-all duration-300 relative py-1 rounded-2xl",
-                isActive ? "text-brand-orange" : "text-white/30 hover:text-white"
-              )}
-            >
-              <Icon className={cn("h-4 w-4 transition-all duration-500", isActive && "scale-110 drop-shadow-[0_0_8px_rgba(255,29,85,0.4)]")} />
-              <span className={cn(
-                "text-[7px] font-black uppercase tracking-[0.15em] transition-all",
-                isActive ? "opacity-100" : "opacity-40"
-              )}>
-                {link.label}
-              </span>
-              {isActive && (
-                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-brand-orange rounded-full shadow-[0_0_15px_#FF1D55]" />
-              )}
-            </Link>
-          );
-        })}
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] lg:hidden w-fit max-w-[95vw]">
+        <nav className="flex items-center gap-1 p-2 rounded-full bg-brand-black/90 backdrop-blur-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+          {navLinks.map((link) => {
+            const isActive = link.exact 
+              ? pathname === link.href 
+              : pathname.startsWith(link.href);
+            const Icon = link.icon;
+            
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "relative flex items-center justify-center h-12 w-12 rounded-full transition-all duration-500",
+                  isActive ? "text-white" : "text-white/40 hover:text-white/60"
+                )}
+              >
+                {isActive && (
+                  <div className="absolute inset-0 bg-brand-green rounded-full shadow-[0_0_15px_rgba(34,197,94,0.4)] animate-in zoom-in duration-300" />
+                )}
+                <Icon className={cn("relative z-10 h-5 w-5 transition-transform duration-300", isActive && "scale-110")} />
+                
+                {isActive && (
+                  <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-brand-black text-white text-[8px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border border-white/10 shadow-xl whitespace-nowrap animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    {link.label}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
 
-        {/* More Button Trigger */}
-        <button 
-          onClick={() => setIsMoreOpen(true)}
-          className="flex flex-1 flex-col items-center justify-center gap-1 transition-all duration-300 relative py-1 rounded-2xl text-white/30 hover:text-white cursor-pointer group"
-        >
-          <MoreHorizontal className="h-4 w-4 transition-transform duration-300 group-hover:rotate-90" />
-          <span className="text-[7px] font-black uppercase tracking-[0.15em] opacity-40">Mais</span>
-        </button>
-      </nav>
+          <button 
+            onClick={() => setIsMoreOpen(true)}
+            className="relative flex items-center justify-center h-12 w-12 rounded-full text-white/40 hover:text-white/60 transition-all"
+          >
+            <MoreHorizontal className="h-5 w-5" />
+          </button>
+        </nav>
+      </div>
 
-      {/* More Options Sheet */}
       <Sheet open={isMoreOpen} onOpenChange={setIsMoreOpen}>
         <SheetContent 
           side="bottom" 
-          className="z-[100] bg-brand-black border-t border-white/10 rounded-t-[2.5rem] p-0 overflow-hidden text-white outline-none"
+          className="z-[101] bg-brand-black border-t border-white/10 rounded-t-[2.5rem] p-0 overflow-hidden text-white outline-none"
         >
           <SheetHeader className="p-8 border-b border-white/5">
             <SheetTitle className="text-white text-left font-black uppercase tracking-[0.3em] text-xs">
-              Outras Opções
+              Menu Administrativo
             </SheetTitle>
           </SheetHeader>
           <div className="p-6 grid grid-cols-2 gap-4 pb-12">
@@ -103,11 +100,11 @@ export function AdminBottomNav() {
                   className={cn(
                     "flex flex-col items-center justify-center gap-3 p-6 rounded-3xl transition-all duration-300 border",
                     isActive 
-                      ? "bg-white/10 border-brand-orange text-white shadow-xl shadow-brand-orange/10" 
+                      ? "bg-white/10 border-brand-green text-white shadow-xl shadow-brand-green/10" 
                       : "bg-white/5 border-white/5 text-white/60 hover:bg-white/10 hover:text-white"
                   )}
                 >
-                  <Icon className={cn("h-6 w-6", isActive ? "text-brand-orange" : "text-white/40")} />
+                  <Icon className={cn("h-6 w-6", isActive ? "text-brand-green" : "text-white/40")} />
                   <span className="text-[9px] font-black uppercase tracking-widest text-center">{link.label}</span>
                 </Link>
               );

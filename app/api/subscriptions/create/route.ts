@@ -18,7 +18,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Token inválido" }, { status: 401 });
     }
 
-    const { planType, cardTokenId } = await request.json();
+    const { planType } = await request.json();
+    
     if (!planType || (planType !== "USER" && planType !== "PARTNER")) {
       return NextResponse.json({ message: "Plano inválido" }, { status: 400 });
     }
@@ -34,17 +35,14 @@ export async function POST(request: Request) {
     const subscription = await MercadoPagoService.createSubscription(
       payload.userId,
       userEmail,
-      planType,
-      cardTokenId
+      planType
     );
 
-    const initialStatus = cardTokenId ? 'active' : 'pending';
-
-    // Update user with pending or active subscription
+    // Update user with active/pending subscription
     await sql`
       UPDATE users 
       SET subscription_plan = ${planType}, 
-          subscription_status = ${initialStatus},
+          subscription_status = 'pending',
           mp_preapproval_id = ${subscription.id}
       WHERE id = ${payload.userId}
     `;

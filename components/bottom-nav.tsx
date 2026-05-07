@@ -2,52 +2,55 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ShoppingCart, FolderOpen, Building2, CreditCard, User } from "lucide-react";
+import { Home, ShoppingCart, FolderOpen, Building2, CreditCard, User, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function BottomNav() {
   const pathname = usePathname();
 
   const navLinks = [
-    { href: "/events", label: "Início", icon: Home },
-    { href: "/products", label: "Produtos", icon: ShoppingCart },
-    { href: "/member-card", label: "Cartão", icon: CreditCard },
-    { href: "/portfolio", label: "Portfólio", icon: FolderOpen },
-    { href: "/account", label: "Conta", icon: User },
+    { href: "/events", label: "Home", icon: Home },
+    { href: "/products", label: "Shop", icon: ShoppingCart },
+    { href: "/member-card", label: "Card", icon: CreditCard },
+    { href: "/portfolio", label: "Jobs", icon: FolderOpen },
+    { href: "/account", label: "Me", icon: User },
   ];
 
-  // Don't show bottom nav on admin routes or auth pages
   if (pathname?.startsWith("/admin") || pathname === "/login" || pathname === "/signup" || pathname === "/") {
     return null;
   }
 
   return (
-    <nav className="fixed bottom-6 left-4 right-4 sm:left-6 sm:right-6 z-50 flex h-16 sm:h-20 items-center justify-between rounded-[2rem] glass-dark px-2 sm:px-4 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] lg:hidden border border-white/20 backdrop-blur-2xl">
-      {navLinks.map((link) => {
-        const isActive = pathname.startsWith(link.href);
-        const Icon = link.icon;
-        return (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={cn(
-              "flex flex-1 flex-col items-center justify-center gap-1 sm:gap-2 transition-all duration-300 relative py-1 sm:py-2 rounded-2xl",
-              isActive ? "text-brand-orange" : "text-white/30 hover:text-white"
-            )}
-          >
-            <Icon className={cn("h-4 w-4 sm:h-5 sm:w-5 transition-all duration-500", isActive && "scale-110 drop-shadow-[0_0_8px_rgba(255,29,85,0.4)]")} />
-            <span className={cn(
-              "text-[7px] sm:text-[8px] font-black uppercase tracking-[0.15em] sm:tracking-[0.25em] transition-all",
-              isActive ? "opacity-100" : "opacity-40"
-            )}>
-              {link.label}
-            </span>
-            {isActive && (
-              <span className="absolute -bottom-1 sm:bottom-0 left-1/2 -translate-x-1/2 w-4 sm:w-8 h-0.5 sm:h-1 bg-brand-orange rounded-full shadow-[0_0_15px_#FF1D55]" />
-            )}
-          </Link>
-        );
-      })}
-    </nav>
+    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] lg:hidden w-fit max-w-[95vw]">
+      <nav className="flex items-center gap-1 p-2 rounded-full bg-brand-black/90 backdrop-blur-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+        {navLinks.map((link) => {
+          const isActive = pathname.startsWith(link.href);
+          const Icon = link.icon;
+          
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={cn(
+                "relative flex items-center justify-center h-12 w-12 rounded-full transition-all duration-500",
+                isActive ? "text-white" : "text-white/40 hover:text-white/60"
+              )}
+            >
+              {isActive && (
+                <div className="absolute inset-0 bg-gradient-to-tr from-brand-red to-brand-orange rounded-full shadow-[0_0_15px_rgba(255,29,85,0.4)] animate-in zoom-in duration-300" />
+              )}
+              <Icon className={cn("relative z-10 h-5 w-5 transition-transform duration-300", isActive && "scale-110")} />
+              
+              {/* Tooltip-like label that appears only when active? Or just icons for maximum minimalism */}
+              {isActive && (
+                <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-brand-black text-white text-[8px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border border-white/10 shadow-xl whitespace-nowrap animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  {link.label}
+                </span>
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+    </div>
   );
 }
