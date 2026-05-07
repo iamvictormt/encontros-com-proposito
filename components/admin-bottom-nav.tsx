@@ -33,6 +33,7 @@ export function AdminBottomNav() {
 
   const moreLinks = [
     { href: "/admin/card-requests", label: "Cartões Físicos", icon: CreditCard },
+    { href: "/admin/verifications", label: "Verificações", icon: Users },
     { href: "/admin/reports", label: "Relatórios", icon: PieChart },
     { href: "/admin/team", label: "Equipe", icon: Users },
     { href: "/admin/settings", label: "Configurações", icon: Settings },

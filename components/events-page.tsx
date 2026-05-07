@@ -41,6 +41,7 @@ export function EventsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const { setIsLoading: setGlobalLoading } = useLoading();
+  const { user, isLoggedIn } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState<"newest" | "oldest">("newest");
@@ -117,11 +118,19 @@ export function EventsPage() {
     });
 
   // Pagination logic
+  const expiryDate = user?.subscriptionExpiry ? new Date(user.subscriptionExpiry) : new Date(0);
+  const hasValidSubscription = user?.subscriptionStatus === 'active' || (user?.subscriptionStatus === 'canceled' && expiryDate > new Date());
+
   const totalPages = Math.max(1, Math.ceil(filteredEvents.length / itemsPerPage));
-  const paginatedEvents = filteredEvents.slice(
+  let paginatedEvents = filteredEvents.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage,
   );
+
+  // Apply limitation for non-premium users
+  if (!hasValidSubscription) {
+    paginatedEvents = filteredEvents.slice(0, 5);
+  }
 
   // Reset to page 1 when search or filters change
   useEffect(() => {
@@ -534,7 +543,7 @@ export function EventsPage() {
             </div>
           )}
 
-          {totalPages > 1 && (
+          {totalPages > 1 && hasValidSubscription && (
             <div className="mt-16 flex items-center justify-center gap-6">
               <Button
                 variant="outline"
@@ -565,6 +574,31 @@ export function EventsPage() {
               >
                 <ArrowRight className="h-5 w-5" />
               </Button>
+            </div>
+          )}
+
+          {!hasValidSubscription && filteredEvents.length > 5 && (
+            <div className="mt-16 glass-dark p-8 sm:p-12 rounded-[2.5rem] text-center border border-white/10 shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-brand-orange/10 blur-3xl rounded-full mix-blend-screen" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand-red/10 blur-3xl rounded-full mix-blend-screen" />
+              
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mb-6">
+                  <span className="text-2xl">👀</span>
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tighter mb-4">
+                  Desbloqueie <span className="text-brand-orange">Mais Eventos</span>
+                </h3>
+                <p className="text-sm font-medium text-white/60 mb-8 max-w-md mx-auto">
+                  A sua versão gratuita permite visualizar até 5 eventos simultaneamente. Assine agora para ter acesso ilimitado ao calendário completo e realizar networking com toda a nossa comunidade.
+                </p>
+                <Button 
+                  onClick={() => window.location.href = "/subscriptions"}
+                  className="bg-gradient-to-r from-brand-orange to-brand-red text-white h-14 px-8 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg hover:scale-105 transition-transform"
+                >
+                  Desbloquear Acesso Completo
+                </Button>
+              </div>
             </div>
           )}
         </div>

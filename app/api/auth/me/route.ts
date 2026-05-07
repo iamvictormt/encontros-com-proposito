@@ -22,7 +22,8 @@ export async function GET() {
 
     const results = await sql`
       SELECT id, full_name, email, phone, birth_date, is_admin, 
-             subscription_status, subscription_plan, subscription_expiry
+             subscription_status, subscription_plan, subscription_expiry,
+             user_category, verification_status, document_url, company_docs_url, partner_docs_url
       FROM users
       WHERE id = ${payload.userId}
     `;
@@ -45,6 +46,11 @@ export async function GET() {
           subscriptionStatus: user.subscription_status,
           subscriptionPlan: user.subscription_plan,
           subscriptionExpiry: user.subscription_expiry,
+          userCategory: user.user_category,
+          verificationStatus: user.verification_status,
+          documentUrl: user.document_url,
+          companyDocsUrl: user.company_docs_url,
+          partnerDocsUrl: user.partner_docs_url,
         },
       },
       { status: 200 },

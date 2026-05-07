@@ -53,6 +53,9 @@ export function EventDetailPage() {
   const router = useRouter();
   const [isCopied, setIsCopied] = useState(false);
 
+  const expiryDate = user?.subscriptionExpiry ? new Date(user.subscriptionExpiry) : new Date(0);
+  const hasValidSubscription = user?.subscriptionStatus === 'active' || (user?.subscriptionStatus === 'canceled' && expiryDate > new Date());
+
   const [mandatoryProductsData, setMandatoryProductsData] = useState<any[]>([]);
   const [associatedBrandsData, setAssociatedBrandsData] = useState<any[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
@@ -141,7 +144,7 @@ export function EventDetailPage() {
       return;
     }
 
-    if (user?.subscriptionStatus !== "active") {
+    if (!hasValidSubscription) {
       toast.error("Assinatura ativa necessária para participar de eventos");
       router.push("/subscriptions");
       return;
@@ -182,9 +185,6 @@ export function EventDetailPage() {
 
   const dateObj = new Date(event.date);
   const eventDate = `${dateObj.getDate().toString().padStart(2, '0')} ${dateObj.toLocaleString("pt-BR", { month: "short" }).replace(".", "").toUpperCase()} ${dateObj.getFullYear()}`;
-
-  const expiryDate = user?.subscriptionExpiry ? new Date(user.subscriptionExpiry) : new Date(0);
-  const hasValidSubscription = user?.subscriptionStatus === 'active' || (user?.subscriptionStatus === 'canceled' && expiryDate > new Date());
 
   return (
     <div className="min-h-screen bg-background flex flex-col font-sans">
@@ -252,12 +252,12 @@ export function EventDetailPage() {
                 onClick={handleParticipate}
                 disabled={isActionLoading}
                 className={cn(
-                  "w-full h-16 rounded-2xl font-black text-xs sm:text-sm uppercase tracking-widest transition-all active:scale-[0.98] shadow-xl",
+                  "w-full h-16 rounded-2xl font-black text-xs sm:text-sm uppercase tracking-widest transition-all shadow-xl",
                   isParticipating 
                     ? "bg-brand-red hover:bg-brand-red/90 text-white" 
                     : hasValidSubscription 
-                      ? "bg-brand-red hover:bg-brand-red/90 text-white"
-                      : "bg-brand-black hover:bg-brand-black/90 text-white"
+                      ? "bg-brand-red hover:bg-brand-red/90 text-white active:scale-[0.98]"
+                      : "bg-gradient-to-r from-brand-orange to-brand-red hover:from-brand-orange/90 hover:to-brand-red/90 text-white"
                 )}
               >
                 {isActionLoading ? (
@@ -267,10 +267,18 @@ export function EventDetailPage() {
                 ) : hasValidSubscription ? (
                   "Garantir Ingresso"
                 ) : (
-                  "Assinar para Participar"
+                  "Desbloquear Premium"
                 )}
               </Button>
               
+              {!hasValidSubscription && (
+                <div className="mt-4 p-3 bg-brand-orange/10 rounded-xl border border-brand-orange/20">
+                  <p className="text-[10px] text-brand-orange font-black uppercase tracking-widest leading-relaxed">
+                    Apenas membros Premium podem participar deste evento.
+                  </p>
+                </div>
+              )}
+
               <p className="mt-4 text-[10px] text-gray-400 font-bold uppercase tracking-widest">
                 Ambiente seguro e certificado
               </p>
@@ -468,11 +476,20 @@ export function EventDetailPage() {
               <div className="mb-10 relative">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="h-1 w-8 bg-brand-green rounded-full" />
-                  <h2 className="text-2xl font-black text-brand-black uppercase tracking-tighter">Networking</h2>
+                  <h2 className="text-2xl font-black text-brand-black uppercase tracking-tighter">Networking Premium</h2>
                 </div>
-                <p className="text-xs text-gray-500 font-bold uppercase tracking-widest leading-relaxed">
-                  Conecte-se com pessoas que compartilham seu propósito
-                </p>
+                {hasValidSubscription ? (
+                  <p className="text-xs text-gray-500 font-bold uppercase tracking-widest leading-relaxed">
+                    Conecte-se com pessoas que compartilham seu propósito
+                  </p>
+                ) : (
+                  <div className="mt-2 p-3 bg-brand-green/10 rounded-xl border border-brand-green/20">
+                    <p className="text-[10px] text-brand-green font-black uppercase tracking-widest leading-relaxed">
+                      Visualize outros perfis que irão participar deste evento.<br/>
+                      <span className="text-gray-500 font-medium">Perfis verificados recebem mais conexões.</span>
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6 relative">
@@ -504,11 +521,19 @@ export function EventDetailPage() {
 
                     <div className="flex items-center justify-between mt-auto pt-5 border-t border-brand-black/5">
                       <div className="flex flex-col gap-1">
-                        <div className="flex -space-x-2.5 mb-1">
+                        <div className="flex -space-x-2.5 mb-1 relative">
+                          {!hasValidSubscription && (
+                            <div className="absolute inset-0 z-10 backdrop-blur-[2px] bg-white/30 rounded-full flex items-center justify-center cursor-pointer" onClick={() => router.push("/subscriptions")}>
+                              <span className="text-[8px] font-black text-brand-black uppercase tracking-widest drop-shadow-md">Desbloquear</span>
+                            </div>
+                          )}
                           {[1, 2, 3, 4].map((n) => (
                             <div 
                               key={n} 
-                              className="w-7 h-7 rounded-full border-2 border-white bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden"
+                              className={cn(
+                                "w-7 h-7 rounded-full border-2 border-white bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden",
+                                !hasValidSubscription && "opacity-50 blur-[1px]"
+                              )}
                             >
                               {n === 4 ? (
                                 <span className="text-[7px] font-black text-gray-400">+{Math.floor(Math.random() * 20) + 5}</span>
@@ -523,16 +548,30 @@ export function EventDetailPage() {
                         </span>
                       </div>
 
-                      <Button
-                        asChild={!!group.link}
-                        className="bg-brand-black hover:bg-brand-green text-white rounded-xl h-11 px-6 font-black uppercase tracking-widest text-[9px] shadow-lg shadow-brand-black/10 transition-all active:scale-95"
-                      >
-                        {group.link ? (
-                          <a href={group.link} target="_blank" rel="noopener noreferrer">Entrar</a>
-                        ) : (
-                          <span>Entrar</span>
-                        )}
-                      </Button>
+                      {hasValidSubscription ? (
+                        <Button
+                          asChild={!!group.link}
+                          className="bg-brand-black hover:bg-brand-green text-white rounded-xl h-11 px-6 font-black uppercase tracking-widest text-[9px] shadow-lg shadow-brand-black/10 transition-all active:scale-95"
+                        >
+                          {group.link ? (
+                            <a href={group.link} target="_blank" rel="noopener noreferrer">Entrar no Grupo</a>
+                          ) : (
+                            <span>Grupo Fechado</span>
+                          )}
+                        </Button>
+                      ) : (
+                        <div className="flex flex-col items-end gap-1">
+                          <span className="text-[8px] text-brand-orange font-bold uppercase tracking-widest">
+                            Vagas prioritárias para assinantes
+                          </span>
+                          <Button
+                            onClick={() => router.push("/subscriptions")}
+                            className="bg-gradient-to-r from-brand-orange to-brand-red text-white rounded-xl h-9 px-4 font-black uppercase tracking-widest text-[9px] shadow-lg transition-all hover:scale-105"
+                          >
+                            Seja Premium
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}

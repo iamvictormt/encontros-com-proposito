@@ -22,11 +22,20 @@ export async function POST(request: Request) {
       else if (status === 'pending') dbStatus = 'pending';
       else if (status === 'cancelled') dbStatus = 'canceled';
 
+      // Fallback expiry: if next_payment_date is null but status is active/authorized, 
+      // set it to 30 days from now.
+      let expiryDate = subscription.next_payment_date;
+      if (!expiryDate && (status === 'authorized' || status === 'active')) {
+        const date = new Date();
+        date.setDate(date.getDate() + 30);
+        expiryDate = date.toISOString();
+      }
+      
       // Update user status
       await sql`
         UPDATE users 
         SET subscription_status = ${dbStatus},
-            subscription_expiry = ${subscription.next_payment_date || null},
+            subscription_expiry = ${expiryDate || null},
             mp_preapproval_id = ${dataId}
         WHERE id = ${userId}
       `;

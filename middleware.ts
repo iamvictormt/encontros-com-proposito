@@ -58,6 +58,22 @@ export async function middleware(request: NextRequest) {
       if (pathname.startsWith("/admin") && !payload.isAdmin) {
         return NextResponse.redirect(new URL("/", request.url));
       }
+
+      // Check verification status (only for non-admin users)
+      if (!payload.isAdmin) {
+        const isVerified = payload.verificationStatus === "APROVADO";
+        const isVerificationPage = pathname === "/em-analise";
+        
+        // If not verified and not already on the verification page or public paths, redirect to verification
+        if (!isVerified && !isVerificationPage && !isPublicPath) {
+           return NextResponse.redirect(new URL("/em-analise", request.url));
+        }
+
+        // If verified and trying to access the verification page, redirect to home
+        if (isVerified && isVerificationPage) {
+           return NextResponse.redirect(new URL("/", request.url));
+        }
+      }
     } catch (error) {
       // Token is invalid, remove it and redirect to login if it's not a public path
       if (!isPublicPath) {

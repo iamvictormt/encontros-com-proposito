@@ -28,6 +28,7 @@ export const menuSections = [
       { icon: Building2, label: "Locais & Empresas", href: "/admin/venues" },
       { icon: PackageOpen, label: "Marcas parceiras", href: "/admin/brands" },
       { icon: ShoppingCart, label: "Loja & Produtos", href: "/admin/products" },
+      { icon: Users, label: "Verificações", href: "/admin/verifications" },
       { icon: PieChart, label: "Relatórios", href: "/admin/reports" },
       { icon: Users, label: "Equipe & Cargos", href: "/admin/team" },
       { icon: CreditCard, label: "Cartões Físicos", href: "/admin/card-requests" },

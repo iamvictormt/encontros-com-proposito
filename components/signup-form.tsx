@@ -31,7 +31,9 @@ export function SignupForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [birthDate, setBirthDate] = useState("");
+  const [city, setCity] = useState("");
   const [year, setYear] = useState("");
+  const [userCategory, setUserCategory] = useState("COMUM");
   const [isLoading, setIsLoading] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [emailPhoneError, setEmailPhoneError] = useState("");
@@ -136,6 +138,8 @@ export function SignupForm() {
         phone: isEmail ? "" : unformatPhone(email),
         password,
         birthDate,
+        userCategory,
+        city,
       });
 
       toast({
@@ -192,6 +196,50 @@ export function SignupForm() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                  Qual o seu perfil?
+                </label>
+                <div className="grid grid-cols-3 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setUserCategory("COMUM")}
+                    className={cn(
+                      "flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all outline-none",
+                      userCategory === "COMUM"
+                        ? "border-brand-orange bg-brand-orange/5 text-brand-orange"
+                        : "border-brand-green/10 bg-white text-gray-400 hover:border-brand-orange/30"
+                    )}
+                  >
+                    <span className="text-xs font-black uppercase tracking-wider">Usuário</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setUserCategory("EMPRESA")}
+                    className={cn(
+                      "flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all outline-none",
+                      userCategory === "EMPRESA"
+                        ? "border-brand-orange bg-brand-orange/5 text-brand-orange"
+                        : "border-brand-green/10 bg-white text-gray-400 hover:border-brand-orange/30"
+                    )}
+                  >
+                    <span className="text-xs font-black uppercase tracking-wider">Empresa</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setUserCategory("PARCEIRO")}
+                    className={cn(
+                      "flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all outline-none",
+                      userCategory === "PARCEIRO"
+                        ? "border-brand-orange bg-brand-orange/5 text-brand-orange"
+                        : "border-brand-green/10 bg-white text-gray-400 hover:border-brand-orange/30"
+                    )}
+                  >
+                    <span className="text-xs font-black uppercase tracking-wider">Parceiro</span>
+                  </button>
+                </div>
+              </div>
+
               <div className="space-y-2">
                 <label htmlFor="fullName" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
                   Nome Completo
@@ -227,18 +275,35 @@ export function SignupForm() {
                 {emailPhoneError && <p className="text-[10px] text-brand-red font-bold uppercase tracking-wide px-1">{emailPhoneError}</p>}
               </div>
 
-              <div className="space-y-2">
-                <label htmlFor="birthDate" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
-                  Data de Nascimento
-                </label>
-                <Input
-                  id="birthDate"
-                  type="date"
-                  value={birthDate}
-                  onChange={(e) => setBirthDate(e.target.value)}
-                  className="w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-4 sm:px-6"
-                  required
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label htmlFor="birthDate" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                    Data de Nascimento
+                  </label>
+                  <Input
+                    id="birthDate"
+                    type="date"
+                    value={birthDate}
+                    onChange={(e) => setBirthDate(e.target.value)}
+                    className="w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-4 sm:px-6"
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label htmlFor="city" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                    Cidade / Região
+                  </label>
+                  <Input
+                    id="city"
+                    type="text"
+                    placeholder="Ex: São Paulo, SP"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    className="w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-4 sm:px-6"
+                    required
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

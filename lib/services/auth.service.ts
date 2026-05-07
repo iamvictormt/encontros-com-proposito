@@ -14,6 +14,8 @@ export interface RegisterData {
   phone: string;
   password: string;
   birthDate: string;
+  userCategory?: string;
+  city?: string;
 }
 
 export interface AuthUser {
@@ -26,6 +28,12 @@ export interface AuthUser {
   subscriptionStatus?: string;
   subscriptionPlan?: string;
   subscriptionExpiry?: string;
+  userCategory?: string;
+  verificationStatus?: string;
+  documentUrl?: string;
+  companyDocsUrl?: string;
+  partnerDocsUrl?: string;
+  city?: string;
 }
 
 export interface AuthResponse {

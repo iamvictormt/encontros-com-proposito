@@ -8,15 +8,17 @@ export const mpClient = new MercadoPagoConfig({
   accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN || "TEST-PLACEHOLDER",
 });
 
+const isTestMode = process.env.NEXT_PUBLIC_TEST_MODE === "true";
+
 export const SUBSCRIPTION_PLANS = {
   USER: {
     name: "MeetOff Usuários",
-    amount: 1,
+    amount: isTestMode ? 1.0 : 170.3,
     description: "Assinatura Mensal MeetOff para Usuários",
   },
   PARTNER: {
     name: "MeetOff Empresas/Parceiros",
-    amount: 1,
+    amount: isTestMode ? 1.0 : 232.7,
     description: "Assinatura Mensal MeetOff para Empresas e Parceiros",
   },
 };
@@ -25,27 +27,32 @@ export class MercadoPagoService {
   /**
    * Create a pre-approval (subscription)
    */
-  static async createSubscription(userId: string, userEmail: string, planType: 'USER' | 'PARTNER') {
+  static async createSubscription(userId: string, userEmail: string, planType: 'USER' | 'PARTNER', cardTokenId?: string) {
     const planData = SUBSCRIPTION_PLANS[planType];
     const preApproval = new PreApproval(mpClient);
 
     const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://meet-off.vercel.app").replace(/\/$/, "");
 
     try {
-      const response = await preApproval.create({
-        body: {
-          reason: planData.name,
-          auto_recurring: {
-            frequency: 1,
-            frequency_type: "months",
-            transaction_amount: planData.amount,
-            currency_id: "BRL",
-          },
-          back_url: `${baseUrl}/subscriptions`,
-          payer_email: userEmail.trim().toLowerCase(),
-          external_reference: userId,
-        }
-      });
+      const body: any = {
+        reason: planData.name,
+        auto_recurring: {
+          frequency: 1,
+          frequency_type: "months",
+          transaction_amount: planData.amount,
+          currency_id: "BRL",
+        },
+        back_url: `${baseUrl}/subscriptions`,
+        payer_email: userEmail.trim().toLowerCase(),
+        external_reference: userId,
+        status: cardTokenId ? "authorized" : "pending",
+      };
+
+      if (cardTokenId) {
+        body.card_token_id = cardTokenId;
+      }
+
+      const response = await preApproval.create({ body });
 
       // Priorizamos o sandbox_init_point se estivermos em modo de teste
       const res = response as any;
@@ -58,7 +65,12 @@ export class MercadoPagoService {
         id: response.id
       };
     } catch (error: any) {
-      console.error("Error creating MP subscription:", error);
+      console.error("Error creating MP subscription:", {
+        message: error.message,
+        status: error.status,
+        cause: error.cause,
+        stack: error.stack
+      });
       throw error;
     }
   }

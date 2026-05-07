@@ -5,7 +5,7 @@ import { validateMinAge } from "@/lib/utils/validators";
 
 export async function POST(request: Request) {
   try {
-    const { fullName, email, phone, password, birthDate } = await request.json();
+    const { fullName, email, phone, password, birthDate, userCategory, city } = await request.json();
 
     if (!fullName || (!email && !phone) || !password || !birthDate) {
       return NextResponse.json({ message: "Todos os campos são obrigatórios" }, { status: 400 });
@@ -39,10 +39,13 @@ export async function POST(request: Request) {
 
     const hashedPassword = await hashPassword(password);
 
+    const category = userCategory || 'COMUM';
+    const initialVerificationStatus = 'PENDENTE';
+
     const newUser = await sql`
-      INSERT INTO users (full_name, email, phone, password_hash, birth_date)
-      VALUES (${fullName}, ${userEmail}, ${userPhone}, ${hashedPassword}, ${birthDate})
-      RETURNING id, full_name, email, phone, birth_date, is_admin
+      INSERT INTO users (full_name, email, phone, password_hash, birth_date, user_category, verification_status, city)
+      VALUES (${fullName}, ${userEmail}, ${userPhone}, ${hashedPassword}, ${birthDate}, ${category}, ${initialVerificationStatus}, ${city || null})
+      RETURNING id, full_name, email, phone, birth_date, is_admin, user_category, verification_status, city, subscription_status, subscription_plan, subscription_expiry
     `;
 
     const user = newUser[0];
@@ -50,6 +53,7 @@ export async function POST(request: Request) {
       userId: user.id,
       email: user.email,
       isAdmin: user.is_admin,
+      verificationStatus: user.verification_status,
     });
 
     const response = NextResponse.json(
@@ -61,6 +65,11 @@ export async function POST(request: Request) {
           email: user.email,
           phone: user.phone,
           isAdmin: user.is_admin,
+          userCategory: user.user_category,
+          verificationStatus: user.verification_status,
+          subscriptionStatus: user.subscription_status,
+          subscriptionPlan: user.subscription_plan,
+          subscriptionExpiry: user.subscription_expiry,
         },
       },
       { status: 201 },

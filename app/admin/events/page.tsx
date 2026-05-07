@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Filter, Plus, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
@@ -10,6 +11,7 @@ import { EventModal } from "@/components/modals/event-modal";
 import { toast } from "sonner";
 import { AdminPagination } from "@/components/admin-pagination";
 import { ConfirmModal } from "@/components/modals/confirm-modal";
+import { useAuth } from "@/hooks/use-auth";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +30,8 @@ export default function AdminEvents() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("recent"); // "recent" | "old"
   const [currentPage, setCurrentPage] = useState(1);
+  const { user } = useAuth();
+  const router = useRouter();
   const itemsPerPage = 6;
 
   const [confirmModal, setConfirmModal] = useState<{
@@ -193,7 +197,21 @@ export default function AdminEvents() {
               </DropdownMenu>
 
               <Button 
-                onClick={() => { setSelectedEvent(null); setIsModalOpen(true); }}
+                onClick={() => {
+                  const expiryDate = user?.subscriptionExpiry ? new Date(user.subscriptionExpiry) : new Date(0);
+                  const hasValidSubscription = user?.subscriptionStatus === 'active' || (user?.subscriptionStatus === 'canceled' && expiryDate > new Date());
+                  
+                  if (!hasValidSubscription && user?.userCategory === "EMPRESA") {
+                    if (events.length >= 1) {
+                      toast.error("Empresas gratuitas podem publicar apenas 1 evento por mês. Assine o plano Premium para publicar eventos ilimitados.");
+                      router.push("/subscriptions"); 
+                      return;
+                    }
+                  }
+                  
+                  setSelectedEvent(null); 
+                  setIsModalOpen(true); 
+                }}
                 className="h-14 px-8 bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-lg shadow-brand-green/20 flex-1 sm:flex-none gap-3"
               >
                 <Plus className="h-4 w-4" />

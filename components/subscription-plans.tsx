@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { ConfirmModal } from "@/components/modals/confirm-modal";
+import { CheckoutModal } from "@/components/checkout-modal";
 
 const USER_PLAN_FEATURES = [
   "Relacionamentos-Namoros-Encontros-Compromisso Sério",
@@ -37,35 +38,29 @@ export function SubscriptionPlans() {
   const { user, refreshAuth } = useAuth();
 
   const expiryDate = user?.subscriptionExpiry ? new Date(user.subscriptionExpiry) : new Date(0);
-  const isSubscribed = user?.subscriptionStatus === 'active';
+  const isSubscribed = user?.subscriptionStatus === 'active' || (user?.subscriptionStatus === 'canceled' && expiryDate > new Date());
   const isCanceledButValid = user?.subscriptionStatus === 'canceled' && expiryDate > new Date();
 
-  const handleSubscribe = async (planType: "USER" | "PARTNER") => {
+  const isTestMode = process.env.NEXT_PUBLIC_TEST_MODE === "true";
+  const userPlanAmount = isTestMode ? 1.0 : 170.3;
+  const partnerPlanAmount = isTestMode ? 1.0 : 232.7;
+
+  const [checkoutConfig, setCheckoutConfig] = useState<{
+    isOpen: boolean;
+    planType: "USER" | "PARTNER";
+    amount: number;
+  }>({
+    isOpen: false,
+    planType: "USER",
+    amount: userPlanAmount
+  });
+
+  const handleSubscribeClick = (planType: "USER" | "PARTNER", amount: number) => {
     if (!user) {
       toast.error("Você precisa estar logado para assinar.");
       return;
     }
-
-    setLoading(planType);
-    try {
-      const response = await fetch("/api/subscriptions/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planType }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.init_point) {
-        window.location.href = data.init_point;
-      } else {
-        toast.error(data.message || "Erro ao iniciar assinatura");
-      }
-    } catch (error) {
-      toast.error("Erro na conexão com o servidor");
-    } finally {
-      setLoading(null);
-    }
+    setCheckoutConfig({ isOpen: true, planType, amount });
   };
 
   const executeCancel = async () => {
@@ -94,24 +89,25 @@ export function SubscriptionPlans() {
   if (isCanceledButValid) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-12">
-        <div className="relative glass p-10 rounded-[3rem] border-gray-200 shadow-2xl flex flex-col bg-white/80 backdrop-blur-xl text-center">
-          <div className="bg-gray-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <AlertTriangle className="w-10 h-10 text-gray-500" />
+        <div className="relative glass p-10 rounded-[3rem] border-brand-orange/20 shadow-2xl flex flex-col bg-white/80 backdrop-blur-xl text-center">
+          <div className="bg-brand-orange/10 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Crown className="w-10 h-10 text-brand-orange" />
           </div>
           <h3 className="text-3xl font-black text-brand-black uppercase tracking-tighter mb-4">
-            Assinatura em Cancelamento
+            Assinatura Ativa
+            <span className="text-brand-orange text-lg block mt-2 tracking-widest">Cancelamento Agendado</span>
           </h3>
           <p className="text-gray-500 font-bold uppercase text-xs tracking-widest mb-10 leading-relaxed">
-            Você cancelou a sua assinatura, mas ainda poderá usufruir dos benefícios até:
+            Sua assinatura continua <span className="text-brand-green">totalmente ativa</span>! Você solicitou o cancelamento, mas continuará usufruindo de todos os benefícios exclusivos Premium até:
             <br />
             <span className="text-brand-red text-lg mt-2 block">
-              {expiryDate.toLocaleDateString("pt-BR", { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+              {expiryDate.toLocaleDateString("pt-BR", { day: '2-digit', month: 'long', year: 'numeric' })}
             </span>
           </p>
           
           <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
             <p className="text-center text-gray-400 text-xs font-bold uppercase">
-              Você poderá assinar um novo plano apenas após esta data.
+              Você poderá reativar ou assinar um novo plano apenas após esta data.
             </p>
           </div>
         </div>
@@ -206,20 +202,17 @@ export function SubscriptionPlans() {
           <div className="mt-auto">
             <div className="mb-6">
               <span className="text-4xl font-black text-brand-black tracking-tighter">
-                R$ 170,30
+                R$ {userPlanAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </span>
               <span className="text-gray-400 font-bold text-sm uppercase ml-2">/ mês</span>
+              {isTestMode && <div className="text-[10px] text-brand-orange font-black uppercase mt-1">Modo de Teste Ativo</div>}
             </div>
             <Button
-              onClick={() => handleSubscribe("USER")}
+              onClick={() => handleSubscribeClick("USER", userPlanAmount)}
               disabled={!!loading}
               className="w-full h-16 rounded-2xl bg-brand-red hover:bg-brand-red/90 text-white font-black uppercase tracking-widest text-xs shadow-xl shadow-brand-red/20 transition-all active:scale-[0.98]"
             >
-              {loading === "USER" ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                "Assinar Agora"
-              )}
+              Assinar Agora
             </Button>
           </div>
         </div>
@@ -262,24 +255,34 @@ export function SubscriptionPlans() {
           <div className="mt-auto">
             <div className="mb-6">
               <span className="text-4xl font-black text-white tracking-tighter">
-                R$ 232,70
+                R$ {partnerPlanAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </span>
               <span className="text-gray-500 font-bold text-sm uppercase ml-2">/ mês</span>
+              {isTestMode && <div className="text-[10px] text-brand-green font-black uppercase mt-1">Modo de Teste Ativo</div>}
             </div>
             <Button
-              onClick={() => handleSubscribe("PARTNER")}
+              onClick={() => handleSubscribeClick("PARTNER", partnerPlanAmount)}
               disabled={!!loading}
               className="w-full h-16 rounded-2xl bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-xs shadow-xl shadow-brand-green/20 transition-all active:scale-[0.98]"
             >
-              {loading === "PARTNER" ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                "Seja um Parceiro"
-              )}
+              Seja um Parceiro
             </Button>
           </div>
         </div>
       </div>
+
+      {checkoutConfig.isOpen && (
+        <CheckoutModal
+          isOpen={checkoutConfig.isOpen}
+          onClose={() => setCheckoutConfig(prev => ({ ...prev, isOpen: false }))}
+          planType={checkoutConfig.planType}
+          amount={checkoutConfig.amount}
+          onSuccess={() => {
+            refreshAuth();
+            toast.success("Bem-vindo à comunidade MeetOff!");
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -20,6 +20,8 @@ import {
   InviteSourceItem,
 } from "@/components/admin-report-components";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
+import { cn } from "@/lib/utils";
 
 const mockLineData = [
   { name: "Jun 5", current: 25000, previous: 8000 },
@@ -63,6 +65,7 @@ const mockInvites = [
 
 export default function AdminReports() {
   const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
 
   useEffect(() => {
     // Simulate loading
@@ -77,9 +80,44 @@ export default function AdminReports() {
       </div>
     );
 
+  const expiryDate = user?.subscriptionExpiry ? new Date(user.subscriptionExpiry) : new Date(0);
+  const hasValidSubscription = user?.subscriptionStatus === 'active' || (user?.subscriptionStatus === 'canceled' && expiryDate > new Date());
+  
+  // If user is a free company or partner, restrict access
+  const isRestricted = (user?.userCategory === "EMPRESA" || user?.userCategory === "PARCEIRO") && !hasValidSubscription;
+
   return (
-    <div className="space-y-16 pb-12">
-      <section>
+    <div className="space-y-16 pb-12 relative">
+      {isRestricted && (
+        <div className="absolute inset-0 z-50 flex items-start justify-center pt-32 backdrop-blur-[8px] bg-white/40 rounded-[3rem]">
+          <div className="glass-dark p-12 rounded-[2.5rem] text-center border border-white/10 shadow-2xl max-w-xl mx-4 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-brand-orange/10 blur-3xl rounded-full mix-blend-screen" />
+            
+            <div className="relative z-10 flex flex-col items-center">
+              <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mb-6">
+                <span className="text-2xl">📈</span>
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tighter mb-4">
+                Desbloqueie <span className="text-brand-orange">Analytics</span>
+              </h3>
+              <p className="text-sm font-medium text-white/60 mb-8 max-w-md mx-auto">
+                {user?.userCategory === "EMPRESA" 
+                  ? "Seu estabelecimento está recebendo alta procura. Desbloqueie leads qualificados e veja as métricas completas de acesso."
+                  : "Parceiros Premium recebem relatórios detalhados de conversão e leads."}
+              </p>
+              <Button 
+                onClick={() => window.location.href = "/subscriptions"}
+                className="bg-gradient-to-r from-brand-orange to-brand-red text-white h-14 px-8 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg hover:scale-105 transition-transform"
+              >
+                Seja Premium
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      <div className={cn("space-y-16", isRestricted && "opacity-30 pointer-events-none select-none")}>
+        <section>
         <div className="flex items-center gap-3 mb-8">
           <div className="h-1 w-8 bg-brand-orange rounded-full" />
           <h2 className="text-[10px] font-black text-brand-black uppercase tracking-[0.3em]">
@@ -234,6 +272,7 @@ export default function AdminReports() {
             </div>
           </div>
         </section>
+      </div>
       </div>
     </div>
   );

@@ -43,6 +43,21 @@ async function setupDatabase() {
     await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_plan TEXT`;
     await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_expiry TIMESTAMP WITH TIME ZONE`;
     await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS mp_preapproval_id TEXT`;
+    
+    // New fields for MeetOff Brasil Permissions Flow
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS user_category TEXT DEFAULT 'COMUM'`; // 'COMUM', 'EMPRESA', 'PARCEIRO'
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_status TEXT DEFAULT 'PENDENTE'`; // 'PENDENTE', 'EM_ANALISE', 'APROVADO', 'RECUSADO'
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_notes TEXT`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS document_type TEXT`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS document_url TEXT`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS selfie_url TEXT`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS cnpj TEXT`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS company_docs_url TEXT`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS legal_representative TEXT`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS background_check_status TEXT`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS partner_docs_url TEXT`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS city TEXT`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS category_of_interest JSONB DEFAULT '[]'`;
 
     // Cards table
     await sql`
