@@ -23,6 +23,12 @@ import {
   validateEmail,
   detectInputType,
 } from "@/lib/utils/validators";
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipProvider, 
+  TooltipTrigger 
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { ForgotPasswordModal } from "./modals/forgot-password-modal";
 
@@ -257,12 +263,20 @@ export function LoginForm() {
                     <label htmlFor="email" className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
                       Email ou Telefone
                     </label>
-                    <span 
-                      className="w-4 h-4 rounded-full bg-brand-orange/10 text-brand-orange flex items-center justify-center text-[10px] font-bold cursor-help"
-                      title="Optou pela Experiência Rápida (Premium)? Utilize o e-mail gerado no final do seu pedido (ex: nome.iniciais@premium.meetoff.com)"
-                    >
-                      ?
-                    </span>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="w-4 h-4 rounded-full bg-brand-orange/10 text-brand-orange flex items-center justify-center text-[10px] font-bold cursor-help">
+                            ?
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent className="glass-dark border-white/10 p-4 rounded-2xl shadow-2xl max-w-[280px] side-top">
+                          <p className="text-[11px] font-medium text-white leading-relaxed">
+                            Optou pela <span className="font-black text-brand-orange uppercase tracking-tight">Experiência Rápida (Premium)</span>? Utilize o e-mail gerado no final do seu pedido (ex: victor.vmt@premium.meetoff.com)
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                   <Input
                     id="email"

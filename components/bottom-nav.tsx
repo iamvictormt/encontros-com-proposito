@@ -4,16 +4,32 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, ShoppingCart, FolderOpen, Building2, CreditCard, User, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
+import { useEffect, useState } from "react";
 
 export function BottomNav() {
   const pathname = usePathname();
+  const [showLabel, setShowLabel] = useState(true);
+  const { isLoggedIn, user } = useAuth();
+
+    useEffect(() => {
+      setShowLabel(true);
+      const timer = setTimeout(() => {
+        setShowLabel(false);
+      }, 2000);
+  
+      return () => clearTimeout(timer);
+    }, [pathname]);
+  
 
   const navLinks = [
     { href: "/events", label: "Home", icon: Home },
-    { href: "/products", label: "Shop", icon: ShoppingCart },
-    { href: "/member-card", label: "Card", icon: CreditCard },
-    { href: "/portfolio", label: "Jobs", icon: FolderOpen },
-    { href: "/account", label: "Me", icon: User },
+    { href: "/products", label: "Produtos", icon: ShoppingCart },
+    ...(isLoggedIn && user?.userCategory === "PREMIUM"
+      ? []
+      : [{ href: "/member-card", label: "Card", icon: CreditCard }]),
+    { href: "/portfolio", label: "Portfólio", icon: FolderOpen },
+    { href: "/account", label: "Conta", icon: User },
   ];
 
   if (pathname?.startsWith("/admin") || pathname === "/login" || pathname === "/signup" || pathname === "/") {
@@ -42,7 +58,7 @@ export function BottomNav() {
               <Icon className={cn("relative z-10 h-5 w-5 transition-transform duration-300", isActive && "scale-110")} />
               
               {/* Tooltip-like label that appears only when active? Or just icons for maximum minimalism */}
-              {isActive && (
+                {isActive && showLabel && (
                 <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-brand-black text-white text-[8px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border border-white/10 shadow-xl whitespace-nowrap animate-in fade-in slide-in-from-bottom-2 duration-300">
                   {link.label}
                 </span>

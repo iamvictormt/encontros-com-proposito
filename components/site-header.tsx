@@ -28,10 +28,12 @@ export function SiteHeader() {
     { href: "/partners", label: "Empresas e Parcerias", icon: Building2 },
     ...(isLoggedIn
       ? [
-          { href: "/member-card", label: "Cartão MeetOff", icon: CreditCard },
-          ...(user?.userCategory === "PREMIUM" 
-              ? [] 
-              : [{ href: "/subscriptions", label: "Assinatura", icon: Crown }]),
+          ...(user?.userCategory === "PREMIUM"
+            ? [{ href: "/account", label: "Minha Conta", icon: User }]
+            : [
+                { href: "/member-card", label: "Cartão MeetOff", icon: CreditCard },
+                { href: "/subscriptions", label: "Assinatura", icon: Crown },
+              ]),
         ]
       : []),
   ];

@@ -32,6 +32,7 @@ export const menuSections = [
       { icon: PieChart, label: "Relatórios", href: "/admin/reports" },
       { icon: Users, label: "Equipe & Cargos", href: "/admin/team" },
       { icon: CreditCard, label: "Cartões Físicos", href: "/admin/card-requests" },
+      { icon: PackageOpen, label: "Pedidos Premium", href: "/admin/premium-orders" },
     ],
   },
   {

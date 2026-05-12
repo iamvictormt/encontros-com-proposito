@@ -12,28 +12,42 @@ import {
   PieChart,
   Users,
   CreditCard,
-  Settings
+  Settings,
+  LogOut
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export function AdminBottomNav() {
   const pathname = usePathname();
   const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const [showLabel, setShowLabel] = useState(true);
+
+  useEffect(() => {
+    setShowLabel(true);
+    const timer = setTimeout(() => {
+      setShowLabel(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [pathname]);
 
   const navLinks = [
     { href: "/admin", label: "Geral", icon: LayoutGrid, exact: true },
-    { href: "/admin/events", label: "Events", icon: CalendarDays },
-    { href: "/admin/venues", label: "Venues", icon: Building2 },
-    { href: "/admin/products", label: "Shop", icon: ShoppingCart },
+    { href: "/admin/events", label: "Eventos", icon: CalendarDays },
+    { href: "/admin/venues", label: "Locais", icon: Building2 },
+    { href: "/admin/products", label: "Loja", icon: ShoppingCart },
   ];
 
   const moreLinks = [
+    { href: "/admin/brands", label: "Marcas", icon: PackageOpen },
     { href: "/admin/card-requests", label: "Cartões", icon: CreditCard },
+    { href: "/admin/premium-orders", label: "Pedidos", icon: PackageOpen },
     { href: "/admin/verifications", label: "Verificações", icon: Users },
-    { href: "/admin/reports", label: "Analytics", icon: PieChart },
-    { href: "/admin/settings", label: "Config", icon: Settings },
+    { href: "/admin/team", label: "Equipe", icon: Users },
+    { href: "/admin/reports", label: "Relatórios", icon: PieChart },
+    { href: "/admin/settings", label: "Configurações", icon: Settings },
   ];
 
   return (
@@ -60,7 +74,7 @@ export function AdminBottomNav() {
                 )}
                 <Icon className={cn("relative z-10 h-5 w-5 transition-transform duration-300", isActive && "scale-110")} />
                 
-                {isActive && (
+                {isActive && showLabel && (
                   <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-brand-black text-white text-[8px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border border-white/10 shadow-xl whitespace-nowrap animate-in fade-in slide-in-from-bottom-2 duration-300">
                     {link.label}
                   </span>
