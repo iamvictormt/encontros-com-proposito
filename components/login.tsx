@@ -113,7 +113,7 @@ export function Login() {
       <div className="hidden lg:block lg:w-1/2 relative p-8">
         <div className="relative w-full h-full rounded-[3.5rem] overflow-hidden shadow-2xl group">
           <Image
-            src="/images/homem-e-mulher.jpg"
+            src="/images/joao-e-alesca.jpg"
             alt="Casal feliz representando conexões com propósito"
             fill
             className="object-cover transition-transform duration-[2000ms] group-hover:scale-110"

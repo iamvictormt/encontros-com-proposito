@@ -1,5 +1,5 @@
-import { Login } from "@/components/login";
+import { PremiumFlow } from "@/components/premium-flow";
 
-export default function LoginPage() {
-  return <Login />;
+export default function HomePage() {
+  return <PremiumFlow />;
 }
