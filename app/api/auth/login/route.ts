@@ -12,7 +12,7 @@ export async function POST(request: Request) {
 
     const results = await sql`
       SELECT id, full_name, email, phone, password_hash, is_admin, user_category, verification_status,
-             subscription_status, subscription_plan, subscription_expiry
+             subscription_status, subscription_plan, subscription_expiry, has_premium_accessory
       FROM users
       WHERE email = ${emailOrPhone} OR phone = ${emailOrPhone}
     `;
@@ -33,6 +33,8 @@ export async function POST(request: Request) {
       email: user.email,
       isAdmin: user.is_admin,
       verificationStatus: user.verification_status,
+      userCategory: user.user_category,
+      hasPremiumAccessory: user.has_premium_accessory,
     });
 
     const response = NextResponse.json(
@@ -45,6 +47,7 @@ export async function POST(request: Request) {
           phone: user.phone,
           isAdmin: user.is_admin,
           userCategory: user.user_category,
+          hasPremiumAccessory: user.has_premium_accessory,
           verificationStatus: user.verification_status,
           subscriptionStatus: user.subscription_status,
           subscriptionPlan: user.subscription_plan,

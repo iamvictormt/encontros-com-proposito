@@ -20,6 +20,8 @@ export async function middleware(request: NextRequest) {
     pathname === "/consent" ||
     pathname === "/security" ||
     pathname === "/cookies" ||
+    pathname === "/premium-flow" ||
+    pathname.startsWith("/api/premium/register") ||
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/webhooks") ||
     pathname === "/api/events" ||
@@ -63,9 +65,27 @@ export async function middleware(request: NextRequest) {
       if (!payload.isAdmin) {
         const isVerified = payload.verificationStatus === "APROVADO";
         const isVerificationPage = pathname === "/em-analise";
-        
-        // If not verified and not already on the verification page or public paths, redirect to verification
-        if (!isVerified && !isVerificationPage && !isPublicPath) {
+        const isPremiumFlowPage = pathname === "/premium-flow";
+        const userCategory = payload.userCategory as string;
+        const hasPremiumAccessory = payload.hasPremiumAccessory as boolean;
+
+        // Force PREMIUM users to buy accessory first
+        if (userCategory === "PREMIUM" && !hasPremiumAccessory) {
+          if (!isPremiumFlowPage && !isPublicPath) {
+             return NextResponse.redirect(new URL("/premium-flow", request.url));
+          }
+        } else if (userCategory === "PREMIUM" && hasPremiumAccessory) {
+          // If PREMIUM user already bought, they cannot access subscriptions
+          if (pathname.startsWith("/subscriptions")) {
+            return NextResponse.redirect(new URL("/events", request.url));
+          }
+          if (isPremiumFlowPage) {
+            return NextResponse.redirect(new URL("/events", request.url));
+          }
+        }
+
+        // If not verified and not already on the verification page, premium flow page, or public paths, redirect to verification
+        if (!isVerified && !isVerificationPage && !isPremiumFlowPage && !isPublicPath) {
            return NextResponse.redirect(new URL("/em-analise", request.url));
         }
 

@@ -29,6 +29,7 @@ export interface AuthUser {
   subscriptionPlan?: string;
   subscriptionExpiry?: string;
   userCategory?: string;
+  hasPremiumAccessory?: boolean;
   verificationStatus?: string;
   documentUrl?: string;
   companyDocsUrl?: string;

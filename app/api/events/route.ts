@@ -6,15 +6,42 @@ import { cookies } from "next/headers";
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
+  
+  const token = (await cookies()).get("auth_token")?.value;
+  const payload = token ? await verifyJWT(token) : null;
+  const isPremium = payload?.userCategory === "PREMIUM";
 
   try {
     if (id) {
       const event = await sql`SELECT * FROM events WHERE id = ${id}`;
+      // Verify access to single event if needed, but usually UI handles it or it's public link.
+      // We will add strict check:
+      if (event.length > 0) {
+         const ev = event[0];
+         if (isPremium && ev.target_audience !== 'PREMIUM') {
+           return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+         }
+         if (!isPremium && ev.target_audience === 'PREMIUM') {
+           return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+         }
+      }
       return NextResponse.json(event[0] || null);
     }
 
     const events = await sql`SELECT * FROM events ORDER BY date ASC`;
-    return NextResponse.json(events);
+    
+    // Filter events based on user type
+    const filteredEvents = events.filter((ev: any) => {
+      if (isPremium) {
+         // Premium users only see PREMIUM events
+         return ev.target_audience === 'PREMIUM';
+      } else {
+         // Normal users only see non-PREMIUM events
+         return ev.target_audience !== 'PREMIUM';
+      }
+    });
+
+    return NextResponse.json(filteredEvents);
   } catch (error) {
     console.error("Error fetching events:", error);
     return NextResponse.json({ message: "Error fetching events" }, { status: 500 });

@@ -119,7 +119,9 @@ export function EventsPage() {
 
   // Pagination logic
   const expiryDate = user?.subscriptionExpiry ? new Date(user.subscriptionExpiry) : new Date(0);
-  const hasValidSubscription = user?.subscriptionStatus === 'active' || (user?.subscriptionStatus === 'canceled' && expiryDate > new Date());
+  const hasValidSubscription = user?.subscriptionStatus === 'active' || 
+    (user?.subscriptionStatus === 'canceled' && expiryDate > new Date()) || 
+    (user?.userCategory === 'PREMIUM' && user?.hasPremiumAccessory);
 
   const totalPages = Math.max(1, Math.ceil(filteredEvents.length / itemsPerPage));
   let paginatedEvents = filteredEvents.slice(

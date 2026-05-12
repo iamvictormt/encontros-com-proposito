@@ -30,7 +30,14 @@ export async function signJWT(payload: any) {
 export async function verifyJWT(token: string) {
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
-    return payload as { userId: string; email: string; isAdmin: boolean; verificationStatus: string };
+    return payload as { 
+      userId: string; 
+      email: string; 
+      isAdmin: boolean; 
+      verificationStatus: string;
+      userCategory?: string;
+      hasPremiumAccessory?: boolean;
+    };
   } catch (error) {
     return null;
   }

@@ -58,6 +58,7 @@ async function setupDatabase() {
     await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS partner_docs_url TEXT`;
     await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS city TEXT`;
     await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS category_of_interest JSONB DEFAULT '[]'`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS has_premium_accessory BOOLEAN DEFAULT FALSE`;
 
     // Cards table
     await sql`
@@ -217,6 +218,27 @@ async function setupDatabase() {
         state TEXT NOT NULL,
         status TEXT DEFAULT 'PENDENTE', -- 'PENDENTE', 'PAGO', 'ENVIADO', 'CANCELADO'
         amount DECIMAL(10, 2) DEFAULT 50.00,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
+    // Premium Accessory Orders table
+    await sql`
+      CREATE TABLE IF NOT EXISTS premium_accessory_orders (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+        accessory_type TEXT NOT NULL,
+        accessory_model TEXT,
+        delivery_method TEXT NOT NULL,
+        address_cep TEXT,
+        address_state TEXT,
+        address_city TEXT,
+        address_neighborhood TEXT,
+        address_street TEXT,
+        address_number TEXT,
+        address_complement TEXT,
+        status TEXT DEFAULT 'PENDING', -- 'PENDING', 'SENT', 'DELIVERED', 'READY_FOR_PICKUP', 'PICKED_UP'
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );

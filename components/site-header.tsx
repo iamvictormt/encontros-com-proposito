@@ -29,7 +29,9 @@ export function SiteHeader() {
     ...(isLoggedIn
       ? [
           { href: "/member-card", label: "Cartão MeetOff", icon: CreditCard },
-          { href: "/subscriptions", label: "Assinatura", icon: Crown },
+          ...(user?.userCategory === "PREMIUM" 
+              ? [] 
+              : [{ href: "/subscriptions", label: "Assinatura", icon: Crown }]),
         ]
       : []),
   ];

@@ -23,6 +23,7 @@ import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
 import Link from "next/link";
+import { toast } from "sonner";
 
 type Step =
   | "WELCOME"
@@ -187,12 +188,19 @@ export function PremiumFlow() {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [formData, setFormData] = useState({
     nome: "",
+    cep: "",
     estado: "",
     cidade: "",
+    bairro: "",
     endereco: "",
-    cep: "",
-    telefone: "",
+    numero: "",
+    complemento: "",
   });
+  const [cepFetchedFields, setCepFetchedFields] = useState<string[]>([]);
+  const [isFetchingCep, setIsFetchingCep] = useState(false);
+  const [isPurchasing, setIsPurchasing] = useState(false);
+
+  const [credentials, setCredentials] = useState<{login: string, password: string | null, isUpgrade?: boolean, orderId?: string} | null>(null);
 
   const currentYear = new Date().getFullYear().toString();
 
@@ -209,6 +217,78 @@ export function PremiumFlow() {
   const progressValue = ((stepOrder.indexOf(step) + 1) / stepOrder.length) * 100;
 
   const nextStep = (next: Step) => setStep(next);
+
+  const handleCepChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    let cep = e.target.value.replace(/\D/g, "");
+    if (cep.length > 8) cep = cep.slice(0, 8);
+    
+    // Add mask 00000-000
+    let maskedCep = cep;
+    if (cep.length > 5) {
+      maskedCep = `${cep.slice(0, 5)}-${cep.slice(5)}`;
+    }
+    
+    setFormData((prev) => ({ ...prev, cep: maskedCep }));
+
+    if (cep.length === 8) {
+      setIsFetchingCep(true);
+      try {
+        const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const data = await res.json();
+        if (!data.erro) {
+          setFormData((prev) => ({
+            ...prev,
+            estado: data.uf || "",
+            cidade: data.localidade || "",
+            bairro: data.bairro || "",
+            endereco: data.logradouro || "",
+          }));
+          const fetched = [];
+          if (data.uf) fetched.push("estado");
+          if (data.localidade) fetched.push("cidade");
+          if (data.bairro) fetched.push("bairro");
+          if (data.logradouro) fetched.push("endereco");
+          setCepFetchedFields(fetched);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar CEP", error);
+      } finally {
+        setIsFetchingCep(false);
+      }
+    } else {
+      setCepFetchedFields([]);
+    }
+  };
+
+  const handlePurchase = async () => {
+    setIsPurchasing(true);
+    try {
+      const response = await fetch("/api/premium/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...formData,
+          accessoryType,
+          model: selectedProduct?.name,
+          deliveryMethod,
+          category,
+        }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setCredentials({ login: data.login, password: data.password, isUpgrade: data.isUpgrade, orderId: data.orderId });
+        nextStep("CONFIRMATION");
+      } else {
+        const data = await response.json();
+        toast.error(data.message || "Erro ao registrar");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao conectar com o servidor.");
+    } finally {
+      setIsPurchasing(false);
+    }
+  };
 
   const formatCEP = (value: string) => {
     return value
@@ -568,6 +648,27 @@ export function PremiumFlow() {
           />
         </div>
 
+        <div className="space-y-2">
+          <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
+            CEP
+          </label>
+          <div className="relative">
+            <Input
+              name="cep"
+              value={formData.cep}
+              onChange={handleCepChange}
+              maxLength={9}
+              placeholder="00000-000"
+              className="h-14 rounded-2xl bg-white border-brand-black/5 text-[11px] font-bold uppercase tracking-widest px-6"
+            />
+            {isFetchingCep && (
+              <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-brand-orange border-t-transparent" />
+              </div>
+            )}
+          </div>
+        </div>
+
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
@@ -577,8 +678,9 @@ export function PremiumFlow() {
               name="estado"
               value={formData.estado}
               onChange={handleInputChange}
+              disabled={cepFetchedFields.includes("estado")}
               placeholder="UF"
-              className="h-14 rounded-2xl bg-white border-brand-black/5 text-[11px] font-bold uppercase tracking-widest px-6 text-center"
+              className="h-14 rounded-2xl bg-white border-brand-black/5 text-[11px] font-bold uppercase tracking-widest px-6 disabled:opacity-60"
             />
           </div>
           <div className="space-y-2">
@@ -589,49 +691,64 @@ export function PremiumFlow() {
               name="cidade"
               value={formData.cidade}
               onChange={handleInputChange}
+              disabled={cepFetchedFields.includes("cidade")}
               placeholder="EX: SÃO PAULO"
-              className="h-14 rounded-2xl bg-white border-brand-black/5 text-[11px] font-bold uppercase tracking-widest px-6"
+              className="h-14 rounded-2xl bg-white border-brand-black/5 text-[11px] font-bold uppercase tracking-widest px-6 disabled:opacity-60"
             />
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
-            Endereço
-          </label>
-          <Input
-            name="endereco"
-            value={formData.endereco}
-            onChange={handleInputChange}
-            placeholder="RUA, NÚMERO, COMPLEMENTO"
-            className="h-14 rounded-2xl bg-white border-brand-black/5 text-[11px] font-bold uppercase tracking-widest px-6"
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
+              Bairro
+            </label>
+            <Input
+              name="bairro"
+              value={formData.bairro}
+              onChange={handleInputChange}
+              disabled={cepFetchedFields.includes("bairro")}
+              placeholder="BAIRRO"
+              className="h-14 rounded-2xl bg-white border-brand-black/5 text-[11px] font-bold uppercase tracking-widest px-6 disabled:opacity-60"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
+              Endereço / Rua
+            </label>
+            <Input
+              name="endereco"
+              value={formData.endereco}
+              onChange={handleInputChange}
+              disabled={cepFetchedFields.includes("endereco")}
+              placeholder="LOGRADOURO"
+              className="h-14 rounded-2xl bg-white border-brand-black/5 text-[11px] font-bold uppercase tracking-widest px-6 disabled:opacity-60"
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
-              CEP
+              Número
             </label>
             <Input
-              name="cep"
-              value={formData.cep}
+              name="numero"
+              value={formData.numero}
               onChange={handleInputChange}
-              maxLength={9}
-              placeholder="00000-000"
+              placeholder="Nº"
               className="h-14 rounded-2xl bg-white border-brand-black/5 text-[11px] font-bold uppercase tracking-widest px-6"
             />
           </div>
           <div className="space-y-2">
             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
-              WhatsApp
+              Complemento
             </label>
             <Input
-              name="telefone"
-              value={formData.telefone}
+              name="complemento"
+              value={formData.complemento}
               onChange={handleInputChange}
-              maxLength={15}
-              placeholder="(00) 00000-0000"
+              placeholder="APTO, SALA (OPCIONAL)"
               className="h-14 rounded-2xl bg-white border-brand-black/5 text-[11px] font-bold uppercase tracking-widest px-6"
             />
           </div>
@@ -639,10 +756,11 @@ export function PremiumFlow() {
       </div>
 
       <Button
-        onClick={() => nextStep("CONFIRMATION")}
+        onClick={handlePurchase}
+        disabled={isPurchasing}
         className="w-full h-16 bg-brand-red hover:bg-brand-red/90 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl shadow-brand-red/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
       >
-        Finalizar Solicitação
+        {isPurchasing ? "Processando..." : "Finalizar Solicitação"}
       </Button>
     </div>
   );
@@ -665,7 +783,7 @@ export function PremiumFlow() {
         {PARTNERS.map((partner) => (
           <div
             key={partner.id}
-            onClick={() => nextStep("CONFIRMATION")}
+            onClick={handlePurchase}
             className="flex items-center justify-between p-6 rounded-[2rem] bg-white border border-brand-black/5 hover:border-brand-green/30 transition-all cursor-pointer group"
           >
             <div className="flex items-center gap-5">
@@ -694,104 +812,90 @@ export function PremiumFlow() {
   );
 
   const renderConfirmation = () => (
-    <div className="w-full max-w-lg space-y-10 animate-in fade-in zoom-in-95 duration-700">
+    <div className="w-full max-w-lg space-y-8 animate-in fade-in zoom-in-95 duration-700">
       <div className="text-center space-y-4">
-        <div className="w-24 h-24 bg-brand-green/10 text-brand-green rounded-[2.5rem] flex items-center justify-center mx-auto mb-6">
+        <div className="w-24 h-24 bg-brand-red/10 text-brand-red rounded-[2.5rem] flex items-center justify-center mx-auto mb-6 shadow-xl shadow-brand-green/10">
           <Check size={48} strokeWidth={4} />
         </div>
         <h2 className="text-4xl font-black uppercase tracking-tighter leading-none">
-          Pedido <br />
-          <span className="text-brand-green">Confirmado!</span>
+          Experiência <br />
+          <span className="text-brand-orange">Confirmada!</span>
         </h2>
         <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">
-          Identificação Premium MeetOff Brasil
+          Seu acesso VIP foi liberado com sucesso
         </p>
       </div>
 
-      <div className="bg-white rounded-[3rem] p-10 border border-brand-black/5 shadow-2xl shadow-brand-black/5 space-y-6">
-        <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-brand-red border-b border-brand-black/5 pb-4">
-          Protocolo de Solicitação
-        </h4>
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
-              Produto
-            </span>
-            <span className="text-[11px] font-black uppercase tracking-tight">
-              {selectedProduct?.name}
-            </span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
-              Finalidade
-            </span>
-            <span className="text-[11px] font-black uppercase tracking-tight text-brand-red">
-              {category}
-            </span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
-              Tipo
-            </span>
-            <span className="text-[11px] font-black uppercase tracking-tight">
-              {deliveryMethod === "RESIDENTIAL" ? "Entrega" : "Retirada"}
-            </span>
-          </div>
-          <div className="flex justify-between items-center pt-4 border-t border-brand-black/5">
-            <span className="text-[10px] font-black uppercase tracking-widest text-brand-black">
-              Pedido ID
-            </span>
-            <span className="text-sm font-black text-brand-orange tracking-widest">#MO-2026-X</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <Button className="w-full h-16 bg-brand-black hover:bg-brand-black/90 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl shadow-brand-black/20 transition-all hover:scale-[1.02] active:scale-[0.98]">
-          Meus Pedidos
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => setStep("WELCOME")}
-          className="w-full h-16 border-2 border-brand-black/10 text-brand-black font-black uppercase tracking-widest text-[11px] rounded-2xl transition-all hover:bg-brand-black/5 hover:scale-[1.02] active:scale-[0.98]"
-        >
-          Voltar para Início
-        </Button>
-      </div>
-
-      <div className="pt-12 border-t border-brand-black/5 space-y-8">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-16 h-16 bg-brand-red text-white rounded-[1.5rem] flex items-center justify-center font-black text-2xl shadow-xl shadow-brand-red/20 animate-bounce">
-            88
-          </div>
-          <div className="text-center space-y-1">
-            <h4 className="font-black uppercase tracking-tighter text-xl">Acesso Premium</h4>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-              Benefícios liberados para seu perfil
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-3">
-          {[
-            "MeetOff Private Experience",
-            "Executive Networking Brasil",
-            "Relationship Experience",
-          ].map((benefit) => (
-            <div
-              key={benefit}
-              className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 border border-brand-black/5"
-            >
-              <Users size={16} className="text-brand-red" />
-              <span className="text-[11px] font-black uppercase tracking-tight">{benefit}</span>
+      {credentials && (
+        <div className="relative bg-gradient-to-br from-brand-black to-gray-900 text-white p-8 rounded-[2rem] shadow-2xl overflow-hidden">
+          <div className="absolute -right-12 -top-12 w-40 h-40 bg-brand-orange/20 blur-3xl rounded-full" />
+          <div className="absolute -left-12 -bottom-12 w-40 h-40 bg-brand-red/20 blur-3xl rounded-full" />
+          
+          <div className="relative z-10 space-y-6">
+            <div className="flex items-center gap-4 border-b border-white/10 pb-4">
+              <div className="w-12 h-12 bg-brand-red text-white rounded-xl flex items-center justify-center font-black text-xl shadow-lg shadow-brand-red/20">
+                <Star size={28} strokeWidth={4} />
+              </div>
+              <div>
+                <h5 className="font-black uppercase tracking-tighter text-lg text-brand-orange leading-none">
+                  {credentials.isUpgrade ? "Conta Atualizada" : "Acesso Premium"}
+                </h5>
+                <p className="text-[9px] text-gray-400 uppercase tracking-widest mt-1">
+                  {credentials.isUpgrade ? "Perfil promovido com sucesso" : "Você já está logado"}
+                </p>
+              </div>
             </div>
-          ))}
-        </div>
 
-        <Button className="w-full h-14 bg-brand-orange hover:bg-brand-orange/90 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl shadow-brand-orange/20 transition-all hover:scale-[1.02] active:scale-[0.98]">
-          Visualizar Eventos Exclusivos
-        </Button>
+            <div className="space-y-3 font-mono">
+              <div className="bg-white/5 p-4 rounded-2xl border border-white/5 backdrop-blur-sm">
+                <span className="text-[9px] text-brand-orange uppercase block mb-1">E-mail (Login)</span>
+                <span className="font-bold tracking-widest text-sm">{credentials.login}</span>
+              </div>
+              
+              {!credentials.isUpgrade && credentials.password && (
+                <div className="bg-white/5 p-4 rounded-2xl border border-white/5 backdrop-blur-sm relative overflow-hidden group">
+                  <span className="text-[9px] text-brand-orange uppercase block mb-1">Senha Gerada</span>
+                  <span className="font-bold tracking-widest text-xl">{credentials.password}</span>
+                  <p className="text-[8px] text-brand-red uppercase mt-2 opacity-80">
+                    * Anote esta senha, ela não será exibida novamente.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="bg-white rounded-[2rem] p-6 border border-brand-black/5 shadow-lg shadow-brand-black/5 space-y-4">
+        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 border-b border-brand-black/5 pb-3">
+          Detalhes do Pedido
+        </h4>
+        <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Produto</span>
+            <span className="text-[10px] font-black uppercase tracking-tight truncate max-w-[150px]">{selectedProduct?.name}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Entrega</span>
+            <span className="text-[10px] font-black uppercase tracking-tight">{deliveryMethod === "RESIDENTIAL" ? "Domicílio" : "Retirada"}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Pedido ID</span>
+            <span className="text-[10px] font-black text-brand-orange tracking-widest">
+              #{credentials?.orderId ? credentials.orderId.substring(0, 8).toUpperCase() : "MO-2026-X"}
+            </span>
+          </div>
+        </div>
       </div>
+
+      <Button 
+        onClick={() => {
+          window.location.href = "/events";
+        }}
+        className="w-full h-16 bg-brand-orange hover:bg-brand-orange/90 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl shadow-brand-orange/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+      >
+        Acessar Plataforma Agora
+      </Button>
     </div>
   );
 
