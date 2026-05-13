@@ -29,8 +29,9 @@ export function PortfolioPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <SiteHeader />
+      <section className="px-4 sm:px-8 py-10 sm:py-16 lg:px-20 relative">
 
-      <main className="flex-1 px-4 sm:px-8 py-10 sm:py-16 lg:px-20">
+      <main className="mx-auto max-w-7xl">
         <div className="mx-auto max-w-7xl">
           {/* Founders Hero Section */}
           <div className="grid lg:grid-cols-2 gap-12 sm:gap-16 items-center mb-16 sm:mb-24">
@@ -38,7 +39,7 @@ export function PortfolioPage() {
                <span className="glass-dark px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.3em]">
                 Nossa História & Propósito
               </span>
-              <h1 className="text-3xl sm:text-5xl md:text-7xl font-black text-brand-black uppercase tracking-tighter leading-[0.85] mt-4">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-brand-black uppercase tracking-tighter leading-[0.98] mt-4">
                 Olá, Nós somos <br/>
                 <span className="text-brand-orange">João Carlos</span> <br/>
                 <span className="text-brand-black">&</span> <span className="text-brand-red">Labernarde</span>
@@ -180,6 +181,7 @@ export function PortfolioPage() {
           </div>
         </div>
       </main>
+      </section>
 
       <SiteFooter />
     </div>

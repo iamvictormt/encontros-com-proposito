@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useImperativeHandle, forwardRef, useState, useEffect } from "react";
+import { formatName } from "@/lib/utils";
 
 interface MemberCardVisualProps {
   cardType?: "GREEN" | "PINK";
@@ -46,7 +47,7 @@ export const MemberCardVisual = forwardRef<HTMLDivElement, MemberCardVisualProps
               <div className="space-y-1 mb-2 sm:mb-4">
                 <p className="text-[8px] sm:text-[10px] font-black text-white/60 uppercase tracking-[0.2em]">Nome do Membro</p>
                 <h3 className="text-white text-xs sm:text-2xl font-black uppercase tracking-widest drop-shadow-lg">
-                  {name ? name.split(" ").slice(0, 2).join(" ") : "Visitante"}
+                  {name ? formatName(name) : "Visitante"}
                 </h3>
               </div>
 
