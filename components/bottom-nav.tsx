@@ -32,7 +32,7 @@ export function BottomNav() {
     { href: "/account", label: "Conta", icon: User },
   ];
 
-  if (pathname?.startsWith("/admin") || pathname === "/login" || pathname === "/signup" || pathname === "/") {
+  if (!isLoggedIn || pathname?.startsWith("/admin") || pathname === "/login" || pathname === "/signup" || pathname === "/") {
     return null;
   }
 

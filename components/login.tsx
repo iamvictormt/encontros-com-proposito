@@ -48,10 +48,12 @@ export function Login() {
           <div className="w-full max-w-md space-y-12">
             <div className="space-y-4">
               <h2 className="text-4xl lg:text-5xl font-black text-brand-black tracking-tighter uppercase leading-none text-pretty">
-                Conecte-se com <br/><span className="text-brand-orange">propósito.</span>
+                Conecte-se com <br />
+                <span className="text-brand-orange">propósito.</span>
               </h2>
               <p className="text-gray-500 font-medium text-sm leading-relaxed max-w-sm">
-                Acesse a plataforma exclusiva para membros e gerencie seus eventos, cartões e conexões.
+                Acesse a plataforma exclusiva para membros e gerencie seus eventos, cartões e
+                conexões.
               </p>
             </div>
 
@@ -101,10 +103,21 @@ export function Login() {
         <div className="mt-20 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
           <span>© MeetOff {year}</span>
           <div className="flex gap-4 sm:gap-6 flex-wrap justify-center">
-            <Link href="/privacy" className="hover:text-brand-black transition-colors">Políticas e Termos</Link>
-            <Link href="/consent" className="hover:text-brand-black transition-colors">Consentimento</Link>
-            <Link href="/security" className="hover:text-brand-black transition-colors">Segurança</Link>
-            <Link href="/cookies" className="hover:text-brand-black transition-colors">Cookies</Link>
+            <Link href="/privacy" className="hover:text-brand-black transition-colors">
+              Políticas e Termos
+            </Link>
+            <Link href="/consent" className="hover:text-brand-black transition-colors">
+              Consentimento
+            </Link>
+            <Link href="/security" className="hover:text-brand-black transition-colors">
+              Segurança
+            </Link>
+            <Link href="/faq" className="hover:text-brand-black transition-colors">
+              FAQ
+            </Link>
+            <Link href="/cookies" className="hover:text-brand-black transition-colors">
+              Cookies
+            </Link>
           </div>
         </div>
       </div>
@@ -125,12 +138,14 @@ export function Login() {
             <div className="glass-dark p-12 rounded-[2.5rem] border-white/20 shadow-2xl">
               <div className="space-y-6">
                 <h2 className="text-4xl font-black text-white uppercase tracking-tighter leading-none text-pretty">
-                  João Carlos <br /> 
+                  João Carlos <br />
                   <span className="text-brand-orange">& Labernarde</span>
                 </h2>
-                
+
                 <p className="text-lg font-medium text-white/80 leading-relaxed text-pretty">
-                  Terapeuta, mentor e criador de experiências com propósito. Vivo para ajudar pessoas a se reconectarem de forma real, segura e afetiva por meio de encontros presenciais, retiros e projetos que unem tecnologia e emoção.
+                  Terapeuta, mentor e criador de experiências com propósito. Vivo para ajudar
+                  pessoas a se reconectarem de forma real, segura e afetiva por meio de encontros
+                  presenciais, retiros e projetos que unem tecnologia e emoção.
                 </p>
               </div>
             </div>

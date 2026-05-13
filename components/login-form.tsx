@@ -23,12 +23,7 @@ import {
   validateEmail,
   detectInputType,
 } from "@/lib/utils/validators";
-import { 
-  Tooltip, 
-  TooltipContent, 
-  TooltipProvider, 
-  TooltipTrigger 
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { ForgotPasswordModal } from "./modals/forgot-password-modal";
 
@@ -150,7 +145,8 @@ export function LoginForm() {
 
     try {
       const inputType = detectInputType(email);
-      const loginIdentifier = inputType === "phone" ? unformatPhone(email) : email.trim().toLowerCase();
+      const loginIdentifier =
+        inputType === "phone" ? unformatPhone(email) : email.trim().toLowerCase();
 
       const response = await authService.login({
         emailOrPhone: loginIdentifier,
@@ -222,7 +218,7 @@ export function LoginForm() {
           <video
             ref={(el) => {
               if (el) {
-                el.play().catch(err => console.error("Video play failed:", err));
+                el.play().catch((err) => console.error("Video play failed:", err));
               }
             }}
             src="/videos/meet-off-animation-logo.mp4"
@@ -250,7 +246,8 @@ export function LoginForm() {
             <div className="w-full max-w-md space-y-12">
               <div className="space-y-4">
                 <h2 className="text-4xl lg:text-5xl font-black text-brand-black tracking-tighter uppercase leading-none">
-                  Bem-vindo(a) <br/><span className="text-brand-orange">de volta!</span>
+                  Bem-vindo(a) <br />
+                  <span className="text-brand-orange">de volta!</span>
                 </h2>
                 <p className="text-gray-500 font-medium">
                   Acesse sua conta para continuar vivendo experiências únicas e conexões reais.
@@ -260,7 +257,10 @@ export function LoginForm() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between px-1">
-                    <label htmlFor="email" className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                    <label
+                      htmlFor="email"
+                      className="text-[10px] font-black text-gray-400 uppercase tracking-widest"
+                    >
                       Email ou Telefone
                     </label>
                     <TooltipProvider>
@@ -272,7 +272,12 @@ export function LoginForm() {
                         </TooltipTrigger>
                         <TooltipContent className="glass-dark border-white/10 p-4 rounded-2xl shadow-2xl max-w-[280px] side-top">
                           <p className="text-[11px] font-medium text-white leading-relaxed">
-                            Optou pela <span className="font-black text-brand-orange uppercase tracking-tight">Experiência Rápida (Premium)</span>? Utilize o e-mail gerado no final do seu pedido (ex: victor.vmt@premium.meetoff.com)
+                            Optou pela{" "}
+                            <span className="font-black text-brand-orange uppercase tracking-tight">
+                              Experiência Rápida (Premium)
+                            </span>
+                            ? Utilize o e-mail gerado no final do seu pedido (ex:
+                            victor.mt@premium.meetoff.com)
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -287,15 +292,23 @@ export function LoginForm() {
                     onBlur={handleEmailPhoneBlur}
                     className={cn(
                       "w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-4 sm:px-6",
-                      emailPhoneError && "border-brand-red focus:border-brand-red"
+                      emailPhoneError && "border-brand-red focus:border-brand-red",
                     )}
                     required
                   />
-                  {emailPhoneError && <p className="text-[10px] text-brand-red font-bold uppercase tracking-wide px-1">{emailPhoneError}</p>}
+                  {emailPhoneError && (
+                    <p className="text-[10px] text-brand-red font-bold uppercase tracking-wide px-1">
+                      {emailPhoneError}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="password" title="Senha" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                  <label
+                    htmlFor="password"
+                    title="Senha"
+                    className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1"
+                  >
                     Senha
                   </label>
                   <Input
@@ -324,7 +337,7 @@ export function LoginForm() {
                       Manter conectado
                     </label>
                   </div>
-                  <button 
+                  <button
                     type="button"
                     onClick={() => setIsForgotPasswordOpen(true)}
                     className="text-xs font-bold text-brand-orange uppercase tracking-wide hover:underline cursor-pointer"
@@ -345,7 +358,10 @@ export function LoginForm() {
               <div className="text-center pt-4">
                 <p className="text-sm font-medium text-gray-500">
                   Ainda não faz parte?{" "}
-                  <Link href="/signup" className="text-brand-orange font-black uppercase tracking-widest text-xs hover:underline ml-2">
+                  <Link
+                    href="/signup"
+                    className="text-brand-orange font-black uppercase tracking-widest text-xs hover:underline ml-2"
+                  >
                     Criar conta
                   </Link>
                 </p>
@@ -356,10 +372,21 @@ export function LoginForm() {
           <div className="mt-20 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
             <span>© MeetOff {year}</span>
             <div className="flex gap-4 sm:gap-6 flex-wrap justify-center">
-              <Link href="/privacy" className="hover:text-brand-black transition-colors">Políticas e Termos</Link>
-              <Link href="/consent" className="hover:text-brand-black transition-colors">Consentimento</Link>
-              <Link href="/security" className="hover:text-brand-black transition-colors">Segurança</Link>
-              <Link href="/cookies" className="hover:text-brand-black transition-colors">Cookies</Link>
+              <Link href="/privacy" className="hover:text-brand-black transition-colors">
+                Políticas e Termos
+              </Link>
+              <Link href="/consent" className="hover:text-brand-black transition-colors">
+                Consentimento
+              </Link>
+              <Link href="/security" className="hover:text-brand-black transition-colors">
+                Segurança
+              </Link>
+              <Link href="/faq" className="hover:text-brand-black transition-colors">
+                FAQ
+              </Link>
+              <Link href="/cookies" className="hover:text-brand-black transition-colors">
+                Cookies
+              </Link>
             </div>
           </div>
         </div>
@@ -380,7 +407,7 @@ export function LoginForm() {
               <div className="glass-dark p-12 rounded-[2.5rem] border-white/20 shadow-2xl">
                 <div className="space-y-6">
                   <h2 className="text-4xl font-black text-white uppercase tracking-tighter leading-none text-pretty">
-                    <span className="text-brand-orange">{carouselSlides[currentSlide].title}{" "}</span>
+                    <span className="text-brand-orange">{carouselSlides[currentSlide].title} </span>
                     {carouselSlides[currentSlide].highlightedText}
                   </h2>
                   <p className="text-lg font-medium text-white/80 leading-relaxed text-pretty">
@@ -395,7 +422,9 @@ export function LoginForm() {
                           onClick={() => goToSlide(index)}
                           className={cn(
                             "h-1.5 rounded-full transition-all duration-500",
-                            index === currentSlide ? "w-12 bg-white" : "w-3 bg-white/30 hover:bg-white/50"
+                            index === currentSlide
+                              ? "w-12 bg-white"
+                              : "w-3 bg-white/30 hover:bg-white/50",
                           )}
                           aria-label={`Slide ${index + 1}`}
                         />
@@ -408,9 +437,9 @@ export function LoginForm() {
           </div>
         </div>
       </div>
-      <ForgotPasswordModal 
-        isOpen={isForgotPasswordOpen} 
-        onClose={() => setIsForgotPasswordOpen(false)} 
+      <ForgotPasswordModal
+        isOpen={isForgotPasswordOpen}
+        onClose={() => setIsForgotPasswordOpen(false)}
       />
     </>
   );

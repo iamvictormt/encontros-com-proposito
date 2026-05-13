@@ -208,7 +208,7 @@ export function SignupForm() {
                       "flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all outline-none",
                       userCategory === "COMUM"
                         ? "border-brand-orange bg-brand-orange/5 text-brand-orange"
-                        : "border-brand-green/10 bg-white text-gray-400 hover:border-brand-orange/30"
+                        : "border-brand-green/10 bg-white text-gray-400 hover:border-brand-orange/30",
                     )}
                   >
                     <span className="text-xs font-black uppercase tracking-wider">Usuário</span>
@@ -220,7 +220,7 @@ export function SignupForm() {
                       "flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all outline-none",
                       userCategory === "EMPRESA"
                         ? "border-brand-orange bg-brand-orange/5 text-brand-orange"
-                        : "border-brand-green/10 bg-white text-gray-400 hover:border-brand-orange/30"
+                        : "border-brand-green/10 bg-white text-gray-400 hover:border-brand-orange/30",
                     )}
                   >
                     <span className="text-xs font-black uppercase tracking-wider">Empresa</span>
@@ -232,7 +232,7 @@ export function SignupForm() {
                       "flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all outline-none",
                       userCategory === "PARCEIRO"
                         ? "border-brand-orange bg-brand-orange/5 text-brand-orange"
-                        : "border-brand-green/10 bg-white text-gray-400 hover:border-brand-orange/30"
+                        : "border-brand-green/10 bg-white text-gray-400 hover:border-brand-orange/30",
                     )}
                   >
                     <span className="text-xs font-black uppercase tracking-wider">Parceiro</span>
@@ -241,7 +241,10 @@ export function SignupForm() {
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="fullName" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                <label
+                  htmlFor="fullName"
+                  className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1"
+                >
                   Nome Completo
                 </label>
                 <Input
@@ -256,7 +259,10 @@ export function SignupForm() {
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="email" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                <label
+                  htmlFor="email"
+                  className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1"
+                >
                   Email ou Telefone
                 </label>
                 <Input
@@ -268,16 +274,23 @@ export function SignupForm() {
                   onBlur={handleEmailPhoneBlur}
                   className={cn(
                     "w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-6",
-                    emailPhoneError && "border-brand-red focus:border-brand-red"
+                    emailPhoneError && "border-brand-red focus:border-brand-red",
                   )}
                   required
                 />
-                {emailPhoneError && <p className="text-[10px] text-brand-red font-bold uppercase tracking-wide px-1">{emailPhoneError}</p>}
+                {emailPhoneError && (
+                  <p className="text-[10px] text-brand-red font-bold uppercase tracking-wide px-1">
+                    {emailPhoneError}
+                  </p>
+                )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label htmlFor="birthDate" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                  <label
+                    htmlFor="birthDate"
+                    className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1"
+                  >
                     Data de Nascimento
                   </label>
                   <Input
@@ -289,9 +302,12 @@ export function SignupForm() {
                     required
                   />
                 </div>
-                
+
                 <div className="space-y-2">
-                  <label htmlFor="city" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                  <label
+                    htmlFor="city"
+                    className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1"
+                  >
                     Cidade / Região
                   </label>
                   <Input
@@ -308,7 +324,11 @@ export function SignupForm() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label htmlFor="password" title="Senha" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                  <label
+                    htmlFor="password"
+                    title="Senha"
+                    className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1"
+                  >
                     Senha
                   </label>
                   <Input
@@ -323,7 +343,11 @@ export function SignupForm() {
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="confirmPassword" title="Confirmar" className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                  <label
+                    htmlFor="confirmPassword"
+                    title="Confirmar"
+                    className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1"
+                  >
                     Confirmar
                   </label>
                   <Input
@@ -378,7 +402,10 @@ export function SignupForm() {
             <div className="text-center pt-4">
               <p className="text-sm font-medium text-gray-500">
                 Já possui uma conta?{" "}
-                <Link href="/login" className="text-brand-green font-black uppercase tracking-widest text-xs hover:underline ml-2">
+                <Link
+                  href="/login"
+                  className="text-brand-green font-black uppercase tracking-widest text-xs hover:underline ml-2"
+                >
                   Fazer login
                 </Link>
               </p>
@@ -389,10 +416,21 @@ export function SignupForm() {
         <div className="mt-20 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
           <span>© MeetOff {year}</span>
           <div className="flex gap-4 sm:gap-6 flex-wrap justify-center">
-            <Link href="/privacy" className="hover:text-brand-black transition-colors">Políticas e Termos</Link>
-            <Link href="/consent" className="hover:text-brand-black transition-colors">Consentimento</Link>
-            <Link href="/security" className="hover:text-brand-black transition-colors">Segurança</Link>
-            <Link href="/cookies" className="hover:text-brand-black transition-colors">Cookies</Link>
+            <Link href="/privacy" className="hover:text-brand-black transition-colors">
+              Políticas e Termos
+            </Link>
+            <Link href="/consent" className="hover:text-brand-black transition-colors">
+              Consentimento
+            </Link>
+            <Link href="/security" className="hover:text-brand-black transition-colors">
+              Segurança
+            </Link>
+            <Link href="/faq" className="hover:text-brand-black transition-colors">
+              FAQ
+            </Link>
+            <Link href="/cookies" className="hover:text-brand-black transition-colors">
+              Cookies
+            </Link>
           </div>
         </div>
       </div>
@@ -413,10 +451,12 @@ export function SignupForm() {
             <div className="glass-dark p-12 rounded-[2.5rem] border-white/20 shadow-2xl">
               <div className="space-y-6">
                 <h2 className="text-4xl font-black text-white uppercase tracking-tighter leading-none text-pretty">
-                  Acesso único, <br/><span className="text-brand-orange">experiências reais.</span>
+                  Acesso único, <br />
+                  <span className="text-brand-orange">experiências reais.</span>
                 </h2>
                 <p className="text-lg font-medium text-white/80 leading-relaxed text-pretty">
-                  Cada convite é um portal. Use seu token e viva algo que só você pode experienciar em nossa comunidade premium.
+                  Cada convite é um portal. Use seu token e viva algo que só você pode experienciar
+                  em nossa comunidade premium.
                 </p>
               </div>
             </div>

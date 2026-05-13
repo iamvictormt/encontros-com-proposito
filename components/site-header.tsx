@@ -22,12 +22,12 @@ export function SiteHeader() {
   const pathname = usePathname();
 
   const navLinks = [
-    { href: "/events", label: "Home", icon: Home },
-    { href: "/products", label: "Produtos Autorais", icon: ShoppingCart },
-    { href: "/portfolio", label: "Portfólio", icon: FolderOpen },
-    { href: "/partners", label: "Empresas e Parcerias", icon: Building2 },
     ...(isLoggedIn
       ? [
+          { href: "/events", label: "Home", icon: Home },
+          { href: "/products", label: "Produtos Autorais", icon: ShoppingCart },
+          { href: "/portfolio", label: "Portfólio", icon: FolderOpen },
+          { href: "/partners", label: "Empresas e Parcerias", icon: Building2 },
           ...(user?.userCategory === "PREMIUM"
             ? [{ href: "/account", label: "Minha Conta", icon: User }]
             : [

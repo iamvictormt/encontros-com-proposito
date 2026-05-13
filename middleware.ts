@@ -20,22 +20,35 @@ export async function middleware(request: NextRequest) {
     pathname === "/consent" ||
     pathname === "/security" ||
     pathname === "/cookies" ||
-    pathname === "/premium-flow" ||
-    pathname.startsWith("/api/premium/register") ||
-    pathname.startsWith("/api/auth") ||
-    pathname.startsWith("/api/webhooks") ||
-    pathname === "/api/events" ||
-    pathname === "/api/products" ||
-    pathname === "/api/venues" ||
-    pathname === "/" ||
-    pathname.startsWith("/events") ||
-    pathname.startsWith("/products") ||
-    pathname.startsWith("/portfolio") ||
-    pathname.startsWith("/partners");
+        pathname === "/faq" ||
 
-  if (!token && !isPublicPath) {
-    // If not authenticated and trying to access a protected route, redirect to login
-    return NextResponse.redirect(new URL("/login", request.url));
+    pathname === "/" ||
+    pathname.startsWith("/api/premium/register") ||
+    pathname.startsWith("/api/webhooks") ||
+    pathname.startsWith("/api/auth");
+
+  const hasVisitedLanding = request.cookies.get("visited_landing")?.value === "true";
+
+  if (!token) {
+    // If visiting landing page, set the visited cookie
+    if (pathname === "/") {
+      const response = NextResponse.next();
+      response.cookies.set("visited_landing", "true", {
+        maxAge: 60 * 60 * 24, // 24 hours
+        path: "/",
+      });
+      return response;
+    }
+
+    // Mandatory landing page visit for login/signup/protected routes
+    if (!hasVisitedLanding && (pathname === "/login" || pathname === "/signup" || !isPublicPath)) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+
+    // Standard protected route check
+    if (!isPublicPath) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
   }
 
   if (token) {
@@ -52,7 +65,12 @@ export async function middleware(request: NextRequest) {
       }
 
       // If an admin tries to access user pages (anything not starting with /admin, /api or auth), redirect to admin
-      if (payload.isAdmin && !pathname.startsWith("/admin") && !pathname.startsWith("/api") && !isPublicPath) {
+      if (
+        payload.isAdmin &&
+        !pathname.startsWith("/admin") &&
+        !pathname.startsWith("/api") &&
+        !isPublicPath
+      ) {
         return NextResponse.redirect(new URL("/admin", request.url));
       }
 
@@ -72,7 +90,7 @@ export async function middleware(request: NextRequest) {
         // Force PREMIUM users to buy accessory first
         if (userCategory === "PREMIUM" && !hasPremiumAccessory) {
           if (!isPremiumFlowPage && !isPublicPath) {
-             return NextResponse.redirect(new URL("/premium-flow", request.url));
+            return NextResponse.redirect(new URL("/premium-flow", request.url));
           }
         } else if (userCategory === "PREMIUM" && hasPremiumAccessory) {
           // If PREMIUM user already bought, they cannot access subscriptions
@@ -86,12 +104,12 @@ export async function middleware(request: NextRequest) {
 
         // If not verified and not already on the verification page, premium flow page, or public paths, redirect to verification
         if (!isVerified && !isVerificationPage && !isPremiumFlowPage && !isPublicPath) {
-           return NextResponse.redirect(new URL("/em-analise", request.url));
+          return NextResponse.redirect(new URL("/em-analise", request.url));
         }
 
         // If verified and trying to access the verification page, redirect to home
         if (isVerified && isVerificationPage) {
-           return NextResponse.redirect(new URL("/", request.url));
+          return NextResponse.redirect(new URL("/", request.url));
         }
       }
     } catch (error) {
