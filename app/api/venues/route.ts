@@ -14,7 +14,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { name, location, type, image, status, description, responsible_name, address, category, contact_phone, latitude, longitude } = await request.json();
+    const { name, location, type, image, status, description, responsible_name, address, category, contact_phone, latitude, longitude, cep } = await request.json();
     
     // For public submissions, status is always Pending
     const finalStatus = status || "Pendente";
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       INSERT INTO venues (
         name, location, type, image, status, description, 
         responsible_name, address, category, contact_phone, 
-        plate_status, qr_code_token, latitude, longitude
+        plate_status, qr_code_token, latitude, longitude, cep
       )
       VALUES (
         ${name}, ${location}, ${type}, 
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
         ${finalStatus}, ${description || ""},
         ${responsible_name || null}, ${address || null}, 
         ${category || null}, ${contact_phone || null},
-        'PENDING', ${qrToken}, ${latitude || null}, ${longitude || null}
+        'PENDING', ${qrToken}, ${latitude || null}, ${longitude || null}, ${cep || null}
       )
       RETURNING *
     `;
@@ -53,7 +53,7 @@ export async function PUT(request: Request) {
 
   try {
     const body = await request.json();
-    const { id, name, location, type, image, status, description, latitude, longitude } = body;
+    const { id, name, location, type, image, status, description, latitude, longitude, cep } = body;
 
     // Handle partial update (e.g., just status)
     if (id && status && Object.keys(body).length <= 2) {
@@ -68,7 +68,7 @@ export async function PUT(request: Request) {
 
     const result = await sql`
       UPDATE venues 
-      SET name = ${name}, location = ${location}, type = ${type}, image = ${image}, status = ${status}, description = ${description}, latitude = ${latitude}, longitude = ${longitude}
+      SET name = ${name}, location = ${location}, type = ${type}, image = ${image}, status = ${status}, description = ${description}, latitude = ${latitude}, longitude = ${longitude}, cep = ${cep}
       WHERE id = ${id}
       RETURNING *
     `;

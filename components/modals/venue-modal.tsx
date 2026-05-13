@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { MapPin } from "lucide-react";
 
 interface VenueModalProps {
   isOpen: boolean;
@@ -28,12 +29,85 @@ export function VenueModal({ isOpen, onClose, onSuccess, venue, isReadOnly }: Ve
   const [formData, setFormData] = useState({
     name: venue?.name || "",
     location: venue?.location || "",
+    address: venue?.address || "",
+    cep: venue?.cep || "",
     type: venue?.type || "",
     image: venue?.image || "",
     status: venue?.status || "Ativo",
     latitude: venue?.latitude || "",
     longitude: venue?.longitude || "",
   });
+  const [cepFetchedFields, setCepFetchedFields] = useState<string[]>([]);
+
+  const handleCepLookup = async (cep: string) => {
+    const cleanCep = cep.replace(/\D/g, "");
+    if (cleanCep.length === 8) {
+      setIsLoading(true);
+      try {
+        const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+        const data = await res.json();
+        if (!data.erro) {
+          const newLocation = `${data.localidade}/${data.uf}`;
+          const newAddress = data.logradouro || "";
+          
+          setFormData(prev => ({
+            ...prev,
+            location: newLocation,
+            address: newAddress
+          }));
+
+          const fetched = ["location", "address"];
+
+          // Automatically fetch coordinates after address is found
+          const query = `${newAddress}, ${newLocation}`;
+          const geoRes = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`
+          );
+          const geoData = await geoRes.json();
+
+          if (geoData && geoData.length > 0) {
+            setFormData(prev => ({
+              ...prev,
+              latitude: geoData[0].lat,
+              longitude: geoData[0].lon
+            }));
+            fetched.push("latitude", "longitude");
+            toast.success("Endereço e coordenadas localizados!");
+          } else {
+            toast.success("Endereço preenchido!");
+          }
+          setCepFetchedFields(fetched);
+        } else {
+          toast.error("CEP não encontrado");
+          setCepFetchedFields([]);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar CEP:", error);
+        setCepFetchedFields([]);
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      setCepFetchedFields([]);
+    }
+  };
+
+  const onCepChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, "");
+    if (value.length > 8) value = value.slice(0, 8);
+    
+    let maskedValue = value;
+    if (value.length > 5) maskedValue = `${value.slice(0, 5)}-${value.slice(5)}`;
+    
+    setFormData(prev => ({ ...prev, cep: maskedValue }));
+    if (value.length === 8) {
+      handleCepLookup(value);
+    } else {
+      setCepFetchedFields([]);
+    }
+  };
+
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,6 +156,7 @@ export function VenueModal({ isOpen, onClose, onSuccess, venue, isReadOnly }: Ve
             </div>
           </div>
 
+
           <div className="space-y-2">
             <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-widest text-gray-400">
               Nome do Local/Empresa
@@ -97,17 +172,45 @@ export function VenueModal({ isOpen, onClose, onSuccess, venue, isReadOnly }: Ve
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="location" className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-              Cidade / UF
+            <Label htmlFor="cep" className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+              CEP
             </Label>
             <Input 
-              id="location" 
+              id="cep" 
               className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white transition-all font-bold"
-              value={formData.location} 
-              onChange={(e) => setFormData({ ...formData, location: e.target.value })} 
-              required 
+              value={formData.cep} 
+              onChange={onCepChange} 
+              placeholder="00000-000"
               disabled={isReadOnly}
             />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="location" className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                Cidade / UF
+              </Label>
+              <Input 
+                id="location" 
+                className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white transition-all font-bold"
+                value={formData.location} 
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })} 
+                required 
+                disabled={isReadOnly || cepFetchedFields.includes("location")}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="address" className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                Endereço Completo
+              </Label>
+              <Input 
+                id="address" 
+                className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white transition-all font-bold"
+                value={formData.address} 
+                onChange={(e) => setFormData({ ...formData, address: e.target.value })} 
+                placeholder="Rua, Número, Bairro"
+                disabled={isReadOnly || cepFetchedFields.includes("address")}
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -137,9 +240,9 @@ export function VenueModal({ isOpen, onClose, onSuccess, venue, isReadOnly }: Ve
                   <SelectValue placeholder="Selecione o status" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-white/20 glass">
-                  <SelectItem value="Aprovado" className="text-brand-green font-bold">● Aprovado</SelectItem>
-                  <SelectItem value="Pendente" className="text-brand-orange font-bold">● Pendente</SelectItem>
-                  <SelectItem value="Recusado" className="text-brand-red font-bold">● Recusado</SelectItem>
+                  <SelectItem value="Aprovado" className="text-brand-green font-bold">Aprovado</SelectItem>
+                  <SelectItem value="Pendente" className="text-brand-orange font-bold">Pendente</SelectItem>
+                  <SelectItem value="Recusado" className="text-brand-red font-bold">Recusado</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -158,7 +261,7 @@ export function VenueModal({ isOpen, onClose, onSuccess, venue, isReadOnly }: Ve
                 className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white transition-all font-bold"
                 value={formData.latitude} 
                 onChange={(e) => setFormData({ ...formData, latitude: e.target.value })} 
-                disabled={isReadOnly}
+                disabled={isReadOnly || cepFetchedFields.includes("latitude")}
               />
             </div>
             <div className="space-y-2">
@@ -173,7 +276,7 @@ export function VenueModal({ isOpen, onClose, onSuccess, venue, isReadOnly }: Ve
                 className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white transition-all font-bold"
                 value={formData.longitude} 
                 onChange={(e) => setFormData({ ...formData, longitude: e.target.value })} 
-                disabled={isReadOnly}
+                disabled={isReadOnly || cepFetchedFields.includes("longitude")}
               />
             </div>
           </div>

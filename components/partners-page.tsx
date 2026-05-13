@@ -50,7 +50,10 @@ export function PartnersPage() {
     address: "",
     image: "",
     selectedProduct: "",
+    latitude: "",
+    longitude: "",
   });
+  const [cepFetchedFields, setCepFetchedFields] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -63,13 +66,36 @@ export function PartnersPage() {
         const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
         const data = await res.json();
         if (!data.erro) {
+          const newLocation = `${data.localidade}/${data.uf}`;
+          const newAddress = data.logradouro || "";
+          
+          const fetched = ["location", "address"];
+          
           setFormData(prev => ({
             ...prev,
-            location: `${data.localidade}/${data.uf}`,
-            address: data.logradouro || ""
+            location: newLocation,
+            address: newAddress
           }));
+
+          // Automatically fetch coordinates
+          const query = `${newAddress}, ${newLocation}`;
+          const geoRes = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`
+          );
+          const geoData = await geoRes.json();
+
+          if (geoData && geoData.length > 0) {
+            setFormData(prev => ({
+              ...prev,
+              latitude: geoData[0].lat,
+              longitude: geoData[0].lon
+            }));
+            fetched.push("latitude", "longitude");
+          }
+          setCepFetchedFields(fetched);
         } else {
           toast.error("CEP não encontrado");
+          setCepFetchedFields([]);
         }
       } catch (error) {
         console.error("Erro ao buscar CEP:", error);
@@ -93,6 +119,8 @@ export function PartnersPage() {
     setFormData({ ...formData, cep: maskedValue });
     if (value.length === 8) {
       handleCepLookup(value);
+    } else {
+      setCepFetchedFields([]);
     }
   };
 
@@ -175,7 +203,9 @@ export function PartnersPage() {
           type: `${formData.businessType}${formData.category ? ` - ${formData.category}` : ""}`,
           description: tags.join(", "),
           image: formData.image,
-          status: "Pendente"
+          status: "Pendente",
+          latitude: formData.latitude,
+          longitude: formData.longitude
         })
       });
 
@@ -192,6 +222,8 @@ export function PartnersPage() {
           address: "",
           image: "",
           selectedProduct: "",
+          latitude: "",
+          longitude: "",
         });
         setTags([]);
       } else {
@@ -226,7 +258,6 @@ export function PartnersPage() {
             {/* Form Section */}
             <div className="lg:col-span-7">
               <div className="glass p-6 sm:p-10 md:p-12 rounded-[2.5rem] sm:rounded-[3rem] border-white/40 shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-brand-orange/10 blur-3xl -mr-16 -mt-16 rounded-full" />
                 
                 <form onSubmit={handleSubmit} className="space-y-8 relative">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -313,9 +344,15 @@ export function PartnersPage() {
                       <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Cidade / UF</label>
                       <Input
                         placeholder="Cidade/UF"
-                        className="h-14 rounded-2xl bg-brand-black/5 border-transparent font-black text-brand-black px-6"
+                        className={cn(
+                          "h-14 rounded-2xl border-brand-green/10 transition-all px-6",
+                          cepFetchedFields.includes("location") 
+                            ? "bg-brand-black/5 font-black text-brand-black border-transparent" 
+                            : "bg-white/50 font-medium"
+                        )}
                         value={formData.location}
-                        readOnly
+                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                        readOnly={cepFetchedFields.includes("location")}
                         required
                       />
                     </div>
@@ -325,10 +362,15 @@ export function PartnersPage() {
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Endereço de Atuação</label>
                     <Input
                       placeholder="Logradouro, Número, Bairro"
-                      className="h-14 rounded-2xl bg-brand-black/5 border-transparent font-black text-brand-black px-6"
+                      className={cn(
+                        "h-14 rounded-2xl border-brand-green/10 transition-all px-6",
+                        cepFetchedFields.includes("address") 
+                          ? "bg-brand-black/5 font-black text-brand-black border-transparent" 
+                          : "bg-white/50 font-medium"
+                      )}
                       value={formData.address}
                       onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                      readOnly
+                      readOnly={cepFetchedFields.includes("address")}
                     />
                   </div>
 

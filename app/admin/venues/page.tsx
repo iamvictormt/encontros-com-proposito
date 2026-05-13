@@ -58,7 +58,7 @@ export default function AdminVenues() {
       setVenues(venuesData);
       // We can customize stats for venues here if needed
       setStats([
-        { label: "Locais/empresas ativas", value: venuesData.filter((v:any) => v.status === 'Ativo').length.toString() },
+        { label: "Locais/empresas ativas", value: venuesData.filter((v:any) => v.status === 'Aprovado').length.toString() },
         { label: "Pendentes de aprovação", value: venuesData.filter((v:any) => v.status === 'Pendente').length.toString() },
         { label: "Total cadastrados", value: venuesData.length.toString() },
       ]);
