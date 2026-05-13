@@ -23,6 +23,7 @@ export async function middleware(request: NextRequest) {
         pathname === "/faq" ||
 
     pathname === "/" ||
+    pathname === "/api/venues" ||
     pathname.startsWith("/api/premium/register") ||
     pathname.startsWith("/api/webhooks") ||
     pathname.startsWith("/api/auth");

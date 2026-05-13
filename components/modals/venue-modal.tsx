@@ -31,6 +31,8 @@ export function VenueModal({ isOpen, onClose, onSuccess, venue, isReadOnly }: Ve
     type: venue?.type || "",
     image: venue?.image || "",
     status: venue?.status || "Ativo",
+    latitude: venue?.latitude || "",
+    longitude: venue?.longitude || "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -140,6 +142,39 @@ export function VenueModal({ isOpen, onClose, onSuccess, venue, isReadOnly }: Ve
                   <SelectItem value="Recusado" className="text-brand-red font-bold">● Recusado</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="latitude" className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                Latitude
+              </Label>
+              <Input 
+                id="latitude" 
+                type="number"
+                step="any"
+                placeholder="Ex: -23.5505" 
+                className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white transition-all font-bold"
+                value={formData.latitude} 
+                onChange={(e) => setFormData({ ...formData, latitude: e.target.value })} 
+                disabled={isReadOnly}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="longitude" className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                Longitude
+              </Label>
+              <Input 
+                id="longitude" 
+                type="number"
+                step="any"
+                placeholder="Ex: -46.6333" 
+                className="h-12 rounded-xl border-brand-black/5 bg-gray-50 focus:bg-white transition-all font-bold"
+                value={formData.longitude} 
+                onChange={(e) => setFormData({ ...formData, longitude: e.target.value })} 
+                disabled={isReadOnly}
+              />
             </div>
           </div>
 

@@ -14,7 +14,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { name, location, type, image, status, description, responsible_name, address, category, contact_phone } = await request.json();
+    const { name, location, type, image, status, description, responsible_name, address, category, contact_phone, latitude, longitude } = await request.json();
     
     // For public submissions, status is always Pending
     const finalStatus = status || "Pendente";
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       INSERT INTO venues (
         name, location, type, image, status, description, 
         responsible_name, address, category, contact_phone, 
-        plate_status, qr_code_token
+        plate_status, qr_code_token, latitude, longitude
       )
       VALUES (
         ${name}, ${location}, ${type}, 
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
         ${finalStatus}, ${description || ""},
         ${responsible_name || null}, ${address || null}, 
         ${category || null}, ${contact_phone || null},
-        'PENDING', ${qrToken}
+        'PENDING', ${qrToken}, ${latitude || null}, ${longitude || null}
       )
       RETURNING *
     `;
@@ -53,7 +53,7 @@ export async function PUT(request: Request) {
 
   try {
     const body = await request.json();
-    const { id, name, location, type, image, status, description } = body;
+    const { id, name, location, type, image, status, description, latitude, longitude } = body;
 
     // Handle partial update (e.g., just status)
     if (id && status && Object.keys(body).length <= 2) {
@@ -68,7 +68,7 @@ export async function PUT(request: Request) {
 
     const result = await sql`
       UPDATE venues 
-      SET name = ${name}, location = ${location}, type = ${type}, image = ${image}, status = ${status}, description = ${description}
+      SET name = ${name}, location = ${location}, type = ${type}, image = ${image}, status = ${status}, description = ${description}, latitude = ${latitude}, longitude = ${longitude}
       WHERE id = ${id}
       RETURNING *
     `;

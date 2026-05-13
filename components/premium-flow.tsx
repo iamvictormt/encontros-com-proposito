@@ -89,12 +89,8 @@ const PRODUCTS: Record<AccessoryType, Product[]> = {
   ],
 };
 
-const PARTNERS = [
-  { id: "1", name: "Hotel Fasano", address: "São Paulo - SP", distance: "2,4 km" },
-  { id: "2", name: "WeWork Paulista", address: "São Paulo - SP", distance: "2,7 km" },
-  { id: "3", name: "Café Cultura", address: "São Paulo - SP", distance: "3,1 km" },
-  { id: "4", name: "MeetOff Point Jardins", address: "São Paulo - SP", distance: "3,8 km" },
-];
+// Removing static PARTNERS as it will be fetched from the database
+const PARTNERS_PLACEHOLDER = [];
 
 const ProductCard = ({ 
   product, 
@@ -204,6 +200,57 @@ export function PremiumFlow() {
 
   const currentYear = new Date().getFullYear().toString();
 
+  const [venues, setVenues] = useState<any[]>([]);
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
+
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 6371; // Earth radius in km
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) *
+        Math.cos(lat2 * (Math.PI / 180)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
+
+  const requestLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+          toast.success("Localização obtida com sucesso!");
+        },
+        (error) => {
+          console.error("Error getting location", error);
+          toast.error("Não foi possível obter sua localização.");
+        }
+      );
+    }
+  };
+
+  React.useEffect(() => {
+    const fetchVenues = async () => {
+      try {
+        const response = await fetch("/api/venues");
+        if (response.ok) {
+          const data = await response.json();
+          // Filter only approved/active venues
+          setVenues(data.filter((v: any) => v.status === "Aprovado" || v.status === "Ativo"));
+        }
+      } catch (error) {
+        console.error("Error fetching venues:", error);
+      }
+    };
+    fetchVenues();
+  }, []);
+
   const stepOrder: Step[] = [
     "WELCOME",
     "TERMS",
@@ -214,7 +261,15 @@ export function PremiumFlow() {
     "ADDRESS_FORM",
     "CONFIRMATION",
   ];
-  const progressValue = ((stepOrder.indexOf(step) + 1) / stepOrder.length) * 100;
+  
+  const getStepIndex = (s: Step) => {
+    if (s === "PARTNER_SELECTION") return stepOrder.indexOf("ADDRESS_FORM");
+    return stepOrder.indexOf(s);
+  };
+
+  const progressValue = Math.max(0, 
+    ((getStepIndex(step) - 1) / (stepOrder.indexOf("ADDRESS_FORM") - 1)) * 100
+  );
 
   const nextStep = (next: Step) => setStep(next);
 
@@ -597,6 +652,7 @@ export function PremiumFlow() {
         <div
           onClick={() => {
             setDeliveryMethod("PARTNER");
+            requestLocation();
             setStep("PARTNER_SELECTION");
           }}
           className="flex items-center gap-6 p-8 rounded-[2.5rem] bg-white border border-brand-black/5 hover:border-brand-green/20 transition-all cursor-pointer group"
@@ -779,34 +835,79 @@ export function PremiumFlow() {
         <h3 className="text-xl font-black uppercase tracking-tighter">Locais de Retirada</h3>
       </div>
 
-      <div className="space-y-3">
-        {PARTNERS.map((partner) => (
-          <div
-            key={partner.id}
-            onClick={handlePurchase}
-            className="flex items-center justify-between p-6 rounded-[2rem] bg-white border border-brand-black/5 hover:border-brand-green/30 transition-all cursor-pointer group"
-          >
-            <div className="flex items-center gap-5">
-              <div className="w-12 h-12 rounded-xl bg-brand-green/10 text-brand-green flex items-center justify-center">
-                {partner.name.includes("Hotel") ? <Star size={20} /> : <MapPin size={20} />}
-              </div>
-              <div className="space-y-0.5">
-                <h4 className="font-black uppercase tracking-tight text-sm leading-none">
-                  {partner.name}
-                </h4>
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                  {partner.address}
-                </p>
-              </div>
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
+            Seu Nome Completo
+          </label>
+          <Input
+            name="nome"
+            value={formData.nome}
+            onChange={handleInputChange}
+            placeholder="COMO CONSTA NO DOCUMENTO"
+            className="h-14 rounded-2xl bg-white border-brand-black/5 text-[11px] font-bold uppercase tracking-widest px-6"
+          />
+        </div>
+
+        <div className="space-y-3">
+          {venues.length === 0 ? (
+            <div className="p-8 text-center glass rounded-3xl border-white/20">
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                Buscando locais disponíveis...
+              </p>
             </div>
-            <div className="flex flex-col items-end gap-1">
-              <span className="text-[10px] font-black text-brand-green uppercase">
-                {partner.distance}
-              </span>
-              <div className="w-2 h-2 rounded-full bg-brand-green animate-pulse" />
-            </div>
-          </div>
-        ))}
+          ) : (
+            [...venues]
+              .map((venue) => {
+                let distanceValue = Infinity;
+                if (userLocation && venue.latitude && venue.longitude) {
+                  distanceValue = calculateDistance(
+                    userLocation.lat,
+                    userLocation.lng,
+                    parseFloat(venue.latitude),
+                    parseFloat(venue.longitude)
+                  );
+                }
+                return { ...venue, distanceValue };
+              })
+              .sort((a, b) => a.distanceValue - b.distanceValue)
+              .map((partner) => (
+                <div
+                  key={partner.id}
+                  onClick={() => {
+                    if (!formData.nome.trim()) {
+                      toast.error("Por favor, informe seu nome completo.");
+                      return;
+                    }
+                    handlePurchase();
+                  }}
+                  className="flex items-center justify-between p-6 rounded-[2rem] bg-white border border-brand-black/5 hover:border-brand-green/30 transition-all cursor-pointer group"
+                >
+                  <div className="flex items-center gap-5">
+                    <div className="w-12 h-12 rounded-xl bg-brand-green/10 text-brand-green flex items-center justify-center">
+                      {partner.name.includes("Hotel") ? <Star size={20} /> : <MapPin size={20} />}
+                    </div>
+                    <div className="space-y-0.5">
+                      <h4 className="font-black uppercase tracking-tight text-sm leading-none">
+                        {partner.name}
+                      </h4>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                        {partner.location || partner.address}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className="text-[10px] font-black text-brand-green uppercase">
+                      {partner.distanceValue !== Infinity 
+                        ? `${partner.distanceValue.toFixed(1)} km` 
+                        : "Disponível"}
+                    </span>
+                    <div className="w-2 h-2 rounded-full bg-brand-green animate-pulse" />
+                  </div>
+                </div>
+              ))
+          )}
+        </div>
       </div>
     </div>
   );
