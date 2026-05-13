@@ -40,6 +40,7 @@ export function SubscriptionPlans() {
   const expiryDate = user?.subscriptionExpiry ? new Date(user.subscriptionExpiry) : new Date(0);
   const isSubscribed = user?.subscriptionStatus === 'active' || (user?.subscriptionStatus === 'canceled' && expiryDate > new Date());
   const isCanceledButValid = user?.subscriptionStatus === 'canceled' && expiryDate > new Date();
+  const hasPremiumAccess = !!user?.hasPremiumAccessory;
 
   const isTestMode = process.env.NEXT_PUBLIC_TEST_MODE === "true";
   const userPlanAmount = isTestMode ? 1.0 : 170.3;
@@ -110,6 +111,25 @@ export function SubscriptionPlans() {
               Você poderá reativar ou assinar um novo plano apenas após esta data.
             </p>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (hasPremiumAccess) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-12">
+        <div className="relative glass p-10 rounded-[3rem] border-brand-green/20 shadow-2xl flex flex-col bg-white/80 backdrop-blur-xl text-center">
+          <div className="bg-brand-green/10 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Crown className="w-10 h-10 text-brand-green" />
+          </div>
+          <h3 className="text-3xl font-black text-brand-black uppercase tracking-tighter mb-4">
+            Acesso Premium Liberado
+          </h3>
+          <p className="text-gray-500 font-bold uppercase text-xs tracking-widest mb-8 leading-relaxed">
+            Seu perfil premium MeetOff ja garante acesso completo. Voce nao precisa contratar uma
+            assinatura para ver ou participar das experiencias da plataforma.
+          </p>
         </div>
       </div>
     );

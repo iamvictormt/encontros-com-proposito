@@ -184,6 +184,8 @@ export function PremiumFlow() {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [formData, setFormData] = useState({
     nome: "",
+    email: "",
+    birthDate: "",
     cep: "",
     estado: "",
     cidade: "",
@@ -316,6 +318,21 @@ export function PremiumFlow() {
   };
 
   const handlePurchase = async () => {
+    if (!formData.nome.trim()) {
+      toast.error("Informe seu nome completo.");
+      return;
+    }
+
+    if (!formData.email.trim()) {
+      toast.error("Informe seu e-mail de login.");
+      return;
+    }
+
+    if (!formData.birthDate) {
+      toast.error("Informe sua data de nascimento.");
+      return;
+    }
+
     setIsPurchasing(true);
     try {
       const response = await fetch("/api/premium/register", {
@@ -366,6 +383,7 @@ export function PremiumFlow() {
 
     if (name === "cep") formattedValue = formatCEP(value);
     if (name === "telefone") formattedValue = formatPhone(value);
+    if (name === "email") formattedValue = value.trim().toLowerCase();
 
     setFormData((prev) => ({ ...prev, [name]: formattedValue }));
   };
@@ -387,8 +405,8 @@ export function PremiumFlow() {
           onClick={() => nextStep("TERMS")}
           className="w-full h-20 bg-brand-red hover:bg-brand-red/90 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl shadow-brand-red/20 transition-all hover:scale-[1.02] active:scale-[0.98] flex flex-col gap-1"
         >
-          <span>EXPERIÊNCIA RÁPIDA</span>
-          <span className="text-[8px] font-bold opacity-60">Sem login, sem cadastro</span>
+          <span>EXPERIÊNCIA PREMIUM</span>
+          <span className="text-[8px] font-bold opacity-60">Cadastro premium simplificado</span>
         </Button>
 
         <Button
@@ -706,6 +724,33 @@ export function PremiumFlow() {
 
         <div className="space-y-2">
           <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
+            E-mail de login
+          </label>
+          <Input
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            placeholder="seu@email.com"
+            className="h-14 rounded-2xl bg-white border-brand-black/5 text-[11px] font-bold px-6"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
+            Data de nascimento
+          </label>
+          <Input
+            name="birthDate"
+            type="date"
+            value={formData.birthDate}
+            onChange={handleInputChange}
+            className="h-14 rounded-2xl bg-white border-brand-black/5 text-[11px] font-bold uppercase tracking-widest px-6"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
             CEP
           </label>
           <div className="relative">
@@ -849,6 +894,33 @@ export function PremiumFlow() {
           />
         </div>
 
+        <div className="space-y-2">
+          <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
+            E-mail (será utilizado para login na plataforma)
+          </label>
+          <Input
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            placeholder="seu@email.com"
+            className="h-14 rounded-2xl bg-white border-brand-black/5 text-[11px] font-bold uppercase tracking-widest px-6"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
+            Data de nascimento
+          </label>
+          <Input
+            name="birthDate"
+            type="date"
+            value={formData.birthDate}
+            onChange={handleInputChange}
+            className="w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-4 sm:px-6"
+          />
+        </div>
+
         <div className="space-y-3">
           {venues.length === 0 ? (
             <div className="p-8 text-center glass rounded-3xl border-white/20">
@@ -875,10 +947,6 @@ export function PremiumFlow() {
                 <div
                   key={partner.id}
                   onClick={() => {
-                    if (!formData.nome.trim()) {
-                      toast.error("Por favor, informe seu nome completo.");
-                      return;
-                    }
                     handlePurchase();
                   }}
                   className="flex items-center justify-between p-6 rounded-[2rem] bg-white border border-brand-black/5 hover:border-brand-green/30 transition-all cursor-pointer group"

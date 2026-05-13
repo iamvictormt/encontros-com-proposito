@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
-import { sql } from "@/lib/db";
-import { hashPassword, signJWT, verifyJWT } from "@/lib/auth-utils";
 import { cookies } from "next/headers";
+import { sql } from "@/lib/db";
+import { createGreenCard } from "@/lib/card-utils";
+import { hashPassword, signJWT, verifyJWT } from "@/lib/auth-utils";
+import { validateEmail, validateMinAge } from "@/lib/utils/validators";
 
 function generateRandomPassword(length = 6) {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -12,120 +14,187 @@ function generateRandomPassword(length = 6) {
   return password;
 }
 
-function generateEmailBase(fullName: string) {
-  const parts = fullName.trim().split(" ");
-  if (parts.length === 1) {
-    return parts[0].toLowerCase();
-  }
-  const firstName = parts[0].toLowerCase();
-  const initials = parts.slice(1).map(p => p[0].toLowerCase()).join("");
-  return `${firstName}.${initials}`;
-}
-
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { 
-      nome, 
-      cep, 
-      estado, 
-      cidade, 
-      bairro, 
-      endereco, 
-      numero, 
-      complemento, 
-      accessoryType, 
-      model, 
-      deliveryMethod, 
-      category 
+    const {
+      nome,
+      email,
+      birthDate,
+      cep,
+      estado,
+      cidade,
+      bairro,
+      endereco,
+      numero,
+      complemento,
+      accessoryType,
+      model,
+      deliveryMethod,
     } = data;
 
     if (!nome) {
-      return NextResponse.json({ message: "Nome é obrigatório" }, { status: 400 });
+      return NextResponse.json({ message: "Nome e obrigatorio" }, { status: 400 });
     }
 
-    // Check for existing session
+    const normalizedEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
+
+    if (!normalizedEmail || !validateEmail(normalizedEmail)) {
+      return NextResponse.json({ message: "E-mail valido e obrigatorio" }, { status: 400 });
+    }
+
+    if (!birthDate || !validateMinAge(birthDate)) {
+      return NextResponse.json({ message: "Voce deve ter pelo menos 18 anos" }, { status: 400 });
+    }
+
     const cookieStore = await cookies();
     const tokenCookie = cookieStore.get("auth_token")?.value;
     let sessionPayload = null;
     try {
       sessionPayload = tokenCookie ? await verifyJWT(tokenCookie) : null;
     } catch (e) {
-      // Ignore invalid token
+      // Ignore invalid token.
     }
 
     let finalUser: any;
     let generatedPassword = null;
-    let finalEmail = "";
     let isUpgrade = false;
 
     if (sessionPayload && sessionPayload.userId) {
       isUpgrade = true;
-      const result = await sql`
-        UPDATE users 
-        SET user_category = 'PREMIUM', 
-            has_premium_accessory = TRUE,
-            verification_status = 'APROVADO',
-            city = COALESCE(${cidade || null}, city)
-        WHERE id = ${sessionPayload.userId}
-        RETURNING id, full_name, email, is_admin, verification_status, user_category, has_premium_accessory
+
+      const existingEmail = await sql`
+        SELECT id FROM users
+        WHERE email = ${normalizedEmail} AND id != ${sessionPayload.userId}
       `;
-      finalUser = result[0];
-      finalEmail = finalUser.email;
-    } else {
-      let emailBase = generateEmailBase(nome);
-      finalEmail = `${emailBase}@premium.meetoff.com`;
-      
-      let isEmailUnique = false;
-      let attempts = 0;
-      while (!isEmailUnique && attempts < 10) {
-        const existingEmail = await sql`SELECT id FROM users WHERE email = ${finalEmail}`;
-        if (existingEmail.length === 0) {
-          isEmailUnique = true;
-        } else {
-          const rand = Math.floor(Math.random() * 1000);
-          finalEmail = `${emailBase}${rand}@premium.meetoff.com`;
-          attempts++;
-        }
+
+      if (existingEmail.length > 0) {
+        return NextResponse.json({ message: "Este e-mail ja esta em uso" }, { status: 409 });
       }
 
-      if (!isEmailUnique) {
-        return NextResponse.json({ message: "Erro ao gerar e-mail único. Tente novamente." }, { status: 500 });
+      const result = await sql`
+        UPDATE users
+        SET user_category = 'PREMIUM',
+            has_premium_accessory = TRUE,
+            verification_status = 'APROVADO',
+            full_name = ${nome},
+            email = ${normalizedEmail},
+            birth_date = ${birthDate},
+            city = COALESCE(${cidade || null}, city)
+        WHERE id = ${sessionPayload.userId}
+        RETURNING id, full_name, email, is_admin, verification_status, user_category,
+                  has_premium_accessory, birth_date
+      `;
+      finalUser = result[0];
+    } else {
+      const existingEmail = await sql`SELECT id FROM users WHERE email = ${normalizedEmail}`;
+      if (existingEmail.length > 0) {
+        return NextResponse.json({ message: "Este e-mail ja esta em uso" }, { status: 409 });
       }
 
       generatedPassword = generateRandomPassword(6);
       const hashedPassword = await hashPassword(generatedPassword);
-      const defaultBirthDate = "1990-01-01"; 
 
       const result = await sql`
         INSERT INTO users (
-          full_name, 
+          full_name,
           email,
-          phone, 
-          password_hash, 
-          birth_date, 
-          user_category, 
-          has_premium_accessory, 
-          verification_status, 
+          phone,
+          password_hash,
+          birth_date,
+          user_category,
+          has_premium_accessory,
+          verification_status,
           city
         )
         VALUES (
-          ${nome}, 
-          ${finalEmail},
-          NULL, 
-          ${hashedPassword}, 
-          ${defaultBirthDate}, 
-          'PREMIUM', 
-          TRUE, 
-          'APROVADO', 
+          ${nome},
+          ${normalizedEmail},
+          NULL,
+          ${hashedPassword},
+          ${birthDate},
+          'PREMIUM',
+          TRUE,
+          'APROVADO',
           ${cidade || null}
         )
-        RETURNING id, full_name, email, is_admin, verification_status, user_category, has_premium_accessory
+        RETURNING id, full_name, email, is_admin, verification_status, user_category,
+                  has_premium_accessory, birth_date
       `;
       finalUser = result[0];
     }
 
-    // Create the order
+    const existingGreenCard = await sql`
+      SELECT *
+      FROM cards
+      WHERE owner_id = ${finalUser.id} AND type = 'GREEN'
+      LIMIT 1
+    `;
+
+    let greenCard = existingGreenCard[0];
+    if (existingGreenCard.length === 0) {
+      greenCard = await createGreenCard(finalUser.id, finalUser.full_name, finalUser.birth_date);
+    } else if (!greenCard.owner_id) {
+      const fixedCard = await sql`
+        UPDATE cards
+        SET owner_id = ${finalUser.id},
+            name = COALESCE(name, ${finalUser.full_name}),
+            birth_date = COALESCE(birth_date, ${finalUser.birth_date})
+        WHERE id = ${greenCard.id}
+        RETURNING *
+      `;
+      greenCard = fixedCard[0];
+    }
+
+    if (greenCard?.id) {
+      const existingPhysicalRequest = await sql`
+        SELECT id FROM physical_card_requests
+        WHERE card_id = ${greenCard.id}
+          AND status IN ('PENDENTE', 'PAGO', 'EM_PRODUCAO', 'ENVIADO')
+        LIMIT 1
+      `;
+
+      if (existingPhysicalRequest.length === 0) {
+        const physicalCep = cep || "00000-000";
+        const physicalAddress =
+          endereco || (deliveryMethod === "PARTNER" ? "Retirada local MeetOff" : "Endereco a confirmar");
+        const physicalNumber = numero || "S/N";
+        const physicalNeighborhood = bairro || "A confirmar";
+        const physicalCity = cidade || "A confirmar";
+        const physicalState = estado || "NA";
+
+        await sql`
+          INSERT INTO physical_card_requests (
+            user_id,
+            card_id,
+            full_name,
+            cep,
+            address,
+            number,
+            complement,
+            neighborhood,
+            city,
+            state,
+            amount,
+            status
+          ) VALUES (
+            ${finalUser.id},
+            ${greenCard.id},
+            ${finalUser.full_name},
+            ${physicalCep},
+            ${physicalAddress},
+            ${physicalNumber},
+            ${complemento || null},
+            ${physicalNeighborhood},
+            ${physicalCity},
+            ${physicalState},
+            ${120.3},
+            'EM_PRODUCAO'
+          )
+        `;
+      }
+    }
+
     const orderResult = await sql`
       INSERT INTO premium_accessory_orders (
         user_id,
@@ -141,9 +210,9 @@ export async function POST(request: Request) {
         address_complement
       ) VALUES (
         ${finalUser.id},
-        ${accessoryType || 'GRAVATA'},
+        ${accessoryType || "GRAVATA"},
         ${model || null},
-        ${deliveryMethod || 'RESIDENTIAL'},
+        ${deliveryMethod || "RESIDENTIAL"},
         ${cep || null},
         ${estado || null},
         ${cidade || null},
@@ -158,26 +227,29 @@ export async function POST(request: Request) {
 
     const token = await signJWT({
       userId: finalUser.id,
-      email: finalUser.email || "", 
+      email: finalUser.email || "",
       isAdmin: finalUser.is_admin || false,
       verificationStatus: finalUser.verification_status,
       userCategory: finalUser.user_category,
-      hasPremiumAccessory: finalUser.has_premium_accessory
+      hasPremiumAccessory: finalUser.has_premium_accessory,
     });
 
-    const response = NextResponse.json({ 
-      message: isUpgrade ? "Upgrade realizado com sucesso" : "Usuário criado com sucesso",
-      password: generatedPassword,
-      login: finalEmail,
-      isUpgrade,
-      orderId
-    }, { status: 201 });
+    const response = NextResponse.json(
+      {
+        message: isUpgrade ? "Upgrade realizado com sucesso" : "Usuario criado com sucesso",
+        password: generatedPassword,
+        login: finalUser.email,
+        isUpgrade,
+        orderId,
+      },
+      { status: 201 },
+    );
 
     response.cookies.set("auth_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24, // 24 hours
+      maxAge: 60 * 60 * 24,
       path: "/",
     });
 

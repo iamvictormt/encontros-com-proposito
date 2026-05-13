@@ -11,13 +11,15 @@ import { useEffect, useState } from "react";
 import { EditProfileModal } from "@/components/modals/edit-profile-modal";
 import { ChangePasswordModal } from "@/components/modals/change-password-modal";
 import { cn, formatName } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function AccountPage() {
-  const { user, isLoggedIn, isLoading, logout } = useAuth();
+  const { user, isLoggedIn, isLoading, logout, refreshAuth } = useAuth();
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const [order, setOrder] = useState<any>(null);
   const [isOrderLoading, setIsOrderLoading] = useState(false);
+  const [isModeUpdating, setIsModeUpdating] = useState(false);
 
   useEffect(() => {
     if (user?.userCategory === "PREMIUM") {
@@ -51,6 +53,32 @@ export default function AccountPage() {
       CANCELADO: { label: "Cancelado", icon: LogOut, color: "text-red-600", bg: "bg-red-50" },
     };
     return config[status] || config.PENDING;
+  };
+
+  const handleProfileModeChange = async (mode: "COMUM" | "PREMIUM") => {
+    if (user?.userCategory === mode) return;
+
+    setIsModeUpdating(true);
+    try {
+      const response = await fetch("/api/account/profile-mode", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Erro ao alterar perfil");
+      }
+
+      await refreshAuth();
+      toast.success(mode === "PREMIUM" ? "Perfil premium ativado" : "Perfil comum ativado");
+    } catch (error: any) {
+      console.error("Profile mode update error:", error);
+      toast.error(error.message || "Erro ao alterar perfil");
+    } finally {
+      setIsModeUpdating(false);
+    }
   };
 
   useEffect(() => {
@@ -265,6 +293,54 @@ export default function AccountPage() {
                       </Button>
                     </div>
                   </div>
+                </div>
+              )}
+
+              {user.hasPremiumAccessory && (
+                <div className="glass p-5 sm:p-8 rounded-[2rem] sm:rounded-[3rem] border-white/40 shadow-xl space-y-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="space-y-1">
+                      <span className="text-[8px] sm:text-[10px] font-black text-brand-green uppercase tracking-[0.2em]">
+                        Modo de Navegacao
+                      </span>
+                      <h3 className="font-black text-lg sm:text-2xl text-brand-black uppercase tracking-tighter">
+                        Perfil MeetOff
+                      </h3>
+                    </div>
+                    <div className="inline-flex rounded-2xl bg-brand-black/5 p-1">
+                      <Button
+                        type="button"
+                        disabled={isModeUpdating}
+                        onClick={() => handleProfileModeChange("COMUM")}
+                        className={cn(
+                          "h-11 rounded-xl px-4 text-[9px] font-black uppercase tracking-widest shadow-none",
+                          user.userCategory === "COMUM"
+                            ? "bg-brand-green text-white hover:bg-brand-green/90"
+                            : "bg-transparent text-brand-black hover:bg-white",
+                        )}
+                      >
+                        Usuario
+                      </Button>
+                      <Button
+                        type="button"
+                        disabled={isModeUpdating}
+                        onClick={() => handleProfileModeChange("PREMIUM")}
+                        className={cn(
+                          "h-11 rounded-xl px-4 text-[9px] font-black uppercase tracking-widest shadow-none",
+                          user.userCategory === "PREMIUM"
+                            ? "bg-brand-orange text-white hover:bg-brand-orange/90"
+                            : "bg-transparent text-brand-black hover:bg-white",
+                        )}
+                      >
+                        Premium
+                      </Button>
+                    </div>
+                  </div>
+                  <p className="text-xs sm:text-sm text-gray-500 font-medium leading-relaxed">
+                    Seu acesso premium segue liberado em qualquer modo. Use o perfil comum para ver
+                    a experiencia MeetOff aberta, ou volte ao premium para os eventos e areas
+                    exclusivas.
+                  </p>
                 </div>
               )}
 

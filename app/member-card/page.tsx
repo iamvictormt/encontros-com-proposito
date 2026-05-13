@@ -2,6 +2,7 @@ import { MemberCardPage } from "@/components/member-card-page";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { getUserSession } from "@/lib/auth-utils";
+import { createGreenCard } from "@/lib/card-utils";
 import { neon } from '@neondatabase/serverless';
 import { redirect } from "next/navigation";
 import { RequestCardModal } from "@/components/request-card-modal";
@@ -16,13 +17,33 @@ export default async function MemberCard() {
   }
 
   const sql = neon(process.env.DATABASE_URL!);
-  const cards = await sql`
+  let cards = await sql`
     SELECT * FROM cards 
     WHERE owner_id = ${session.userId} 
     AND status = 'ATIVO'
     ORDER BY created_at DESC 
     LIMIT 1
   `;
+
+  if (cards.length === 0) {
+    const users = await sql`
+      SELECT full_name, birth_date, has_premium_accessory
+      FROM users
+      WHERE id = ${session.userId}
+    `;
+
+    const user = users[0];
+    if (user?.has_premium_accessory && user.birth_date) {
+      await createGreenCard(session.userId, user.full_name, user.birth_date);
+      cards = await sql`
+        SELECT * FROM cards
+        WHERE owner_id = ${session.userId}
+        AND status = 'ATIVO'
+        ORDER BY created_at DESC
+        LIMIT 1
+      `;
+    }
+  }
 
   if (cards.length === 0) {
     return (

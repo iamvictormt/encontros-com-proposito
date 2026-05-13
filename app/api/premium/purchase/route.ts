@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { sql } from "@/lib/db";
 import { verifyJWT, signJWT } from "@/lib/auth-utils";
 import { cookies } from "next/headers";
+import { createGreenCard } from "@/lib/card-utils";
 
 export async function POST(request: Request) {
   try {
@@ -12,14 +13,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    // Update the database
-    await sql`
+    const result = await sql`
       UPDATE users 
       SET has_premium_accessory = TRUE
       WHERE id = ${payload.userId}
+      RETURNING id, full_name, birth_date
     `;
 
-    // Sign a new token with updated payload
+    const user = result[0];
+    if (user?.birth_date) {
+      const existingGreenCard = await sql`
+        SELECT id FROM cards
+        WHERE owner_id = ${payload.userId} AND type = 'GREEN'
+        LIMIT 1
+      `;
+
+      if (existingGreenCard.length === 0) {
+        await createGreenCard(payload.userId, user.full_name, user.birth_date);
+      }
+    }
+
     const newToken = await signJWT({
       ...payload,
       hasPremiumAccessory: true,

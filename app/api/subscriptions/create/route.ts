@@ -25,9 +25,19 @@ export async function POST(request: Request) {
     }
 
     // Get user email
-    const userResults = await sql`SELECT email FROM users WHERE id = ${payload.userId}`;
+    const userResults = await sql`
+      SELECT email, has_premium_accessory
+      FROM users
+      WHERE id = ${payload.userId}
+    `;
     if (userResults.length === 0) {
       return NextResponse.json({ message: "Usuário não encontrado" }, { status: 404 });
+    }
+    if (userResults[0].has_premium_accessory) {
+      return NextResponse.json(
+        { message: "Seu acesso premium ja esta liberado. Assinatura nao e necessaria." },
+        { status: 400 },
+      );
     }
     const userEmail = userResults[0].email;
 

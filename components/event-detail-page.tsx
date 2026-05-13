@@ -54,7 +54,10 @@ export function EventDetailPage() {
   const [isCopied, setIsCopied] = useState(false);
 
   const expiryDate = user?.subscriptionExpiry ? new Date(user.subscriptionExpiry) : new Date(0);
-  const hasValidSubscription = user?.subscriptionStatus === 'active' || (user?.subscriptionStatus === 'canceled' && expiryDate > new Date());
+  const hasValidSubscription =
+    user?.subscriptionStatus === 'active' ||
+    (user?.subscriptionStatus === 'canceled' && expiryDate > new Date()) ||
+    !!user?.hasPremiumAccessory;
 
   const [mandatoryProductsData, setMandatoryProductsData] = useState<any[]>([]);
   const [associatedBrandsData, setAssociatedBrandsData] = useState<any[]>([]);
@@ -330,7 +333,7 @@ export function EventDetailPage() {
                   </p>
                   <Button
                     variant="outline"
-                    disabled={user?.subscriptionStatus !== "active"}
+                    disabled={!hasValidSubscription}
                     className="w-full h-14 border-brand-black/10 bg-white text-brand-black hover:bg-brand-black hover:text-white font-black rounded-2xl transition-all flex items-center justify-center gap-3 uppercase tracking-widest text-[10px] disabled:opacity-50"
                     onClick={() => {
                       const url = `${window.location.origin}/events/${id}`;

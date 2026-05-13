@@ -57,6 +57,7 @@ export async function POST(request: Request) {
         neighborhood, 
         city, 
         state,
+        amount,
         status
       ) VALUES (
         ${session.userId}, 
@@ -69,6 +70,7 @@ export async function POST(request: Request) {
         ${neighborhood}, 
         ${city}, 
         ${state},
+        ${120.3},
         'PAGO' -- Automatically marking as PAGO for simulation as requested
       ) RETURNING *
     `;

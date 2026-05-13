@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 export function SiteHeader() {
   const { isLoggedIn, user, logout, isLoading } = useAuth();
   const pathname = usePathname();
+  const hasPremiumAccess = !!user?.hasPremiumAccessory;
 
   const navLinks = [
     ...(isLoggedIn
@@ -28,7 +29,12 @@ export function SiteHeader() {
           { href: "/products", label: "Produtos Autorais", icon: ShoppingCart },
           { href: "/portfolio", label: "Portfólio", icon: FolderOpen },
           { href: "/partners", label: "Empresas e Parcerias", icon: Building2 },
-          ...(user?.userCategory === "PREMIUM"
+          ...(hasPremiumAccess
+            ? [
+                { href: "/member-card", label: "Cartão MeetOff", icon: CreditCard },
+                { href: "/account", label: "Minha Conta", icon: User },
+              ]
+            : user?.userCategory === "PREMIUM"
             ? [{ href: "/account", label: "Minha Conta", icon: User }]
             : [
                 { href: "/member-card", label: "Cartão MeetOff", icon: CreditCard },

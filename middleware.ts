@@ -93,12 +93,12 @@ export async function middleware(request: NextRequest) {
           if (!isPremiumFlowPage && !isPublicPath) {
             return NextResponse.redirect(new URL("/premium-flow", request.url));
           }
-        } else if (userCategory === "PREMIUM" && hasPremiumAccessory) {
-          // If PREMIUM user already bought, they cannot access subscriptions
+        } else if (hasPremiumAccessory) {
+          // Premium entitlement removes the need for subscriptions in any profile mode.
           if (pathname.startsWith("/subscriptions")) {
             return NextResponse.redirect(new URL("/events", request.url));
           }
-          if (isPremiumFlowPage) {
+          if (userCategory === "PREMIUM" && isPremiumFlowPage) {
             return NextResponse.redirect(new URL("/events", request.url));
           }
         }

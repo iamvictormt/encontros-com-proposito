@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ShoppingCart, FolderOpen, Building2, CreditCard, User, Crown } from "lucide-react";
+import { Home, ShoppingCart, FolderOpen, CreditCard, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect, useState } from "react";
@@ -11,6 +11,7 @@ export function BottomNav() {
   const pathname = usePathname();
   const [showLabel, setShowLabel] = useState(true);
   const { isLoggedIn, user } = useAuth();
+  const hasPremiumAccess = !!user?.hasPremiumAccessory;
 
     useEffect(() => {
       setShowLabel(true);
@@ -25,7 +26,7 @@ export function BottomNav() {
   const navLinks = [
     { href: "/events", label: "Home", icon: Home },
     { href: "/products", label: "Produtos", icon: ShoppingCart },
-    ...(isLoggedIn && user?.userCategory === "PREMIUM"
+    ...(isLoggedIn && user?.userCategory === "PREMIUM" && !hasPremiumAccess
       ? []
       : [{ href: "/member-card", label: "Card", icon: CreditCard }]),
     { href: "/portfolio", label: "Portfólio", icon: FolderOpen },

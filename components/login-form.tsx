@@ -263,25 +263,6 @@ export function LoginForm() {
                     >
                       Email ou Telefone
                     </label>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <span className="w-4 h-4 rounded-full bg-brand-orange/10 text-brand-orange flex items-center justify-center text-[10px] font-bold cursor-help">
-                            ?
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent className="glass-dark border-white/10 p-4 rounded-2xl shadow-2xl max-w-[280px] side-top">
-                          <p className="text-[11px] font-medium text-white leading-relaxed">
-                            Optou pela{" "}
-                            <span className="font-black text-brand-orange uppercase tracking-tight">
-                              Experiência Rápida (Premium)
-                            </span>
-                            ? Utilize o e-mail gerado no final do seu pedido (ex:
-                            victor.mt@premium.meetoff.com)
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
                   </div>
                   <Input
                     id="email"
