@@ -21,7 +21,8 @@ export async function GET() {
 
     // Get the most recent premium accessory order for this user
     const orders = await sql`
-      SELECT id, accessory_type, accessory_model, delivery_method, status, created_at
+      SELECT id, accessory_type, accessory_model, delivery_method, status, created_at,
+             address_street, address_number, address_city, address_state, address_cep
       FROM premium_accessory_orders
       WHERE user_id = ${userId}
       ORDER BY created_at DESC

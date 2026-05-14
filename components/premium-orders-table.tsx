@@ -38,11 +38,11 @@ interface PremiumOrdersListProps {
 }
 
 const statusConfig: Record<string, { label: string; icon: any; color: string; bg: string }> = {
-  PENDING: { label: "Pendente", icon: Clock, color: "text-amber-600", bg: "bg-amber-50" },
-  SENT: { label: "Enviado", icon: Truck, color: "text-blue-600", bg: "bg-blue-50" },
-  DELIVERED: { label: "Entregue", icon: CheckCircle, color: "text-green-600", bg: "bg-green-50" },
-  READY_FOR_PICKUP: { label: "Pronto p/ Retirada", icon: MapPin, color: "text-purple-600", bg: "bg-purple-50" },
-  PICKED_UP: { label: "Retirado", icon: Package, color: "text-gray-600", bg: "bg-gray-50" },
+  PENDING: { label: "Confirmado", icon: Clock, color: "text-brand-orange", bg: "bg-brand-orange/10" },
+  SENT: { label: "Em Trânsito", icon: Truck, color: "text-blue-600", bg: "bg-blue-50" },
+  DELIVERED: { label: "Concluído", icon: CheckCircle, color: "text-green-600", bg: "bg-green-50" },
+  READY_FOR_PICKUP: { label: "Disponível", icon: MapPin, color: "text-purple-600", bg: "bg-purple-50" },
+  PICKED_UP: { label: "Concluído", icon: Package, color: "text-emerald-600", bg: "bg-emerald-50" },
   CANCELADO: { label: "Cancelado", icon: XCircle, color: "text-red-600", bg: "bg-red-50" },
 };
 
@@ -69,35 +69,35 @@ export function PremiumOrdersList({ orders, onUpdateStatus, onPrintLabel }: Prem
                     onSelect={() => onUpdateStatus(order.id, "PENDING")} 
                     className="rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest hover:bg-brand-black/5 cursor-pointer disabled:opacity-30"
                   >
-                    Pendente
+                    Confirmado
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     disabled={order.status === "SENT"}
                     onSelect={() => onUpdateStatus(order.id, "SENT")} 
                     className="rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest hover:bg-brand-black/5 cursor-pointer disabled:opacity-30"
                   >
-                    Enviado
+                    Em Trânsito
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     disabled={order.status === "DELIVERED"}
                     onSelect={() => onUpdateStatus(order.id, "DELIVERED")} 
                     className="rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest hover:bg-brand-black/5 cursor-pointer disabled:opacity-30"
                   >
-                    Entregue
+                    Concluído
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     disabled={order.status === "READY_FOR_PICKUP"}
                     onSelect={() => onUpdateStatus(order.id, "READY_FOR_PICKUP")} 
                     className="rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest hover:bg-brand-black/5 cursor-pointer disabled:opacity-30"
                   >
-                    Pronto p/ Retirada
+                    Disponível p/ Retirada
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     disabled={order.status === "PICKED_UP"}
                     onSelect={() => onUpdateStatus(order.id, "PICKED_UP")} 
                     className="rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest hover:bg-brand-black/5 cursor-pointer disabled:opacity-30"
                   >
-                    Retirado
+                    Concluído (Retirado)
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     disabled={order.status === "CANCELADO"}

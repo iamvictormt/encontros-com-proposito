@@ -45,7 +45,7 @@ export const MemberCardVisual = forwardRef<HTMLDivElement, MemberCardVisualProps
           <div className="absolute inset-0 p-6 sm:p-12 flex flex-col justify-end">
             <div className="flex justify-between items-end w-full">
               <div className="space-y-1 mb-2 sm:mb-4">
-                <p className="text-[8px] sm:text-[10px] font-black text-white/60 uppercase tracking-[0.2em]">Nome do Membro</p>
+                <p className="text-[8px] sm:text-[12px] font-black text-white/60 uppercase tracking-[0.2em]">Nome do Membro</p>
                 <h3 className="text-white text-xs sm:text-2xl font-black uppercase tracking-widest drop-shadow-lg">
                   {name ? formatName(name) : "Visitante"}
                 </h3>
@@ -80,9 +80,9 @@ export const MemberCardVisual = forwardRef<HTMLDivElement, MemberCardVisualProps
               </div>
 
               {/* Right Column - Security & Info */}
-              <div className="flex flex-col justify-start items-start gap-6 text-white drop-shadow-md">
+              <div className="flex flex-col justify-start items-start sm:gap-10 gap-2 text-white drop-shadow-md">
                 <div className="space-y-1">
-                  <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest opacity-60 block">
+                  <span className="text-[8px] sm:text-[12px] font-black uppercase tracking-widest opacity-60 block">
                     Cód. Segurança
                   </span>
                   <span className="font-mono text-xs sm:text-lg font-black tracking-widest">
@@ -90,7 +90,7 @@ export const MemberCardVisual = forwardRef<HTMLDivElement, MemberCardVisualProps
                   </span>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest opacity-60 block">
+                  <span className="text-[8px] sm:text-[12px] font-black uppercase tracking-widest opacity-60 block">
                     Nascimento
                   </span>
                   <span className="font-mono text-xs sm:text-lg font-black tracking-widest">

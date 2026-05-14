@@ -130,6 +130,8 @@ const ProductCard = ({
             src={img}
             alt={`${product.name} - ${idx}`}
             fill
+            priority={idx === 0}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className={cn(
               "object-cover transition-all duration-1000",
               idx === currentIdx ? "opacity-100 scale-100" : "opacity-0 scale-105",
@@ -344,20 +346,27 @@ export function PremiumFlow() {
     }
   };
 
-  const handlePurchase = async () => {
-    if (!formData.nome.trim()) {
+  const handlePurchase = async (dataOverride?: Partial<typeof formData>) => {
+    const dataToUse = dataOverride ? { ...formData, ...dataOverride } : formData;
+
+    if (!dataToUse.nome.trim()) {
       toast.error("Informe seu nome completo.");
       return;
     }
 
-    if (!formData.email.trim()) {
+    if (!dataToUse.email.trim()) {
       toast.error("Informe seu e-mail de login.");
       return;
     }
 
-    if (!formData.birthDate) {
+    if (!dataToUse.birthDate) {
       toast.error("Informe sua data de nascimento.");
       return;
+    }
+
+    // If dataOverride is provided, update the state so it's available for the checkout step
+    if (dataOverride) {
+      setFormData(dataToUse);
     }
 
     setIsPurchasing(true);
@@ -366,7 +375,7 @@ export function PremiumFlow() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...formData,
+          ...dataToUse,
           accessoryType,
           model: selectedProduct?.name,
           deliveryMethod,
@@ -657,7 +666,14 @@ export function PremiumFlow() {
           className="flex items-center gap-5 p-5 rounded-[2rem] bg-white border border-brand-black/5 hover:border-brand-red/20 transition-all cursor-pointer group"
         >
           <div className="relative w-20 h-20 rounded-2xl overflow-hidden border-2 border-brand-black/5">
-            <Image src="/images/lenço-01.png" alt="Lenços" fill className="object-cover" />
+            <Image 
+              src="/images/lenço-01.png" 
+              alt="Lenços" 
+              fill 
+              sizes="80px"
+              priority
+              className="object-cover" 
+            />
           </div>
           <div className="flex-1">
             <h4 className="font-black uppercase tracking-widest text-[13px]">Lenços</h4>
@@ -676,7 +692,13 @@ export function PremiumFlow() {
           className="flex items-center gap-5 p-5 rounded-[2rem] bg-white border border-brand-black/5 hover:border-brand-red/20 transition-all cursor-pointer group"
         >
           <div className="relative w-20 h-20 rounded-2xl overflow-hidden border-2 border-brand-black/5">
-            <Image src="/images/gravata-01.png" alt="Gravatas" fill className="object-cover" />
+            <Image 
+              src="/images/gravata-01.png" 
+              alt="Gravatas" 
+              fill 
+              sizes="80px"
+              className="object-cover" 
+            />
           </div>
           <div className="flex-1">
             <h4 className="font-black uppercase tracking-widest text-[13px]">Gravatas</h4>
@@ -950,7 +972,7 @@ export function PremiumFlow() {
       </div>
 
       <Button
-        onClick={handlePurchase}
+        onClick={() => handlePurchase()}
         disabled={isPurchasing}
         className="w-full h-16 bg-brand-red hover:bg-brand-red/90 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl shadow-brand-red/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
       >
@@ -1040,7 +1062,14 @@ export function PremiumFlow() {
                 <div
                   key={partner.id}
                   onClick={() => {
-                    handlePurchase();
+                    handlePurchase({
+                      endereco: partner.name,
+                      numero: "PONTO DE RETIRADA",
+                      bairro: partner.location || partner.address || "Local Oficial",
+                      cidade: partner.location || "A confirmar",
+                      estado: "BR",
+                      cep: partner.cep || "00000-000",
+                    });
                   }}
                   className="flex items-center justify-between p-6 rounded-[2rem] bg-white border border-brand-black/5 hover:border-brand-green/30 transition-all cursor-pointer group"
                 >

@@ -53,21 +53,21 @@ export default function AccountPage() {
 
   const getStatusInfo = (status: string) => {
     const config: Record<string, { label: string; icon: any; color: string; bg: string }> = {
-      PENDING: { label: "Pendente", icon: Calendar, color: "text-amber-600", bg: "bg-amber-50" },
-      SENT: { label: "Enviado", icon: ArrowRight, color: "text-blue-600", bg: "bg-blue-50" },
+      PENDING: { label: "Confirmado", icon: Calendar, color: "text-brand-orange", bg: "bg-brand-orange/10" },
+      SENT: { label: "Em Trânsito", icon: ArrowRight, color: "text-blue-600", bg: "bg-blue-50" },
       DELIVERED: {
-        label: "Entregue",
+        label: "Concluído",
         icon: Shield,
         color: "text-brand-green",
         bg: "bg-brand-green/10",
       },
       READY_FOR_PICKUP: {
-        label: "Pronto para Retirada",
+        label: "Disponível",
         icon: MapPin,
         color: "text-purple-600",
         bg: "bg-purple-50",
       },
-      PICKED_UP: { label: "Retirado", icon: User, color: "text-gray-600", bg: "bg-gray-50" },
+      PICKED_UP: { label: "Concluído", icon: User, color: "text-emerald-600", bg: "bg-emerald-50" },
       CANCELADO: { label: "Cancelado", icon: LogOut, color: "text-red-600", bg: "bg-red-50" },
     };
     return config[status] || config.PENDING;
@@ -76,7 +76,7 @@ export default function AccountPage() {
   const getProductOrderStatusInfo = (status: string) => {
     const config: Record<string, { label: string; color: string; bg: string }> = {
       APPROVED: { label: "Pago", color: "text-brand-green", bg: "bg-brand-green/10" },
-      PENDING: { label: "Pendente", color: "text-amber-600", bg: "bg-amber-50" },
+      PENDING: { label: "Confirmado", color: "text-brand-orange", bg: "bg-brand-orange/10" },
       REJECTED: { label: "Recusado", color: "text-red-600", bg: "bg-red-50" },
       CANCELLED: { label: "Cancelado", color: "text-red-600", bg: "bg-red-50" },
     };
@@ -231,12 +231,19 @@ export default function AccountPage() {
                             <span className="text-[7px] sm:text-[9px] font-black text-gray-400 uppercase tracking-widest">
                               Forma de Entrega
                             </span>
-                            <p className="text-xs sm:text-sm font-black text-brand-black uppercase tracking-tight">
-                              {order.delivery_method === "RESIDENTIAL"
-                                ? "Entrega em Domicílio"
-                                : "Retirada no Local"}
-                            </p>
-                          </div>
+                             <p className="text-xs sm:text-sm font-black text-brand-black uppercase tracking-tight">
+                                {order.delivery_method === "RESIDENTIAL"
+                                  ? "Entrega em Domicílio"
+                                  : "Retirada no Local"}
+                             </p>
+                             {order.address_street && (
+                               <p className="text-[9px] sm:text-[10px] font-medium text-gray-400 uppercase mt-1">
+                                 {order.address_street}{order.address_number ? `, ${order.address_number}` : ''}
+                                 <br />
+                                 {order.address_city}/{order.address_state}
+                               </p>
+                             )}
+                           </div>
                         </div>
                         <div className="flex flex-col justify-center items-center sm:items-end text-center sm:text-right space-y-4 mt-2 sm:mt-0">
                           <div className="w-full sm:w-auto p-5 sm:p-6 bg-white rounded-xl sm:rounded-2xl shadow-xl shadow-brand-black/5 flex flex-col items-center sm:items-end">

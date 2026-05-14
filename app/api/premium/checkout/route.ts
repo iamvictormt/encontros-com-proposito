@@ -141,20 +141,9 @@ export async function POST(request: Request) {
 
     // Create the accessory order
     const orderResult = await sql`
-      INSERT INTO premium_accessory_orders (
-        user_id,
-        accessory_type,
-        accessory_model,
-        delivery_method,
-        address_cep,
-        address_state,
-        address_city,
-        address_neighborhood,
-        address_street,
-        address_number,
-        address_complement,
         amount,
         payment_status,
+        status,
         mp_payment_id
       ) VALUES (
         ${finalUserId},
@@ -170,6 +159,7 @@ export async function POST(request: Request) {
         ${complemento || null},
         ${baseAmount},
         ${paymentStatus},
+        'PENDING',
         ${String(payment.id)}
       )
       RETURNING id

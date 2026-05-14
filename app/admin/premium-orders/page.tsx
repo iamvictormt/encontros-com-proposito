@@ -36,11 +36,11 @@ interface PremiumOrder {
 }
 
 const statusLabels: Record<string, string> = {
-  PENDING: "Pendente",
-  SENT: "Enviado",
-  DELIVERED: "Entregue",
-  READY_FOR_PICKUP: "Pronto para Retirada",
-  PICKED_UP: "Retirado",
+  PENDING: "Confirmado",
+  SENT: "Em Trânsito",
+  DELIVERED: "Concluído",
+  READY_FOR_PICKUP: "Disponível",
+  PICKED_UP: "Concluído (Retirado)",
   CANCELADO: "Cancelado",
 };
 

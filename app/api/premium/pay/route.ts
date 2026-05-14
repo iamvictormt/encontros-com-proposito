@@ -92,6 +92,7 @@ export async function POST(request: Request) {
     await sql`
       UPDATE premium_accessory_orders
       SET payment_status = ${paymentStatus},
+          status = CASE WHEN ${paymentStatus} = 'APPROVED' THEN 'PENDING' ELSE status END,
           mp_payment_id = ${String(payment.id)},
           amount = ${baseAmount},
           updated_at = CURRENT_TIMESTAMP
