@@ -171,9 +171,9 @@ export function ProductCheckoutModal({
       }
 
       if (data.order?.payment_status === "APPROVED") {
-        toast.success("Compra aprovada! Pedido salvo no seu historico.");
+        toast.success("Compra aprovada! Pedido salvo no seu histórico.");
       } else {
-        toast.success("Pedido criado! Aguardando confirmacao do pagamento.");
+        toast.success("Pedido criado! Aguardando confirmação do pagamento.");
       }
 
       onSuccess?.();
@@ -451,12 +451,6 @@ export function ProductCheckoutModal({
                   </div>
                 )}
               </>
-            )}
-
-            {isProcessing && (
-              <p className="text-center text-[10px] font-black text-brand-red uppercase tracking-widest mt-4">
-                Confirmando pagamento...
-              </p>
             )}
           </div>
         </div>
