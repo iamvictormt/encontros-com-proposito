@@ -50,11 +50,11 @@ function validateMercadoPagoEnvironment() {
   const publicKey = process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY || "";
   const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN || "";
 
-  if (process.env.NEXT_PUBLIC_TEST_MODE === "true") {
-    if (!publicKey.startsWith("TEST-") || !accessToken.startsWith("TEST-")) {
-      return "Modo teste ativo: use NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY e MERCADOPAGO_ACCESS_TOKEN com credenciais TEST da mesma aplicacao Mercado Pago.";
-    }
-  }
+  // if (process.env.NEXT_PUBLIC_TEST_MODE === "true") {
+  //   if (!publicKey.startsWith("TEST-") || !accessToken.startsWith("TEST-")) {
+  //     return "Modo teste ativo: use NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY e MERCADOPAGO_ACCESS_TOKEN com credenciais TEST da mesma aplicacao Mercado Pago.";
+  //   }
+  // }
 
   return null;
 }

@@ -157,12 +157,12 @@ export function SiteHeader() {
                       </Link>
                     </DropdownMenuItem>
                   )}
-                  <DropdownMenuItem asChild className="rounded-xl focus:bg-brand-orange/10 focus:text-brand-orange cursor-pointer p-3 transition-colors">
+                  {/* <DropdownMenuItem asChild className="rounded-xl focus:bg-brand-orange/10 focus:text-brand-orange cursor-pointer p-3 transition-colors">
                     <Link href="/settings" className="flex items-center gap-3 w-full">
                       <Settings size={16} />
                       <span className="text-xs font-bold uppercase tracking-wider">Configurações</span>
                     </Link>
-                  </DropdownMenuItem>
+                  </DropdownMenuItem> */}
                   <DropdownMenuSeparator className="my-2 bg-black/5" />
                   <DropdownMenuItem 
                     onClick={() => logout()}

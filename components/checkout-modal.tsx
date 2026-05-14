@@ -56,8 +56,8 @@ export function CheckoutModal({
 
       const data = await res.json();
 
-      if (res.ok && data.status === "active") {
-        toast.success("Assinatura ativada com sucesso!");
+      if (res.ok && (data.status === "active" || data.status === "pending")) {
+        toast.success("Assinatura em processamento! Avisaremos assim que o pagamento for aprovado.");
         onSuccess();
         onClose();
         return;
@@ -159,12 +159,6 @@ export function CheckoutModal({
                 }}
               />
             </div>
-          )}
-
-          {isProcessing && (
-            <p className="text-center text-[10px] font-black text-brand-green uppercase tracking-widest mt-4">
-              Confirmando sua assinatura...
-            </p>
           )}
         </div>
       </DialogContent>

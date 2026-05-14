@@ -61,16 +61,14 @@ export async function POST(request: Request) {
           next_payment_date: null,
         };
 
-    const subscriptionStatus = subscription.status === "authorized" ? "active" : "pending";
-    const fallbackExpiry = new Date();
-    fallbackExpiry.setDate(fallbackExpiry.getDate() + 30);
+    // Sempre criamos a assinatura como pendente para que o webhook do pagamento libere o acesso.
+    const subscriptionStatus = "pending";
 
-    // Update user with active/pending subscription
+    // Update user with pending subscription
     await sql`
       UPDATE users 
       SET subscription_plan = ${planType}, 
           subscription_status = ${subscriptionStatus},
-          subscription_expiry = ${subscriptionStatus === "active" ? (subscription.next_payment_date || fallbackExpiry.toISOString()) : null},
           mp_preapproval_id = ${subscription.id}
       WHERE id = ${payload.userId}
     `;

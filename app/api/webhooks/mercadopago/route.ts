@@ -23,28 +23,21 @@ export async function POST(request: Request) {
       const userId = subscription.external_reference;
       const status = subscription.status; // 'pending', 'authorized', 'paused', 'cancelled'
       
-      let dbStatus = 'inactive';
-      if (status === 'authorized') dbStatus = 'active';
-      else if (status === 'pending') dbStatus = 'pending';
-      else if (status === 'cancelled') dbStatus = 'canceled';
-
-      // Fallback expiry: if next_payment_date is null but status is active/authorized, 
-      // set it to 30 days from now.
-      let expiryDate = subscription.next_payment_date;
-      if (!expiryDate && (status === 'authorized' || status === 'active')) {
-        const date = new Date();
-        date.setDate(date.getDate() + 30);
-        expiryDate = date.toISOString();
+      if (status === 'cancelled' || status === 'paused') {
+        await sql`
+          UPDATE users 
+          SET subscription_status = ${status === 'cancelled' ? 'canceled' : 'pending'},
+              mp_preapproval_id = ${dataId}
+          WHERE id = ${userId}
+        `;
+      } else {
+        // Apenas vincula o ID, nao ativa! A ativacao ocorrera via webhook de pagamento.
+        await sql`
+          UPDATE users 
+          SET mp_preapproval_id = ${dataId}
+          WHERE id = ${userId}
+        `;
       }
-      
-      // Update user status
-      await sql`
-        UPDATE users 
-        SET subscription_status = ${dbStatus},
-            subscription_expiry = ${expiryDate || null},
-            mp_preapproval_id = ${dataId}
-        WHERE id = ${userId}
-      `;
     }
 
     if (type === "payment" && dataId) {
@@ -53,6 +46,7 @@ export async function POST(request: Request) {
       const paymentStatus = mapPaymentStatus(payment.status);
 
       if (orderId) {
+        // Verifica se e um pedido de produto
         const currentOrders = await sql`
           SELECT product_id, quantity, product_type, payment_status
           FROM product_orders
@@ -82,6 +76,27 @@ export async function POST(request: Request) {
               UPDATE products
               SET stock = GREATEST(stock - ${Number(order.quantity || 1)}, 0)
               WHERE id = ${order.product_id}
+            `;
+          }
+        } else {
+          // Se nao for pedido de produto, o orderId e na verdade o userId da Assinatura
+          if (paymentStatus === "APPROVED") {
+            const date = new Date();
+            date.setDate(date.getDate() + 30); // Adiciona 30 dias de acesso
+            const expiryDate = date.toISOString();
+
+            await sql`
+              UPDATE users
+              SET subscription_status = 'active',
+                  subscription_expiry = ${expiryDate}
+              WHERE id = ${orderId}
+            `;
+          } else if (paymentStatus === "REJECTED" || paymentStatus === "CANCELLED") {
+            // Pagamento falhou, mantem ou reverte para pendente
+            await sql`
+              UPDATE users
+              SET subscription_status = 'pending'
+              WHERE id = ${orderId} AND subscription_status != 'canceled'
             `;
           }
         }

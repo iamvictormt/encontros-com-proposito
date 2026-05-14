@@ -5,9 +5,9 @@ export function isPaymentTestMode() {
 }
 
 export function resolvePaymentAmount(amount: number) {
-  return isPaymentTestMode() ? TEST_PAYMENT_AMOUNT : amount;
+  return amount;
 }
 
 export function resolvePayerEmail(email: string) {
-  return isPaymentTestMode() ? "comprador.teste@meetoff.com.br" : email;
+  return isPaymentTestMode() ? "test_user_5936489190012169711@testuser.com" : email;
 }

@@ -117,6 +117,34 @@ export function SubscriptionPlans() {
     );
   }
 
+  if (user?.subscriptionStatus === 'pending') {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-12">
+        <div className="relative glass p-10 rounded-[3rem] border-brand-orange/20 shadow-2xl flex flex-col bg-white/80 backdrop-blur-xl text-center">
+          <div className="bg-brand-orange/10 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Loader2 className="w-10 h-10 text-brand-orange animate-spin" />
+          </div>
+          <h3 className="text-3xl font-black text-brand-black uppercase tracking-tighter mb-4">
+            Assinatura em Processamento
+          </h3>
+          <p className="text-gray-500 font-bold uppercase text-xs tracking-widest mb-10 leading-relaxed">
+            Sua solicitação de assinatura foi recebida e estamos aguardando a confirmação do pagamento pelo Mercado Pago.
+          </p>
+          
+          <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+            <div className="flex items-center gap-3 text-left mb-2">
+              <AlertTriangle className="w-5 h-5 text-brand-orange" />
+              <span className="font-bold text-brand-black uppercase text-xs tracking-wider">Aguarde alguns minutos</span>
+            </div>
+            <p className="text-left text-gray-400 text-xs">
+              Seu acesso será liberado automaticamente assim que a primeira cobrança for aprovada. Você receberá um e-mail com o recibo.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (hasPremiumAccess) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-12">
