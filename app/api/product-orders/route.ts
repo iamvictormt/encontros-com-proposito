@@ -67,7 +67,7 @@ export async function GET() {
     const payload = token ? await verifyJWT(token) : null;
 
     if (!payload?.userId) {
-      return NextResponse.json({ message: "Nao autorizado" }, { status: 401 });
+      return NextResponse.json({ message: "Não autorizado" }, { status: 401 });
     }
 
     const orders = await sql`
@@ -92,7 +92,7 @@ export async function POST(request: Request) {
     const payload = token ? await verifyJWT(token) : null;
 
     if (!payload?.userId) {
-      return NextResponse.json({ message: "Nao autorizado" }, { status: 401 });
+      return NextResponse.json({ message: "Não autorizado" }, { status: 401 });
     }
 
     const credentialsError = validateMercadoPagoEnvironment();
@@ -126,7 +126,7 @@ export async function POST(request: Request) {
     `;
 
     if (products.length === 0) {
-      return NextResponse.json({ message: "Produto nao encontrado" }, { status: 404 });
+      return NextResponse.json({ message: "Produto não encontrado" }, { status: 404 });
     }
 
     const product = products[0];
@@ -153,7 +153,7 @@ export async function POST(request: Request) {
     `;
 
     if (userResults.length === 0) {
-      return NextResponse.json({ message: "Usuario nao encontrado" }, { status: 404 });
+      return NextResponse.json({ message: "Usuário não encontrado" }, { status: 404 });
     }
 
     const user = userResults[0];
