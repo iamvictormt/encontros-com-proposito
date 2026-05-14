@@ -35,6 +35,7 @@ import { toast } from "sonner";
 import { useLoading } from "@/providers/loading-provider";
 import { useAuth } from "@/hooks/use-auth";
 import { ProductCheckoutModal } from "@/components/product-checkout-modal";
+import { isPaymentTestMode, resolvePaymentAmount } from "@/lib/payments";
 
 const reviews = [
   {
@@ -141,6 +142,8 @@ export function ProductDetailPage() {
   // Parse sizes if they are stored as comma-separated or similar,
   // but for now we'll just show the raw string if it's not empty.
   const sizes = product.size ? product.size.split(",").map((s: string) => s.trim()) : [];
+  const displayPrice = resolvePaymentAmount(Number(product.price || 0));
+  const isTestMode = isPaymentTestMode();
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -238,8 +241,12 @@ export function ProductDetailPage() {
                 <div className="flex flex-col gap-1 mb-8">
                   <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Valor do Investimento</p>
                   <div className="flex items-baseline gap-4">
-                    <span className="text-5xl font-black text-brand-black tracking-tighter">{formatBRL(product.price)}</span>
-                    {product.price && (
+                    <span className="text-5xl font-black text-brand-black tracking-tighter">{formatBRL(displayPrice)}</span>
+                    {isTestMode ? (
+                      <span className="text-[10px] font-black text-brand-red uppercase tracking-widest">
+                        Modo teste
+                      </span>
+                    ) : product.price && (
                       <span className="text-xl text-gray-400 line-through font-bold">
                         {formatBRL(product.price * 1.15)}
                       </span>
@@ -404,7 +411,7 @@ export function ProductDetailPage() {
                       <div className="p-8 flex flex-col flex-1">
                         <h3 className="text-lg font-black text-brand-black uppercase tracking-tight group-hover:text-brand-orange transition-colors mb-4 line-clamp-2">{p.name}</h3>
                         <div className="mt-auto flex items-center justify-between">
-                          <span className="text-xl font-black text-brand-black tracking-tighter">{formatBRL(p.price)}</span>
+                          <span className="text-xl font-black text-brand-black tracking-tighter">{formatBRL(resolvePaymentAmount(Number(p.price || 0)))}</span>
                           <Button size="icon" className="w-10 h-10 rounded-xl bg-brand-green hover:bg-brand-green/90">
                             <ArrowRight className="w-4 h-4" />
                           </Button>

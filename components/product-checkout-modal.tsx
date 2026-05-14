@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
+import { isPaymentTestMode, resolvePayerEmail, resolvePaymentAmount } from "@/lib/payments";
 import { formatBRL } from "@/lib/utils/format";
 
 type ProductCheckoutModalProps = {
@@ -41,11 +42,15 @@ export function ProductCheckoutModal({
   const [address, setAddress] = useState(emptyAddress);
   const [cepFetchedFields, setCepFetchedFields] = useState<string[]>([]);
   const [isFetchingCep, setIsFetchingCep] = useState(false);
+  const [step, setStep] = useState<"DETAILS" | "PAYMENT">("DETAILS");
   const { user } = useAuth();
   const publicKey = process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY;
 
   const isPhysical = product?.type !== "Digital";
-  const amount = Number(product?.price || 0);
+  const originalAmount = Number(product?.price || 0);
+  const amount = resolvePaymentAmount(originalAmount);
+  const isTestMode = isPaymentTestMode();
+  const payerEmail = resolvePayerEmail(user?.email || "");
 
   useEffect(() => {
     if (publicKey) {
@@ -56,9 +61,11 @@ export function ProductCheckoutModal({
   useEffect(() => {
     if (isOpen) {
       setIsBrickReady(false);
+      setIsProcessing(false);
       setCustomerName(user?.fullName || "");
       setAddress(emptyAddress);
       setCepFetchedFields([]);
+      setStep("DETAILS");
     }
   }, [isOpen, user?.fullName]);
 
@@ -174,10 +181,19 @@ export function ProductCheckoutModal({
     } catch (error: any) {
       console.error("Product checkout submit error:", error);
       toast.error(error.message || "Erro ao processar compra");
-      throw error;
-    } finally {
       setIsProcessing(false);
+      return;
+    } finally {
+      if (!isOpen) {
+        setIsProcessing(false);
+      }
     }
+  };
+
+  const goToPayment = () => {
+    if (!validateCheckout()) return;
+    setIsBrickReady(false);
+    setStep("PAYMENT");
   };
 
   if (!product) return null;
@@ -210,7 +226,7 @@ export function ProductCheckoutModal({
                   </p>
                   <div className="flex items-end justify-between gap-4">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">
-                      {isPhysical ? "Entrega fisica" : "Produto digital"}
+                      {isTestMode ? "Modo teste" : isPhysical ? "Entrega fisica" : "Produto digital"}
                     </p>
                     <p className="text-3xl font-black tracking-tighter text-brand-red">
                       {formatBRL(amount)}
@@ -237,143 +253,204 @@ export function ProductCheckoutModal({
           </div>
 
           <div className="min-h-0 overflow-y-auto p-5 sm:p-8 bg-white">
+            <div className="mb-5 grid grid-cols-2 gap-2 rounded-2xl bg-brand-black/[0.03] p-1">
+              <button
+                type="button"
+                onClick={() => setStep("DETAILS")}
+                disabled={isProcessing}
+                className={`h-11 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
+                  step === "DETAILS"
+                    ? "bg-brand-black text-white shadow-lg"
+                    : "text-gray-400 hover:text-brand-black"
+                }`}
+              >
+                1. Dados
+              </button>
+              <button
+                type="button"
+                onClick={goToPayment}
+                disabled={isProcessing}
+                className={`h-11 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
+                  step === "PAYMENT"
+                    ? "bg-brand-red text-white shadow-lg"
+                    : "text-gray-400 hover:text-brand-black"
+                }`}
+              >
+                2. Pagamento
+              </button>
+            </div>
+
             <div className="mb-5 flex items-center justify-between gap-4 rounded-2xl border border-brand-black/5 bg-brand-black/[0.03] p-4">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-brand-black">
-                  Dados do pedido
+                  {step === "DETAILS" ? "Dados do pedido" : "Pagamento no cartao"}
                 </p>
                 <p className="text-[11px] font-medium text-gray-500 mt-1">
-                  Seus dados de cartao sao tokenizados pelo Mercado Pago.
+                  {step === "DETAILS"
+                    ? "Confira seus dados antes de abrir o pagamento."
+                    : "Seus dados de cartao sao tokenizados pelo Mercado Pago."}
                 </p>
               </div>
               <CheckCircle2 className="w-5 h-5 text-brand-green shrink-0" />
             </div>
 
-            <div className="space-y-4 mb-6">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
-                  Nome no pedido
-                </label>
-                <Input
-                  value={customerName}
-                  onChange={(event) => setCustomerName(event.target.value)}
-                  placeholder="Nome completo"
-                  className="h-14 rounded-2xl bg-white border-brand-black/10 text-sm font-bold px-5"
-                />
-              </div>
+            {step === "DETAILS" ? (
+              <div className="space-y-5">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
+                      Nome no pedido
+                    </label>
+                    <Input
+                      value={customerName}
+                      onChange={(event) => setCustomerName(event.target.value)}
+                      placeholder="Nome completo"
+                      className="h-14 rounded-2xl bg-white border-brand-black/10 text-sm font-bold px-5"
+                    />
+                  </div>
 
-              {isPhysical && (
-                <div className="rounded-2xl border border-brand-black/5 bg-brand-black/[0.02] p-4 space-y-4">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-brand-green" />
-                    <p className="text-[10px] font-black uppercase tracking-widest text-brand-black">
-                      Entrega
-                    </p>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <Input
-                      value={address.cep}
-                      onChange={(event) => handleCepChange(event.target.value)}
-                      placeholder="CEP"
-                      maxLength={9}
-                      className="h-12 rounded-2xl bg-white border-brand-black/10 text-xs font-bold px-4"
-                    />
-                    <Input
-                      value={address.state}
-                      onChange={(event) => handleAddressChange("state", event.target.value)}
-                      disabled={cepFetchedFields.includes("state")}
-                      placeholder="Estado"
-                      className="h-12 rounded-2xl bg-white border-brand-black/10 text-xs font-bold px-4 disabled:opacity-60"
-                    />
-                    <Input
-                      value={address.city}
-                      onChange={(event) => handleAddressChange("city", event.target.value)}
-                      disabled={cepFetchedFields.includes("city")}
-                      placeholder="Cidade"
-                      className="h-12 rounded-2xl bg-white border-brand-black/10 text-xs font-bold px-4 disabled:opacity-60"
-                    />
-                    <Input
-                      value={address.neighborhood}
-                      onChange={(event) => handleAddressChange("neighborhood", event.target.value)}
-                      disabled={cepFetchedFields.includes("neighborhood")}
-                      placeholder="Bairro"
-                      className="h-12 rounded-2xl bg-white border-brand-black/10 text-xs font-bold px-4 disabled:opacity-60"
-                    />
-                    <Input
-                      value={address.street}
-                      onChange={(event) => handleAddressChange("street", event.target.value)}
-                      disabled={cepFetchedFields.includes("street")}
-                      placeholder="Rua"
-                      className="h-12 rounded-2xl bg-white border-brand-black/10 text-xs font-bold px-4 disabled:opacity-60"
-                    />
-                    <Input
-                      value={address.number}
-                      onChange={(event) => handleAddressChange("number", event.target.value)}
-                      placeholder="Numero"
-                      className="h-12 rounded-2xl bg-white border-brand-black/10 text-xs font-bold px-4"
-                    />
-                    <Input
-                      value={address.complement}
-                      onChange={(event) => handleAddressChange("complement", event.target.value)}
-                      placeholder="Complemento"
-                      className="h-12 rounded-2xl bg-white border-brand-black/10 text-xs font-bold px-4 sm:col-span-2"
-                    />
-                  </div>
-                  {isFetchingCep && (
-                    <p className="text-[10px] font-black uppercase tracking-widest text-brand-green">
-                      Buscando endereco...
-                    </p>
+                  {isPhysical && (
+                    <div className="rounded-2xl border border-brand-black/5 bg-brand-black/[0.02] p-4 space-y-4">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-brand-green" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-brand-black">
+                          Entrega
+                        </p>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <Input
+                          value={address.cep}
+                          onChange={(event) => handleCepChange(event.target.value)}
+                          placeholder="CEP"
+                          maxLength={9}
+                          className="h-12 rounded-2xl bg-white border-brand-black/10 text-xs font-bold px-4"
+                        />
+                        <Input
+                          value={address.state}
+                          onChange={(event) => handleAddressChange("state", event.target.value)}
+                          disabled={cepFetchedFields.includes("state")}
+                          placeholder="Estado"
+                          className="h-12 rounded-2xl bg-white border-brand-black/10 text-xs font-bold px-4 disabled:opacity-60"
+                        />
+                        <Input
+                          value={address.city}
+                          onChange={(event) => handleAddressChange("city", event.target.value)}
+                          disabled={cepFetchedFields.includes("city")}
+                          placeholder="Cidade"
+                          className="h-12 rounded-2xl bg-white border-brand-black/10 text-xs font-bold px-4 disabled:opacity-60"
+                        />
+                        <Input
+                          value={address.neighborhood}
+                          onChange={(event) => handleAddressChange("neighborhood", event.target.value)}
+                          disabled={cepFetchedFields.includes("neighborhood")}
+                          placeholder="Bairro"
+                          className="h-12 rounded-2xl bg-white border-brand-black/10 text-xs font-bold px-4 disabled:opacity-60"
+                        />
+                        <Input
+                          value={address.street}
+                          onChange={(event) => handleAddressChange("street", event.target.value)}
+                          disabled={cepFetchedFields.includes("street")}
+                          placeholder="Rua"
+                          className="h-12 rounded-2xl bg-white border-brand-black/10 text-xs font-bold px-4 disabled:opacity-60"
+                        />
+                        <Input
+                          value={address.number}
+                          onChange={(event) => handleAddressChange("number", event.target.value)}
+                          placeholder="Numero"
+                          className="h-12 rounded-2xl bg-white border-brand-black/10 text-xs font-bold px-4"
+                        />
+                        <Input
+                          value={address.complement}
+                          onChange={(event) => handleAddressChange("complement", event.target.value)}
+                          placeholder="Complemento"
+                          className="h-12 rounded-2xl bg-white border-brand-black/10 text-xs font-bold px-4 sm:col-span-2"
+                        />
+                      </div>
+                      {isFetchingCep && (
+                        <p className="text-[10px] font-black uppercase tracking-widest text-brand-green">
+                          Buscando endereco...
+                        </p>
+                      )}
+                    </div>
                   )}
                 </div>
-              )}
-            </div>
 
-            {!publicKey ? (
-              <div className="rounded-2xl bg-brand-red/5 border border-brand-red/10 p-5 text-center">
-                <p className="text-xs font-bold text-brand-red uppercase tracking-widest">
-                  Chave publica do Mercado Pago nao configurada.
-                </p>
+                <button
+                  type="button"
+                  onClick={goToPayment}
+                  className="w-full h-14 rounded-2xl bg-brand-red text-white font-black uppercase tracking-widest text-[11px] shadow-xl shadow-brand-red/20 hover:bg-brand-red/90 transition-all active:scale-[0.98]"
+                >
+                  Continuar para pagamento
+                </button>
               </div>
             ) : (
-              <div className="relative mercado-pago-card-brick">
-                {!isBrickReady && (
-                  <div className="absolute inset-x-0 top-0 z-10 flex min-h-[320px] items-center justify-center rounded-2xl bg-white">
-                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-red border-t-transparent" />
+              <>
+                <button
+                  type="button"
+                  onClick={() => setStep("DETAILS")}
+                  disabled={isProcessing}
+                  className="mb-4 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-brand-black transition-colors disabled:opacity-40"
+                >
+                  Voltar para dados do pedido
+                </button>
+                {!publicKey ? (
+                  <div className="rounded-2xl bg-brand-red/5 border border-brand-red/10 p-5 text-center">
+                    <p className="text-xs font-bold text-brand-red uppercase tracking-widest">
+                      Chave publica do Mercado Pago nao configurada.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="relative mercado-pago-card-brick">
+                    {(!isBrickReady || isProcessing) && (
+                      <div className="absolute inset-0 z-20 flex min-h-[320px] flex-col items-center justify-center gap-4 rounded-2xl bg-white/95 backdrop-blur-sm">
+                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-red border-t-transparent" />
+                        {isProcessing && (
+                          <div className="space-y-1 text-center">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-brand-red">
+                              Confirmando pagamento
+                            </p>
+                            <p className="text-[11px] font-medium text-gray-500">
+                              Mantenha esta janela aberta.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    <CardPayment
+                      key={`${product.id}-${amount}`}
+                      locale="pt-BR"
+                      initialization={{
+                        amount,
+                        payer: { email: payerEmail || undefined },
+                      }}
+                      customization={{
+                        paymentMethods: {
+                          maxInstallments: 1,
+                          types: { included: ["credit_card"] },
+                        },
+                        visual: {
+                          hideFormTitle: true,
+                          style: {
+                            theme: "default",
+                            customVariables: {
+                              baseColor: "#FF1D55",
+                              borderRadiusMedium: "16px",
+                              formBackgroundColor: "#FFFFFF",
+                              inputBackgroundColor: "#FFFFFF",
+                            },
+                          },
+                        },
+                      }}
+                      onReady={() => setIsBrickReady(true)}
+                      onError={(error) => {
+                        console.error("Mercado Pago Brick error:", error);
+                        toast.error("Nao foi possivel carregar o checkout.");
+                      }}
+                      onSubmit={submitOrder}
+                    />
                   </div>
                 )}
-                <CardPayment
-                  key={`${product.id}-${amount}`}
-                  locale="pt-BR"
-                  initialization={{
-                    amount,
-                    payer: { email: user?.email || undefined },
-                  }}
-                  customization={{
-                    paymentMethods: {
-                      maxInstallments: 1,
-                      types: { included: ["credit_card"] },
-                    },
-                    visual: {
-                      hideFormTitle: true,
-                      style: {
-                        theme: "default",
-                        customVariables: {
-                          baseColor: "#FF1D55",
-                          borderRadiusMedium: "16px",
-                          formBackgroundColor: "#FFFFFF",
-                          inputBackgroundColor: "#FFFFFF",
-                        },
-                      },
-                    },
-                  }}
-                  onReady={() => setIsBrickReady(true)}
-                  onError={(error) => {
-                    console.error("Mercado Pago Brick error:", error);
-                    toast.error("Nao foi possivel carregar o checkout.");
-                  }}
-                  onSubmit={submitOrder}
-                />
-              </div>
+              </>
             )}
 
             {isProcessing && (

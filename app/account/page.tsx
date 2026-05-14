@@ -382,13 +382,6 @@ export default function AccountPage() {
                       Pedidos da Loja
                     </h3>
                   </div>
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="h-11 rounded-xl border-brand-black/10 bg-white font-black uppercase tracking-widest text-[9px]"
-                  >
-                    <Link href="/products">Ver Produtos</Link>
-                  </Button>
                 </div>
 
                 {isProductOrdersLoading ? (

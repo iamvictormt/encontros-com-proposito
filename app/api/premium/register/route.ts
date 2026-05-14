@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { sql } from "@/lib/db";
-import { createGreenCard } from "@/lib/card-utils";
-import { hashPassword, signJWT, verifyJWT } from "@/lib/auth-utils";
+import { hashPassword, verifyJWT, signJWT } from "@/lib/auth-utils";
 import { validateEmail, validateMinAge } from "@/lib/utils/validators";
 
 function generateRandomPassword(length = 6) {
@@ -72,12 +71,10 @@ export async function POST(request: Request) {
         return NextResponse.json({ message: "Este e-mail ja esta em uso" }, { status: 409 });
       }
 
+      // Update user data but keep current category — payment will promote to PREMIUM
       const result = await sql`
         UPDATE users
-        SET user_category = 'PREMIUM',
-            has_premium_accessory = TRUE,
-            verification_status = 'APROVADO',
-            full_name = ${nome},
+        SET full_name = ${nome},
             email = ${normalizedEmail},
             birth_date = ${birthDate},
             city = COALESCE(${cidade || null}, city)
@@ -95,6 +92,7 @@ export async function POST(request: Request) {
       generatedPassword = generateRandomPassword(6);
       const hashedPassword = await hashPassword(generatedPassword);
 
+      // Create user with PENDENTE_PAGAMENTO — will be promoted after payment
       const result = await sql`
         INSERT INTO users (
           full_name,
@@ -113,9 +111,9 @@ export async function POST(request: Request) {
           NULL,
           ${hashedPassword},
           ${birthDate},
-          'PREMIUM',
-          TRUE,
-          'APROVADO',
+          'PENDENTE_PAGAMENTO',
+          FALSE,
+          'PENDENTE',
           ${cidade || null}
         )
         RETURNING id, full_name, email, is_admin, verification_status, user_category,
@@ -124,77 +122,7 @@ export async function POST(request: Request) {
       finalUser = result[0];
     }
 
-    const existingGreenCard = await sql`
-      SELECT *
-      FROM cards
-      WHERE owner_id = ${finalUser.id} AND type = 'GREEN'
-      LIMIT 1
-    `;
-
-    let greenCard = existingGreenCard[0];
-    if (existingGreenCard.length === 0) {
-      greenCard = await createGreenCard(finalUser.id, finalUser.full_name, finalUser.birth_date);
-    } else if (!greenCard.owner_id) {
-      const fixedCard = await sql`
-        UPDATE cards
-        SET owner_id = ${finalUser.id},
-            name = COALESCE(name, ${finalUser.full_name}),
-            birth_date = COALESCE(birth_date, ${finalUser.birth_date})
-        WHERE id = ${greenCard.id}
-        RETURNING *
-      `;
-      greenCard = fixedCard[0];
-    }
-
-    if (greenCard?.id) {
-      const existingPhysicalRequest = await sql`
-        SELECT id FROM physical_card_requests
-        WHERE card_id = ${greenCard.id}
-          AND status IN ('PENDENTE', 'PAGO', 'EM_PRODUCAO', 'ENVIADO')
-        LIMIT 1
-      `;
-
-      if (existingPhysicalRequest.length === 0) {
-        const physicalCep = cep || "00000-000";
-        const physicalAddress =
-          endereco || (deliveryMethod === "PARTNER" ? "Retirada local MeetOff" : "Endereco a confirmar");
-        const physicalNumber = numero || "S/N";
-        const physicalNeighborhood = bairro || "A confirmar";
-        const physicalCity = cidade || "A confirmar";
-        const physicalState = estado || "NA";
-
-        await sql`
-          INSERT INTO physical_card_requests (
-            user_id,
-            card_id,
-            full_name,
-            cep,
-            address,
-            number,
-            complement,
-            neighborhood,
-            city,
-            state,
-            amount,
-            status
-          ) VALUES (
-            ${finalUser.id},
-            ${greenCard.id},
-            ${finalUser.full_name},
-            ${physicalCep},
-            ${physicalAddress},
-            ${physicalNumber},
-            ${complemento || null},
-            ${physicalNeighborhood},
-            ${physicalCity},
-            ${physicalState},
-            ${120.3},
-            'EM_PRODUCAO'
-          )
-        `;
-      }
-    }
-
+    // Pre-create the accessory order so we have an ID for the payment step
     const orderResult = await sql`
       INSERT INTO premium_accessory_orders (
         user_id,
@@ -225,37 +153,40 @@ export async function POST(request: Request) {
     `;
     const orderId = orderResult[0].id;
 
-    const token = await signJWT({
+    // Set a limited auth cookie with PENDENTE_PAGAMENTO status.
+    // The middleware will gate this user to /pendente-pagamento until payment is approved.
+    const tempToken = await signJWT({
       userId: finalUser.id,
       email: finalUser.email || "",
       isAdmin: finalUser.is_admin || false,
-      verificationStatus: finalUser.verification_status,
-      userCategory: finalUser.user_category,
-      hasPremiumAccessory: finalUser.has_premium_accessory,
+      verificationStatus: finalUser.verification_status || "PENDENTE",
+      userCategory: finalUser.user_category || "PENDENTE_PAGAMENTO",
+      hasPremiumAccessory: false,
     });
 
-    const response = NextResponse.json(
+    const res = NextResponse.json(
       {
-        message: isUpgrade ? "Upgrade realizado com sucesso" : "Usuario criado com sucesso",
+        message: "Dados registrados. Prossiga para o pagamento.",
         password: generatedPassword,
         login: finalUser.email,
         isUpgrade,
+        userId: finalUser.id,
         orderId,
       },
       { status: 201 },
     );
 
-    response.cookies.set("auth_token", token, {
+    res.cookies.set("auth_token", tempToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24,
+      maxAge: 60 * 60 * 2, // 2 hours to complete payment
       path: "/",
     });
 
-    return response;
+    return res;
   } catch (error) {
-    console.error("Error creating premium user:", error);
+    console.error("Error registering premium user:", error);
     return NextResponse.json({ message: "Erro interno do servidor" }, { status: 500 });
   }
 }

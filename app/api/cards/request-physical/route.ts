@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getUserSession } from "@/lib/auth-utils";
+import { resolvePaymentAmount } from "@/lib/payments";
 import { neon } from '@neondatabase/serverless';
 
 export async function POST(request: Request) {
@@ -70,7 +71,7 @@ export async function POST(request: Request) {
         ${neighborhood}, 
         ${city}, 
         ${state},
-        ${120.3},
+        ${resolvePaymentAmount(120.3)},
         'PAGO' -- Automatically marking as PAGO for simulation as requested
       ) RETURNING *
     `;

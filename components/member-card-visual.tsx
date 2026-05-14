@@ -51,11 +51,11 @@ export const MemberCardVisual = forwardRef<HTMLDivElement, MemberCardVisualProps
                 </h3>
               </div>
 
-              <div className="w-16 h-16 sm:w-24 sm:h-24">
+              <div className="w-12 h-12 sm:w-20 sm:h-20">
                 <img
                   src={qrUrl}
                   alt="QR Code"
-                  className="w-12 h-12 sm:w-full sm:h-full object-contain mix-blend-screen mt-2"
+                  className="w-10 h-10 sm:w-full sm:h-full object-contain mix-blend-screen mt-2"
                 />
               </div>
             </div>

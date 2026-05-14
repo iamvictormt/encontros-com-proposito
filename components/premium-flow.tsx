@@ -24,6 +24,11 @@ import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
 import Link from "next/link";
 import { toast } from "sonner";
+import { isPaymentTestMode, resolvePaymentAmount } from "@/lib/payments";
+import { CardPayment, initMercadoPago } from "@mercadopago/sdk-react";
+import { Loader2 } from "lucide-react";
+
+const premiumAccessoryPrice = (price: string) => isPaymentTestMode() ? "R$ 1,00" : price;
 
 type Step =
   | "WELCOME"
@@ -34,6 +39,7 @@ type Step =
   | "DELIVERY_METHOD"
   | "ADDRESS_FORM"
   | "PARTNER_SELECTION"
+  | "PAYMENT"
   | "CONFIRMATION";
 
 type Category = "RELACIONAMENTOS" | "NETWORKING";
@@ -147,7 +153,7 @@ const ProductCard = ({
 
         <div className="absolute top-6 right-6 bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl shadow-xl border border-white/50 z-20">
           <span className="text-[11px] font-black tracking-tighter text-brand-black">
-            {product.price}
+            {premiumAccessoryPrice(product.price)}
           </span>
         </div>
       </div>
@@ -197,6 +203,17 @@ export function PremiumFlow() {
   const [cepFetchedFields, setCepFetchedFields] = useState<string[]>([]);
   const [isFetchingCep, setIsFetchingCep] = useState(false);
   const [isPurchasing, setIsPurchasing] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [orderInfo, setOrderInfo] = useState<{ id: string; amount: number; userId?: string } | null>(null);
+  const [isBrickReady, setIsBrickReady] = useState(false);
+
+  const publicKey = process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY;
+
+  React.useEffect(() => {
+    if (publicKey) {
+      initMercadoPago(publicKey, { locale: "pt-BR" });
+    }
+  }, [publicKey]);
 
   const [credentials, setCredentials] = useState<{login: string, password: string | null, isUpgrade?: boolean, orderId?: string} | null>(null);
 
@@ -261,6 +278,7 @@ export function PremiumFlow() {
     "MODEL_SELECTION",
     "DELIVERY_METHOD",
     "ADDRESS_FORM",
+    "PAYMENT",
     "CONFIRMATION",
   ];
   
@@ -270,7 +288,7 @@ export function PremiumFlow() {
   };
 
   const progressValue = Math.max(0, 
-    ((getStepIndex(step) - 1) / (stepOrder.indexOf("ADDRESS_FORM") - 1)) * 100
+    ((getStepIndex(step) - 1) / (stepOrder.indexOf("PAYMENT") - 1)) * 100
   );
 
   const nextStep = (next: Step) => setStep(next);
@@ -349,7 +367,12 @@ export function PremiumFlow() {
       if (response.ok) {
         const data = await response.json();
         setCredentials({ login: data.login, password: data.password, isUpgrade: data.isUpgrade, orderId: data.orderId });
-        nextStep("CONFIRMATION");
+        
+        const originalPrice = selectedProduct?.price ? parseFloat(selectedProduct.price.replace(/[^\d,]/g, "").replace(",", ".")) : 0;
+        const price = resolvePaymentAmount(originalPrice);
+        setOrderInfo({ id: data.orderId, amount: price, userId: data.userId });
+        
+        nextStep("PAYMENT");
       } else {
         const data = await response.json();
         toast.error(data.message || "Erro ao registrar");
@@ -359,6 +382,45 @@ export function PremiumFlow() {
       toast.error("Erro ao conectar com o servidor.");
     } finally {
       setIsPurchasing(false);
+    }
+  };
+
+  const handlePaymentSubmit = async (paymentData: any) => {
+    if (!orderInfo) return;
+
+    setIsProcessingPayment(true);
+    try {
+      const response = await fetch("/api/premium/pay", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: orderInfo.id,
+          userId: orderInfo.userId,
+          cardTokenId: paymentData.token,
+          paymentMethodId: paymentData.payment_method_id,
+          issuerId: paymentData.issuer_id,
+          installments: paymentData.installments,
+          payer: paymentData.payer,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.status === "APPROVED") {
+        toast.success("Pagamento aprovado! Bem-vindo ao MeetOff Premium!");
+        nextStep("CONFIRMATION");
+        return;
+      }
+
+      // Payment not approved — stay on payment step and show the error
+      toast.error(
+        data.message || "Pagamento recusado. Verifique os dados do cartão e tente novamente.",
+      );
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao processar pagamento. Tente novamente.");
+    } finally {
+      setIsProcessingPayment(false);
     }
   };
 
@@ -443,20 +505,23 @@ export function PremiumFlow() {
 
       <div className="space-y-3">
         {[
-          "Termos de Uso",
-          "Política de Privacidade",
-          "Política LGPD Brasil",
-          "Política de Identificação Premium MeetOff",
+          { label: "Termos de Uso", href: "/privacy" },
+          { label: "Política de Privacidade", href: "/privacy" },
+          { label: "Política LGPD Brasil", href: "/privacy#conformidade" },
+          { label: "Política de Identificação Premium MeetOff", href: "/privacy" },
         ].map((term) => (
-          <div
-            key={term}
+          <Link
+            key={term.label}
+            href={term.href}
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center justify-between p-5 rounded-2xl bg-white border border-brand-black/5 hover:border-brand-red/20 transition-all cursor-pointer group"
           >
             <span className="text-[11px] font-black uppercase tracking-widest text-gray-600">
-              {term}
+              {term.label}
             </span>
             <ExternalLink size={14} className="text-gray-300 group-hover:text-brand-red" />
-          </div>
+          </Link>
         ))}
       </div>
 
@@ -724,7 +789,7 @@ export function PremiumFlow() {
 
         <div className="space-y-2">
           <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
-            E-mail de login
+            E-mail (será utilizado para login na plataforma)
           </label>
           <Input
             name="email"
@@ -732,7 +797,7 @@ export function PremiumFlow() {
             value={formData.email}
             onChange={handleInputChange}
             placeholder="seu@email.com"
-            className="h-14 rounded-2xl bg-white border-brand-black/5 text-[11px] font-bold px-6"
+            className="h-14 rounded-2xl bg-white border-brand-black/5 text-[11px] font-bold uppercase tracking-widest px-6"
           />
         </div>
 
@@ -980,6 +1045,78 @@ export function PremiumFlow() {
     </div>
   );
 
+  const renderPayment = () => (
+    <div className="w-full max-w-lg space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+      <div className="text-center space-y-3">
+        <h3 className="text-2xl font-black uppercase tracking-tighter">Pagamento Seguro</h3>
+        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-relaxed">
+          Sua experiência premium está a um passo. <br />
+          O pagamento é processado via Mercado Pago em ambiente seguro.
+        </p>
+      </div>
+
+      <div className="bg-white rounded-[2rem] p-6 border border-brand-black/5 shadow-xl shadow-brand-black/5 space-y-4">
+        <div className="flex justify-between items-center pb-4 border-b border-brand-black/5">
+          <div className="space-y-0.5">
+            <span className="text-[9px] font-black text-brand-red uppercase tracking-widest">Resumo</span>
+            <h4 className="font-black uppercase tracking-tighter text-sm">{selectedProduct?.name}</h4>
+          </div>
+          <div className="text-right">
+            <span className="text-xl font-black tracking-tighter text-brand-black">
+              {selectedProduct?.price}
+            </span>
+          </div>
+        </div>
+
+        <div className="relative mercado-pago-card-brick py-2">
+          {(!isBrickReady || isProcessingPayment) && (
+            <div className="absolute inset-0 z-20 flex min-h-[300px] flex-col items-center justify-center gap-4 rounded-2xl bg-white/95 backdrop-blur-sm">
+              <Loader2 className="h-8 w-8 animate-spin text-brand-red" />
+              <p className="text-[10px] font-black uppercase tracking-widest text-brand-red">
+                {isProcessingPayment ? "Processando Pagamento..." : "Carregando Checkout..."}
+              </p>
+            </div>
+          )}
+          
+          {publicKey && (
+            <CardPayment
+              initialization={{
+                amount: orderInfo?.amount || 0,
+                payer: { email: formData.email },
+              }}
+              customization={{
+                paymentMethods: {
+                  maxInstallments: 1,
+                  types: { included: ["credit_card"] },
+                },
+                visual: {
+                  hideFormTitle: true,
+                  style: {
+                    theme: "default",
+                    customVariables: {
+                      baseColor: "#FF1D55",
+                      borderRadiusMedium: "20px",
+                    },
+                  },
+                },
+              }}
+              onReady={() => setIsBrickReady(true)}
+              onError={(error) => {
+                console.error("MP Error:", error);
+                toast.error("Erro ao carregar o checkout.");
+              }}
+              onSubmit={handlePaymentSubmit}
+            />
+          )}
+        </div>
+      </div>
+
+      <p className="text-center text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+        Pagamento 100% criptografado e seguro
+      </p>
+    </div>
+  );
+
   const renderConfirmation = () => (
     <div className="w-full max-w-lg space-y-8 animate-in fade-in zoom-in-95 duration-700">
       <div className="text-center space-y-4">
@@ -1093,6 +1230,7 @@ export function PremiumFlow() {
         {step === "DELIVERY_METHOD" && renderDeliveryMethod()}
         {step === "ADDRESS_FORM" && renderAddressForm()}
         {step === "PARTNER_SELECTION" && renderPartnerSelection()}
+        {step === "PAYMENT" && renderPayment()}
         {step === "CONFIRMATION" && renderConfirmation()}
       </div>
 

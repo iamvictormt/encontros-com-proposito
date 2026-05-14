@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { ConfirmModal } from "@/components/modals/confirm-modal";
 import { CheckoutModal } from "@/components/checkout-modal";
+import { isPaymentTestMode, resolvePaymentAmount } from "@/lib/payments";
 
 const USER_PLAN_FEATURES = [
   "Relacionamentos-Namoros-Encontros-Compromisso Sério",
@@ -42,9 +43,9 @@ export function SubscriptionPlans() {
   const isCanceledButValid = user?.subscriptionStatus === 'canceled' && expiryDate > new Date();
   const hasPremiumAccess = !!user?.hasPremiumAccessory;
 
-  const isTestMode = process.env.NEXT_PUBLIC_TEST_MODE === "true";
-  const userPlanAmount = isTestMode ? 1.0 : 170.3;
-  const partnerPlanAmount = isTestMode ? 1.0 : 232.7;
+  const isTestMode = isPaymentTestMode();
+  const userPlanAmount = resolvePaymentAmount(170.3);
+  const partnerPlanAmount = resolvePaymentAmount(232.7);
 
   const [checkoutConfig, setCheckoutConfig] = useState<{
     isOpen: boolean;

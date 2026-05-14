@@ -32,6 +32,13 @@ export function CheckoutModal({
     }
   }, [publicKey]);
 
+  useEffect(() => {
+    if (isOpen) {
+      setIsBrickReady(false);
+      setIsProcessing(false);
+    }
+  }, [isOpen]);
+
   const formattedAmount = useMemo(
     () => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(amount),
     [amount],
@@ -66,9 +73,12 @@ export function CheckoutModal({
     } catch (err) {
       console.error(err);
       toast.error("Erro na conexao com o servidor");
-      throw err;
-    } finally {
       setIsProcessing(false);
+      return;
+    } finally {
+      if (!isOpen) {
+        setIsProcessing(false);
+      }
     }
   };
 
@@ -147,9 +157,19 @@ export function CheckoutModal({
               </div>
             ) : (
               <div className="relative mercado-pago-card-brick">
-                {!isBrickReady && (
-                  <div className="absolute inset-x-0 top-0 z-10 flex min-h-[320px] items-center justify-center rounded-2xl bg-white">
+                {(!isBrickReady || isProcessing) && (
+                  <div className="absolute inset-0 z-20 flex min-h-[320px] flex-col items-center justify-center gap-4 rounded-2xl bg-white/95 backdrop-blur-sm">
                     <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-red border-t-transparent" />
+                    {isProcessing && (
+                      <div className="space-y-1 text-center">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-brand-red">
+                          Confirmando assinatura
+                        </p>
+                        <p className="text-[11px] font-medium text-gray-500">
+                          Mantenha esta janela aberta.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
                 <CardPayment

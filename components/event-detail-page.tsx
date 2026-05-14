@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatBRL } from "@/lib/utils/format";
+import { resolvePaymentAmount } from "@/lib/payments";
 import { SiteHeader } from "./site-header";
 import { SiteFooter } from "./site-footer";
 import {
@@ -460,7 +461,7 @@ export function EventDetailPage() {
                         </div>
                       </div>
                       <h3 className="text-sm font-black text-brand-black text-center uppercase tracking-tight px-2">{product.name}</h3>
-                      <p className="text-xs text-brand-orange font-bold mt-1 uppercase tracking-widest">{formatBRL(product.price || 0)}</p>
+                      <p className="text-xs text-brand-orange font-bold mt-1 uppercase tracking-widest">{formatBRL(resolvePaymentAmount(Number(product.price || 0)))}</p>
                     </div>
                   );
                 })}
@@ -645,7 +646,7 @@ export function EventDetailPage() {
                   {viewingProduct.name}
                 </DialogTitle>
                 <div className="text-2xl font-black text-brand-orange mb-8 tracking-tighter">
-                  {formatBRL(viewingProduct.price || 0)}
+                  {formatBRL(resolvePaymentAmount(Number(viewingProduct.price || 0)))}
                 </div>
                 
                 <DialogDescription className="text-base text-gray-500 font-medium leading-relaxed mb-10">

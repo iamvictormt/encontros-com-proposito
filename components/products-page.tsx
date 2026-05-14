@@ -8,6 +8,7 @@ import Image from "next/image";
 import { SiteHeader } from "./site-header";
 import { SiteFooter } from "./site-footer";
 import { formatBRL } from "@/lib/utils/format";
+import { resolvePaymentAmount } from "@/lib/payments";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -235,7 +236,7 @@ export function ProductsPage() {
     }
 
     // Price filter
-    if (product.price > priceRange[0]) return false;
+    if (resolvePaymentAmount(Number(product.price || 0)) > priceRange[0]) return false;
 
     // Theme filter
     if (selectedTheme !== "all") {
@@ -370,9 +371,13 @@ export function ProductsPage() {
                           <div className="mt-auto pt-6 border-t border-brand-green/5 flex items-center justify-between">
                             <div className="flex flex-col">
                               <span className="text-2xl font-black text-brand-black tracking-tighter">
-                                {formatBRL(product.price)}
+                                {formatBRL(resolvePaymentAmount(Number(product.price || 0)))}
                               </span>
-                              {product.originalPrice && (
+                              {process.env.NEXT_PUBLIC_TEST_MODE === "true" ? (
+                                <span className="text-[9px] text-brand-red font-black uppercase tracking-widest">
+                                  Teste
+                                </span>
+                              ) : product.originalPrice && (
                                 <span className="text-xs text-gray-400 line-through font-bold">
                                   {formatBRL(product.originalPrice)}
                                 </span>

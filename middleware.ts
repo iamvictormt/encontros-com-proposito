@@ -20,13 +20,16 @@ export async function middleware(request: NextRequest) {
     pathname === "/consent" ||
     pathname === "/security" ||
     pathname === "/cookies" ||
-        pathname === "/faq" ||
-
+    pathname === "/faq" ||
     pathname === "/" ||
     pathname === "/api/venues" ||
     pathname.startsWith("/api/premium/register") ||
+    pathname.startsWith("/api/premium/pay") ||
+    pathname.startsWith("/api/premium/pending-order") ||
     pathname.startsWith("/api/webhooks") ||
     pathname.startsWith("/api/auth");
+
+  const isPendingPaymentPage = pathname === "/pendente-pagamento";
 
   const hasVisitedLanding = request.cookies.get("visited_landing")?.value === "true";
 
@@ -57,6 +60,20 @@ export async function middleware(request: NextRequest) {
       // Verify token
       const { payload } = await jwtVerify(token, JWT_SECRET);
 
+      const userCategory = payload.userCategory as string;
+
+      // ── GATE: PENDENTE_PAGAMENTO ──────────────────────────────────────
+      // Users who started premium flow but haven't paid yet can ONLY reach
+      // the payment page. Any other protected route bounces them back there.
+      if (!payload.isAdmin && userCategory === "PENDENTE_PAGAMENTO") {
+        // Let them reach the payment page and the needed APIs
+        if (isPendingPaymentPage || isPublicPath) {
+          return NextResponse.next();
+        }
+        // Redirect login/signup/home to the payment page too
+        return NextResponse.redirect(new URL("/pendente-pagamento", request.url));
+      }
+
       // If already logged in and trying to access login/signup/home
       if (isPublicPath && (pathname === "/login" || pathname === "/signup" || pathname === "/")) {
         if (payload.isAdmin) {
@@ -85,7 +102,6 @@ export async function middleware(request: NextRequest) {
         const isVerified = payload.verificationStatus === "APROVADO";
         const isVerificationPage = pathname === "/em-analise";
         const isPremiumFlowPage = pathname === "/premium-flow";
-        const userCategory = payload.userCategory as string;
         const hasPremiumAccessory = payload.hasPremiumAccessory as boolean;
 
         // Force PREMIUM users to buy accessory first

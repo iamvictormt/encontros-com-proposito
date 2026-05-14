@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { verifyJWT } from "@/lib/auth-utils";
 import { sql } from "@/lib/db";
 import { MercadoPagoService } from "@/lib/mercado-pago";
+import { resolvePaymentAmount } from "@/lib/payments";
 
 async function ensureProductOrdersTable() {
   await sql`
@@ -45,6 +46,19 @@ function mapPaymentStatus(status: string) {
   return "PENDING";
 }
 
+function validateMercadoPagoEnvironment() {
+  const publicKey = process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY || "";
+  const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN || "";
+
+  if (process.env.NEXT_PUBLIC_TEST_MODE === "true") {
+    if (!publicKey.startsWith("TEST-") || !accessToken.startsWith("TEST-")) {
+      return "Modo teste ativo: use NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY e MERCADOPAGO_ACCESS_TOKEN com credenciais TEST da mesma aplicacao Mercado Pago.";
+    }
+  }
+
+  return null;
+}
+
 export async function GET() {
   try {
     await ensureProductOrdersTable();
@@ -79,6 +93,11 @@ export async function POST(request: Request) {
 
     if (!payload?.userId) {
       return NextResponse.json({ message: "Nao autorizado" }, { status: 401 });
+    }
+
+    const credentialsError = validateMercadoPagoEnvironment();
+    if (credentialsError) {
+      return NextResponse.json({ message: credentialsError }, { status: 400 });
     }
 
     const {
@@ -138,8 +157,10 @@ export async function POST(request: Request) {
     }
 
     const user = userResults[0];
-    const unitPrice = Number(product.price);
-    const totalAmount = Number((unitPrice * normalizedQuantity).toFixed(2));
+    const originalUnitPrice = Number(product.price);
+    const originalTotalAmount = Number((originalUnitPrice * normalizedQuantity).toFixed(2));
+    const totalAmount = resolvePaymentAmount(originalTotalAmount);
+    const unitPrice = Number((totalAmount / normalizedQuantity).toFixed(2));
 
     const inserted = await sql`
       INSERT INTO product_orders (

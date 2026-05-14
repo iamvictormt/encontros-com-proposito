@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { MercadoPagoConfig, PreApproval } from "mercadopago";
+import { isPaymentTestMode, resolvePayerEmail, resolvePaymentAmount } from "@/lib/payments";
 
 if (!process.env.MERCADOPAGO_ACCESS_TOKEN) {
   console.warn("MERCADOPAGO_ACCESS_TOKEN is not defined in .env");
@@ -9,18 +10,16 @@ export const mpClient = new MercadoPagoConfig({
   accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN || "TEST-PLACEHOLDER",
 });
 
-const isTestMode = process.env.NEXT_PUBLIC_TEST_MODE === "true";
-
 export const SUBSCRIPTION_PLANS: Record<string, { name: string, amount: number, description: string, planId?: string }> = {
   USER: {
     name: "MeetOff Usuários",
-    amount: isTestMode ? 1.0 : 170.3,
+    amount: resolvePaymentAmount(170.3),
     description: "Assinatura Mensal MeetOff para Usuários",
     planId: "69ce9463cda24799b9c5a3b613001df0" // ID do plano criado no painel
   },
   PARTNER: {
     name: "MeetOff Empresas/Parceiros",
-    amount: isTestMode ? 1.0 : 232.7,
+    amount: resolvePaymentAmount(232.7),
     description: "Assinatura Mensal MeetOff para Empresas e Parceiros",
   },
 };
@@ -184,15 +183,17 @@ export class MercadoPagoService {
     identificationType?: string;
     identificationNumber?: string;
   }) {
+    const paymentAmount = resolvePaymentAmount(amount);
+    const payerEmail = resolvePayerEmail(userEmail);
     const body: any = {
-      transaction_amount: amount,
+      transaction_amount: paymentAmount,
       token: cardTokenId,
       description: productName,
       installments: installments || 1,
       payment_method_id: paymentMethodId,
       external_reference: orderId,
       payer: {
-        email: userEmail.trim().toLowerCase(),
+        email: payerEmail.trim().toLowerCase(),
       },
     };
 
@@ -225,6 +226,11 @@ export class MercadoPagoService {
       let errorMessage = data.message || "Erro ao processar pagamento";
       if (data.cause?.[0]?.description) {
         errorMessage = data.cause[0].description;
+      }
+      if (response.status === 500 && data.message === "internal_error") {
+        errorMessage = isPaymentTestMode()
+          ? "Erro interno do Mercado Pago em modo teste. Confira se MERCADOPAGO_ACCESS_TOKEN e NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY sao credenciais TEST da mesma aplicacao."
+          : "Erro interno do Mercado Pago. Tente novamente em alguns instantes.";
       }
 
       throw {
