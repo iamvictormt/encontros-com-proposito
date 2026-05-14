@@ -37,11 +37,7 @@ export function TestimonialCarousel({
   return (
     <div className="w-full relative py-12">
       {/* Background Glows */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] opacity-20 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-64 h-64 bg-brand-orange/20 blur-[120px] rounded-full" />
-        <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-brand-green/20 blur-[120px] rounded-full" />
-      </div>
-
+ 
       <div className="relative h-[480px] sm:h-[420px] md:h-[480px] w-full overflow-hidden sm:overflow-visible md:mb-12">
         <div className="relative w-full h-full max-w-7xl mx-auto">
           {reviews.map((review, index) => {
@@ -93,12 +89,7 @@ export function TestimonialCarousel({
                     "opacity-0 pointer-events-none scale-[0.70] left-[24%] z-0",
                 )}
               >
-                {/* Decorative Elements */}
-                <div className="absolute top-10 right-10 flex gap-2">
-                   <div className="w-1.5 h-1.5 rounded-full bg-brand-red/40" />
-                   <div className="w-1.5 h-1.5 rounded-full bg-brand-orange/40" />
-                   <div className="w-1.5 h-1.5 rounded-full bg-brand-green/40" />
-                </div>
+ 
 
                 {/* QUOTE ICON */}
                 <div className="mb-8 relative">

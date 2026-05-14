@@ -81,8 +81,8 @@ export function SiteFooter() {
       )}
 
       <div className={isLoggedIn ? "mt-16 pt-8" : " " + "mx-auto max-w-7xl border-t border-brand-black/5 flex flex-col lg:flex-row items-center justify-between gap-8"}>
-        <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold text-center lg:text-left">
-          Copyright © {year} MEET OFF. Todos os direitos reservados.
+        <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold text-center lg:text-left md:mb-0 mb-2">
+          Copyright © {year} MEET OFF. <br className="md:hidden flex"/> Todos os direitos reservados.
         </p>
         <div className="flex gap-x-8 gap-y-4 text-[10px] text-gray-400 font-bold flex-wrap justify-center lg:justify-end">
           <Link
