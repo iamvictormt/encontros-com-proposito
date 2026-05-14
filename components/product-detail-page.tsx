@@ -33,6 +33,8 @@ import { useParams } from "next/navigation";
 import { formatBRL } from "@/lib/utils/format";
 import { toast } from "sonner";
 import { useLoading } from "@/providers/loading-provider";
+import { useAuth } from "@/hooks/use-auth";
+import { ProductCheckoutModal } from "@/components/product-checkout-modal";
 
 const reviews = [
   {
@@ -60,10 +62,12 @@ export function ProductDetailPage() {
   const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { setIsLoading: setGlobalLoading } = useLoading();
+  const { user } = useAuth();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState("");
   const [fabricationOpen, setFabricationOpen] = useState(false);
   const [materialsOpen, setMaterialsOpen] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -245,9 +249,18 @@ export function ProductDetailPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Button 
+                    disabled={product.stock <= 0}
                     className="h-16 rounded-2xl bg-brand-orange hover:bg-brand-orange/90 text-white font-black uppercase tracking-widest text-sm shadow-xl shadow-brand-orange/20"
                     onClick={() => {
-                      toast.info("A funcionalidade de compra será implementada em breve!");
+                      if (!user) {
+                        toast.error("Voce precisa estar logado para comprar.");
+                        return;
+                      }
+                      if (sizes.length > 0 && !selectedSize) {
+                        toast.error("Escolha um tamanho antes de continuar.");
+                        return;
+                      }
+                      setIsCheckoutOpen(true);
                     }}
                   >
                     Garantir Agora
@@ -405,6 +418,19 @@ export function ProductDetailPage() {
           )}
         </div>
       </main>
+
+      <ProductCheckoutModal
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+        product={product}
+        selectedSize={selectedSize}
+        onSuccess={() => {
+          setProduct((prev: any) => {
+            if (!prev || prev.type === "Digital") return prev;
+            return { ...prev, stock: Math.max(Number(prev.stock || 0) - 1, 0) };
+          });
+        }}
+      />
 
       <SiteFooter />
     </div>

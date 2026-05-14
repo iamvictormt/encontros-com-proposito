@@ -1,17 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useEffect, useMemo, useState } from "react";
+import { CardPayment, initMercadoPago } from "@mercadopago/sdk-react";
+import { CheckCircle2, CreditCard, LockKeyhole, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
+
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/use-auth";
-import { ShieldCheck, ArrowRight, CreditCard, QrCode } from "lucide-react";
 
 export function CheckoutModal({
   isOpen,
   onClose,
   planType,
   amount,
-  onSuccess
+  onSuccess,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -20,98 +22,179 @@ export function CheckoutModal({
   onSuccess: () => void;
 }) {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isBrickReady, setIsBrickReady] = useState(false);
   const { user } = useAuth();
+  const publicKey = process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY;
 
-  const processSubscription = async () => {
+  useEffect(() => {
+    if (publicKey) {
+      initMercadoPago(publicKey, { locale: "pt-BR" });
+    }
+  }, [publicKey]);
+
+  const formattedAmount = useMemo(
+    () => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(amount),
+    [amount],
+  );
+
+  const processSubscription = async (cardTokenId: string) => {
     try {
       setIsProcessing(true);
-      
+
       const res = await fetch("/api/subscriptions/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planType }),
+        body: JSON.stringify({ planType, cardTokenId }),
       });
-      
+
       const data = await res.json();
-      
-      if (res.ok && data.init_point) {
-        // Redirecionar para o ambiente seguro do Mercado Pago
-        window.location.href = data.init_point;
-      } else {
-        toast.error(data.message || "Erro ao processar assinatura");
-        setIsProcessing(false);
+
+      if (res.ok && data.status === "active") {
+        toast.success("Assinatura ativada com sucesso!");
+        onSuccess();
+        onClose();
+        return;
       }
+
+      if (res.ok && data.init_point) {
+        window.location.href = data.init_point;
+        return;
+      }
+
+      toast.error(data.message || "Erro ao processar assinatura");
+      throw new Error(data.message || "Subscription failed");
     } catch (err) {
       console.error(err);
-      toast.error("Erro na conexão com o servidor");
+      toast.error("Erro na conexao com o servidor");
+      throw err;
+    } finally {
       setIsProcessing(false);
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="w-[95%] sm:max-w-[450px] bg-white rounded-[2rem] sm:rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col">
-        <DialogHeader className="p-6 sm:p-8 pb-4 text-center">
-          <div className="w-16 h-16 bg-brand-green/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <ShieldCheck className="w-8 h-8 text-brand-green" />
-          </div>
-          <DialogTitle className="text-xl sm:text-2xl font-black text-brand-black uppercase tracking-tighter">
-            Assinatura Segura
-          </DialogTitle>
-          <p className="text-[12px] font-medium text-gray-500 mt-2">
-            Você será redirecionado para o ambiente seguro do Mercado Pago para escolher a sua forma de pagamento.
-          </p>
-        </DialogHeader>
+      <DialogContent className="w-[96%] sm:max-w-[720px] max-h-[92vh] bg-white rounded-[2rem] sm:rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col">
+        <div className="grid min-h-0 grid-cols-1 lg:grid-cols-[0.82fr_1.18fr]">
+          <div className="bg-brand-black text-white p-6 sm:p-8 flex flex-col justify-between gap-8">
+            <DialogHeader className="text-left">
+              <div className="w-14 h-14 bg-brand-green/20 rounded-2xl flex items-center justify-center mb-5">
+                <ShieldCheck className="w-7 h-7 text-brand-green" />
+              </div>
+              <DialogTitle className="text-2xl sm:text-3xl font-black uppercase tracking-tighter leading-none">
+                Checkout Transparente
+              </DialogTitle>
+              <p className="text-[11px] font-bold text-white/55 uppercase tracking-widest mt-3 leading-relaxed">
+                Complete sua assinatura sem sair da experiencia MeetOff.
+              </p>
+            </DialogHeader>
 
-        <div className="px-6 sm:px-8 py-6 bg-brand-black/5 border-y border-brand-black/5 flex justify-between items-center shrink-0">
-          <div className="flex flex-col">
-            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest leading-none mb-1">
-              Plano Selecionado
-            </span>
-            <span className="text-sm font-bold text-brand-black">
-              {planType === "USER" ? "MeetOff Usuários" : "MeetOff Parceiros"}
-            </span>
-          </div>
-          <div className="flex flex-col items-end">
-             <span className="text-[10px] font-black text-brand-green uppercase tracking-widest leading-none mb-1">
-              Mensal
-            </span>
-            <span className="text-xl sm:text-2xl font-black text-brand-black tracking-tighter">
-              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(amount)}
-            </span>
-          </div>
-        </div>
-        
-        <div className="p-6 sm:p-8">
-          <div className="flex items-center justify-center gap-4 mb-6 text-gray-400">
-            <div className="flex items-center gap-2">
-               <CreditCard className="w-5 h-5" />
-               <span className="text-xs font-bold uppercase tracking-wider">Cartão</span>
-            </div>
-            <div className="w-1 h-1 rounded-full bg-gray-300"></div>
-            <div className="flex items-center gap-2">
-               <QrCode className="w-5 h-5" />
-               <span className="text-xs font-bold uppercase tracking-wider">Pix</span>
+            <div className="space-y-4">
+              <div className="rounded-[1.5rem] bg-white/5 border border-white/10 p-5">
+                <span className="text-[9px] font-black text-brand-green uppercase tracking-[0.2em]">
+                  Plano selecionado
+                </span>
+                <div className="mt-3 flex items-end justify-between gap-4">
+                  <div>
+                    <p className="text-lg font-black uppercase tracking-tighter leading-none">
+                      {planType === "USER" ? "MeetOff Usuarios" : "MeetOff Parceiros"}
+                    </p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mt-2">
+                      Renovacao mensal
+                    </p>
+                  </div>
+                  <p className="text-2xl font-black tracking-tighter text-brand-green">
+                    {formattedAmount}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 text-white/50">
+                <div className="rounded-2xl bg-white/5 border border-white/10 p-4">
+                  <CreditCard className="w-5 h-5 text-brand-green mb-3" />
+                  <p className="text-[9px] font-black uppercase tracking-widest leading-tight">
+                    Cartao tokenizado
+                  </p>
+                </div>
+                <div className="rounded-2xl bg-white/5 border border-white/10 p-4">
+                  <LockKeyhole className="w-5 h-5 text-brand-green mb-3" />
+                  <p className="text-[9px] font-black uppercase tracking-widest leading-tight">
+                    Dados protegidos
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
-          <button 
-            onClick={processSubscription}
-            disabled={isProcessing}
-            className="w-full bg-[#009EE3] text-white font-bold h-14 rounded-[20px] flex items-center justify-center gap-2 hover:bg-[#0089C5] transition-colors disabled:opacity-70 shadow-lg shadow-[#009EE3]/20"
-          >
-            {isProcessing ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          <div className="min-h-0 overflow-y-auto p-5 sm:p-8 bg-white">
+            <div className="mb-5 flex items-center justify-between gap-4 rounded-2xl border border-brand-black/5 bg-brand-black/[0.03] p-4">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-brand-black">
+                  Pagamento no cartao
+                </p>
+                <p className="text-[11px] font-medium text-gray-500 mt-1">
+                  O Mercado Pago valida os dados em ambiente seguro.
+                </p>
+              </div>
+              <CheckCircle2 className="w-5 h-5 text-brand-green shrink-0" />
+            </div>
+
+            {!publicKey ? (
+              <div className="rounded-2xl bg-brand-red/5 border border-brand-red/10 p-5 text-center">
+                <p className="text-xs font-bold text-brand-red uppercase tracking-widest">
+                  Chave publica do Mercado Pago nao configurada.
+                </p>
+              </div>
             ) : (
-              <>
-                Ir para o Pagamento <ArrowRight className="w-5 h-5" />
-              </>
+              <div className="relative mercado-pago-card-brick">
+                {!isBrickReady && (
+                  <div className="absolute inset-x-0 top-0 z-10 flex min-h-[320px] items-center justify-center rounded-2xl bg-white">
+                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-red border-t-transparent" />
+                  </div>
+                )}
+                <CardPayment
+                  key={`${planType}-${amount}`}
+                  locale="pt-BR"
+                  initialization={{
+                    amount,
+                    payer: { email: user?.email || undefined },
+                  }}
+                  customization={{
+                    paymentMethods: {
+                      maxInstallments: 1,
+                      types: { included: ["credit_card"] },
+                    },
+                    visual: {
+                      hideFormTitle: true,
+                      style: {
+                        theme: "default",
+                        customVariables: {
+                          baseColor: "#FF1D55",
+                          borderRadiusMedium: "16px",
+                          formBackgroundColor: "#FFFFFF",
+                          inputBackgroundColor: "#FFFFFF",
+                        },
+                      },
+                    },
+                  }}
+                  onReady={() => setIsBrickReady(true)}
+                  onError={(error) => {
+                    console.error("Mercado Pago Brick error:", error);
+                    toast.error("Nao foi possivel carregar o checkout.");
+                  }}
+                  onSubmit={async (formData) => {
+                    await processSubscription(formData.token);
+                  }}
+                />
+              </div>
             )}
-          </button>
-          
-          <p className="text-[10px] text-center text-gray-400 mt-4 uppercase tracking-widest font-semibold">
-            Processado de forma 100% segura pelo Mercado Pago
-          </p>
+
+            {isProcessing && (
+              <p className="text-center text-[10px] font-black text-brand-red uppercase tracking-widest mt-4">
+                Confirmando sua assinatura...
+              </p>
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>

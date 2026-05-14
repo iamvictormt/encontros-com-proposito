@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Token inválido" }, { status: 401 });
     }
 
-    const { planType } = await request.json();
+    const { planType, cardTokenId } = await request.json();
     
     if (!planType || (planType !== "USER" && planType !== "PARTNER")) {
       return NextResponse.json({ message: "Plano inválido" }, { status: 400 });
@@ -41,25 +41,44 @@ export async function POST(request: Request) {
     }
     const userEmail = userResults[0].email;
 
-    // Create subscription in Mercado Pago
-    const subscription = await MercadoPagoService.createSubscription(
-      payload.userId,
-      userEmail,
-      planType
-    );
+    const subscription = cardTokenId
+      ? {
+          ...(await MercadoPagoService.createTransparentSubscription(
+            payload.userId,
+            userEmail,
+            planType,
+            cardTokenId,
+          )),
+          init_point: undefined,
+        }
+      : {
+          ...(await MercadoPagoService.createSubscription(
+            payload.userId,
+            userEmail,
+            planType
+          )),
+          status: "pending",
+          next_payment_date: null,
+        };
+
+    const subscriptionStatus = subscription.status === "authorized" ? "active" : "pending";
+    const fallbackExpiry = new Date();
+    fallbackExpiry.setDate(fallbackExpiry.getDate() + 30);
 
     // Update user with active/pending subscription
     await sql`
       UPDATE users 
       SET subscription_plan = ${planType}, 
-          subscription_status = 'pending',
+          subscription_status = ${subscriptionStatus},
+          subscription_expiry = ${subscriptionStatus === "active" ? (subscription.next_payment_date || fallbackExpiry.toISOString()) : null},
           mp_preapproval_id = ${subscription.id}
       WHERE id = ${payload.userId}
     `;
 
     return NextResponse.json({ 
       init_point: subscription.init_point,
-      id: subscription.id 
+      id: subscription.id,
+      status: subscriptionStatus,
     });
   } catch (error: any) {
     console.error("Subscription creation error:", error);

@@ -120,6 +120,18 @@ button,
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-green to-brand-red;
   }
+
+  .mercado-pago-card-brick button[type="submit"] {
+    @apply h-14 rounded-2xl bg-brand-red font-black uppercase tracking-widest text-[11px] shadow-xl shadow-brand-red/20 transition-all hover:bg-brand-red/90 active:scale-[0.98];
+  }
+
+  .mercado-pago-card-brick :is(input, select) {
+    @apply rounded-2xl border-brand-black/10 text-sm font-bold;
+  }
+
+  .mercado-pago-card-brick label {
+    @apply text-[10px] font-black uppercase tracking-widest text-gray-500;
+  }
 }
 
 @layer base {

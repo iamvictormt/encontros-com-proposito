@@ -4,7 +4,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { User, Mail, Shield, CreditCard, ArrowRight, Calendar, LogOut, MapPin } from "lucide-react";
+import { User, Mail, Shield, CreditCard, ArrowRight, Calendar, LogOut, MapPin, Package } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -12,13 +12,16 @@ import { EditProfileModal } from "@/components/modals/edit-profile-modal";
 import { ChangePasswordModal } from "@/components/modals/change-password-modal";
 import { cn, formatName } from "@/lib/utils";
 import { toast } from "sonner";
+import { formatBRL } from "@/lib/utils/format";
 
 export default function AccountPage() {
   const { user, isLoggedIn, isLoading, logout, refreshAuth } = useAuth();
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const [order, setOrder] = useState<any>(null);
+  const [productOrders, setProductOrders] = useState<any[]>([]);
   const [isOrderLoading, setIsOrderLoading] = useState(false);
+  const [isProductOrdersLoading, setIsProductOrdersLoading] = useState(false);
   const [isModeUpdating, setIsModeUpdating] = useState(false);
 
   useEffect(() => {
@@ -31,6 +34,21 @@ export default function AccountPage() {
         })
         .finally(() => setIsOrderLoading(false));
     }
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    setIsProductOrdersLoading(true);
+    fetch("/api/product-orders")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data.orders)) setProductOrders(data.orders);
+      })
+      .catch((error) => {
+        console.error("Error fetching product orders:", error);
+      })
+      .finally(() => setIsProductOrdersLoading(false));
   }, [user]);
 
   const getStatusInfo = (status: string) => {
@@ -51,6 +69,16 @@ export default function AccountPage() {
       },
       PICKED_UP: { label: "Retirado", icon: User, color: "text-gray-600", bg: "bg-gray-50" },
       CANCELADO: { label: "Cancelado", icon: LogOut, color: "text-red-600", bg: "bg-red-50" },
+    };
+    return config[status] || config.PENDING;
+  };
+
+  const getProductOrderStatusInfo = (status: string) => {
+    const config: Record<string, { label: string; color: string; bg: string }> = {
+      APPROVED: { label: "Pago", color: "text-brand-green", bg: "bg-brand-green/10" },
+      PENDING: { label: "Pendente", color: "text-amber-600", bg: "bg-amber-50" },
+      REJECTED: { label: "Recusado", color: "text-red-600", bg: "bg-red-50" },
+      CANCELLED: { label: "Cancelado", color: "text-red-600", bg: "bg-red-50" },
     };
     return config[status] || config.PENDING;
   };
@@ -343,6 +371,81 @@ export default function AccountPage() {
                   </p>
                 </div>
               )}
+
+              <div className="glass p-5 sm:p-10 rounded-[2rem] sm:rounded-[3rem] border-white/40 shadow-xl space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div className="space-y-1">
+                    <span className="text-[8px] sm:text-[10px] font-black text-brand-red uppercase tracking-[0.2em]">
+                      Historico
+                    </span>
+                    <h3 className="font-black text-lg sm:text-2xl text-brand-black uppercase tracking-tighter">
+                      Pedidos da Loja
+                    </h3>
+                  </div>
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="h-11 rounded-xl border-brand-black/10 bg-white font-black uppercase tracking-widest text-[9px]"
+                  >
+                    <Link href="/products">Ver Produtos</Link>
+                  </Button>
+                </div>
+
+                {isProductOrdersLoading ? (
+                  <div className="py-8 flex justify-center">
+                    <div className="h-7 w-7 animate-spin rounded-full border-4 border-solid border-brand-red border-r-transparent"></div>
+                  </div>
+                ) : productOrders.length > 0 ? (
+                  <div className="space-y-3">
+                    {productOrders.slice(0, 5).map((productOrder) => {
+                      const paymentStatus = getProductOrderStatusInfo(productOrder.payment_status);
+                      return (
+                        <div
+                          key={productOrder.id}
+                          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-brand-black/[0.02] border border-brand-black/5 p-4"
+                        >
+                          <div className="flex items-center gap-4 min-w-0">
+                            <div className="w-12 h-12 rounded-2xl bg-brand-red/10 text-brand-red flex items-center justify-center shrink-0">
+                              <Package className="w-5 h-5" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs sm:text-sm font-black uppercase tracking-tight text-brand-black truncate">
+                                {productOrder.product_name}
+                              </p>
+                              <p className="text-[9px] font-bold uppercase tracking-widest text-gray-400 mt-1">
+                                #{productOrder.id.substring(0, 8).toUpperCase()} - {new Date(productOrder.created_at).toLocaleDateString("pt-BR")}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between sm:justify-end gap-3">
+                            <span
+                              className={cn(
+                                "inline-flex items-center px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest",
+                                paymentStatus.bg,
+                                paymentStatus.color,
+                              )}
+                            >
+                              {paymentStatus.label}
+                            </span>
+                            <span className="text-sm font-black text-brand-black">
+                              {formatBRL(productOrder.total_amount)}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="rounded-2xl bg-brand-black/[0.02] border border-brand-black/5 p-8 text-center">
+                    <p className="text-sm font-black text-brand-black uppercase tracking-tight">
+                      Nenhum pedido de produto ainda
+                    </p>
+                    <p className="text-xs text-gray-500 font-medium mt-2">
+                      Suas compras aprovadas e pendentes vao aparecer aqui.
+                    </p>
+                  </div>
+                )}
+              </div>
 
               {/* Personal Data Grid */}
               <div className="glass p-5 sm:p-10 rounded-[2rem] sm:rounded-[3rem] border-white/40 shadow-xl space-y-6 sm:space-y-10">

@@ -176,6 +176,38 @@ async function setupDatabase() {
     await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS images TEXT`;
     await sql`ALTER TABLE products DROP COLUMN IF EXISTS brand_id`;
 
+    // Product Orders table
+    await sql`
+      CREATE TABLE IF NOT EXISTS product_orders (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+        product_id UUID REFERENCES products(id) ON DELETE SET NULL,
+        product_name TEXT NOT NULL,
+        product_image TEXT,
+        quantity INTEGER NOT NULL DEFAULT 1,
+        unit_price DECIMAL(10, 2) NOT NULL,
+        total_amount DECIMAL(10, 2) NOT NULL,
+        selected_size TEXT,
+        product_type TEXT,
+        customer_name TEXT,
+        customer_email TEXT,
+        delivery_method TEXT DEFAULT 'DIGITAL',
+        address_cep TEXT,
+        address_state TEXT,
+        address_city TEXT,
+        address_neighborhood TEXT,
+        address_street TEXT,
+        address_number TEXT,
+        address_complement TEXT,
+        payment_status TEXT DEFAULT 'PENDING',
+        fulfillment_status TEXT DEFAULT 'PENDING',
+        mp_payment_id TEXT,
+        mp_status_detail TEXT,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
     // Participations table (Event joining)
     await sql`
       CREATE TABLE IF NOT EXISTS participations (

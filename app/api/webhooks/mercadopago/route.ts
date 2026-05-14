@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
 import { sql } from "@/lib/db";
 import { MercadoPagoService } from "@/lib/mercado-pago";
-import crypto from "crypto";
+
+function mapPaymentStatus(status: string) {
+  if (status === "approved") return "APPROVED";
+  if (status === "rejected") return "REJECTED";
+  if (status === "cancelled") return "CANCELLED";
+  return "PENDING";
+}
 
 export async function POST(request: Request) {
   try {
@@ -39,6 +45,47 @@ export async function POST(request: Request) {
             mp_preapproval_id = ${dataId}
         WHERE id = ${userId}
       `;
+    }
+
+    if (type === "payment" && dataId) {
+      const payment = await MercadoPagoService.getPayment(dataId);
+      const orderId = payment.external_reference;
+      const paymentStatus = mapPaymentStatus(payment.status);
+
+      if (orderId) {
+        const currentOrders = await sql`
+          SELECT product_id, quantity, product_type, payment_status
+          FROM product_orders
+          WHERE id = ${orderId}
+          LIMIT 1
+        `;
+
+        if (currentOrders.length > 0) {
+          const order = currentOrders[0];
+          const isPhysical = order.product_type !== "Digital";
+          const fulfillmentStatus = paymentStatus === "APPROVED"
+            ? isPhysical ? "PAID" : "DELIVERED"
+            : "PENDING";
+
+          await sql`
+            UPDATE product_orders
+            SET payment_status = ${paymentStatus},
+                fulfillment_status = ${fulfillmentStatus},
+                mp_payment_id = ${String(payment.id)},
+                mp_status_detail = ${payment.status_detail || null},
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ${orderId}
+          `;
+
+          if (paymentStatus === "APPROVED" && order.payment_status !== "APPROVED" && isPhysical && order.product_id) {
+            await sql`
+              UPDATE products
+              SET stock = GREATEST(stock - ${Number(order.quantity || 1)}, 0)
+              WHERE id = ${order.product_id}
+            `;
+          }
+        }
+      }
     }
 
     return NextResponse.json({ received: true });
