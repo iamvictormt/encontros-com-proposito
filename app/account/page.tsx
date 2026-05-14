@@ -100,7 +100,7 @@ export default function AccountPage() {
       }
 
       await refreshAuth();
-      toast.success(mode === "PREMIUM" ? "Perfil premium ativado" : "Perfil comum ativado");
+      toast.success(mode === "PREMIUM" ? "Perfil Premium ativado" : "Perfil Membro ativado");
     } catch (error: any) {
       console.error("Profile mode update error:", error);
       toast.error(error.message || "Erro ao alterar perfil");
@@ -329,7 +329,7 @@ export default function AccountPage() {
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div className="space-y-1">
                       <span className="text-[8px] sm:text-[10px] font-black text-brand-green uppercase tracking-[0.2em]">
-                        Modo de Navegacao
+                        Modo de Navegação
                       </span>
                       <h3 className="font-black text-lg sm:text-2xl text-brand-black uppercase tracking-tighter">
                         Perfil MeetOff
@@ -347,7 +347,7 @@ export default function AccountPage() {
                             : "bg-transparent text-brand-black hover:bg-white",
                         )}
                       >
-                        Usuario
+                        Membro
                       </Button>
                       <Button
                         type="button"
@@ -366,7 +366,7 @@ export default function AccountPage() {
                   </div>
                   <p className="text-xs sm:text-sm text-gray-500 font-medium leading-relaxed">
                     Seu acesso premium segue liberado em qualquer modo. Use o perfil comum para ver
-                    a experiencia MeetOff aberta, ou volte ao premium para os eventos e areas
+                    a experiência MeetOff aberta, ou volte ao premium para os eventos e áreas
                     exclusivas.
                   </p>
                 </div>
@@ -376,7 +376,7 @@ export default function AccountPage() {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="space-y-1">
                     <span className="text-[8px] sm:text-[10px] font-black text-brand-red uppercase tracking-[0.2em]">
-                      Historico
+                      Histórico
                     </span>
                     <h3 className="font-black text-lg sm:text-2xl text-brand-black uppercase tracking-tighter">
                       Pedidos da Loja
@@ -434,7 +434,7 @@ export default function AccountPage() {
                       Nenhum pedido de produto ainda
                     </p>
                     <p className="text-xs text-gray-500 font-medium mt-2">
-                      Suas compras aprovadas e pendentes vao aparecer aqui.
+                      Suas compras aprovadas e pendentes vão aparecer aqui.
                     </p>
                   </div>
                 )}

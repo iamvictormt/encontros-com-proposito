@@ -103,7 +103,7 @@ export function SiteHeader() {
                         {user?.fullName.split(" ")[0]}
                       </span>
                       <span className="text-[9px] font-bold uppercase tracking-widest text-brand-black/40">
-                        {user?.userCategory || "Membro"}
+                        {user?.userCategory === 'PREMIUM' ? 'Premium' : 'Membro'}
                       </span>
                     </div>
                     <Avatar className="h-9 w-9 border-2 border-white shadow-sm transition-transform group-hover:scale-105">
