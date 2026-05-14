@@ -56,12 +56,6 @@ export default async function EmAnalisePage() {
         </div>
 
         <DocumentUploadForm />
-
-        <div className="pt-6 border-t border-gray-100 flex flex-col gap-4">
-          <Button variant="outline" className="w-full h-12 rounded-xl font-bold uppercase tracking-widest text-xs" asChild>
-            <Link href="/">Voltar ao Início</Link>
-          </Button>
-        </div>
       </div>
     </div>
   );

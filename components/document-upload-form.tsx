@@ -6,6 +6,7 @@ import { useAuth } from "@/providers/auth-provider";
 import { Loader2, UploadCloud, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { authService } from "@/lib/services/auth.service";
 
 export function DocumentUploadForm() {
   const { user, refreshAuth } = useAuth();
@@ -18,6 +19,11 @@ export function DocumentUploadForm() {
       setFile(e.target.files[0]);
     }
   };
+
+  const handleLogout = async () => {
+    await authService.logout();
+    router.push("/login");
+  }
 
   const handleUpload = async () => {
     if (!file) return;
@@ -129,6 +135,10 @@ export function DocumentUploadForm() {
         className="w-full h-12 rounded-xl bg-brand-black hover:bg-brand-black/90 text-white font-bold uppercase tracking-widest text-xs"
       >
         {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Enviar Documento"}
+      </Button>
+
+      <Button variant="link" className="w-full h-12 rounded-xl font-bold uppercase tracking-widest text-xs" onClick={handleLogout}>
+        Sair do Aplicativo
       </Button>
     </div>
   );
