@@ -156,3 +156,150 @@ export async function sendPasswordResetEmail(email: string, code: string) {
     attachments,
   });
 }
+
+export async function sendPremiumWelcomeEmail(email: string, password?: string) {
+  const logoPath = path.join(process.cwd(), "public", "logo-meet-off.svg");
+  const logoExists = fs.existsSync(logoPath);
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        .container {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          max-width: 600px;
+          margin: 0 auto;
+        }
+        .card {
+          background-color: #ffffff;
+          border-radius: 32px;
+          padding: 30px;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+          text-align: center;
+          border: 1px solid #eeeeee;
+        }
+        .logo {
+          width: 180px;
+          height: auto;
+          margin-bottom: 40px;
+        }
+        .title {
+          color: #000000;
+          font-size: 28px;
+          font-weight: 900;
+          text-transform: uppercase;
+          letter-spacing: -1px;
+          margin-bottom: 16px;
+          line-height: 1.1;
+        }
+        .highlight {
+          color: #FF1D55;
+        }
+        .description {
+          color: #666666;
+          font-size: 16px;
+          font-weight: 500;
+          margin-bottom: 30px;
+          line-height: 1.5;
+        }
+        .credentials-container {
+          background-color: #000000;
+          color: #ffffff;
+          padding: 24px;
+          border-radius: 24px;
+          text-align: left;
+          margin-bottom: 30px;
+        }
+        .label {
+          color: #FF1D55;
+          font-size: 10px;
+          font-weight: 900;
+          text-transform: uppercase;
+          letter-spacing: 2px;
+          display: block;
+          margin-bottom: 4px;
+        }
+        .value {
+          font-size: 16px;
+          font-weight: 700;
+          margin-bottom: 16px;
+          word-break: break-all;
+        }
+        .btn {
+          display: inline-block;
+          background-color: #FF1D55;
+          color: #ffffff !important;
+          text-decoration: none;
+          padding: 16px 32px;
+          border-radius: 16px;
+          font-weight: 900;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          font-size: 12px;
+          margin-top: 10px;
+        }
+        .footer {
+          margin-top: 40px;
+          color: #999999;
+          font-size: 11px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 2px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="card">
+          ${logoExists ? '<img src="cid:logo" alt="MeetOff" class="logo">' : '<h1 style="color: #0A4742; margin-bottom: 40px;">MeetOff</h1>'}
+          
+          <h1 class="title">Acesso <span class="highlight">Premium</span></h1>
+          
+          <p class="description">
+            Sua jornada exclusiva na MeetOff começou!<br>
+            Seu acesso Premium foi liberado. Use os dados abaixo para entrar.
+          </p>
+          
+          <div class="credentials-container">
+            <span class="label">E-mail (Login)</span>
+            <div class="value">${email}</div>
+            
+            ${password ? `
+              <span class="label">Senha Gerada</span>
+              <div class="value">${password}</div>
+            ` : ""}
+          </div>
+          
+          <a href="https://meet-off.vercel.app/login" class="btn">Acessar Plataforma</a>
+          
+          <p style="font-size: 12px; color: #999; margin-top: 30px;">
+            Recomendamos que você altere sua senha após o primeiro acesso para sua maior segurança.
+          </p>
+          
+          <div class="footer">
+            © MeetOff Brasil
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const attachments = [];
+  if (logoExists) {
+    attachments.push({
+      filename: "logo-meet-off.svg",
+      path: logoPath,
+      cid: "logo",
+    });
+  }
+
+  return sendMail({
+    to: email,
+    subject: `Bem-vindo ao MeetOff Premium`,
+    html,
+    attachments,
+  });
+}

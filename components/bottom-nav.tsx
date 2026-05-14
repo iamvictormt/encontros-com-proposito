@@ -28,7 +28,7 @@ export function BottomNav() {
     { href: "/products", label: "Produtos", icon: ShoppingCart },
     ...(isLoggedIn && user?.userCategory === "PREMIUM" && !hasPremiumAccess
       ? []
-      : [{ href: "/member-card", label: "Card", icon: CreditCard }]),
+      : [{ href: "/member-card", label: "Cartão", icon: CreditCard }]),
     { href: "/portfolio", label: "Portfólio", icon: FolderOpen },
     { href: "/account", label: "Conta", icon: User },
   ];
@@ -38,7 +38,7 @@ export function BottomNav() {
   }
 
   return (
-    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] lg:hidden w-fit max-w-[95vw]">
+    <div className="fixed bottom-2 left-1/2 -translate-x-1/2 z-[100] lg:hidden w-fit max-w-[95vw]">
       <nav className="flex items-center gap-1 p-2 rounded-full bg-brand-black/90 backdrop-blur-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
         {navLinks.map((link) => {
           const isActive = pathname.startsWith(link.href);

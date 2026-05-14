@@ -28,7 +28,7 @@ import { isPaymentTestMode, resolvePaymentAmount } from "@/lib/payments";
 import { CardPayment, initMercadoPago } from "@mercadopago/sdk-react";
 import { Loader2 } from "lucide-react";
 
-const premiumAccessoryPrice = (price: string) => isPaymentTestMode() ? "R$ 1,00" : price;
+const premiumAccessoryPrice = (price: string) => (isPaymentTestMode() ? "R$ 1,00" : price);
 
 type Step =
   | "WELCOME"
@@ -88,8 +88,7 @@ const PRODUCTS: Record<AccessoryType, Product[]> = {
       name: "Gravata Heritage",
       price: "R$ 249,00",
       images: ["/images/gravata-02.png", "/images/gravata-borboleta-02.png"],
-      description:
-        "Design sofisticado social para eventos privados e experiências premium.",
+      description: "Design sofisticado social para eventos privados e experiências premium.",
       category: "Social",
     },
   ],
@@ -98,11 +97,11 @@ const PRODUCTS: Record<AccessoryType, Product[]> = {
 // Removing static PARTNERS as it will be fetched from the database
 const PARTNERS_PLACEHOLDER = [];
 
-const ProductCard = ({ 
-  product, 
-  onSelect 
-}: { 
-  product: Product; 
+const ProductCard = ({
+  product,
+  onSelect,
+}: {
+  product: Product;
   onSelect: (p: Product) => void;
 }) => {
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -119,7 +118,7 @@ const ProductCard = ({
   }, [isHovered, product.images.length]);
 
   return (
-    <div 
+    <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className="group relative bg-white rounded-[2.5rem] overflow-hidden border border-brand-black/5 hover:border-brand-red/20 transition-all hover:shadow-2xl hover:shadow-brand-red/5"
@@ -133,19 +132,19 @@ const ProductCard = ({
             fill
             className={cn(
               "object-cover transition-all duration-1000",
-              idx === currentIdx ? "opacity-100 scale-100" : "opacity-0 scale-105"
+              idx === currentIdx ? "opacity-100 scale-100" : "opacity-0 scale-105",
             )}
           />
         ))}
-        
+
         {/* Pagination Dots */}
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
           {product.images.map((_, idx) => (
-            <div 
+            <div
               key={idx}
               className={cn(
                 "w-1.5 h-1.5 rounded-full transition-all duration-500",
-                idx === currentIdx ? "bg-white w-4" : "bg-white/40"
+                idx === currentIdx ? "bg-white w-4" : "bg-white/40",
               )}
             />
           ))}
@@ -204,7 +203,11 @@ export function PremiumFlow() {
   const [isFetchingCep, setIsFetchingCep] = useState(false);
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-  const [orderInfo, setOrderInfo] = useState<{ id: string; amount: number; userId?: string } | null>(null);
+  const [orderInfo, setOrderInfo] = useState<{
+    id?: string;
+    amount: number;
+    userId?: string;
+  } | null>(null);
   const [isBrickReady, setIsBrickReady] = useState(false);
 
   const publicKey = process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY;
@@ -215,12 +218,17 @@ export function PremiumFlow() {
     }
   }, [publicKey]);
 
-  const [credentials, setCredentials] = useState<{login: string, password: string | null, isUpgrade?: boolean, orderId?: string} | null>(null);
+  const [credentials, setCredentials] = useState<{
+    login: string;
+    password: string | null;
+    isUpgrade?: boolean;
+    orderId?: string;
+  } | null>(null);
 
   const currentYear = new Date().getFullYear().toString();
 
   const [venues, setVenues] = useState<any[]>([]);
-  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
 
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     const R = 6371; // Earth radius in km
@@ -249,7 +257,7 @@ export function PremiumFlow() {
         (error) => {
           console.error("Error getting location", error);
           toast.error("Não foi possível obter sua localização.");
-        }
+        },
       );
     }
   };
@@ -281,14 +289,15 @@ export function PremiumFlow() {
     "PAYMENT",
     "CONFIRMATION",
   ];
-  
+
   const getStepIndex = (s: Step) => {
     if (s === "PARTNER_SELECTION") return stepOrder.indexOf("ADDRESS_FORM");
     return stepOrder.indexOf(s);
   };
 
-  const progressValue = Math.max(0, 
-    ((getStepIndex(step) - 1) / (stepOrder.indexOf("PAYMENT") - 1)) * 100
+  const progressValue = Math.max(
+    0,
+    ((getStepIndex(step) - 1) / (stepOrder.indexOf("PAYMENT") - 1)) * 100,
   );
 
   const nextStep = (next: Step) => setStep(next);
@@ -296,13 +305,13 @@ export function PremiumFlow() {
   const handleCepChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     let cep = e.target.value.replace(/\D/g, "");
     if (cep.length > 8) cep = cep.slice(0, 8);
-    
+
     // Add mask 00000-000
     let maskedCep = cep;
     if (cep.length > 5) {
       maskedCep = `${cep.slice(0, 5)}-${cep.slice(5)}`;
     }
-    
+
     setFormData((prev) => ({ ...prev, cep: maskedCep }));
 
     if (cep.length === 8) {
@@ -366,12 +375,21 @@ export function PremiumFlow() {
       });
       if (response.ok) {
         const data = await response.json();
-        setCredentials({ login: data.login, password: data.password, isUpgrade: data.isUpgrade, orderId: data.orderId });
-        
-        const originalPrice = selectedProduct?.price ? parseFloat(selectedProduct.price.replace(/[^\d,]/g, "").replace(",", ".")) : 0;
+        // The account is NOT created yet, we just store the generated password and upgrade status
+        setCredentials({
+          login: data.login,
+          password: data.password,
+          isUpgrade: data.isUpgrade,
+        });
+
+        const originalPrice = selectedProduct?.price
+          ? parseFloat(selectedProduct.price.replace(/[^\d,]/g, "").replace(",", "."))
+          : 0;
         const price = resolvePaymentAmount(originalPrice);
-        setOrderInfo({ id: data.orderId, amount: price, userId: data.userId });
-        
+
+        // We don't have an orderId or userId yet
+        setOrderInfo({ amount: price });
+
         nextStep("PAYMENT");
       } else {
         const data = await response.json();
@@ -390,12 +408,19 @@ export function PremiumFlow() {
 
     setIsProcessingPayment(true);
     try {
-      const response = await fetch("/api/premium/pay", {
+      const response = await fetch("/api/premium/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          orderId: orderInfo.id,
-          userId: orderInfo.userId,
+          // Registration Data
+          ...formData,
+          accessoryType,
+          model: selectedProduct?.name,
+          deliveryMethod,
+          category,
+          password: credentials?.password,
+
+          // Payment Data
           cardTokenId: paymentData.token,
           paymentMethodId: paymentData.payment_method_id,
           issuerId: paymentData.issuer_id,
@@ -407,6 +432,9 @@ export function PremiumFlow() {
       const data = await response.json();
 
       if (response.ok && data.status === "APPROVED") {
+        // Store the orderId returned by the checkout endpoint for the confirmation screen
+        setCredentials((prev) => (prev ? { ...prev, orderId: data.orderId } : null));
+
         toast.success("Pagamento aprovado! Bem-vindo ao MeetOff Premium!");
         nextStep("CONFIRMATION");
         return;
@@ -683,13 +711,13 @@ export function PremiumFlow() {
 
       <div className="grid grid-cols-1 gap-6">
         {(accessoryType ? PRODUCTS[accessoryType] : []).map((product) => (
-          <ProductCard 
-            key={product.id} 
-            product={product} 
-            onSelect={(p) => { 
-              setSelectedProduct(p); 
-              nextStep("DELIVERY_METHOD"); 
-            }} 
+          <ProductCard
+            key={product.id}
+            product={product}
+            onSelect={(p) => {
+              setSelectedProduct(p);
+              nextStep("DELIVERY_METHOD");
+            }}
           />
         ))}
       </div>
@@ -1002,7 +1030,7 @@ export function PremiumFlow() {
                     userLocation.lat,
                     userLocation.lng,
                     parseFloat(venue.latitude),
-                    parseFloat(venue.longitude)
+                    parseFloat(venue.longitude),
                   );
                 }
                 return { ...venue, distanceValue };
@@ -1031,8 +1059,8 @@ export function PremiumFlow() {
                   </div>
                   <div className="flex flex-col items-end gap-1">
                     <span className="text-[10px] font-black text-brand-green uppercase">
-                      {partner.distanceValue !== Infinity 
-                        ? `${partner.distanceValue.toFixed(1)} km` 
+                      {partner.distanceValue !== Infinity
+                        ? `${partner.distanceValue.toFixed(1)} km`
                         : "Disponível"}
                     </span>
                     <div className="w-2 h-2 rounded-full bg-brand-green animate-pulse" />
@@ -1050,16 +1078,20 @@ export function PremiumFlow() {
       <div className="text-center space-y-3">
         <h3 className="text-2xl font-black uppercase tracking-tighter">Pagamento Seguro</h3>
         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-relaxed">
-          Sua experiência premium está a um passo. <br />
-          O pagamento é processado via Mercado Pago em ambiente seguro.
+          Sua experiência premium está a um passo. <br />O pagamento é processado via Mercado Pago
+          em ambiente seguro.
         </p>
       </div>
 
       <div className="bg-white rounded-[2rem] p-6 border border-brand-black/5 shadow-xl shadow-brand-black/5 space-y-4">
         <div className="flex justify-between items-center pb-4 border-b border-brand-black/5">
           <div className="space-y-0.5">
-            <span className="text-[9px] font-black text-brand-red uppercase tracking-widest">Resumo</span>
-            <h4 className="font-black uppercase tracking-tighter text-sm">{selectedProduct?.name}</h4>
+            <span className="text-[9px] font-black text-brand-red uppercase tracking-widest">
+              Resumo
+            </span>
+            <h4 className="font-black uppercase tracking-tighter text-sm">
+              {selectedProduct?.name}
+            </h4>
           </div>
           <div className="text-right">
             <span className="text-xl font-black tracking-tighter text-brand-black">
@@ -1077,7 +1109,7 @@ export function PremiumFlow() {
               </p>
             </div>
           )}
-          
+
           {publicKey && (
             <CardPayment
               initialization={{
@@ -1136,7 +1168,7 @@ export function PremiumFlow() {
         <div className="relative bg-gradient-to-br from-brand-black to-gray-900 text-white p-8 rounded-[2rem] shadow-2xl overflow-hidden">
           <div className="absolute -right-12 -top-12 w-40 h-40 bg-brand-orange/20 blur-3xl rounded-full" />
           <div className="absolute -left-12 -bottom-12 w-40 h-40 bg-brand-red/20 blur-3xl rounded-full" />
-          
+
           <div className="relative z-10 space-y-6">
             <div className="flex items-center gap-4 border-b border-white/10 pb-4">
               <div className="w-12 h-12 bg-brand-red text-white rounded-xl flex items-center justify-center font-black text-xl shadow-lg shadow-brand-red/20">
@@ -1154,16 +1186,20 @@ export function PremiumFlow() {
 
             <div className="space-y-3 font-mono">
               <div className="bg-white/5 p-4 rounded-2xl border border-white/5 backdrop-blur-sm">
-                <span className="text-[9px] text-brand-orange uppercase block mb-1">E-mail (Login)</span>
+                <span className="text-[9px] text-brand-orange uppercase block mb-1">
+                  E-mail (Login)
+                </span>
                 <span className="font-bold tracking-widest text-sm">{credentials.login}</span>
               </div>
-              
+
               {!credentials.isUpgrade && credentials.password && (
                 <div className="bg-white/5 p-4 rounded-2xl border border-white/5 backdrop-blur-sm relative overflow-hidden group">
-                  <span className="text-[9px] text-brand-orange uppercase block mb-1">Senha Gerada</span>
+                  <span className="text-[9px] text-brand-orange uppercase block mb-1">
+                    Senha Gerada
+                  </span>
                   <span className="font-bold tracking-widest text-xl">{credentials.password}</span>
                   <p className="text-[8px] text-brand-red uppercase mt-2 opacity-80">
-                    * Anote esta senha, ela não será exibida novamente.
+                    Enviamos um email com os dados de acesso. Confira sua caixa de spam.
                   </p>
                 </div>
               )}
@@ -1178,23 +1214,36 @@ export function PremiumFlow() {
         </h4>
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Produto</span>
-            <span className="text-[10px] font-black uppercase tracking-tight truncate max-w-[150px]">{selectedProduct?.name}</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+              Produto
+            </span>
+            <span className="text-[10px] font-black uppercase tracking-tight truncate max-w-[150px]">
+              {selectedProduct?.name}
+            </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Entrega</span>
-            <span className="text-[10px] font-black uppercase tracking-tight">{deliveryMethod === "RESIDENTIAL" ? "Domicílio" : "Retirada"}</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+              Entrega
+            </span>
+            <span className="text-[10px] font-black uppercase tracking-tight">
+              {deliveryMethod === "RESIDENTIAL" ? "Domicílio" : "Retirada"}
+            </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Pedido ID</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+              Pedido ID
+            </span>
             <span className="text-[10px] font-black text-brand-orange tracking-widest">
-              #{credentials?.orderId ? credentials.orderId.substring(0, 8).toUpperCase() : "MO-2026-X"}
+              #
+              {credentials?.orderId
+                ? credentials.orderId.substring(0, 8).toUpperCase()
+                : "MO-2026-X"}
             </span>
           </div>
         </div>
       </div>
 
-      <Button 
+      <Button
         onClick={() => {
           window.location.href = "/events";
         }}
@@ -1246,6 +1295,9 @@ export function PremiumFlow() {
           </Link>
           <Link href="/security" className="hover:text-brand-black transition-colors">
             Segurança
+          </Link>
+          <Link href="/faq" className="hover:text-brand-black transition-colors">
+            FAQ
           </Link>
           <Link href="/cookies" className="hover:text-brand-black transition-colors">
             Cookies
