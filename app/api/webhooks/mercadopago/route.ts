@@ -11,6 +11,8 @@ function mapPaymentStatus(status: string) {
 
 async function updateSubscriptionFromAuthorizedPayment(authorizedPayment: any, authorizedPaymentId?: string) {
   const paymentStatus = mapPaymentStatus(authorizedPayment.payment?.status || authorizedPayment.summarized);
+  const mpPaymentId = authorizedPayment.payment?.id ? String(authorizedPayment.payment.id) : null;
+  const mpStatusDetail = authorizedPayment.payment?.status_detail || null;
   let userId = authorizedPayment.external_reference;
 
   if (!userId && authorizedPayment.preapproval_id) {
@@ -36,6 +38,8 @@ async function updateSubscriptionFromAuthorizedPayment(authorizedPayment: any, a
       UPDATE users
       SET subscription_status = 'active',
           subscription_expiry = ${expiryDate},
+          mp_subscription_payment_id = COALESCE(${mpPaymentId}, mp_subscription_payment_id),
+          mp_subscription_status_detail = ${mpStatusDetail},
           mp_preapproval_id = COALESCE(${authorizedPayment.preapproval_id ? String(authorizedPayment.preapproval_id) : null}, mp_preapproval_id)
       WHERE id = ${String(userId)}
     `;
@@ -45,7 +49,9 @@ async function updateSubscriptionFromAuthorizedPayment(authorizedPayment: any, a
   if (paymentStatus === "REJECTED" || paymentStatus === "CANCELLED") {
     await sql`
       UPDATE users
-      SET subscription_status = 'pending'
+      SET subscription_status = 'inactive',
+          mp_subscription_payment_id = COALESCE(${mpPaymentId}, mp_subscription_payment_id),
+          mp_subscription_status_detail = ${mpStatusDetail}
       WHERE id = ${String(userId)} AND subscription_status != 'canceled'
     `;
     return true;
@@ -153,7 +159,9 @@ export async function POST(request: Request) {
             // Pagamento falhou, mantem ou reverte para pendente
             await sql`
               UPDATE users
-              SET subscription_status = 'pending'
+              SET subscription_status = 'inactive',
+                  mp_subscription_payment_id = ${String(payment.id)},
+                  mp_subscription_status_detail = ${payment.status_detail || null}
               WHERE id = ${orderId} AND subscription_status != 'canceled'
             `;
           }

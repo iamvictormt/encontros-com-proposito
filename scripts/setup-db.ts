@@ -43,6 +43,8 @@ async function setupDatabase() {
     await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_plan TEXT`;
     await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_expiry TIMESTAMP WITH TIME ZONE`;
     await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS mp_preapproval_id TEXT`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS mp_subscription_payment_id TEXT`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS mp_subscription_status_detail TEXT`;
     
     // New fields for MeetOff Brasil Permissions Flow
     await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS user_category TEXT DEFAULT 'COMUM'`; // 'COMUM', 'EMPRESA', 'PARCEIRO'
