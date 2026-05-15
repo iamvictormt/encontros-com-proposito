@@ -278,6 +278,26 @@ export class MercadoPagoService {
     return data;
   }
 
+  static async getAuthorizedPayment(authorizedPaymentId: string) {
+    const response = await fetch(`https://api.mercadopago.com/authorized_payments/${authorizedPaymentId}`, {
+      headers: {
+        "Authorization": `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw {
+        message: data.message || "Erro ao consultar fatura da assinatura",
+        status: response.status,
+        details: data,
+      };
+    }
+
+    return data;
+  }
+
   /**
    * Get subscription details
    */
