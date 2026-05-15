@@ -298,6 +298,27 @@ export class MercadoPagoService {
     return data;
   }
 
+  static async searchAuthorizedPaymentsByPayment(paymentId: string) {
+    const params = new URLSearchParams({ payment_id: paymentId });
+    const response = await fetch(`https://api.mercadopago.com/authorized_payments/search?${params.toString()}`, {
+      headers: {
+        "Authorization": `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw {
+        message: data.message || "Erro ao buscar fatura da assinatura pelo pagamento",
+        status: response.status,
+        details: data,
+      };
+    }
+
+    return data.results || [];
+  }
+
   /**
    * Get subscription details
    */

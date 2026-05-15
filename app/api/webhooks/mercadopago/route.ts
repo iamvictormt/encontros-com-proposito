@@ -9,6 +9,59 @@ function mapPaymentStatus(status: string) {
   return "PENDING";
 }
 
+async function updateSubscriptionFromAuthorizedPayment(authorizedPayment: any, authorizedPaymentId?: string) {
+  const paymentStatus = mapPaymentStatus(authorizedPayment.payment?.status || authorizedPayment.summarized);
+  let userId = authorizedPayment.external_reference;
+
+  if (!userId && authorizedPayment.preapproval_id) {
+    const subscription = await MercadoPagoService.getSubscription(String(authorizedPayment.preapproval_id));
+    userId = subscription.external_reference;
+  }
+
+  if (!userId) {
+    console.warn("Mercado Pago authorized payment without user reference:", {
+      authorizedPaymentId: authorizedPaymentId || authorizedPayment.id,
+      preapprovalId: authorizedPayment.preapproval_id,
+      paymentId: authorizedPayment.payment?.id,
+    });
+    return false;
+  }
+
+  if (paymentStatus === "APPROVED") {
+    const date = new Date();
+    date.setDate(date.getDate() + 30);
+    const expiryDate = date.toISOString();
+
+    await sql`
+      UPDATE users
+      SET subscription_status = 'active',
+          subscription_expiry = ${expiryDate},
+          mp_preapproval_id = COALESCE(${authorizedPayment.preapproval_id ? String(authorizedPayment.preapproval_id) : null}, mp_preapproval_id)
+      WHERE id = ${String(userId)}
+    `;
+    return true;
+  }
+
+  if (paymentStatus === "REJECTED" || paymentStatus === "CANCELLED") {
+    await sql`
+      UPDATE users
+      SET subscription_status = 'pending'
+      WHERE id = ${String(userId)} AND subscription_status != 'canceled'
+    `;
+    return true;
+  }
+
+  console.log("Mercado Pago subscription authorized payment still pending:", {
+    authorizedPaymentId: authorizedPaymentId || authorizedPayment.id,
+    preapprovalId: authorizedPayment.preapproval_id,
+    paymentId: authorizedPayment.payment?.id,
+    summarized: authorizedPayment.summarized,
+    paymentStatus: authorizedPayment.payment?.status,
+    paymentStatusDetail: authorizedPayment.payment?.status_detail,
+  });
+  return false;
+}
+
 export async function POST(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -42,48 +95,7 @@ export async function POST(request: Request) {
 
     if (type === "subscription_authorized_payment" && dataId) {
       const authorizedPayment = await MercadoPagoService.getAuthorizedPayment(dataId);
-      const paymentStatus = mapPaymentStatus(authorizedPayment.payment?.status || authorizedPayment.summarized);
-      let userId = authorizedPayment.external_reference;
-
-      if (!userId && authorizedPayment.preapproval_id) {
-        const subscription = await MercadoPagoService.getSubscription(String(authorizedPayment.preapproval_id));
-        userId = subscription.external_reference;
-      }
-
-      if (userId) {
-        if (paymentStatus === "APPROVED") {
-          const date = new Date();
-          date.setDate(date.getDate() + 30);
-          const expiryDate = date.toISOString();
-
-          await sql`
-            UPDATE users
-            SET subscription_status = 'active',
-                subscription_expiry = ${expiryDate},
-                mp_preapproval_id = COALESCE(${authorizedPayment.preapproval_id ? String(authorizedPayment.preapproval_id) : null}, mp_preapproval_id)
-            WHERE id = ${String(userId)}
-          `;
-        } else if (paymentStatus === "REJECTED" || paymentStatus === "CANCELLED") {
-          await sql`
-            UPDATE users
-            SET subscription_status = 'pending'
-            WHERE id = ${String(userId)} AND subscription_status != 'canceled'
-          `;
-        } else {
-          console.log("Mercado Pago subscription authorized payment still pending:", {
-            authorizedPaymentId: dataId,
-            preapprovalId: authorizedPayment.preapproval_id,
-            summarized: authorizedPayment.summarized,
-            paymentStatus: authorizedPayment.payment?.status,
-            paymentStatusDetail: authorizedPayment.payment?.status_detail,
-          });
-        }
-      } else {
-        console.warn("Mercado Pago authorized payment without user reference:", {
-          authorizedPaymentId: dataId,
-          preapprovalId: authorizedPayment.preapproval_id,
-        });
-      }
+      await updateSubscriptionFromAuthorizedPayment(authorizedPayment, dataId);
     }
 
     if (type === "payment" && dataId) {
@@ -145,6 +157,13 @@ export async function POST(request: Request) {
               WHERE id = ${orderId} AND subscription_status != 'canceled'
             `;
           }
+        }
+      } else {
+        const authorizedPayments = await MercadoPagoService.searchAuthorizedPaymentsByPayment(dataId);
+        const authorizedPayment = authorizedPayments[0];
+
+        if (authorizedPayment) {
+          await updateSubscriptionFromAuthorizedPayment(authorizedPayment, String(authorizedPayment.id));
         }
       }
     }
