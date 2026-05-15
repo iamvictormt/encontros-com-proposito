@@ -95,10 +95,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Não autorizado" }, { status: 401 });
     }
 
-    const credentialsError = validateMercadoPagoEnvironment();
-    if (credentialsError) {
-      return NextResponse.json({ message: credentialsError }, { status: 400 });
-    }
+    // const credentialsError = validateMercadoPagoEnvironment();
+    // if (credentialsError) {
+    //   return NextResponse.json({ message: credentialsError }, { status: 400 });
+    // }
 
     const {
       productId,

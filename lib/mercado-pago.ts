@@ -19,13 +19,13 @@ export const SUBSCRIPTION_PLANS: Record<string, { name: string, amount: number, 
     name: "MeetOff Usuários",
     amount: resolvePaymentAmount(170.3),
     description: "Assinatura Mensal MeetOff para Usuários",
-    planId: "c05acb2466e14f9eb0a65b86e062c90c" // ID do plano criado no painel
+    planId: process.env.MP_USER_PLAN_ID
   },
   PARTNER: {
     name: "MeetOff Empresas/Parceiros",
     amount: resolvePaymentAmount(232.7),
     description: "Assinatura Mensal MeetOff para Empresas e Parceiros",
-    planId: "64abd4df58e44e1a973df90787aa09c9" // ID do plano criado no painel
+    planId: process.env.MP_PARTNER_PLAN_ID
   },
 };
 

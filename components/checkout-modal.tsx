@@ -84,7 +84,7 @@ export function CheckoutModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="w-[96%] sm:max-w-[480px] max-h-[92vh] bg-white rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col">
+      <DialogContent className="w-[96%] sm:max-w-[525px] max-h-[92vh] bg-white rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col">
         <div className="min-h-0 overflow-y-auto p-6 sm:p-8">
           <DialogHeader className="text-center mb-8">
             <div className="mx-auto w-14 h-14 bg-brand-green/10 rounded-2xl flex items-center justify-center mb-4">
