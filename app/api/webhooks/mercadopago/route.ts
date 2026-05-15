@@ -9,11 +9,33 @@ function mapPaymentStatus(status: string) {
   return "PENDING";
 }
 
+async function ensureUserSubscriptionPaymentColumns() {
+  await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS mp_subscription_payment_id TEXT`;
+  await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS mp_subscription_status_detail TEXT`;
+}
+
+async function parseWebhookBody(request: Request) {
+  const text = await request.text();
+
+  if (!text) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    console.warn("Mercado Pago Webhook received non-JSON body:", text.slice(0, 500));
+    return null;
+  }
+}
+
 async function updateSubscriptionFromAuthorizedPayment(authorizedPayment: any, authorizedPaymentId?: string) {
   const paymentStatus = mapPaymentStatus(authorizedPayment.payment?.status || authorizedPayment.summarized);
   const mpPaymentId = authorizedPayment.payment?.id ? String(authorizedPayment.payment.id) : null;
   const mpStatusDetail = authorizedPayment.payment?.status_detail || null;
   let userId = authorizedPayment.external_reference;
+
+  await ensureUserSubscriptionPaymentColumns();
 
   if (!userId && authorizedPayment.preapproval_id) {
     const subscription = await MercadoPagoService.getSubscription(String(authorizedPayment.preapproval_id));
@@ -71,10 +93,12 @@ async function updateSubscriptionFromAuthorizedPayment(authorizedPayment: any, a
 export async function POST(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const type = searchParams.get("type");
-    const dataId = searchParams.get("data.id");
+    const body = await parseWebhookBody(request);
+    const action = searchParams.get("action") || body?.action;
+    const type = searchParams.get("type") || body?.type || action?.split(".")[0] || null;
+    const dataId = searchParams.get("data.id") || body?.data?.id || null;
 
-    console.log("Mercado Pago Webhook received:", { type, dataId });
+    console.log("Mercado Pago Webhook received:", { action, type, dataId });
 
     if (type === "subscription_preapproval") {
       const subscription = await MercadoPagoService.getSubscription(dataId!);
@@ -157,6 +181,7 @@ export async function POST(request: Request) {
             `;
           } else if (paymentStatus === "REJECTED" || paymentStatus === "CANCELLED") {
             // Pagamento falhou, mantem ou reverte para pendente
+            await ensureUserSubscriptionPaymentColumns();
             await sql`
               UPDATE users
               SET subscription_status = 'inactive',
