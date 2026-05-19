@@ -272,7 +272,7 @@ export async function sendPremiumWelcomeEmail(email: string, password?: string) 
             ` : ""}
           </div>
           
-          <a href="https://meet-off.vercel.app/login" class="btn">Acessar Plataforma</a>
+          <a href="https://meet-off.vercel.app/entrar" class="btn">Acessar Plataforma</a>
           
           <p style="font-size: 12px; color: #999; margin-top: 30px;">
             Recomendamos que você altere sua senha após o primeiro acesso para sua maior segurança.

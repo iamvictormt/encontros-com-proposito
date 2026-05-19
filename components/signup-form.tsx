@@ -147,7 +147,7 @@ export function SignupForm() {
         description: "Você será redirecionado.",
       });
 
-      router.push("/events");
+      router.push("/eventos");
     } catch (err) {
       if (err instanceof APIError) {
         toast({
@@ -375,11 +375,11 @@ export function SignupForm() {
                   className="text-[11px] font-medium text-gray-500 leading-relaxed cursor-pointer select-none"
                 >
                   Eu li e concordo integralmente com as{" "}
-                  <Link href="/privacy" className="text-brand-orange font-bold hover:underline">
+                  <Link href="/privacidade" className="text-brand-orange font-bold hover:underline">
                     Políticas e Termos de Uso
                   </Link>
                   ,{" "}
-                  <Link href="/consent" className="text-brand-orange font-bold hover:underline">
+                  <Link href="/consentimento" className="text-brand-orange font-bold hover:underline">
                     Consentimento de Grupos
                   </Link>{" "}
                   e{" "}
@@ -403,7 +403,7 @@ export function SignupForm() {
               <p className="text-sm font-medium text-gray-500">
                 Já possui uma conta?{" "}
                 <Link
-                  href="/login"
+                  href="/entrar"
                   className="text-brand-green font-black uppercase tracking-widest text-xs hover:underline ml-2"
                 >
                   Fazer login
@@ -416,13 +416,13 @@ export function SignupForm() {
         <div className="mt-20 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
           <span>© MeetOff {year}</span>
           <div className="flex gap-4 sm:gap-6 flex-wrap justify-center">
-            <Link href="/privacy" className="hover:text-brand-black transition-colors">
+            <Link href="/privacidade" className="hover:text-brand-black transition-colors">
               Políticas e Termos
             </Link>
-            <Link href="/consent" className="hover:text-brand-black transition-colors">
+            <Link href="/consentimento" className="hover:text-brand-black transition-colors">
               Consentimento
             </Link>
-            <Link href="/security" className="hover:text-brand-black transition-colors">
+            <Link href="/seguranca" className="hover:text-brand-black transition-colors">
               Segurança
             </Link>
             <Link href="/faq" className="hover:text-brand-black transition-colors">

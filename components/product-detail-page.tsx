@@ -113,7 +113,7 @@ export function ProductDetailPage() {
         <main className="flex-1 flex flex-col items-center justify-center gap-4">
           <h1 className="text-2xl font-bold">Produto não encontrado</h1>
           <Button asChild>
-            <Link href="/products">Voltar para a loja</Link>
+            <Link href="/produtos">Voltar para a loja</Link>
           </Button>
         </main>
         <SiteFooter />
@@ -391,14 +391,14 @@ export function ProductDetailPage() {
                   <h4 className="text-brand-orange font-bold uppercase tracking-[0.3em] text-[10px]">Recomendações</h4>
                   <h2 className="text-4xl font-black text-brand-black uppercase tracking-tighter">Complemente seu <span className="text-brand-red">Lifestyle</span></h2>
                 </div>
-                <Link href="/products" className="hidden sm:flex items-center gap-2 text-brand-black font-black uppercase tracking-widest text-[10px] hover:text-brand-orange transition-colors">
+                <Link href="/produtos" className="hidden sm:flex items-center gap-2 text-brand-black font-black uppercase tracking-widest text-[10px] hover:text-brand-orange transition-colors">
                   Ver Coleção Completa <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
 
               <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
                 {relatedProducts.map((p, index) => (
-                  <Link href={`/products/${p.id}`} key={index} className="group">
+                  <Link href={`/produtos/${p.id}`} key={index} className="group">
                     <div className="premium-card bg-white rounded-[2.5rem] overflow-hidden h-full flex flex-col shadow-xl">
                       <div className="relative h-64 overflow-hidden bg-gray-50 p-6">
                         <Image

@@ -62,7 +62,7 @@ export function ActivateCardClient() {
 
       if (res.ok) {
         toast.success("Cartão ativado com sucesso!");
-        router.push("/member-card");
+        router.push("/cartao-membro");
       } else {
         toast.error(data.error || "Erro na ativação");
       }

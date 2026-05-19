@@ -17,7 +17,7 @@ export default async function EmAnalisePage() {
       redirect("/");
     }
   } else {
-    redirect("/login");
+    redirect("/entrar");
   }
 
   return (

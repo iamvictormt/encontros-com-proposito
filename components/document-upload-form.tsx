@@ -22,7 +22,7 @@ export function DocumentUploadForm() {
 
   const handleLogout = async () => {
     await authService.logout();
-    router.push("/login");
+    router.push("/entrar");
   }
 
   const handleUpload = async () => {

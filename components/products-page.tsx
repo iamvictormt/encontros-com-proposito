@@ -347,7 +347,7 @@ export function ProductsPage() {
               ) : (
                 <div className="grid gap-8 sm:grid-cols-2 xl:grid-cols-3">
                   {paginatedProducts.map((product, index) => (
-                    <Link href={`/products/${product.id}`} key={index} className="group">
+                    <Link href={`/produtos/${product.id}`} key={index} className="group">
                       <div className="premium-card bg-white rounded-[2.5rem] overflow-hidden flex flex-col h-full border-none shadow-xl hover:shadow-2xl">
                         <div className="relative h-50 overflow-hidden p-6">
                           <Image

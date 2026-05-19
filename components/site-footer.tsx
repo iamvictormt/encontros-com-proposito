@@ -48,12 +48,12 @@ export function SiteFooter() {
             <h4 className="text-lg font-black uppercase tracking-widest text-[10px]">Explorar</h4>
             <ul className="space-y-3 text-sm text-gray-500 font-medium">
               <li>
-                <a href="/events" className="hover:text-brand-red transition-colors">
+                <a href="/eventos" className="hover:text-brand-red transition-colors">
                   Eventos
                 </a>
               </li>
               <li>
-                <a href="/products" className="hover:text-brand-red transition-colors">
+                <a href="/produtos" className="hover:text-brand-red transition-colors">
                   Produtos
                 </a>
               </li>
@@ -63,7 +63,7 @@ export function SiteFooter() {
                 </a>
               </li>
               <li>
-                <a href="/member-card" className="hover:text-brand-red transition-colors">
+                <a href="/cartao-membro" className="hover:text-brand-red transition-colors">
                   Cartão MeetOff
                 </a>
               </li>
@@ -86,19 +86,19 @@ export function SiteFooter() {
         </p>
         <div className="flex gap-x-8 gap-y-4 text-[10px] text-gray-400 font-bold flex-wrap justify-center lg:justify-end">
           <Link
-            href="/privacy"
+            href="/privacidade"
             className="hover:text-brand-black transition-colors uppercase tracking-[0.2em]"
           >
             Políticas e Termos
           </Link>
           <Link
-            href="/consent"
+            href="/consentimento"
             className="hover:text-brand-black transition-colors uppercase tracking-[0.2em]"
           >
             Consentimento
           </Link>
           <Link
-            href="/security"
+            href="/seguranca"
             className="hover:text-brand-black transition-colors uppercase tracking-[0.2em]"
           >
             Segurança

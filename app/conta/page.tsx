@@ -111,7 +111,7 @@ export default function AccountPage() {
 
   useEffect(() => {
     if (!isLoading && !isLoggedIn) {
-      redirect("/login");
+      redirect("/entrar");
     }
   }, [isLoading, isLoggedIn]);
 
@@ -280,7 +280,7 @@ export default function AccountPage() {
                           asChild
                           className="h-12 sm:h-14 rounded-2xl bg-brand-orange hover:bg-brand-orange/90 text-white font-black uppercase tracking-widest text-[10px] px-10 shadow-xl shadow-brand-orange/20"
                         >
-                          <Link href="/premium-flow">Solicitar Meu Acessório</Link>
+                          <Link href="/fluxo-premium">Solicitar Meu Acessório</Link>
                         </Button>
                       </div>
                     )}
@@ -320,7 +320,7 @@ export default function AccountPage() {
                         className="h-12 sm:h-14 rounded-2xl bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-6 sm:px-8 shadow-xl shadow-brand-green/20 group w-full sm:w-auto"
                       >
                         <Link
-                          href="/member-card"
+                          href="/cartao-membro"
                           className="flex items-center justify-center gap-2 sm:gap-3"
                         >
                           Acessar Cartão Digital

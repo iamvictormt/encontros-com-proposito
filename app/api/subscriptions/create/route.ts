@@ -41,25 +41,15 @@ export async function POST(request: Request) {
     }
     const userEmail = userResults[0].email;
 
-    const subscription = cardTokenId
-      ? {
-          ...(await MercadoPagoService.createTransparentSubscription(
-            payload.userId,
-            userEmail,
-            planType,
-            cardTokenId,
-          )),
-          init_point: undefined,
-        }
-      : {
-          ...(await MercadoPagoService.createSubscription(
-            payload.userId,
-            userEmail,
-            planType
-          )),
-          status: "pending",
-          next_payment_date: null,
-        };
+    const subscription = {
+      ...(await MercadoPagoService.createSubscription(
+        payload.userId,
+        userEmail,
+        planType
+      )),
+      status: "pending",
+      next_payment_date: null,
+    };
 
     // Sempre criamos a assinatura como pendente para que o webhook do pagamento libere o acesso.
     const subscriptionStatus = "pending";

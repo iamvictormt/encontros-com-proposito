@@ -11,14 +11,59 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
+  const legacyRouteMap: Record<string, string> = {
+    "/account": "/conta",
+    "/activate": "/ativar",
+    "/admin/brands": "/administracao/marcas",
+    "/admin/card-requests": "/administracao/solicitacoes-cartao",
+    "/admin/events": "/administracao/eventos",
+    "/admin/premium-orders": "/administracao/pedidos-premium",
+    "/admin/products": "/administracao/produtos",
+    "/admin/reports": "/administracao/relatorios",
+    "/admin/settings": "/administracao/configuracoes",
+    "/admin/team": "/administracao/equipe",
+    "/admin/users": "/administracao/usuarios",
+    "/admin/venues": "/administracao/locais",
+    "/admin/verifications": "/administracao/verificacoes",
+    "/admin": "/administracao",
+    "/consent": "/consentimento",
+    "/directory": "/diretorio",
+    "/events": "/eventos",
+    "/forgot-password": "/esqueci-senha",
+    "/invite": "/convite",
+    "/login": "/entrar",
+    "/member-card": "/cartao-membro",
+    "/partners": "/parceiros",
+    "/plate": "/placa",
+    "/premium-id": "/identificacao-premium",
+    "/premium-flow": "/fluxo-premium",
+    "/privacy": "/privacidade",
+    "/products": "/produtos",
+    "/profile": "/perfil",
+    "/reset-password": "/redefinir-senha",
+    "/schedule-session": "/agendar-sessao",
+    "/security": "/seguranca",
+    "/signup": "/cadastro",
+    "/subscriptions": "/assinaturas",
+    "/verification-pending": "/verificacao-pendente",
+  };
+
+  for (const [from, to] of Object.entries(legacyRouteMap)) {
+    if (pathname === from || pathname.startsWith(`${from}/`)) {
+      const url = request.nextUrl.clone();
+      url.pathname = `${to}${pathname.slice(from.length)}`;
+      return NextResponse.redirect(url);
+    }
+  }
+
   // Paths that are public (don't need auth)
   const isPublicPath =
-    pathname === "/login" ||
-    pathname === "/signup" ||
-    pathname === "/privacy" ||
+    pathname === "/entrar" ||
+    pathname === "/cadastro" ||
+    pathname === "/privacidade" ||
     pathname === "/terms-conditions" ||
-    pathname === "/consent" ||
-    pathname === "/security" ||
+    pathname === "/consentimento" ||
+    pathname === "/seguranca" ||
     pathname === "/cookies" ||
     pathname === "/faq" ||
     pathname === "/" ||
@@ -45,14 +90,14 @@ export async function middleware(request: NextRequest) {
       return response;
     }
 
-    // Mandatory landing page visit for login/signup/protected routes
-    if (!hasVisitedLanding && (pathname === "/login" || pathname === "/signup" || !isPublicPath)) {
+    // Mandatory landing page visit for entrar/cadastro/protected routes
+    if (!hasVisitedLanding && (pathname === "/entrar" || pathname === "/cadastro" || !isPublicPath)) {
       return NextResponse.redirect(new URL("/", request.url));
     }
 
     // Standard protected route check
     if (!isPublicPath) {
-      return NextResponse.redirect(new URL("/login", request.url));
+      return NextResponse.redirect(new URL("/entrar", request.url));
     }
   }
 
@@ -71,30 +116,30 @@ export async function middleware(request: NextRequest) {
         if (isPendingPaymentPage || isPublicPath) {
           return NextResponse.next();
         }
-        // Redirect login/signup/home to the payment page too
+        // Redirect entrar/cadastro/home to the payment page too
         return NextResponse.redirect(new URL("/pendente-pagamento", request.url));
       }
 
-      // If already logged in and trying to access login/signup/home
-      if (isPublicPath && (pathname === "/login" || pathname === "/signup" || pathname === "/")) {
+      // If already logged in and trying to access entrar/cadastro/home
+      if (isPublicPath && (pathname === "/entrar" || pathname === "/cadastro" || pathname === "/")) {
         if (payload.isAdmin) {
-          return NextResponse.redirect(new URL("/admin", request.url));
+          return NextResponse.redirect(new URL("/administracao", request.url));
         }
-        return NextResponse.redirect(new URL("/events", request.url));
+        return NextResponse.redirect(new URL("/eventos", request.url));
       }
 
-      // If an admin tries to access user pages (anything not starting with /admin, /api or auth), redirect to admin
+      // If an admin tries to access user pages (anything not starting with /administracao, /api or auth), redirect to admin
       if (
         payload.isAdmin &&
-        !pathname.startsWith("/admin") &&
+        !pathname.startsWith("/administracao") &&
         !pathname.startsWith("/api") &&
         !isPublicPath
       ) {
-        return NextResponse.redirect(new URL("/admin", request.url));
+        return NextResponse.redirect(new URL("/administracao", request.url));
       }
 
       // Check admin status for specific routes
-      if (pathname.startsWith("/admin") && !payload.isAdmin) {
+      if (pathname.startsWith("/administracao") && !payload.isAdmin) {
         return NextResponse.redirect(new URL("/", request.url));
       }
 
@@ -102,21 +147,21 @@ export async function middleware(request: NextRequest) {
       if (!payload.isAdmin) {
         const isVerified = payload.verificationStatus === "APROVADO";
         const isVerificationPage = pathname === "/em-analise";
-        const isPremiumFlowPage = pathname === "/premium-flow";
+        const isPremiumFlowPage = pathname === "/fluxo-premium";
         const hasPremiumAccessory = payload.hasPremiumAccessory as boolean;
 
         // Force PREMIUM users to buy accessory first
         if (userCategory === "PREMIUM" && !hasPremiumAccessory) {
           if (!isPremiumFlowPage && !isPublicPath) {
-            return NextResponse.redirect(new URL("/premium-flow", request.url));
+            return NextResponse.redirect(new URL("/fluxo-premium", request.url));
           }
         } else if (hasPremiumAccessory) {
           // Premium entitlement removes the need for subscriptions in any profile mode.
-          if (pathname.startsWith("/subscriptions")) {
-            return NextResponse.redirect(new URL("/events", request.url));
+          if (pathname.startsWith("/assinaturas")) {
+            return NextResponse.redirect(new URL("/eventos", request.url));
           }
           if (userCategory === "PREMIUM" && isPremiumFlowPage) {
-            return NextResponse.redirect(new URL("/events", request.url));
+            return NextResponse.redirect(new URL("/eventos", request.url));
           }
         }
 
@@ -131,9 +176,9 @@ export async function middleware(request: NextRequest) {
         }
       }
     } catch (error) {
-      // Token is invalid, remove it and redirect to login if it's not a public path
+      // Token is invalid, remove it and redirect to entrar if it's not a public path
       if (!isPublicPath) {
-        const response = NextResponse.redirect(new URL("/login", request.url));
+        const response = NextResponse.redirect(new URL("/entrar", request.url));
         response.cookies.delete("auth_token");
         return response;
       }

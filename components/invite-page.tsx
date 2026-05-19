@@ -18,7 +18,7 @@ export function InvitePage() {
   };
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText("meetoff.com/invite/123");
+    navigator.clipboard.writeText("meetoff.com/convite/123");
     toast.success("Link copiado!");
   };
 

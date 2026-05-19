@@ -106,7 +106,7 @@ export default function AdminReports() {
                   : "Parceiros Premium recebem relatórios detalhados de conversão e leads."}
               </p>
               <Button 
-                onClick={() => window.location.href = "/subscriptions"}
+                onClick={() => window.location.href = "/assinaturas"}
                 className="bg-gradient-to-r from-brand-orange to-brand-red text-white h-14 px-8 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg hover:scale-105 transition-transform"
               >
                 Seja Premium

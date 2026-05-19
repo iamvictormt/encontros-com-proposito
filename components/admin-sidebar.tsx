@@ -23,20 +23,20 @@ import { useState } from "react";
 export const menuSections = [
   {
     items: [
-      { icon: LayoutGrid, label: "Visão Geral", href: "/admin" },
-      { icon: CalendarDays, label: "Eventos", href: "/admin/events" },
-      { icon: Building2, label: "Locais & Empresas", href: "/admin/venues" },
-      { icon: PackageOpen, label: "Marcas parceiras", href: "/admin/brands" },
-      { icon: ShoppingCart, label: "Loja & Produtos", href: "/admin/products" },
-      { icon: Users, label: "Verificações", href: "/admin/verifications" },
-      { icon: PieChart, label: "Relatórios", href: "/admin/reports" },
-      { icon: Users, label: "Equipe & Cargos", href: "/admin/team" },
-      { icon: CreditCard, label: "Cartões Físicos", href: "/admin/card-requests" },
-      { icon: PackageOpen, label: "Pedidos Premium", href: "/admin/premium-orders" },
+      { icon: LayoutGrid, label: "Visão Geral", href: "/administracao" },
+      { icon: CalendarDays, label: "Eventos", href: "/administracao/eventos" },
+      { icon: Building2, label: "Locais & Empresas", href: "/administracao/locais" },
+      { icon: PackageOpen, label: "Marcas parceiras", href: "/administracao/marcas" },
+      { icon: ShoppingCart, label: "Loja & Produtos", href: "/administracao/produtos" },
+      { icon: Users, label: "Verificações", href: "/administracao/verificacoes" },
+      { icon: PieChart, label: "Relatórios", href: "/administracao/relatorios" },
+      { icon: Users, label: "Equipe & Cargos", href: "/administracao/equipe" },
+      { icon: CreditCard, label: "Cartões Físicos", href: "/administracao/solicitacoes-cartao" },
+      { icon: PackageOpen, label: "Pedidos Premium", href: "/administracao/pedidos-premium" },
     ],
   },
   {
-    items: [{ icon: Settings, label: "Configurações", href: "/admin/settings" }],
+    items: [{ icon: Settings, label: "Configurações", href: "/administracao/configuracoes" }],
     borderTop: true,
   },
 ];
@@ -49,7 +49,7 @@ export function AdminSidebar() {
   return (
     <aside className="w-80 glass border-r border-white/20 flex-col h-[calc(100vh-2rem)] sticky top-4 left-4 m-4 rounded-[2.5rem] hidden lg:flex shadow-2xl z-50">
       <div className="p-10">
-        <Logo href="/admin" />
+        <Logo href="/administracao" />
       </div>
 
       <nav className="flex-1 overflow-y-auto px-8 pb-6 flex flex-col">

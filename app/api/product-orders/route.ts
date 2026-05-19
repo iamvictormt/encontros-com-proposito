@@ -106,15 +106,10 @@ export async function POST(request: Request) {
       selectedSize,
       customerName,
       address,
-      cardTokenId,
-      paymentMethodId,
-      issuerId,
-      installments,
-      payer,
     } = await request.json();
 
-    if (!productId || !cardTokenId || !paymentMethodId) {
-      return NextResponse.json({ message: "Dados de pagamento incompletos" }, { status: 400 });
+    if (!productId) {
+      return NextResponse.json({ message: "Dados de produto incompletos" }, { status: 400 });
     }
 
     const normalizedQuantity = Math.max(1, Math.min(Number(quantity) || 1, 10));
@@ -181,44 +176,26 @@ export async function POST(request: Request) {
     `;
 
     const order = inserted[0];
-    const payment = await MercadoPagoService.createProductPayment({
+    const preference = await MercadoPagoService.createProductPreference({
       orderId: order.id,
       productName: `${product.name} - MeetOff`,
       amount: totalAmount,
       userEmail: user.email,
-      cardTokenId,
-      paymentMethodId,
-      issuerId,
-      installments,
-      identificationType: payer?.identification?.type,
-      identificationNumber: payer?.identification?.number,
     });
 
-    const paymentStatus = mapPaymentStatus(payment.status);
-    const fulfillmentStatus = paymentStatus === "APPROVED"
-      ? isPhysical ? "PAID" : "DELIVERED"
-      : "PENDING";
+    const paymentStatus = "PENDING";
+    const fulfillmentStatus = "PENDING";
 
     const updated = await sql`
       UPDATE product_orders
       SET payment_status = ${paymentStatus},
           fulfillment_status = ${fulfillmentStatus},
-          mp_payment_id = ${String(payment.id)},
-          mp_status_detail = ${payment.status_detail || null},
           updated_at = CURRENT_TIMESTAMP
       WHERE id = ${order.id}
       RETURNING *
     `;
 
-    if (paymentStatus === "APPROVED" && isPhysical) {
-      await sql`
-        UPDATE products
-        SET stock = GREATEST(stock - ${normalizedQuantity}, 0)
-        WHERE id = ${product.id}
-      `;
-    }
-
-    return NextResponse.json({ order: updated[0] }, { status: 201 });
+    return NextResponse.json({ order: updated[0], init_point: preference.init_point }, { status: 201 });
   } catch (error: any) {
     console.error("Product checkout error:", error);
     return NextResponse.json(

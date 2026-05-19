@@ -124,9 +124,9 @@ export function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordModalProp
       onClose();
       
       if (response.user.isAdmin) {
-        router.push("/admin");
+        router.push("/administracao");
       } else {
-        router.push("/events");
+        router.push("/eventos");
       }
     } catch (err) {
       toast({ variant: "error", title: "Erro", description: err instanceof APIError ? err.message : "Erro ao redefinir senha." });

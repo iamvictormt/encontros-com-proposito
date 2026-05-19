@@ -18,7 +18,7 @@ export function AdminMobileHeader() {
 
   return (
     <header className="lg:hidden glass border-b border-white/10 px-6 h-24 sticky top-0 z-40 flex items-center justify-between">
-      <Logo href="/admin" />
+      <Logo href="/administracao" />
       
       <div className="flex items-center gap-4">
         <button 

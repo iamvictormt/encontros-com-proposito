@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoggedIn(false);
       setUser(null);
       toast.success("Logout realizado com sucesso");
-      router.push("/login");
+      router.push("/entrar");
     } catch (error) {
       console.error("Logout error:", error);
       toast.error("Erro ao sair");

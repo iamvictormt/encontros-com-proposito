@@ -85,14 +85,14 @@ export default function AdminOverview() {
           </div>
           <div className="flex flex-wrap gap-4 w-full md:w-auto">
             <Button className="bg-brand-red hover:bg-brand-red/90 text-white font-black uppercase tracking-widest text-[10px] px-8 h-14 rounded-2xl shadow-lg shadow-brand-red/20 flex-1 md:flex-none" asChild>
-              <Link href="/admin/events">Criar Novo Evento</Link>
+              <Link href="/administracao/eventos">Criar Novo Evento</Link>
             </Button>
             <Button
               variant="outline"
               className="h-14 px-8 border-brand-black/10 bg-white rounded-2xl text-brand-black font-black uppercase tracking-widest text-[10px] hover:bg-brand-black hover:text-white transition-all flex-1 md:flex-none"
               asChild
             >
-              <Link href="/admin/events">Ver todos</Link>
+              <Link href="/administracao/eventos">Ver todos</Link>
             </Button>
           </div>
         </div>
@@ -118,7 +118,7 @@ export default function AdminOverview() {
             className="h-14 px-8 border-brand-black/10 bg-white rounded-2xl text-brand-black font-black uppercase tracking-widest text-[10px] hover:bg-brand-black hover:text-white transition-all w-full md:w-auto"
             asChild
           >
-            <Link href="/admin/venues">Ver todos os locais</Link>
+            <Link href="/administracao/locais">Ver todos os locais</Link>
           </Button>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -143,7 +143,7 @@ export default function AdminOverview() {
             className="h-14 px-8 border-brand-black/10 bg-white rounded-2xl text-brand-black font-black uppercase tracking-widest text-[10px] hover:bg-brand-black hover:text-white transition-all w-full md:w-auto"
             asChild
           >
-            <Link href="/admin/brands">Ver todas as marcas</Link>
+            <Link href="/administracao/marcas">Ver todas as marcas</Link>
           </Button>
         </div>
         <BrandContentTable brands={data?.brands} />
@@ -164,7 +164,7 @@ export default function AdminOverview() {
             className="h-14 px-8 border-brand-black/10 bg-white rounded-2xl text-brand-black font-black uppercase tracking-widest text-[10px] hover:bg-brand-black hover:text-white transition-all w-full md:w-auto"
             asChild
           >
-            <Link href="/admin/team">Ver toda a equipe</Link>
+            <Link href="/administracao/equipe">Ver toda a equipe</Link>
           </Button>
         </div>
           <RoleAssignmentList team={data?.team} />

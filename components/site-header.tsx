@@ -37,10 +37,10 @@ export function SiteHeader() {
   const navLinks = [
     ...(isLoggedIn
       ? [
-          { href: "/events", label: "Home", icon: Home },
-          { href: "/products", label: "Produtos Autorais", icon: ShoppingCart },
+          { href: "/eventos", label: "Home", icon: Home },
+          { href: "/produtos", label: "Produtos Autorais", icon: ShoppingCart },
           { href: "/portfolio", label: "Portfólio", icon: FolderOpen },
-          { href: "/partners", label: "Empresas e Parcerias", icon: Building2 },
+          { href: "/parceiros", label: "Empresas e Parcerias", icon: Building2 },
         ]
       : []),
   ];
@@ -58,7 +58,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 w-full px-4 lg:px-20 glass border-b border-white/5 backdrop-blur-xl">
       <div className="mx-auto max-w-7xl flex h-20 items-center justify-between relative">
         <div className="flex-1 flex items-center">
-          <Logo href="/events" />
+          <Logo href="/eventos" />
         </div>
 
         <nav className="hidden items-center gap-10 lg:flex absolute left-1/2 -translate-x-1/2">
@@ -124,7 +124,7 @@ export function SiteHeader() {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator className="my-2 bg-black/5" />
                   <DropdownMenuItem asChild className="rounded-xl focus:bg-brand-orange/10 focus:text-brand-orange cursor-pointer p-3 transition-colors">
-                    <Link href="/account" className="flex items-center gap-3 w-full">
+                    <Link href="/conta" className="flex items-center gap-3 w-full">
                       <User size={16} />
                       <span className="text-xs font-bold uppercase tracking-wider">Minha Conta</span>
                     </Link>
@@ -133,7 +133,7 @@ export function SiteHeader() {
                   {/* Links movidos da navbar principal */}
                   {(hasPremiumAccess || user?.userCategory !== "PREMIUM") && (
                     <DropdownMenuItem asChild className="rounded-xl focus:bg-brand-orange/10 focus:text-brand-orange cursor-pointer p-3 transition-colors">
-                      <Link href="/member-card" className="flex items-center gap-3 w-full">
+                      <Link href="/cartao-membro" className="flex items-center gap-3 w-full">
                         <CreditCard size={16} />
                         <span className="text-xs font-bold uppercase tracking-wider">Cartão MeetOff</span>
                       </Link>
@@ -142,7 +142,7 @@ export function SiteHeader() {
 
                   {!hasPremiumAccess && user?.userCategory !== "PREMIUM" && (
                     <DropdownMenuItem asChild className="rounded-xl focus:bg-brand-orange/10 focus:text-brand-orange cursor-pointer p-3 transition-colors">
-                      <Link href="/subscriptions" className="flex items-center gap-3 w-full">
+                      <Link href="/assinaturas" className="flex items-center gap-3 w-full">
                         <Crown size={16} />
                         <span className="text-xs font-bold uppercase tracking-wider">Assinatura</span>
                       </Link>
@@ -151,7 +151,7 @@ export function SiteHeader() {
                   
                   {user?.isAdmin && (
                     <DropdownMenuItem asChild className="rounded-xl focus:bg-brand-orange/10 focus:text-brand-orange cursor-pointer p-3 transition-colors">
-                      <Link href="/admin" className="flex items-center gap-3 w-full">
+                      <Link href="/administracao" className="flex items-center gap-3 w-full">
                         <ShieldCheck size={16} />
                         <span className="text-xs font-bold uppercase tracking-wider">Painel Admin</span>
                       </Link>
@@ -179,7 +179,7 @@ export function SiteHeader() {
           ) : (
             <div className="flex items-center gap-4">
               <Link
-                href="/login"
+                href="/entrar"
                 className="hidden sm:inline-block text-[11px] font-bold uppercase tracking-[0.15em] text-brand-black/60 hover:text-brand-orange transition-colors mr-4"
               >
                 Entrar
@@ -188,7 +188,7 @@ export function SiteHeader() {
                 asChild
                 className="h-10 px-6 rounded-xl bg-brand-green hover:bg-brand-green/90 text-white font-bold uppercase tracking-widest text-[11px] shadow-lg shadow-brand-green/20 hidden sm:flex transition-all active:scale-95"
               >
-                <Link href="/signup">Criar Conta</Link>
+                <Link href="/cadastro">Criar Conta</Link>
               </Button>
             </div>
           )}

@@ -30,7 +30,7 @@ export const MemberCardVisual = forwardRef<HTMLDivElement, MemberCardVisualProps
     }
   }, []);
 
-  const shareUrl = `${origin}/profile/${qrCodeToken || "MeetOff"}`;
+  const shareUrl = `${origin}/perfil/${qrCodeToken || "MeetOff"}`;
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(shareUrl)}&color=ffffff&bgcolor=000000&qzone=1`;
 
   return (

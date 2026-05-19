@@ -53,7 +53,7 @@ export function PortfolioPage() {
                   asChild
                   className="h-16 w-full sm:w-auto rounded-2xl bg-brand-orange hover:bg-brand-orange/90 text-white font-black uppercase tracking-widest text-sm shadow-xl shadow-brand-orange/20 px-8 transition-all active:scale-95"
                 >
-                  <Link href="/schedule-session">Agendar com Fundadores</Link>
+                  <Link href="/agendar-sessao">Agendar com Fundadores</Link>
                 </Button>
                 <Link href="#about" className="text-xs font-black uppercase tracking-widest text-brand-black hover:text-brand-orange transition-colors flex items-center gap-3 group">
                   Conheça nossa Jornada <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-2" />

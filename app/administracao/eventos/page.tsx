@@ -204,7 +204,7 @@ export default function AdminEvents() {
                   if (!hasValidSubscription && user?.userCategory === "EMPRESA") {
                     if (events.length >= 1) {
                       toast.error("Empresas gratuitas podem publicar apenas 1 evento por mês. Assine o plano Premium para publicar eventos ilimitados.");
-                      router.push("/subscriptions"); 
+                      router.push("/assinaturas"); 
                       return;
                     }
                   }

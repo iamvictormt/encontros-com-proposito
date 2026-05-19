@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CardPayment, initMercadoPago } from "@mercadopago/sdk-react";
 import { CheckCircle2, CreditCard, LockKeyhole, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
@@ -22,19 +21,10 @@ export function CheckoutModal({
   onSuccess: () => void;
 }) {
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isBrickReady, setIsBrickReady] = useState(false);
   const { user } = useAuth();
-  const publicKey = process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY;
-
-  useEffect(() => {
-    if (publicKey) {
-      initMercadoPago(publicKey, { locale: "pt-BR" });
-    }
-  }, [publicKey]);
 
   useEffect(() => {
     if (isOpen) {
-      setIsBrickReady(false);
       setIsProcessing(false);
     }
   }, [isOpen]);
@@ -44,27 +34,27 @@ export function CheckoutModal({
     [amount],
   );
 
-  const processSubscription = async (cardTokenId: string) => {
+  const processSubscription = async () => {
     try {
       setIsProcessing(true);
 
       const res = await fetch("/api/subscriptions/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planType, cardTokenId }),
+        body: JSON.stringify({ planType }),
       });
 
       const data = await res.json();
 
-      if (res.ok && (data.status === "active" || data.status === "pending")) {
-        toast.success("Assinatura em processamento! Avisaremos assim que o pagamento for aprovado.");
-        onSuccess();
-        onClose();
+      if (res.ok && data.init_point) {
+        window.location.href = data.init_point;
         return;
       }
 
-      if (res.ok && data.init_point) {
-        window.location.href = data.init_point;
+      if (res.ok && (data.status === "active" || data.status === "pending")) {
+        toast.success("Assinatura criada com sucesso.");
+        onSuccess();
+        onClose();
         return;
       }
 
@@ -101,65 +91,35 @@ export function CheckoutModal({
             </p>
           </DialogHeader>
 
-          {!publicKey ? (
-            <div className="rounded-2xl bg-brand-red/5 border border-brand-red/10 p-5 text-center">
-              <p className="text-xs font-bold text-brand-red uppercase tracking-widest">
-                Chave publica do Mercado Pago nao configurada.
-              </p>
-            </div>
-          ) : (
-            <div className="relative mercado-pago-card-brick">
-              {(!isBrickReady || isProcessing) && (
-                <div className="absolute inset-0 z-20 flex min-h-[320px] flex-col items-center justify-center gap-4 rounded-2xl bg-white/95 backdrop-blur-sm">
-                  <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-green border-t-transparent" />
-                  {isProcessing && (
-                    <div className="space-y-1 text-center">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-brand-green">
-                        Confirmando assinatura
-                      </p>
-                      <p className="text-[11px] font-medium text-gray-500">
-                        Mantenha esta janela aberta.
-                      </p>
-                    </div>
-                  )}
+          <div className="mt-4">
+            {isProcessing ? (
+              <div className="flex flex-col items-center justify-center gap-4 py-6">
+                <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-brand-green border-t-transparent" />
+                <div className="space-y-1 text-center">
+                  <p className="text-xs font-black uppercase tracking-widest text-brand-green">
+                    Conectando ao Checkout
+                  </p>
+                  <p className="text-xs font-medium text-gray-500 max-w-[200px] leading-relaxed">
+                    Preparando ambiente seguro do Mercado Pago...
+                  </p>
                 </div>
-              )}
-              <CardPayment
-                key={`${planType}-${amount}`}
-                locale="pt-BR"
-                initialization={{
-                  amount,
-                  payer: { email: user?.email || undefined },
-                }}
-                customization={{
-                  paymentMethods: {
-                    maxInstallments: 1,
-                    types: { included: ["credit_card"] },
-                  },
-                  visual: {
-                    hideFormTitle: true,
-                    style: {
-                      theme: "default",
-                      customVariables: {
-                        baseColor: "#10b981", // brand-green
-                        borderRadiusMedium: "16px",
-                        formBackgroundColor: "#FFFFFF",
-                        inputBackgroundColor: "#FFFFFF",
-                      },
-                    },
-                  },
-                }}
-                onReady={() => setIsBrickReady(true)}
-                onError={(error) => {
-                  console.error("Mercado Pago Brick error:", error);
-                  toast.error("Nao foi possivel carregar o checkout.");
-                }}
-                onSubmit={async (formData) => {
-                  await processSubscription(formData.token);
-                }}
-              />
-            </div>
-          )}
+              </div>
+            ) : (
+              <>
+                <button
+                  onClick={processSubscription}
+                  className="w-full h-14 rounded-2xl bg-brand-green text-white font-black uppercase tracking-widest text-[11px] shadow-xl shadow-brand-green/20 hover:bg-brand-green/90 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                >
+                  <LockKeyhole className="w-4 h-4" />
+                  Pagar com Mercado Pago
+                </button>
+                
+                <p className="text-center text-[10px] text-gray-400 mt-4 px-4">
+                  Você será redirecionado para o ambiente seguro do Mercado Pago para concluir sua assinatura.
+                </p>
+              </>
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>

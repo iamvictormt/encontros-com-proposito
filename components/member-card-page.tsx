@@ -41,12 +41,12 @@ export function MemberCardPage({
   };
 
   const [shareUrl, setShareUrl] = useState(
-    `https://meetoff.com.br/profile/${qrCodeToken || "MeetOff"}`,
+    `https://meetoff.com.br/perfil/${qrCodeToken || "MeetOff"}`,
   );
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setShareUrl(`${window.location.origin}/profile/${qrCodeToken || "MeetOff"}`);
+      setShareUrl(`${window.location.origin}/perfil/${qrCodeToken || "MeetOff"}`);
     }
   }, [qrCodeToken]);
 

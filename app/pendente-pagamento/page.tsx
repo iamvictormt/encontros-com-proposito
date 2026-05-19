@@ -77,7 +77,7 @@ export default function PendentePagamentoPage() {
         setApproved(true);
         toast.success("Pagamento aprovado! Bem-vindo ao MeetOff Premium!");
         // Short delay then redirect so the user sees the success state
-        setTimeout(() => router.replace("/events"), 2500);
+        setTimeout(() => router.replace("/eventos"), 2500);
         return;
       }
 
@@ -94,7 +94,7 @@ export default function PendentePagamentoPage() {
 
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
-    router.replace("/login");
+    router.replace("/entrar");
   };
 
   return (

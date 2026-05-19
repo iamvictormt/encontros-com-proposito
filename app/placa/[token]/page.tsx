@@ -106,17 +106,17 @@ export default async function PlatePage({ params }: { params: { token: string } 
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Button asChild variant="outline" className="h-14 rounded-2xl border-brand-black/10 bg-white font-black uppercase tracking-widest text-[10px] hover:bg-brand-black hover:text-white transition-all">
-                    <a href={`/login?redirect=/plate/${token}`}>Já sou Membro</a>
+                    <a href={`/entrar?redirect=/placa/${token}`}>Já sou Membro</a>
                   </Button>
                   <Button asChild className="h-14 rounded-2xl bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-[10px] shadow-xl shadow-brand-green/20">
-                    <a href="/signup">Novo Cadastro</a>
+                    <a href="/cadastro">Novo Cadastro</a>
                   </Button>
                 </div>
               </div>
             )}
 
             <Button asChild variant="ghost" className="mt-10 text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-brand-orange hover:bg-transparent">
-              <a href="/events">Explorar mais Eventos</a>
+              <a href="/eventos">Explorar mais Eventos</a>
             </Button>
           </div>
         </div>

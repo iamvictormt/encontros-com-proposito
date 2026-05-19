@@ -34,20 +34,20 @@ export function AdminBottomNav() {
   }, [pathname]);
 
   const navLinks = [
-    { href: "/admin", label: "Geral", icon: LayoutGrid, exact: true },
-    { href: "/admin/events", label: "Eventos", icon: CalendarDays },
-    { href: "/admin/venues", label: "Locais", icon: Building2 },
-    { href: "/admin/products", label: "Loja", icon: ShoppingCart },
+    { href: "/administracao", label: "Geral", icon: LayoutGrid, exact: true },
+    { href: "/administracao/eventos", label: "Eventos", icon: CalendarDays },
+    { href: "/administracao/locais", label: "Locais", icon: Building2 },
+    { href: "/administracao/produtos", label: "Loja", icon: ShoppingCart },
   ];
 
   const moreLinks = [
-    { href: "/admin/brands", label: "Marcas", icon: PackageOpen },
-    { href: "/admin/card-requests", label: "Cartões", icon: CreditCard },
-    { href: "/admin/premium-orders", label: "Pedidos", icon: PackageOpen },
-    { href: "/admin/verifications", label: "Verificações", icon: Users },
-    { href: "/admin/team", label: "Equipe", icon: Users },
-    { href: "/admin/reports", label: "Relatórios", icon: PieChart },
-    { href: "/admin/settings", label: "Configurações", icon: Settings },
+    { href: "/administracao/marcas", label: "Marcas", icon: PackageOpen },
+    { href: "/administracao/solicitacoes-cartao", label: "Cartões", icon: CreditCard },
+    { href: "/administracao/pedidos-premium", label: "Pedidos", icon: PackageOpen },
+    { href: "/administracao/verificacoes", label: "Verificações", icon: Users },
+    { href: "/administracao/equipe", label: "Equipe", icon: Users },
+    { href: "/administracao/relatorios", label: "Relatórios", icon: PieChart },
+    { href: "/administracao/configuracoes", label: "Configurações", icon: Settings },
   ];
 
   return (

@@ -509,7 +509,7 @@ export function PremiumFlow() {
         </Button>
 
         <Button
-          onClick={() => router.push("/signup")}
+          onClick={() => router.push("/cadastro")}
           className="w-full h-20 bg-brand-green hover:bg-brand-green/90 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl shadow-brand-green/20 transition-all hover:scale-[1.02] active:scale-[0.98] flex flex-col gap-1"
         >
           <span>CONTA COMPLETA</span>
@@ -519,7 +519,7 @@ export function PremiumFlow() {
 
       <p className="text-center text-[10px] font-black text-gray-400 uppercase tracking-widest">
         Já tem conta?{" "}
-        <button onClick={() => router.push("/login")} className="text-brand-red hover:underline">
+        <button onClick={() => router.push("/entrar")} className="text-brand-red hover:underline">
           Entrar
         </button>
       </p>
@@ -542,10 +542,10 @@ export function PremiumFlow() {
 
       <div className="space-y-3">
         {[
-          { label: "Termos de Uso", href: "/privacy" },
-          { label: "Política de Privacidade", href: "/privacy" },
-          { label: "Política LGPD Brasil", href: "/privacy#conformidade" },
-          { label: "Política de Identificação Premium MeetOff", href: "/privacy" },
+          { label: "Termos de Uso", href: "/privacidade" },
+          { label: "Política de Privacidade", href: "/privacidade" },
+          { label: "Política LGPD Brasil", href: "/privacidade#conformidade" },
+          { label: "Política de Identificação Premium MeetOff", href: "/privacidade" },
         ].map((term) => (
           <Link
             key={term.label}
@@ -1274,7 +1274,7 @@ export function PremiumFlow() {
 
       <Button
         onClick={() => {
-          window.location.href = "/events";
+          window.location.href = "/eventos";
         }}
         className="w-full h-16 bg-brand-orange hover:bg-brand-orange/90 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl shadow-brand-orange/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
       >
@@ -1316,13 +1316,13 @@ export function PremiumFlow() {
         <span>© MeetOff {currentYear}</span>
 
         <div className="flex gap-4 sm:gap-6 flex-wrap justify-center">
-          <Link href="/privacy" className="hover:text-brand-black transition-colors">
+          <Link href="/privacidade" className="hover:text-brand-black transition-colors">
             Políticas e Termos
           </Link>
-          <Link href="/consent" className="hover:text-brand-black transition-colors">
+          <Link href="/consentimento" className="hover:text-brand-black transition-colors">
             Consentimento
           </Link>
-          <Link href="/security" className="hover:text-brand-black transition-colors">
+          <Link href="/seguranca" className="hover:text-brand-black transition-colors">
             Segurança
           </Link>
           <Link href="/faq" className="hover:text-brand-black transition-colors">

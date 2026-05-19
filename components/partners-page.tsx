@@ -500,7 +500,7 @@ export function PartnersPage() {
                   <h4 className="text-brand-orange font-bold uppercase tracking-[0.3em] text-[10px]">Showcase</h4>
                   <h2 className="text-2xl sm:text-4xl font-black text-brand-black uppercase tracking-tighter">Parceiros em <span className="text-brand-red">Destaque</span></h2>
                 </div>
-                <Link href="/directory">
+                <Link href="/diretorio">
                   <Button variant="link" className="text-brand-black font-black uppercase tracking-widest text-[10px] hover:text-brand-orange gap-2">
                     Ver Diretório Completo <ArrowRight className="w-4 h-4" />
                   </Button>

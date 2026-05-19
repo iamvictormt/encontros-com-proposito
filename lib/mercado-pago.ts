@@ -41,7 +41,7 @@ export class MercadoPagoService {
       const body: any = {
         reason: planData.name,
         payer_email: userEmail.trim().toLowerCase(),
-        back_url: `${baseUrl}/account`,
+        back_url: `${baseUrl}/conta`,
         external_reference: userId,
         auto_recurring: {
           frequency: 1,
@@ -51,9 +51,8 @@ export class MercadoPagoService {
         }
       };
 
-      if (planData.planId) {
-        body.preapproval_plan_id = planData.planId;
-      }
+      // Removed preapproval_plan_id assignment to force a redirect flow (dynamic subscription).
+      // If we pass preapproval_plan_id, Mercado Pago expects card_token_id for transparent checkout.
 
       console.log("FINAL SUBMISSION BODY (REDIRECT):", JSON.stringify(body, null, 2));
 
@@ -97,134 +96,48 @@ export class MercadoPagoService {
     }
   }
 
-  /**
-   * Create and authorize a subscription from a card token (Transparent Checkout)
-   * Follows "Assinaturas com plano associado" documentation.
-   */
-  static async createTransparentSubscription(
-    userId: string,
-    userEmail: string,
-    planType: 'USER' | 'PARTNER',
-    cardTokenId: string,
-  ) {
-    const planData = SUBSCRIPTION_PLANS[planType];
-    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://meet-off.vercel.app").replace(/\/$/, "");
-
-    try {
-      const body: any = {
-        payer_email: resolvePayerEmail(userEmail.trim().toLowerCase()),
-        card_token_id: cardTokenId,
-        back_url: `${baseUrl}/account`,
-        external_reference: userId,
-        status: "authorized",
-      };
-
-      if (planData.planId) {
-        body.preapproval_plan_id = planData.planId;
-        body.reason = planData.name;
-      } else {
-        body.reason = planData.name;
-        body.auto_recurring = {
-          frequency: 1,
-          frequency_type: "months",
-          transaction_amount: planData.amount,
-          currency_id: "BRL",
-        };
-      }
-
-      console.log("CREATING TRANSPARENT SUBSCRIPTION WITH BODY:", JSON.stringify(body, null, 2));
-
-      const response = await fetch("https://api.mercadopago.com/preapproval", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`
-        },
-        body: JSON.stringify(body)
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.error("MP PREAPPROVAL ERROR:", JSON.stringify(data, null, 2));
-        
-        let errorMessage = data.message || "Erro na API do Mercado Pago";
-        if (response.status === 404 && data.message === "Card token service not found") {
-          errorMessage = "O Mercado Pago não permitiu o processamento direto deste cartão para assinatura.";
-        }
-        
-        throw {
-          message: errorMessage,
-          status: response.status,
-          details: data
-        };
-      }
-
-      return {
-        id: data.id,
-        status: data.status,
-        next_payment_date: data.next_payment_date,
-      };
-    } catch (error: any) {
-      console.error("Final error in createTransparentSubscription:", error);
-      throw error;
-    }
-  }
-
-  static async createProductPayment({
+  static async createProductPreference({
     orderId,
     productName,
     amount,
     userEmail,
-    cardTokenId,
-    paymentMethodId,
-    issuerId,
-    installments,
-    identificationType,
-    identificationNumber,
   }: {
     orderId: string;
     productName: string;
     amount: number;
     userEmail: string;
-    cardTokenId: string;
-    paymentMethodId: string;
-    issuerId?: string;
-    installments?: number;
-    identificationType?: string;
-    identificationNumber?: string;
   }) {
     const paymentAmount = resolvePaymentAmount(amount);
     const payerEmail = resolvePayerEmail(userEmail);
+    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://meet-off.vercel.app").replace(/\/$/, "");
+
     const body: any = {
-      transaction_amount: paymentAmount,
-      token: cardTokenId,
-      description: productName,
-      installments: installments || 1,
-      payment_method_id: paymentMethodId,
-      external_reference: orderId,
+      items: [
+        {
+          id: orderId,
+          title: productName,
+          quantity: 1,
+          unit_price: paymentAmount,
+          currency_id: "BRL",
+        }
+      ],
       payer: {
         email: payerEmail.trim().toLowerCase(),
       },
+      back_urls: {
+        success: `${baseUrl}/conta?success=true`,
+        failure: `${baseUrl}/conta?success=false`,
+        pending: `${baseUrl}/conta?success=pending`,
+      },
+      auto_return: "approved",
+      external_reference: orderId,
     };
 
-    if (issuerId) {
-      body.issuer_id = issuerId;
-    }
-
-    if (identificationType && identificationNumber) {
-      body.payer.identification = {
-        type: identificationType,
-        number: identificationNumber,
-      };
-    }
-
-    const response = await fetch("https://api.mercadopago.com/v1/payments", {
+    const response = await fetch("https://api.mercadopago.com/checkout/preferences", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
-        "X-Idempotency-Key": crypto.randomUUID(),
       },
       body: JSON.stringify(body),
     });
@@ -232,18 +145,8 @@ export class MercadoPagoService {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("MP PRODUCT PAYMENT ERROR:", JSON.stringify(data, null, 2));
-
-      let errorMessage = data.message || "Erro ao processar pagamento";
-      if (data.cause?.[0]?.description) {
-        errorMessage = data.cause[0].description;
-      }
-      if (response.status === 500 && data.message === "internal_error") {
-        errorMessage = isPaymentTestMode()
-          ? "Erro interno do Mercado Pago em modo teste. Confira se MERCADOPAGO_ACCESS_TOKEN e NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY sao credenciais TEST da mesma aplicacao."
-          : "Erro interno do Mercado Pago. Tente novamente em alguns instantes.";
-      }
-
+      console.error("MP PREFERENCE ERROR:", JSON.stringify(data, null, 2));
+      let errorMessage = data.message || "Erro ao criar preferência de pagamento";
       throw {
         message: errorMessage,
         status: response.status,
@@ -251,10 +154,13 @@ export class MercadoPagoService {
       };
     }
 
+    const initPoint = (process.env.MERCADOPAGO_ACCESS_TOKEN?.startsWith("TEST-") && data.sandbox_init_point)
+      ? data.sandbox_init_point
+      : data.init_point;
+
     return {
+      init_point: initPoint,
       id: data.id,
-      status: data.status,
-      status_detail: data.status_detail,
     };
   }
 

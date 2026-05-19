@@ -52,16 +52,16 @@ export function BottomNav() {
   }, [lastScrollY]);
 
   const navLinks = [
-    { href: "/events", label: "Home", icon: Home },
-    { href: "/products", label: "Produtos", icon: ShoppingCart },
+    { href: "/eventos", label: "Home", icon: Home },
+    { href: "/produtos", label: "Produtos", icon: ShoppingCart },
     ...(isLoggedIn && user?.userCategory === "PREMIUM" && !hasPremiumAccess
       ? []
-      : [{ href: "/member-card", label: "Cartão", icon: CreditCard }]),
+      : [{ href: "/cartao-membro", label: "Cartão", icon: CreditCard }]),
     { href: "/portfolio", label: "Portfólio", icon: FolderOpen },
-    { href: "/account", label: "Conta", icon: User },
+    { href: "/conta", label: "Conta", icon: User },
   ];
 
-  if (!isLoggedIn || pathname?.startsWith("/admin") || pathname === "/login" || pathname === "/signup" || pathname === "/") {
+  if (!isLoggedIn || pathname?.startsWith("/administracao") || pathname === "/entrar" || pathname === "/cadastro" || pathname === "/") {
     return null;
   }
 

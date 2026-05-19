@@ -183,14 +183,14 @@ export function EventsPage() {
                             className="bg-brand-red hover:bg-brand-red/90 text-white font-black uppercase tracking-widest text-[10px] px-8 h-14 rounded-2xl shadow-lg shadow-brand-red/20"
                             asChild
                           >
-                            <Link href={`/events/${slide.id}`}>Explorar Evento</Link>
+                            <Link href={`/eventos/${slide.id}`}>Explorar Evento</Link>
                           </Button>
 
                           <Button
                             variant="ghost"
                             className="bg-white/10 text-white hover:bg-white/20 backdrop-blur-md px-4 sm:px-6 h-14 rounded-2xl font-black uppercase tracking-widest text-[10px]"
                             onClick={() => {
-                              const url = `${window.location.origin}/events/${slide.id}`;
+                              const url = `${window.location.origin}/eventos/${slide.id}`;
                               navigator.clipboard.writeText(url);
                               setCopiedId(slide.id);
                               toast.success("Link de convite copiado!");
@@ -469,7 +469,7 @@ export function EventsPage() {
                     className="group premium-card flex flex-col bg-white rounded-[2rem] overflow-hidden"
                   >
                     <div className="relative h-72 overflow-hidden">
-                      <Link href={`/events/${event.id}`} className="absolute inset-0 z-0">
+                      <Link href={`/eventos/${event.id}`} className="absolute inset-0 z-0">
                         <Image
                           src={event.image || "/placeholder.svg"}
                           alt={event.title}
@@ -498,7 +498,7 @@ export function EventsPage() {
                           className="w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow-xl hover:bg-brand-red hover:text-white transition-colors cursor-pointer text-brand-black"
                           onClick={(e) => {
                             e.preventDefault();
-                            const url = `${window.location.origin}/events/${event.id}`;
+                            const url = `${window.location.origin}/eventos/${event.id}`;
                             navigator.clipboard.writeText(url);
                             toast.success("Link copiado!");
                           }}
@@ -535,7 +535,7 @@ export function EventsPage() {
                           className="flex-1 bg-brand-black hover:bg-brand-black/80 text-white font-black uppercase tracking-widest text-[10px] px-8 h-14 rounded-2xl shadow-lg shadow-brand-black/20"
                           asChild
                         >
-                          <Link href={`/events/${event.id}`}>Ver Detalhes</Link>
+                          <Link href={`/eventos/${event.id}`}>Ver Detalhes</Link>
                         </Button>
                       </div>
                     </div>
@@ -595,7 +595,7 @@ export function EventsPage() {
                   A sua versão gratuita permite visualizar até 5 eventos simultaneamente. Assine agora para ter acesso ilimitado ao calendário completo e realizar networking com toda a nossa comunidade.
                 </p>
                 <Button 
-                  onClick={() => window.location.href = "/subscriptions"}
+                  onClick={() => window.location.href = "/assinaturas"}
                   className="bg-gradient-to-r from-brand-orange to-brand-red text-white h-14 px-8 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg hover:scale-105 transition-transform"
                 >
                   Desbloquear Acesso Completo

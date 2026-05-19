@@ -144,13 +144,13 @@ export function EventDetailPage() {
   const handleParticipate = async () => {
     if (!isLoggedIn) {
       toast.error("Faça login para participar");
-      router.push("/login");
+      router.push("/entrar");
       return;
     }
 
     if (!hasValidSubscription) {
       toast.error("Assinatura ativa necessária para participar de eventos");
-      router.push("/subscriptions");
+      router.push("/assinaturas");
       return;
     }
 
@@ -169,7 +169,7 @@ export function EventDetailPage() {
       } else {
         if (data.requireSubscription) {
           toast.error(data.message);
-          router.push("/subscriptions");
+          router.push("/assinaturas");
         } else {
           toast.error(data.message);
         }
@@ -297,13 +297,13 @@ export function EventDetailPage() {
                     <div className="flex items-center glass-dark rounded-2xl p-1.5 shadow-inner border-white/5">
                       <Input
                         type="text"
-                        value={typeof window !== "undefined" ? `${window.location.origin}/events/${id}` : ""}
+                        value={typeof window !== "undefined" ? `${window.location.origin}/eventos/${id}` : ""}
                         readOnly
                         className="border-none focus-visible:ring-0 shadow-none bg-transparent flex-1 text-xs font-bold text-white/70 truncate px-4"
                       />
                       <Button
                         onClick={() => {
-                          const url = `${window.location.origin}/events/${id}`;
+                          const url = `${window.location.origin}/eventos/${id}`;
                           navigator.clipboard.writeText(url);
                           setIsCopied(true);
                           toast.success("Link copiado!");
@@ -319,7 +319,7 @@ export function EventDetailPage() {
                         Assine um plano para liberar o link de convite e networking
                       </p>
                       <Button 
-                        onClick={() => router.push("/subscriptions")}
+                        onClick={() => router.push("/assinaturas")}
                         className="mt-4 bg-brand-black text-white rounded-xl h-10 px-4 text-[9px] font-black uppercase tracking-widest w-full"
                       >
                         Ver Planos
@@ -337,7 +337,7 @@ export function EventDetailPage() {
                     disabled={!hasValidSubscription}
                     className="w-full h-14 border-brand-black/10 bg-white text-brand-black hover:bg-brand-black hover:text-white font-black rounded-2xl transition-all flex items-center justify-center gap-3 uppercase tracking-widest text-[10px] disabled:opacity-50"
                     onClick={() => {
-                      const url = `${window.location.origin}/events/${id}`;
+                      const url = `${window.location.origin}/eventos/${id}`;
                       if (navigator.share) {
                         navigator.share({ title: event.title, text: `Olha esse evento!`, url }).catch(console.error);
                       } else {
@@ -527,7 +527,7 @@ export function EventDetailPage() {
                       <div className="flex flex-col gap-1">
                         <div className="flex -space-x-2.5 mb-1 relative">
                           {!hasValidSubscription && (
-                            <div className="absolute inset-0 z-10 backdrop-blur-[2px] bg-white/30 rounded-full flex items-center justify-center cursor-pointer" onClick={() => router.push("/subscriptions")}>
+                            <div className="absolute inset-0 z-10 backdrop-blur-[2px] bg-white/30 rounded-full flex items-center justify-center cursor-pointer" onClick={() => router.push("/assinaturas")}>
                               <span className="text-[8px] font-black text-brand-black uppercase tracking-widest drop-shadow-md">Desbloquear</span>
                             </div>
                           )}
@@ -569,7 +569,7 @@ export function EventDetailPage() {
                             Vagas prioritárias para assinantes
                           </span>
                           <Button
-                            onClick={() => router.push("/subscriptions")}
+                            onClick={() => router.push("/assinaturas")}
                             className="bg-gradient-to-r from-brand-orange to-brand-red text-white rounded-xl h-9 px-4 font-black uppercase tracking-widest text-[9px] shadow-lg transition-all hover:scale-105"
                           >
                             Seja Premium

@@ -13,7 +13,7 @@ export default async function MemberCard() {
   const session = await getUserSession();
   
   if (!session) {
-    redirect("/login");
+    redirect("/entrar");
   }
 
   const sql = neon(process.env.DATABASE_URL!);
@@ -78,7 +78,7 @@ export default async function MemberCard() {
                 </div>
               </div>
               <Button asChild variant="outline" className="w-full h-14 rounded-2xl border-brand-black/10 bg-white hover:bg-brand-black hover:text-white transition-all font-black uppercase tracking-widest text-[10px]">
-                <Link href="/activate">Ativar Cartão Rosa</Link>
+                <Link href="/ativar">Ativar Cartão Rosa</Link>
               </Button>
             </div>
           </div>
