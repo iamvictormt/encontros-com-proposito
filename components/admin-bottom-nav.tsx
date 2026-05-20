@@ -53,7 +53,7 @@ export function AdminBottomNav() {
 
   return (
     <>
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] lg:hidden w-fit max-w-[95vw]">
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[40] lg:hidden w-fit max-w-[95vw]">
         <nav className="flex items-center gap-1 p-2 rounded-full bg-brand-black/90 backdrop-blur-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
           {navLinks.map((link) => {
             const isActive = link.exact 

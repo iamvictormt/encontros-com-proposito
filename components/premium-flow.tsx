@@ -16,6 +16,7 @@ import {
   Shield,
   Star,
   CheckCircle2,
+  Copy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1138,44 +1139,63 @@ export function PremiumFlow() {
         </div>
 
         {pixData ? (
-          <div className="space-y-6 text-center py-4 bg-white p-6 rounded-[2rem] border border-brand-black/5">
-            <div className="mx-auto w-16 h-16 bg-brand-green/10 rounded-2xl flex items-center justify-center mb-2">
-              <CheckCircle2 className="w-8 h-8 text-brand-green animate-bounce" />
-            </div>
-            <h3 className="text-lg font-black uppercase tracking-tighter text-brand-black">
-              Reserva Realizada!
-            </h3>
-            <p className="text-xs text-gray-500 max-w-[280px] mx-auto leading-relaxed">
-              Pague com Pix para confirmar a assinatura premium e o envio do acessório. O QR code expira em 30 minutos.
-            </p>
-
-            <div className="mx-auto p-4 bg-brand-black/[0.02] border border-brand-black/5 rounded-[2rem] w-[200px] h-[200px] flex items-center justify-center shadow-inner">
-              {pixData.qrCodeBase64 ? (
-                <img
-                  src={`data:image/jpeg;base64,${pixData.qrCodeBase64}`}
-                  alt="PIX QR Code"
-                  className="w-full h-full object-contain rounded-2xl"
-                />
-              ) : (
-                <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-brand-red border-t-transparent" />
-              )}
-            </div>
-
-            <div className="space-y-3 px-4">
-              <button
-                type="button"
-                onClick={() => {
-                  navigator.clipboard.writeText(pixData.qrCode);
-                  toast.success("Código PIX copiado!");
-                }}
-                className="w-full h-14 rounded-2xl bg-brand-black text-white font-black uppercase tracking-widest text-[11px] shadow-xl hover:bg-brand-black/90 transition-all active:scale-[0.98]"
-              >
-                Copiar Código Pix
-              </button>
+          <div className="space-y-6 text-center py-4 bg-gray-50/50 border border-gray-100 rounded-[2.5rem] p-6 shadow-inner relative overflow-hidden">
+            <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-35 pointer-events-none" />
+            
+            <div className="relative z-10 space-y-5">
+              <div className="mx-auto w-16 h-16 bg-gradient-to-tr from-emerald-500/10 to-emerald-500/20 rounded-2xl flex items-center justify-center shadow-md">
+                <CheckCircle2 className="w-8 h-8 text-emerald-500 animate-pulse" />
+              </div>
               
-              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
-                Após o pagamento, sua conta será atualizada para Premium.
+              <div className="space-y-1">
+                <h3 className="text-xl font-black uppercase tracking-tighter text-brand-black">
+                  Reserva Realizada!
+                </h3>
+                <div className="mx-auto w-12 h-1 bg-gradient-to-r from-brand-red to-brand-orange rounded-full" />
+              </div>
+
+              <p className="text-[11px] text-gray-500 max-w-[280px] mx-auto leading-relaxed font-medium">
+                Pague com Pix para confirmar a assinatura premium e o envio do acessório. O QR code expira em 30 minutos.
               </p>
+
+              <div className="relative py-2">
+                <div className="absolute left-[-25px] top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white border-r border-gray-100" />
+                <div className="absolute right-[-25px] top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white border-l border-gray-100" />
+                <div className="border-t-2 border-dashed border-gray-200 w-full" />
+              </div>
+
+              <div className="relative mx-auto p-4 bg-white border border-brand-black/5 rounded-[2rem] w-[210px] h-[210px] flex flex-col items-center justify-center shadow-xl group transition-transform duration-300 hover:scale-[1.02]">
+                <div className="absolute -inset-0.5 bg-gradient-to-tr from-brand-red/10 to-brand-orange/10 rounded-[2.2rem] blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                
+                {pixData.qrCodeBase64 ? (
+                  <img
+                    src={`data:image/jpeg;base64,${pixData.qrCodeBase64}`}
+                    alt="PIX QR Code"
+                    className="relative z-10 w-full h-full object-contain rounded-2xl"
+                  />
+                ) : (
+                  <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-brand-red border-t-transparent" />
+                )}
+              </div>
+
+              <div className="space-y-4 px-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(pixData.qrCode);
+                    toast.success("Código PIX copiado!");
+                  }}
+                  className="w-full h-14 rounded-2xl bg-brand-black text-white font-black uppercase tracking-widest text-[11px] shadow-xl hover:bg-brand-black/90 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group cursor-pointer"
+                >
+                  <Copy className="w-4 h-4 transition-transform group-hover:scale-110" />
+                  Copiar Código Pix
+                </button>
+                
+                <div className="flex items-center justify-center gap-1.5 text-[9px] text-brand-green font-black uppercase tracking-widest bg-brand-green/5 py-2 px-3 rounded-full border border-brand-green/10 max-w-[280px] mx-auto animate-pulse">
+                  <div className="w-1.5 h-1.5 rounded-full bg-brand-green" />
+                  Após pagar, o pedido aprova na hora!
+                </div>
+              </div>
             </div>
           </div>
         ) : (

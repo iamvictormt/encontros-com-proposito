@@ -70,7 +70,7 @@ export function BottomNav() {
       {/* Trigger Area - detect touch/hover at bottom to reveal */}
       <div 
         className={cn(
-          "fixed bottom-0 left-0 right-0 h-4 z-[99] lg:hidden transition-opacity duration-300",
+          "fixed bottom-0 left-0 right-0 h-4 z-[39] lg:hidden transition-opacity duration-300",
           isVisible ? "pointer-events-none opacity-0" : "pointer-events-auto opacity-100"
         )}
         onMouseEnter={() => setIsVisible(true)}
@@ -79,7 +79,7 @@ export function BottomNav() {
 
       <div 
         className={cn(
-          "fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] lg:hidden w-fit max-w-[95vw] transition-all duration-500 ease-in-out",
+          "fixed bottom-6 left-1/2 -translate-x-1/2 z-[40] lg:hidden w-fit max-w-[95vw] transition-all duration-500 ease-in-out",
           isVisible ? "translate-y-0 opacity-100 scale-100" : "translate-y-20 opacity-0 scale-90"
         )}
       >

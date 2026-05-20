@@ -89,6 +89,10 @@ export class MercadoPagoService {
         },
       };
 
+      if (baseUrl && !baseUrl.includes("localhost") && !baseUrl.includes("127.0.0.1")) {
+        body.notification_url = `${baseUrl}/api/webhooks/mercadopago`;
+      }
+
       // Removed preapproval_plan_id assignment to force a redirect flow (dynamic subscription).
       // If we pass preapproval_plan_id, Mercado Pago expects card_token_id for transparent checkout.
 
@@ -233,6 +237,7 @@ export class MercadoPagoService {
     try {
       const planId = await this.getOrCreatePreapprovalPlanId(planType);
       const planData = await this.getPlanFromDb(planType);
+      const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://meet-off.vercel.app").replace(/\/$/, "");
 
       const body: any = {
         preapproval_plan_id: planId,
@@ -247,6 +252,10 @@ export class MercadoPagoService {
           currency_id: "BRL",
         },
       };
+
+      if (baseUrl && !baseUrl.includes("localhost") && !baseUrl.includes("127.0.0.1")) {
+        body.notification_url = `${baseUrl}/api/webhooks/mercadopago`;
+      }
 
       if (startDate && endDate) {
         body.auto_recurring.start_date = startDate;
@@ -561,6 +570,7 @@ export class MercadoPagoService {
     // Fallback to legacy behavior if no card token
     const paymentAmount = resolvePaymentAmount(amount);
     const payerEmail = resolvePayerEmail(userEmail);
+    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://meet-off.vercel.app").replace(/\/$/, "");
 
     const body: any = {
       description: productName,
@@ -576,6 +586,10 @@ export class MercadoPagoService {
       transaction_amount: paymentAmount,
       external_reference: orderId,
     };
+
+    if (baseUrl && !baseUrl.includes("localhost") && !baseUrl.includes("127.0.0.1")) {
+      body.notification_url = `${baseUrl}/api/webhooks/mercadopago`;
+    }
 
     if (cardId) {
       body.card = { id: cardId };
@@ -670,6 +684,10 @@ export class MercadoPagoService {
       auto_return: "approved",
       external_reference: orderId,
     };
+
+    if (baseUrl && !baseUrl.includes("localhost") && !baseUrl.includes("127.0.0.1")) {
+      body.notification_url = `${baseUrl}/api/webhooks/mercadopago`;
+    }
 
     const response = await fetch("https://api.mercadopago.com/checkout/preferences", {
       method: "POST",

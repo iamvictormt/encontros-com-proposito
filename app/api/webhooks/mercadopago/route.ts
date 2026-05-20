@@ -102,8 +102,8 @@ export async function POST(request: Request) {
     const { searchParams } = new URL(request.url);
     const body = await parseWebhookBody(request);
     const action = searchParams.get("action") || body?.action;
-    const type = searchParams.get("type") || body?.type || action?.split(".")[0] || null;
-    const dataId = searchParams.get("data.id") || body?.data?.id || null;
+    const type = searchParams.get("type") || searchParams.get("topic") || body?.type || (action ? action.split(".")[0] : null) || null;
+    const dataId = searchParams.get("data.id") || searchParams.get("id") || body?.data?.id || null;
 
     console.log("Mercado Pago Webhook received:", { action, type, dataId });
 
