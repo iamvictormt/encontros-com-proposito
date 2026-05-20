@@ -2,9 +2,9 @@ import type React from "react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
-import "./globals.css";
 import { Toaster as SonnerToaster } from "sonner";
 import { Toaster } from "@/components/ui/toaster";
+import Script from "next/script";
 
 import { LoadingProvider } from "@/providers/loading-provider";
 import { AuthProvider } from "@/providers/auth-provider";
@@ -48,6 +48,10 @@ export default function RootLayout({
             <SonnerToaster position="top-center" richColors />
           </AuthProvider>
         </LoadingProvider>
+        <Script
+          src="https://www.mercadopago.com/v2/security.js"
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   );

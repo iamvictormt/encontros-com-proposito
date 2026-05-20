@@ -86,6 +86,8 @@ export async function POST(request: Request) {
         installments,
         identificationType: payer?.identification?.type,
         identificationNumber: payer?.identification?.number,
+        firstName: payer?.first_name,
+        lastName: payer?.last_name,
       });
     } catch (payError: any) {
       console.error("Premium pay payment error:", payError);

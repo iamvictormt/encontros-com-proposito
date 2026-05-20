@@ -314,6 +314,8 @@ export class MercadoPagoService {
     installments,
     identificationType,
     identificationNumber,
+    firstName,
+    lastName,
   }: {
     orderId: string;
     productName: string;
@@ -325,6 +327,8 @@ export class MercadoPagoService {
     installments?: number | string | null;
     identificationType?: string | null;
     identificationNumber?: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
   }) {
     const paymentAmount = resolvePaymentAmount(amount);
     const payerEmail = resolvePayerEmail(userEmail);
@@ -420,6 +424,13 @@ export class MercadoPagoService {
       };
     }
 
+    if (firstName) {
+      orderBody.payer.first_name = firstName;
+    }
+    if (lastName) {
+      orderBody.payer.last_name = lastName;
+    }
+
     try {
       console.log("[MP Orders] Creating order with:", JSON.stringify(orderBody, null, 2));
 
@@ -497,6 +508,8 @@ export class MercadoPagoService {
     identificationNumber,
     customerId,
     cardId,
+    firstName,
+    lastName,
   }: {
     orderId: string;
     productName: string;
@@ -510,6 +523,8 @@ export class MercadoPagoService {
     identificationNumber?: string | null;
     customerId?: string | null;
     cardId?: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
   }) {
     // If using card token ID, delegate to the new Orders API
     if (cardTokenId) {
@@ -525,6 +540,8 @@ export class MercadoPagoService {
           installments,
           identificationType,
           identificationNumber,
+          firstName,
+          lastName,
         });
 
         // Adapt Orders API response to legacy format for backward compatibility
