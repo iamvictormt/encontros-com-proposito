@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { verifyJWT, signJWT, hashPassword } from "@/lib/auth-utils";
 import { sql } from "@/lib/db";
 import { MercadoPagoService } from "@/lib/mercado-pago";
-import { resolvePaymentAmount } from "@/lib/payments";
+import { resolvePaymentAmount, parseMercadoPagoError } from "@/lib/payments";
 import { createGreenCard } from "@/lib/card-utils";
 import { sendPremiumWelcomeEmail } from "@/lib/mail";
 
@@ -162,18 +162,37 @@ export async function POST(request: Request) {
     const newOrderId = orderResult[0].id;
 
     // Call Mercado Pago with the actual order ID!
-    const payment = await MercadoPagoService.createProductPayment({
-      orderId: newOrderId,
-      productName: `Acessório Premium MeetOff - ${model || accessoryType}`,
-      amount: finalAmount,
-      userEmail: payer?.email || normalizedEmail,
-      cardTokenId,
-      paymentMethodId,
-      issuerId,
-      installments,
-      identificationType: payer?.identification?.type,
-      identificationNumber: payer?.identification?.number,
-    });
+    let payment: any;
+    try {
+      payment = await MercadoPagoService.createProductPayment({
+        orderId: newOrderId,
+        productName: `Acessório Premium MeetOff - ${model || accessoryType}`,
+        amount: finalAmount,
+        userEmail: payer?.email || normalizedEmail,
+        cardTokenId,
+        paymentMethodId,
+        issuerId,
+        installments,
+        identificationType: payer?.identification?.type,
+        identificationNumber: payer?.identification?.number,
+      });
+    } catch (payError: any) {
+      console.error("Premium checkout payment error:", payError);
+
+      // Revert/delete the pending order if card fails to avoid cluttering DB
+      await sql`
+        DELETE FROM premium_accessory_orders WHERE id = ${newOrderId}
+      `;
+
+      const parsedError = parseMercadoPagoError(payError);
+      return NextResponse.json(
+        {
+          status: parsedError.status_detail || "error",
+          message: parsedError.message,
+        },
+        { status: parsedError.status },
+      );
+    }
 
     const paymentStatus = mapPaymentStatus(payment.status);
 

@@ -3,39 +3,9 @@ import { cookies } from "next/headers";
 import { verifyJWT } from "@/lib/auth-utils";
 import { MercadoPagoService } from "@/lib/mercado-pago";
 import { sql } from "@/lib/db";
+import { parseMercadoPagoError, getFriendlyPaymentErrorMessage } from "@/lib/payments";
 
-function getFriendlyStatusDetailMessage(detail: string): string {
-  switch (detail) {
-    case "cc_rejected_bad_filled_card_number":
-      return "Número do cartão inválido.";
-    case "cc_rejected_bad_filled_date":
-      return "Data de vencimento incorreta.";
-    case "cc_rejected_bad_filled_other":
-      return "Dados do cartão incorretos.";
-    case "cc_rejected_bad_filled_security_code":
-      return "Código de segurança (CVV) incorreto.";
-    case "cc_rejected_blacklist":
-      return "Cartão bloqueado para esta transação.";
-    case "cc_rejected_call_for_authorize":
-      return "Transação não autorizada. Entre em contato com o banco emissor do cartão para liberar.";
-    case "cc_rejected_card_disabled":
-      return "O cartão está desabilitado. Entre em contato com seu banco.";
-    case "cc_rejected_card_error":
-      return "Erro ao processar o cartão. Tente novamente ou use outro cartão.";
-    case "cc_rejected_duplicated_payment":
-      return "Pagamento duplicado. Aguarde alguns instantes.";
-    case "cc_rejected_high_risk":
-      return "Transação recusada por políticas de segurança (análise de risco). Use outro cartão ou tente mais tarde.";
-    case "cc_rejected_insufficient_amount":
-      return "Saldo ou limite insuficiente no cartão.";
-    case "cc_rejected_invalid_installments":
-      return "O número de parcelas selecionado é inválido para este cartão.";
-    case "cc_rejected_max_attempts":
-      return "Limite de tentativas excedido. Tente novamente mais tarde.";
-    default:
-      return "Pagamento recusado. Verifique os dados do cartão, limite e tente novamente.";
-  }
-}
+
 
 export async function POST(request: Request) {
   try {
@@ -107,7 +77,7 @@ export async function POST(request: Request) {
           console.warn(
             `[MP] Subscription payment rejected. Order Status: ${orderStatus}, Payment Status: ${paymentStatus}, Detail: ${paymentStatusDetail}`,
           );
-          const friendlyMessage = getFriendlyStatusDetailMessage(paymentStatusDetail || "");
+          const friendlyMessage = getFriendlyPaymentErrorMessage(paymentStatusDetail || "");
           return NextResponse.json(
             {
               message: friendlyMessage,
@@ -210,12 +180,14 @@ export async function POST(request: Request) {
         });
       } catch (subError: any) {
         console.error("Transparent subscription error:", subError);
+        const parsedError = parseMercadoPagoError(subError);
         return NextResponse.json(
           {
-            message: subError.message || "Erro ao processar assinatura com o cartão.",
+            message: parsedError.message,
+            status: parsedError.status_detail || "error",
             details: subError.details || null,
           },
-          { status: subError.status || 400 },
+          { status: parsedError.status },
         );
       }
     }

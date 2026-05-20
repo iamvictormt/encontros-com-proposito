@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { verifyJWT, signJWT } from "@/lib/auth-utils";
 import { sql } from "@/lib/db";
 import { MercadoPagoService } from "@/lib/mercado-pago";
-import { resolvePaymentAmount } from "@/lib/payments";
+import { resolvePaymentAmount, parseMercadoPagoError } from "@/lib/payments";
 import { createGreenCard } from "@/lib/card-utils";
 
 async function ensureColumns() {
@@ -73,18 +73,41 @@ export async function POST(request: Request) {
     const dbUser = userResults[0];
 
     // Process payment
-    const payment = await MercadoPagoService.createProductPayment({
-      orderId: order.id,
-      productName: `Acessório Premium MeetOff - ${order.accessory_model || order.accessory_type}`,
-      amount: finalAmount,
-      userEmail: dbUser.email || payer?.email,
-      cardTokenId,
-      paymentMethodId,
-      issuerId,
-      installments,
-      identificationType: payer?.identification?.type,
-      identificationNumber: payer?.identification?.number,
-    });
+    let payment: any;
+    try {
+      payment = await MercadoPagoService.createProductPayment({
+        orderId: order.id,
+        productName: `Acessório Premium MeetOff - ${order.accessory_model || order.accessory_type}`,
+        amount: finalAmount,
+        userEmail: dbUser.email || payer?.email,
+        cardTokenId,
+        paymentMethodId,
+        issuerId,
+        installments,
+        identificationType: payer?.identification?.type,
+        identificationNumber: payer?.identification?.number,
+      });
+    } catch (payError: any) {
+      console.error("Premium pay payment error:", payError);
+
+      const parsedError = parseMercadoPagoError(payError);
+
+      // Update order in DB with rejected status
+      await sql`
+        UPDATE premium_accessory_orders
+        SET payment_status = ${parsedError.status_detail ? 'REJECTED' : 'PENDING'},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ${order.id}
+      `;
+
+      return NextResponse.json(
+        {
+          status: parsedError.status_detail || "error",
+          message: parsedError.message,
+        },
+        { status: parsedError.status },
+      );
+    }
 
     const paymentStatus = mapPaymentStatus(payment.status);
 

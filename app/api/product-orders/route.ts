@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { verifyJWT } from "@/lib/auth-utils";
 import { sql } from "@/lib/db";
 import { MercadoPagoService } from "@/lib/mercado-pago";
-import { resolvePaymentAmount } from "@/lib/payments";
+import { resolvePaymentAmount, parseMercadoPagoError } from "@/lib/payments";
 
 async function ensureProductOrdersTable() {
   await sql`
@@ -186,18 +186,42 @@ export async function POST(request: Request) {
 
     if (paymentMethodId) {
       try {
-        const payment = await MercadoPagoService.createProductPayment({
-          orderId: order.id,
-          productName: `${product.name} - MeetOff`,
-          amount: totalAmount,
-          userEmail: user.email,
-          cardTokenId,
-          paymentMethodId,
-          issuerId,
-          installments,
-          identificationType: payer?.identification?.type,
-          identificationNumber: payer?.identification?.number,
-        });
+        let payment: any;
+        try {
+          payment = await MercadoPagoService.createProductPayment({
+            orderId: order.id,
+            productName: `${product.name} - MeetOff`,
+            amount: totalAmount,
+            userEmail: user.email,
+            cardTokenId,
+            paymentMethodId,
+            issuerId,
+            installments,
+            identificationType: payer?.identification?.type,
+            identificationNumber: payer?.identification?.number,
+          });
+        } catch (payError: any) {
+          console.error("Transparent checkout product payment error:", payError);
+
+          const parsedError = parseMercadoPagoError(payError);
+
+          // Update order with failed status
+          await sql`
+            UPDATE product_orders
+            SET payment_status = ${parsedError.status_detail ? 'REJECTED' : 'PENDING'},
+                mp_status_detail = ${parsedError.status_detail || null},
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ${order.id}
+          `;
+
+          return NextResponse.json(
+            {
+              message: parsedError.message,
+              status: parsedError.status_detail || "error",
+            },
+            { status: parsedError.status },
+          );
+        }
 
         const paymentStatus = mapPaymentStatus(payment.status);
 
