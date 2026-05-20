@@ -10,6 +10,11 @@ function mapPaymentStatus(status: string) {
   return "PENDING";
 }
 
+function isValidUUID(value: any): boolean {
+  if (typeof value !== "string") return false;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+}
+
 async function ensureUserSubscriptionPaymentColumns() {
   await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS mp_subscription_payment_id TEXT`;
   await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS mp_subscription_status_detail TEXT`;
@@ -43,11 +48,12 @@ async function updateSubscriptionFromAuthorizedPayment(authorizedPayment: any, a
     userId = subscription.external_reference;
   }
 
-  if (!userId) {
-    console.warn("Mercado Pago authorized payment without user reference:", {
+  if (!userId || !isValidUUID(userId)) {
+    console.warn("Mercado Pago authorized payment without valid user UUID reference:", {
       authorizedPaymentId: authorizedPaymentId || authorizedPayment.id,
       preapprovalId: authorizedPayment.preapproval_id,
       paymentId: authorizedPayment.payment?.id,
+      userId,
     });
     return false;
   }
@@ -134,7 +140,9 @@ export async function POST(request: Request) {
       const orderId = payment.external_reference;
       const paymentStatus = mapPaymentStatus(payment.status);
 
-      if (orderId) {
+      let orderChecked = false;
+
+      if (orderId && isValidUUID(orderId)) {
         // Verifica se e um pedido de produto
         const currentOrders = await sql`
           SELECT product_id, quantity, product_type, payment_status
@@ -144,6 +152,7 @@ export async function POST(request: Request) {
         `;
 
         if (currentOrders.length > 0) {
+          orderChecked = true;
           const order = currentOrders[0];
           const isPhysical = order.product_type !== "Digital";
           const fulfillmentStatus = paymentStatus === "APPROVED"
@@ -179,6 +188,7 @@ export async function POST(request: Request) {
           `;
 
           if (currentAccessoryOrders.length > 0) {
+            orderChecked = true;
             const accOrder = currentAccessoryOrders[0];
             
             await sql`
@@ -252,38 +262,44 @@ export async function POST(request: Request) {
                 }
               }
             }
-          } else {
-            // Se nao for pedido de acessorio, o orderId e na verdade o userId da Assinatura
-            if (paymentStatus === "APPROVED") {
-              const date = new Date();
-              date.setDate(date.getDate() + 30); // Adiciona 30 dias de acesso
-              const expiryDate = date.toISOString();
-
-              await sql`
-                UPDATE users
-                SET subscription_status = 'active',
-                    subscription_expiry = ${expiryDate}
-                WHERE id = ${orderId}
-              `;
-            } else if (paymentStatus === "REJECTED" || paymentStatus === "CANCELLED") {
-              // Pagamento falhou, mantem ou reverte para pendente
-              await ensureUserSubscriptionPaymentColumns();
-              await sql`
-                UPDATE users
-                SET subscription_status = 'inactive',
-                    mp_subscription_payment_id = ${String(payment.id)},
-                    mp_subscription_status_detail = ${payment.status_detail || null}
-                WHERE id = ${orderId} AND subscription_status != 'canceled'
-              `;
-            }
           }
         }
-      } else {
-        const authorizedPayments = await MercadoPagoService.searchAuthorizedPaymentsByPayment(dataId);
-        const authorizedPayment = authorizedPayments[0];
+      }
 
-        if (authorizedPayment) {
-          await updateSubscriptionFromAuthorizedPayment(authorizedPayment, String(authorizedPayment.id));
+      if (!orderChecked) {
+        // Se nao for pedido de produto ou acessorio (ou se o orderId for na verdade o userId da Assinatura)
+        // Mas precisamos ter certeza que e um UUID se for buscar na tabela de usuarios
+        if (orderId && isValidUUID(orderId)) {
+          if (paymentStatus === "APPROVED") {
+            const date = new Date();
+            date.setDate(date.getDate() + 30); // Adiciona 30 dias de acesso
+            const expiryDate = date.toISOString();
+
+            await sql`
+              UPDATE users
+              SET subscription_status = 'active',
+                  subscription_expiry = ${expiryDate}
+              WHERE id = ${orderId}
+            `;
+          } else if (paymentStatus === "REJECTED" || paymentStatus === "CANCELLED") {
+            // Pagamento falhou, mantem ou reverte para pendente
+            await ensureUserSubscriptionPaymentColumns();
+            await sql`
+              UPDATE users
+              SET subscription_status = 'inactive',
+                  mp_subscription_payment_id = ${String(payment.id)},
+                  mp_subscription_status_detail = ${payment.status_detail || null}
+              WHERE id = ${orderId} AND subscription_status != 'canceled'
+            `;
+          }
+        } else {
+          // Se nao tiver orderId ou nao for UUID, tenta obter via authorized payment
+          const authorizedPayments = await MercadoPagoService.searchAuthorizedPaymentsByPayment(dataId);
+          const authorizedPayment = authorizedPayments[0];
+
+          if (authorizedPayment) {
+            await updateSubscriptionFromAuthorizedPayment(authorizedPayment, String(authorizedPayment.id));
+          }
         }
       }
     }
