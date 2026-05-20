@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -23,16 +23,51 @@ import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { authService } from "@/lib/services/auth.service";
 import { cn } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 
 export function SignupForm() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [birthDate, setBirthDate] = useState("");
   const [city, setCity] = useState("");
+  const [showCitySuggestions, setShowCitySuggestions] = useState(false);
+  const [allCities, setAllCities] = useState<string[]>([]);
+  const [isLoadingCities, setIsLoadingCities] = useState(false);
+  const [cityError, setCityError] = useState("");
   const [year, setYear] = useState("");
+
+  const loadCities = async () => {
+    if (allCities.length > 0 || isLoadingCities) return;
+    setIsLoadingCities(true);
+    try {
+      const response = await fetch("https://servicodados.ibge.gov.br/api/v1/localidades/municipios");
+      if (response.ok) {
+        const data = await response.json();
+        const formatted = data.map((item: any) => {
+          const sigla = item.microrregiao?.mesorregiao?.UF?.sigla || item["regiao-imediata"]?.["regiao-intermediaria"]?.UF?.sigla || "";
+          return sigla ? `${item.nome}, ${sigla}` : item.nome;
+        });
+        formatted.sort((a: string, b: string) => a.localeCompare(b));
+        setAllCities(formatted);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar cidades do IBGE:", error);
+    } finally {
+      setIsLoadingCities(false);
+    }
+  };
+
+  const filteredCityOptions = useMemo(() => {
+    if (!city || city.trim().length < 2) return [];
+    const search = city.trim().toLowerCase();
+    return allCities
+      .filter((option) => option.toLowerCase().includes(search))
+      .slice(0, 10);
+  }, [city, allCities]);
   const [userCategory, setUserCategory] = useState("COMUM");
   const [isLoading, setIsLoading] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -123,6 +158,16 @@ export function SignupForm() {
         variant: "error",
         title: "Termos e Políticas",
         description: "Você precisa aceitar os termos e políticas para continuar.",
+      });
+      return;
+    }
+
+    if (!city || !allCities.includes(city)) {
+      setCityError("Por favor, selecione uma cidade/região válida da lista");
+      toast({
+        variant: "error",
+        title: "Cidade/Região inválida",
+        description: "Você deve selecionar uma cidade da lista de sugestões.",
       });
       return;
     }
@@ -303,22 +348,70 @@ export function SignupForm() {
                   />
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2 relative">
                   <label
                     htmlFor="city"
                     className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1"
                   >
                     Cidade / Região
                   </label>
-                  <Input
-                    id="city"
-                    type="text"
-                    placeholder="Ex: São Paulo, SP"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    className="w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-4 sm:px-6"
-                    required
-                  />
+                  <div className="relative">
+                    <Input
+                      id="city"
+                      type="text"
+                      placeholder="Busque por Cidade, UF"
+                      value={city}
+                      onChange={(e) => {
+                        setCity(e.target.value);
+                        setCityError("");
+                      }}
+                      onFocus={() => {
+                        setShowCitySuggestions(true);
+                        loadCities();
+                      }}
+                      onBlur={() => setTimeout(() => setShowCitySuggestions(false), 200)}
+                      className={cn(
+                        "w-full h-14 rounded-2xl bg-white focus:border-brand-orange transition-all font-medium px-4 sm:px-6",
+                        cityError ? "border-red-500/50" : "border-brand-green/10"
+                      )}
+                      required
+                      autoComplete="off"
+                    />
+                    {showCitySuggestions && (
+                      <div className="absolute left-0 right-0 mt-2 bg-white border border-brand-green/10 rounded-2xl shadow-xl z-50 overflow-hidden max-h-60 overflow-y-auto">
+                        {isLoadingCities ? (
+                          <div className="px-5 py-4 text-xs text-gray-400 font-bold uppercase tracking-wider text-center flex items-center justify-center gap-2">
+                            <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-orange border-t-transparent" />
+                            Carregando cidades...
+                          </div>
+                        ) : city.trim().length < 3 ? (
+                          <div className="px-5 py-4 text-xs text-gray-400 font-semibold text-center">
+                            Digite pelo menos 3 caracteres para buscar...
+                          </div>
+                        ) : filteredCityOptions.length > 0 ? (
+                          filteredCityOptions.map((option) => (
+                            <button
+                              key={option}
+                              type="button"
+                              onMouseDown={() => setCity(option)}
+                              className="w-full text-left px-5 py-3.5 hover:bg-brand-orange/10 hover:text-brand-orange transition-colors text-sm font-medium border-b border-brand-green/5 last:border-0 cursor-pointer"
+                            >
+                              {option}
+                            </button>
+                          ))
+                        ) : (
+                          <div className="px-5 py-4 text-xs text-gray-400 font-semibold italic text-center">
+                            Nenhuma cidade encontrada.
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  {cityError && (
+                    <p className="text-xs text-red-500 font-medium mt-1 px-1">
+                      {cityError}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -331,15 +424,28 @@ export function SignupForm() {
                   >
                     Senha
                   </label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-4 sm:px-6"
-                    required
-                  />
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium pl-4 sm:pl-6 pr-12"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-orange transition-colors cursor-pointer"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -350,15 +456,28 @@ export function SignupForm() {
                   >
                     Confirmar
                   </label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="••••••••"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium px-6"
-                    required
-                  />
+                  <div className="relative">
+                    <Input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="w-full h-14 rounded-2xl bg-white border-brand-green/10 focus:border-brand-orange transition-all font-medium pl-4 sm:pl-6 pr-12"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-orange transition-colors cursor-pointer"
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
 

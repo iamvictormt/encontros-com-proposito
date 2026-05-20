@@ -1,11 +1,12 @@
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { authService } from "@/lib/services/auth.service";
 import { cookies } from "next/headers";
 import { verifyJWT } from "@/lib/auth-utils";
 import { redirect } from "next/navigation";
 import { DocumentUploadForm } from "@/components/document-upload-form";
+import { sql } from "@/lib/db";
+import { VerificationPolling } from "@/components/verification-polling";
 
 export default async function EmAnalisePage() {
   const cookieStore = await cookies();
@@ -13,8 +14,18 @@ export default async function EmAnalisePage() {
 
   if (token) {
     const payload = await verifyJWT(token);
-    if (payload && payload.verificationStatus === "APROVADO") {
-      redirect("/");
+    if (payload) {
+      // Query the database directly to get the current status in real-time
+      const results = await sql`
+        SELECT verification_status 
+        FROM users 
+        WHERE id = ${payload.userId}
+      `;
+      if (results.length > 0 && results[0].verification_status === "APROVADO") {
+        redirect("/api/auth/refresh?redirect=/");
+      }
+    } else {
+      redirect("/entrar");
     }
   } else {
     redirect("/entrar");
@@ -22,6 +33,7 @@ export default async function EmAnalisePage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-6">
+      <VerificationPolling />
       <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-10 text-center space-y-8 border border-brand-green/10">
         <div className="flex justify-center">
           <Logo />

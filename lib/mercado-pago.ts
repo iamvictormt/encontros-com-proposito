@@ -67,7 +67,7 @@ export class MercadoPagoService {
     try {
       const body: any = {
         reason: planData.name,
-        payer_email: userEmail.trim().toLowerCase(),
+        payer_email: resolvePayerEmail(userEmail).trim().toLowerCase(),
         back_url: `${baseUrl}/conta`,
         external_reference: userId,
         auto_recurring: {
@@ -212,7 +212,7 @@ export class MercadoPagoService {
 
       const body: any = {
         preapproval_plan_id: planId,
-        payer_email: userEmail.trim().toLowerCase(),
+        payer_email: resolvePayerEmail(userEmail).trim().toLowerCase(),
         status: "authorized",
         reason: planData.name,
         external_reference: userId,
@@ -530,7 +530,7 @@ export class MercadoPagoService {
    * Search for a customer by email or create a new one
    */
   static async getOrCreateCustomer(email: string): Promise<string> {
-    const cleanEmail = email.trim().toLowerCase();
+    const cleanEmail = resolvePayerEmail(email).trim().toLowerCase();
     try {
       // 1. Search for customer
       const searchResponse = await fetch(`https://api.mercadopago.com/v1/customers/search?email=${encodeURIComponent(cleanEmail)}`, {
