@@ -320,6 +320,13 @@ export class MercadoPagoService {
     firstName,
     lastName,
     deviceId,
+    quantity,
+    categoryId,
+    city,
+    zipCode,
+    state,
+    registrationDate,
+    statementDescriptor,
   }: {
     orderId: string;
     productName: string;
@@ -334,6 +341,13 @@ export class MercadoPagoService {
     firstName?: string | null;
     lastName?: string | null;
     deviceId?: string | null;
+    quantity?: number | null;
+    categoryId?: string | null;
+    city?: string | null;
+    zipCode?: string | null;
+    state?: string | null;
+    registrationDate?: string | null;
+    statementDescriptor?: string | null;
   }) {
     const paymentAmount = resolvePaymentAmount(amount);
     const payerEmail = resolvePayerEmail(userEmail);
@@ -413,6 +427,8 @@ export class MercadoPagoService {
       processing_mode: "automatic",
       external_reference: orderId,
       total_amount: paymentAmount.toString(),
+      // statement_descriptor: shown on card statement to reduce chargebacks (required)
+      statement_descriptor: statementDescriptor || "MeetOff",
       payer: {
         email: resolvePayerEmail(userEmail).trim().toLowerCase(),
       },
@@ -434,6 +450,44 @@ export class MercadoPagoService {
     }
     if (lastName) {
       orderBody.payer.last_name = lastName;
+    }
+
+    // additional_info: recommended fields to improve approval rate and reduce fraud
+    const additionalInfo: any = {};
+
+    if (productName || quantity != null) {
+      additionalInfo.items = [
+        {
+          id: orderId,
+          title: productName,
+          quantity: quantity ?? 1,
+          unit_price: paymentAmount,
+          currency_id: "BRL",
+          ...(categoryId ? { category_id: categoryId } : {}),
+        },
+      ];
+    }
+
+    if (firstName || lastName || registrationDate) {
+      additionalInfo.payer = {
+        ...(firstName ? { first_name: firstName } : {}),
+        ...(lastName ? { last_name: lastName } : {}),
+        ...(registrationDate ? { registration_date: registrationDate } : {}),
+      };
+    }
+
+    if (city || zipCode || state) {
+      additionalInfo.shipments = {
+        receiver_address: {
+          ...(city ? { city_name: city } : {}),
+          ...(zipCode ? { zip_code: zipCode } : {}),
+          ...(state ? { state_name: state } : {}),
+        },
+      };
+    }
+
+    if (Object.keys(additionalInfo).length > 0) {
+      orderBody.additional_info = additionalInfo;
     }
 
     try {
@@ -497,6 +551,7 @@ export class MercadoPagoService {
     }
   }
 
+
   /**
    * Process a direct card payment (Checkout Transparente - Wrapper using Orders API)
    * This is now a wrapper around createOrderPayment for backward compatibility
@@ -517,6 +572,13 @@ export class MercadoPagoService {
     firstName,
     lastName,
     deviceId,
+    quantity,
+    categoryId,
+    city,
+    zipCode,
+    state,
+    registrationDate,
+    statementDescriptor,
   }: {
     orderId: string;
     productName: string;
@@ -533,6 +595,13 @@ export class MercadoPagoService {
     firstName?: string | null;
     lastName?: string | null;
     deviceId?: string | null;
+    quantity?: number | null;
+    categoryId?: string | null;
+    city?: string | null;
+    zipCode?: string | null;
+    state?: string | null;
+    registrationDate?: string | null;
+    statementDescriptor?: string | null;
   }) {
     // If using card token ID, delegate to the new Orders API
     if (cardTokenId) {
@@ -551,6 +620,13 @@ export class MercadoPagoService {
           firstName,
           lastName,
           deviceId,
+          quantity,
+          categoryId,
+          city,
+          zipCode,
+          state,
+          registrationDate,
+          statementDescriptor,
         });
 
         // Adapt Orders API response to legacy format for backward compatibility
@@ -608,9 +684,41 @@ export class MercadoPagoService {
           }
         : {
             email: payerEmail.trim().toLowerCase(),
+            ...(firstName ? { first_name: firstName } : {}),
+            ...(lastName ? { last_name: lastName } : {}),
           },
       transaction_amount: paymentAmount,
       external_reference: orderId,
+      // statement_descriptor: shown on card statement to reduce chargebacks (required)
+      statement_descriptor: statementDescriptor || "MeetOff",
+      // additional_info: recommended fields to improve approval rate and reduce fraud
+      additional_info: {
+        items: [
+          {
+            id: orderId,
+            title: productName,
+            quantity: quantity ?? 1,
+            unit_price: paymentAmount,
+            ...(categoryId ? { category_id: categoryId } : {}),
+          },
+        ],
+        payer: {
+          ...(firstName ? { first_name: firstName } : {}),
+          ...(lastName ? { last_name: lastName } : {}),
+          ...(registrationDate ? { registration_date: registrationDate } : {}),
+        },
+        ...(city || zipCode || state
+          ? {
+              shipments: {
+                receiver_address: {
+                  ...(city ? { city_name: city } : {}),
+                  ...(zipCode ? { zip_code: zipCode } : {}),
+                  ...(state ? { state_name: state } : {}),
+                },
+              },
+            }
+          : {}),
+      },
     };
 
     if (baseUrl && !baseUrl.includes("localhost") && !baseUrl.includes("127.0.0.1")) {
@@ -677,11 +785,27 @@ export class MercadoPagoService {
     productName,
     amount,
     userEmail,
+    quantity,
+    categoryId,
+    city,
+    zipCode,
+    state,
+    firstName,
+    lastName,
+    registrationDate,
   }: {
     orderId: string;
     productName: string;
     amount: number;
     userEmail: string;
+    quantity?: number | null;
+    categoryId?: string | null;
+    city?: string | null;
+    zipCode?: string | null;
+    state?: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
+    registrationDate?: string | null;
   }) {
     const paymentAmount = resolvePaymentAmount(amount);
     const payerEmail = resolvePayerEmail(userEmail);
@@ -690,18 +814,42 @@ export class MercadoPagoService {
       "",
     );
 
+    const resolvedQuantity = quantity ?? 1;
+
     const body: any = {
       items: [
         {
           id: orderId,
           title: productName,
-          quantity: 1,
+          quantity: resolvedQuantity,
           unit_price: paymentAmount,
           currency_id: "BRL",
+          ...(categoryId ? { category_id: categoryId } : {}),
         },
       ],
       payer: {
         email: payerEmail.trim().toLowerCase(),
+        ...(firstName ? { first_name: firstName } : {}),
+        ...(lastName ? { last_name: lastName } : {}),
+      },
+      // statement_descriptor: shown on card statement to reduce chargebacks (required)
+      statement_descriptor: "MeetOff",
+      // additional_info: recommended fields to improve approval rate and reduce fraud
+      additional_info: {
+        ...(registrationDate
+          ? { payer: { registration_date: registrationDate } }
+          : {}),
+        ...(city || zipCode || state
+          ? {
+              shipments: {
+                receiver_address: {
+                  ...(city ? { city_name: city } : {}),
+                  ...(zipCode ? { zip_code: zipCode } : {}),
+                  ...(state ? { state_name: state } : {}),
+                },
+              },
+            }
+          : {}),
       },
       back_urls: {
         success: `${baseUrl}/conta?success=true`,

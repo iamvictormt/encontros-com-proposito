@@ -203,6 +203,11 @@ export async function POST(request: Request) {
             firstName: payer?.first_name,
             lastName: payer?.last_name,
             deviceId,
+            quantity: normalizedQuantity,
+            categoryId: product.type === "Digital" ? "digital_goods" : "others",
+            city: address?.city || null,
+            zipCode: address?.cep || null,
+            state: address?.state || null,
           });
         } catch (payError: any) {
           console.error("Transparent checkout product payment error:", payError);
@@ -306,6 +311,11 @@ export async function POST(request: Request) {
       productName: `${product.name} - MeetOff`,
       amount: totalAmount,
       userEmail: user.email,
+      quantity: normalizedQuantity,
+      categoryId: product.type === "Digital" ? "digital_goods" : "others",
+      city: address?.city || null,
+      zipCode: address?.cep || null,
+      state: address?.state || null,
     });
 
     const paymentStatus = "PENDING";

@@ -179,6 +179,11 @@ export async function POST(request: Request) {
         firstName: payer?.first_name,
         lastName: payer?.last_name,
         deviceId,
+        quantity: 1,
+        categoryId: "fashion_accessories",
+        city: cidade || null,
+        zipCode: cep || null,
+        state: estado || null,
       });
     } catch (payError: any) {
       console.error("Premium checkout payment error:", payError);

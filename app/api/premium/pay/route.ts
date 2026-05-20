@@ -89,6 +89,11 @@ export async function POST(request: Request) {
         firstName: payer?.first_name,
         lastName: payer?.last_name,
         deviceId,
+        quantity: 1,
+        categoryId: "fashion_accessories",
+        city: order.address_city || null,
+        zipCode: order.address_cep || null,
+        state: order.address_state || null,
       });
     } catch (payError: any) {
       console.error("Premium pay payment error:", payError);

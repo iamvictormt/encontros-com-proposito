@@ -69,6 +69,8 @@ export async function POST(request: Request) {
           firstName: payer?.first_name,
           lastName: payer?.last_name,
           deviceId,
+          quantity: 1,
+          categoryId: "services",
         });
 
         // Check order status
