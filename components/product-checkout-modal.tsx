@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { CheckCircle2, Copy, CreditCard, MapPin, Package, ShieldCheck } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { CheckCircle2, Copy, MapPin, Package, X } from "lucide-react";
 import { toast } from "sonner";
 import { Payment, initMercadoPago } from "@mercadopago/sdk-react";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 import { isPaymentTestMode, resolvePayerEmail, resolvePaymentAmount } from "@/lib/payments";
@@ -44,6 +43,8 @@ export function ProductCheckoutModal({
   const [isFetchingCep, setIsFetchingCep] = useState(false);
   const [step, setStep] = useState<"DETAILS" | "PAYMENT">("DETAILS");
   const [pixData, setPixData] = useState<{ qrCode: string; qrCodeBase64: string } | null>(null);
+  const [pixOrderId, setPixOrderId] = useState<string | null>(null);
+  const pixPollingRef = useRef<NodeJS.Timeout | null>(null);
   const { user } = useAuth();
 
   const isPhysical = product?.type !== "Digital";
@@ -69,8 +70,54 @@ export function ProductCheckoutModal({
       setCepFetchedFields([]);
       setStep("DETAILS");
       setPixData(null);
+      setPixOrderId(null);
+      // Prevent body scroll when modal is open
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
     }
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isOpen, user?.fullName]);
+
+  // Polling to check PIX payment status
+  useEffect(() => {
+    if (!pixData || !pixOrderId) {
+      if (pixPollingRef.current) {
+        clearInterval(pixPollingRef.current);
+        pixPollingRef.current = null;
+      }
+      return;
+    }
+
+    pixPollingRef.current = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/product-orders/status?orderId=${pixOrderId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+
+        if (data.paymentStatus === "APPROVED") {
+          clearInterval(pixPollingRef.current!);
+          pixPollingRef.current = null;
+          setPixData(null);
+          setPixOrderId(null);
+          toast.success("Pagamento PIX confirmado! Compra realizada com sucesso.");
+          onSuccess?.();
+          onClose();
+        }
+      } catch (err) {
+        // Silently ignore polling errors
+      }
+    }, 4000);
+
+    return () => {
+      if (pixPollingRef.current) {
+        clearInterval(pixPollingRef.current);
+        pixPollingRef.current = null;
+      }
+    };
+  }, [pixData, pixOrderId, onSuccess, onClose]);
 
   const summaryLabel = useMemo(() => {
     if (!selectedSize) return product?.name || "Produto MeetOff";
@@ -162,8 +209,6 @@ export function ProductCheckoutModal({
           selectedSize: selectedSize || null,
           customerName,
           address: isPhysical ? address : null,
-
-          // Payment details
           cardTokenId: formData.token || null,
           paymentMethodId: formData.payment_method_id,
           issuerId: formData.issuer_id || null,
@@ -180,11 +225,11 @@ export function ProductCheckoutModal({
 
       if (data.pix) {
         setPixData(data.pix);
+        setPixOrderId(data.order?.id || null);
         return;
       }
 
       toast.success("Compra realizada com sucesso!");
-
       onSuccess?.();
       onClose();
     } catch (error: any) {
@@ -200,259 +245,268 @@ export function ProductCheckoutModal({
     setStep("PAYMENT");
   };
 
-  if (!product) return null;
+  if (!product || !isOpen) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="w-[96%] sm:max-w-[525px] max-h-[92vh] bg-white rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col">
-        <div className="flex-1 flex flex-col min-h-0 overflow-y-auto p-6 sm:p-8">
-          <DialogHeader className="text-center mb-6">
-            <div className="mx-auto w-14 h-14 bg-brand-red/10 rounded-2xl flex items-center justify-center mb-4">
-              <Package className="w-7 h-7 text-brand-red" />
-            </div>
-            <DialogTitle className="text-2xl font-black uppercase tracking-tighter leading-none">
-              Checkout do Produto
-            </DialogTitle>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-3">
-              {summaryLabel}
-            </p>
-            <p className="text-2xl font-black tracking-tighter text-brand-red mt-1">
-              {formatBRL(amount)}
-            </p>
-          </DialogHeader>
+    <div className="fixed inset-0 z-50">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
+        onClick={onClose}
+      />
 
-          <div className="mb-6 grid grid-cols-2 gap-2 rounded-2xl bg-brand-black/[0.03] p-1">
-            <button
-              type="button"
-              onClick={() => setStep("DETAILS")}
-              disabled={isProcessing}
-              className={`h-11 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
-                step === "DETAILS"
-                  ? "bg-brand-black text-white shadow-lg"
-                  : "text-gray-400 hover:text-brand-black"
-              }`}
-            >
-              1. Dados
-            </button>
-            <button
-              type="button"
-              onClick={goToPayment}
-              disabled={isProcessing}
-              className={`h-11 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
-                step === "PAYMENT"
-                  ? "bg-brand-red text-white shadow-lg"
-                  : "text-gray-400 hover:text-brand-black"
-              }`}
-            >
-              2. Pagamento
-            </button>
-          </div>
+      {/* Modal */}
+      <div className="absolute inset-0 flex items-end sm:items-center justify-center sm:p-4">
+        <div className="relative w-full sm:max-w-[500px] max-h-[95dvh] sm:max-h-[88vh] bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-300 overflow-hidden">
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+            aria-label="Fechar"
+          >
+            <X className="w-4 h-4 text-gray-600" />
+          </button>
 
-          {step === "DETAILS" ? (
-            <div className="space-y-5">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
-                    Nome no pedido
-                  </label>
-                  <Input
-                    value={customerName}
-                    onChange={(event) => setCustomerName(event.target.value)}
-                    placeholder="Nome completo"
-                    className="h-14 rounded-2xl bg-white border-brand-black/10 text-sm font-bold px-5"
-                  />
+          {/* Scrollable content */}
+          <div className="flex-1 overflow-y-auto overscroll-contain">
+            <div className="p-5 sm:p-7 pb-8">
+              {/* Header */}
+              <div className="text-center mb-5">
+                <div className="mx-auto w-11 h-11 bg-brand-red/10 rounded-xl flex items-center justify-center mb-3">
+                  <Package className="w-5 h-5 text-brand-red" />
                 </div>
-
-                {isPhysical && (
-                  <div className="rounded-2xl border border-brand-black/5 bg-brand-black/[0.02] p-4 space-y-4">
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-brand-green" />
-                      <p className="text-[10px] font-black uppercase tracking-widest text-brand-black">
-                        Entrega
-                      </p>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <Input
-                        value={address.cep}
-                        onChange={(event) => handleCepChange(event.target.value)}
-                        placeholder="CEP"
-                        maxLength={9}
-                        className="h-12 rounded-2xl bg-white border-brand-black/10 text-xs font-bold px-4"
-                      />
-                      <Input
-                        value={address.state}
-                        onChange={(event) => handleAddressChange("state", event.target.value)}
-                        disabled={cepFetchedFields.includes("state")}
-                        placeholder="Estado"
-                        className="h-12 rounded-2xl bg-white border-brand-black/10 text-xs font-bold px-4 disabled:opacity-60"
-                      />
-                      <Input
-                        value={address.city}
-                        onChange={(event) => handleAddressChange("city", event.target.value)}
-                        disabled={cepFetchedFields.includes("city")}
-                        placeholder="Cidade"
-                        className="h-12 rounded-2xl bg-white border-brand-black/10 text-xs font-bold px-4 disabled:opacity-60"
-                      />
-                      <Input
-                        value={address.neighborhood}
-                        onChange={(event) => handleAddressChange("neighborhood", event.target.value)}
-                        disabled={cepFetchedFields.includes("neighborhood")}
-                        placeholder="Bairro"
-                        className="h-12 rounded-2xl bg-white border-brand-black/10 text-xs font-bold px-4 disabled:opacity-60"
-                      />
-                      <Input
-                        value={address.street}
-                        onChange={(event) => handleAddressChange("street", event.target.value)}
-                        disabled={cepFetchedFields.includes("street")}
-                        placeholder="Rua"
-                        className="h-12 rounded-2xl bg-white border-brand-black/10 text-xs font-bold px-4 disabled:opacity-60"
-                      />
-                      <Input
-                        value={address.number}
-                        onChange={(event) => handleAddressChange("number", event.target.value)}
-                        placeholder="Numero"
-                        className="h-12 rounded-2xl bg-white border-brand-black/10 text-xs font-bold px-4"
-                      />
-                      <Input
-                        value={address.complement}
-                        onChange={(event) => handleAddressChange("complement", event.target.value)}
-                        placeholder="Complemento"
-                        className="h-12 rounded-2xl bg-white border-brand-black/10 text-xs font-bold px-4 sm:col-span-2"
-                      />
-                    </div>
-                    {isFetchingCep && (
-                      <p className="text-[10px] font-black uppercase tracking-widest text-brand-green">
-                        Buscando endereco...
-                      </p>
-                    )}
-                  </div>
-                )}
+                <h2 className="text-lg sm:text-xl font-black uppercase tracking-tighter leading-none">
+                  Checkout do Produto
+                </h2>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1.5">
+                  {summaryLabel}
+                </p>
+                <p className="text-lg sm:text-xl font-black tracking-tighter text-brand-red mt-1">
+                  {formatBRL(amount)}
+                </p>
               </div>
 
-              <button
-                type="button"
-                onClick={goToPayment}
-                className="w-full h-14 rounded-2xl bg-brand-red text-white font-black uppercase tracking-widest text-[11px] shadow-xl shadow-brand-red/20 hover:bg-brand-red/90 transition-all active:scale-[0.98]"
-              >
-                Continuar para pagamento
-              </button>
-            </div>
-          ) : pixData ? (
-            <div className="space-y-6 text-center py-4 bg-gray-50/50 border border-gray-100 rounded-[2.5rem] p-6 shadow-inner relative overflow-hidden">
-              <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-35 pointer-events-none" />
-              
-              <div className="relative z-10 space-y-5">
-                <div className="mx-auto w-16 h-16 bg-gradient-to-tr from-emerald-500/10 to-emerald-500/20 rounded-2xl flex items-center justify-center shadow-md">
-                  <CheckCircle2 className="w-8 h-8 text-emerald-500 animate-pulse" />
-                </div>
-                
-                <div className="space-y-1">
-                  <h3 className="text-xl font-black uppercase tracking-tighter text-brand-black">
-                    Pedido Reservado!
-                  </h3>
-                  <div className="mx-auto w-12 h-1 bg-gradient-to-r from-brand-red to-brand-orange rounded-full" />
-                </div>
+              {/* Step tabs */}
+              <div className="mb-5 grid grid-cols-2 gap-1.5 rounded-xl bg-gray-100 p-1">
+                <button
+                  type="button"
+                  onClick={() => setStep("DETAILS")}
+                  disabled={isProcessing}
+                  className={`h-9 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${
+                    step === "DETAILS"
+                      ? "bg-white text-brand-black shadow-sm"
+                      : "text-gray-400 hover:text-brand-black"
+                  }`}
+                >
+                  1. Dados
+                </button>
+                <button
+                  type="button"
+                  onClick={goToPayment}
+                  disabled={isProcessing}
+                  className={`h-9 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${
+                    step === "PAYMENT"
+                      ? "bg-brand-red text-white shadow-sm"
+                      : "text-gray-400 hover:text-brand-black"
+                  }`}
+                >
+                  2. Pagamento
+                </button>
+              </div>
 
-                <p className="text-[11px] text-gray-500 max-w-[280px] mx-auto leading-relaxed font-medium">
-                  Pague com Pix para confirmar a sua compra. O QR code expira em 30 minutos.
-                </p>
-
-                <div className="relative py-2">
-                  <div className="absolute left-[-25px] top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white border-r border-gray-100" />
-                  <div className="absolute right-[-25px] top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white border-l border-gray-100" />
-                  <div className="border-t-2 border-dashed border-gray-200 w-full" />
-                </div>
-
-                <div className="relative mx-auto p-4 bg-white border border-brand-black/5 rounded-[2rem] w-[210px] h-[210px] flex flex-col items-center justify-center shadow-xl group transition-transform duration-300 hover:scale-[1.02]">
-                  <div className="absolute -inset-0.5 bg-gradient-to-tr from-brand-red/10 to-brand-orange/10 rounded-[2.2rem] blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  
-                  {pixData.qrCodeBase64 ? (
-                    <img
-                      src={`data:image/jpeg;base64,${pixData.qrCodeBase64}`}
-                      alt="PIX QR Code"
-                      className="relative z-10 w-full h-full object-contain rounded-2xl"
+              {/* Content */}
+              {step === "DETAILS" ? (
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-1">
+                      Nome no pedido
+                    </label>
+                    <Input
+                      value={customerName}
+                      onChange={(event) => setCustomerName(event.target.value)}
+                      placeholder="Nome completo"
+                      className="h-11 rounded-xl bg-white border-gray-200 text-sm font-medium px-4"
                     />
-                  ) : (
-                    <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-brand-red border-t-transparent" />
-                  )}
-                </div>
+                  </div>
 
-                <div className="space-y-4 px-2">
+                  {isPhysical && (
+                    <div className="rounded-xl border border-gray-100 bg-gray-50/50 p-3.5 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-3.5 h-3.5 text-brand-green" />
+                        <p className="text-[9px] font-black uppercase tracking-widest text-brand-black">
+                          Endereço de entrega
+                        </p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input
+                          value={address.cep}
+                          onChange={(event) => handleCepChange(event.target.value)}
+                          placeholder="CEP"
+                          maxLength={9}
+                          className="h-10 rounded-lg bg-white border-gray-200 text-xs font-medium px-3"
+                        />
+                        <Input
+                          value={address.state}
+                          onChange={(event) => handleAddressChange("state", event.target.value)}
+                          disabled={cepFetchedFields.includes("state")}
+                          placeholder="Estado"
+                          className="h-10 rounded-lg bg-white border-gray-200 text-xs font-medium px-3 disabled:opacity-60"
+                        />
+                        <Input
+                          value={address.city}
+                          onChange={(event) => handleAddressChange("city", event.target.value)}
+                          disabled={cepFetchedFields.includes("city")}
+                          placeholder="Cidade"
+                          className="h-10 rounded-lg bg-white border-gray-200 text-xs font-medium px-3 disabled:opacity-60"
+                        />
+                        <Input
+                          value={address.neighborhood}
+                          onChange={(event) => handleAddressChange("neighborhood", event.target.value)}
+                          disabled={cepFetchedFields.includes("neighborhood")}
+                          placeholder="Bairro"
+                          className="h-10 rounded-lg bg-white border-gray-200 text-xs font-medium px-3 disabled:opacity-60"
+                        />
+                        <Input
+                          value={address.street}
+                          onChange={(event) => handleAddressChange("street", event.target.value)}
+                          disabled={cepFetchedFields.includes("street")}
+                          placeholder="Rua"
+                          className="col-span-2 h-10 rounded-lg bg-white border-gray-200 text-xs font-medium px-3 disabled:opacity-60"
+                        />
+                        <Input
+                          value={address.number}
+                          onChange={(event) => handleAddressChange("number", event.target.value)}
+                          placeholder="Número"
+                          className="h-10 rounded-lg bg-white border-gray-200 text-xs font-medium px-3"
+                        />
+                        <Input
+                          value={address.complement}
+                          onChange={(event) => handleAddressChange("complement", event.target.value)}
+                          placeholder="Complemento"
+                          className="h-10 rounded-lg bg-white border-gray-200 text-xs font-medium px-3"
+                        />
+                      </div>
+                      {isFetchingCep && (
+                        <p className="text-[9px] font-black uppercase tracking-widest text-brand-green animate-pulse">
+                          Buscando endereço...
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={goToPayment}
+                    className="w-full h-12 rounded-xl bg-brand-red text-white font-black uppercase tracking-widest text-[10px] shadow-lg shadow-brand-red/20 hover:bg-brand-red/90 transition-all active:scale-[0.98]"
+                  >
+                    Continuar para pagamento
+                  </button>
+                </div>
+              ) : pixData ? (
+                <div className="text-center space-y-4">
+                  <div className="mx-auto w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center">
+                    <CheckCircle2 className="w-6 h-6 text-emerald-500 animate-pulse" />
+                  </div>
+
+                  <div>
+                    <h3 className="text-base font-black uppercase tracking-tighter text-brand-black">
+                      Pedido Reservado!
+                    </h3>
+                    <p className="text-[10px] text-gray-500 mt-1 leading-relaxed font-medium max-w-[260px] mx-auto">
+                      Pague com Pix para confirmar a sua compra. O QR code expira em 30 minutos.
+                    </p>
+                  </div>
+
+                  <div className="border-t border-dashed border-gray-200 my-3" />
+
+                  {/* QR Code */}
+                  <div className="mx-auto p-3 bg-white border border-gray-100 rounded-2xl w-[180px] h-[180px] sm:w-[200px] sm:h-[200px] flex items-center justify-center shadow-md">
+                    {pixData.qrCodeBase64 ? (
+                      <img
+                        src={`data:image/jpeg;base64,${pixData.qrCodeBase64}`}
+                        alt="PIX QR Code"
+                        className="w-full h-full object-contain rounded-xl"
+                      />
+                    ) : (
+                      <div className="h-7 w-7 animate-spin rounded-full border-[3px] border-brand-red border-t-transparent" />
+                    )}
+                  </div>
+
+                  {/* Copy button */}
                   <button
                     type="button"
                     onClick={() => {
                       navigator.clipboard.writeText(pixData.qrCode);
                       toast.success("Código PIX copiado!");
                     }}
-                    className="w-full h-14 rounded-2xl bg-brand-black text-white font-black uppercase tracking-widest text-[11px] shadow-xl hover:bg-brand-black/90 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group cursor-pointer"
+                    className="w-full h-11 rounded-xl bg-brand-black text-white font-black uppercase tracking-widest text-[10px] shadow-lg hover:bg-brand-black/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                   >
-                    <Copy className="w-4 h-4 transition-transform group-hover:scale-110" />
+                    <Copy className="w-3.5 h-3.5" />
                     Copiar Código Pix
                   </button>
-                  
-                  <div className="flex items-center justify-center gap-1.5 text-[9px] text-brand-green font-black uppercase tracking-widest bg-brand-green/5 py-2 px-3 rounded-full border border-brand-green/10 max-w-[280px] mx-auto animate-pulse">
+
+                  {/* Status indicator */}
+                  <div className="inline-flex items-center gap-1.5 text-[8px] text-brand-green font-black uppercase tracking-widest bg-brand-green/5 py-1.5 px-3 rounded-full border border-brand-green/10 animate-pulse">
                     <div className="w-1.5 h-1.5 rounded-full bg-brand-green" />
                     Após pagar, o pedido aprova na hora!
                   </div>
                 </div>
-              </div>
-            </div>
-          ) : (
-            <div className="mt-4">
-              <div className="relative mercado-pago-card-brick py-2">
-                {(!isBrickReady || isProcessing) && (
-                  <div className="absolute inset-0 z-20 flex min-h-[300px] flex-col items-center justify-center gap-4 rounded-2xl bg-white/95 backdrop-blur-sm">
-                    <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-brand-red border-t-transparent" />
-                    <p className="text-[10px] font-black uppercase tracking-widest text-brand-red">
-                      {isProcessing ? "Confirmando Pagamento..." : "Carregando checkout..."}
-                    </p>
-                  </div>
-                )}
+              ) : (
+                <div className="relative mercado-pago-card-brick">
+                  {(!isBrickReady || isProcessing) && (
+                    <div className="absolute inset-0 z-20 flex min-h-[280px] flex-col items-center justify-center gap-3 rounded-xl bg-white/95 backdrop-blur-sm">
+                      <div className="h-7 w-7 animate-spin rounded-full border-[3px] border-brand-red border-t-transparent" />
+                      <p className="text-[9px] font-black uppercase tracking-widest text-brand-red">
+                        {isProcessing ? "Confirmando Pagamento..." : "Carregando checkout..."}
+                      </p>
+                    </div>
+                  )}
 
-                {publicKey ? (
-                  <Payment
-                    initialization={{
-                      amount,
-                      payer: { email: payerEmail || undefined },
-                    }}
-                    customization={{
-                      paymentMethods: {
-                        creditCard: "all",
-                        debitCard: "all",
-                        bankTransfer: ["pix"],
-                      },
-                      visual: {
-                        hideFormTitle: true,
-                        style: {
-                          theme: "default",
-                          customVariables: {
-                            baseColor: "#FF1D55",
-                            borderRadiusMedium: "16px",
-                            formBackgroundColor: "#FFFFFF",
-                            inputBackgroundColor: "#FFFFFF",
+                  {publicKey ? (
+                    <Payment
+                      initialization={{
+                        amount,
+                        payer: { email: payerEmail || undefined },
+                      }}
+                      customization={{
+                        paymentMethods: {
+                          creditCard: "all",
+                          debitCard: "all",
+                          bankTransfer: ["pix"],
+                        },
+                        visual: {
+                          hideFormTitle: true,
+                          style: {
+                            theme: "default",
+                            customVariables: {
+                              baseColor: "#FF1D55",
+                              borderRadiusMedium: "12px",
+                              formBackgroundColor: "#FFFFFF",
+                              inputBackgroundColor: "#FFFFFF",
+                            },
                           },
                         },
-                      },
-                    }}
-                    onReady={() => setIsBrickReady(true)}
-                    onError={(error) => {
-                      console.error("MP Brick error:", error);
-                      toast.error("Não foi possível carregar o checkout.");
-                    }}
-                    onSubmit={handlePaymentSubmit}
-                  />
-                ) : (
-                  <div className="rounded-2xl bg-brand-red/5 border border-brand-red/10 p-6 text-center">
-                    <p className="text-xs font-bold text-brand-red uppercase tracking-widest">
-                      Chave pública do Mercado Pago não configurada.
-                    </p>
-                  </div>
-                )}
-              </div>
+                      }}
+                      onReady={() => setIsBrickReady(true)}
+                      onError={(error) => {
+                        console.error("MP Brick error:", error);
+                        toast.error("Não foi possível carregar o checkout.");
+                      }}
+                      onSubmit={handlePaymentSubmit}
+                    />
+                  ) : (
+                    <div className="rounded-xl bg-brand-red/5 border border-brand-red/10 p-5 text-center">
+                      <p className="text-[10px] font-bold text-brand-red uppercase tracking-widest">
+                        Chave pública do Mercado Pago não configurada.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }

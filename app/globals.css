@@ -122,15 +122,23 @@ button,
   }
 
   .mercado-pago-card-brick button[type="submit"] {
-    @apply h-14 rounded-2xl bg-brand-red font-black uppercase tracking-widest text-[11px] shadow-xl shadow-brand-red/20 transition-all hover:bg-brand-red/90 active:scale-[0.98];
+    @apply h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-brand-red font-black uppercase tracking-widest text-[10px] sm:text-[11px] shadow-xl shadow-brand-red/20 transition-all hover:bg-brand-red/90 active:scale-[0.98];
   }
 
   .mercado-pago-card-brick :is(input, select) {
-    @apply rounded-2xl border-brand-black/10 text-sm font-bold;
+    @apply rounded-xl sm:rounded-2xl border-brand-black/10 text-sm font-bold;
   }
 
   .mercado-pago-card-brick label {
-    @apply text-[10px] font-black uppercase tracking-widest text-gray-500;
+    @apply text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-gray-500;
+  }
+
+  .mercado-pago-card-brick {
+    @apply text-sm;
+  }
+
+  .mercado-pago-card-brick iframe {
+    max-width: 100% !important;
   }
 }
 

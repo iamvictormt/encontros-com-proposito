@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
@@ -214,6 +214,46 @@ export function PremiumFlow() {
   } | null>(null);
   const [isBrickReady, setIsBrickReady] = useState(false);
   const [pixData, setPixData] = useState<{ qrCode: string; qrCodeBase64: string } | null>(null);
+  const [pixOrderId, setPixOrderId] = useState<string | null>(null);
+  const pixPollingRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Polling to check PIX payment status
+  useEffect(() => {
+    if (!pixData || !pixOrderId) {
+      if (pixPollingRef.current) {
+        clearInterval(pixPollingRef.current);
+        pixPollingRef.current = null;
+      }
+      return;
+    }
+
+    pixPollingRef.current = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/premium/checkout/status?orderId=${pixOrderId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+
+        if (data.paymentStatus === "APPROVED") {
+          clearInterval(pixPollingRef.current!);
+          pixPollingRef.current = null;
+          setPixData(null);
+          setCredentials((prev) => (prev ? { ...prev, orderId: pixOrderId } : null));
+          toast.success("Pagamento aprovado! Bem-vindo ao MeetOff Premium!");
+          // Reload to refresh auth token with premium status
+          window.location.href = "/eventos";
+        }
+      } catch (err) {
+        // Silently ignore polling errors
+      }
+    }, 4000);
+
+    return () => {
+      if (pixPollingRef.current) {
+        clearInterval(pixPollingRef.current);
+        pixPollingRef.current = null;
+      }
+    };
+  }, [pixData, pixOrderId]);
 
   const publicKey = process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY;
 
@@ -456,6 +496,7 @@ export function PremiumFlow() {
           return;
         } else if (data.status === "PENDING" && data.pix) {
           setPixData(data.pix);
+          setPixOrderId(data.orderId || null);
           toast.success("Código PIX gerado! Pague para confirmar sua ativação.");
           return;
         }
@@ -1115,86 +1156,84 @@ export function PremiumFlow() {
   );
 
   const renderPayment = () => (
-    <div className="w-full max-w-lg space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
-      <div className="text-center space-y-3">
-        <h3 className="text-2xl font-black uppercase tracking-tighter">Pagamento Seguro</h3>
-        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-relaxed">
-          Sua experiência premium está a um passo. <br />O pagamento é processado via Mercado Pago
+    <div className="w-full max-w-lg space-y-5 sm:space-y-8 px-1 sm:px-0 animate-in fade-in slide-in-from-right-4 duration-500">
+      <div className="text-center space-y-2 sm:space-y-3">
+        <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tighter">Pagamento Seguro</h3>
+        <p className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-relaxed">
+          Sua experiência premium está a um passo. <br className="hidden sm:block" />O pagamento é processado via Mercado Pago
           em ambiente seguro.
         </p>
       </div>
 
-      <div className="bg-white rounded-[2rem] p-6 border border-brand-black/5 shadow-xl shadow-brand-black/5 space-y-4">
-        <div className="flex justify-between items-center pb-4 border-b border-brand-black/5">
+      <div className="bg-white rounded-2xl sm:rounded-[2rem] p-4 sm:p-6 border border-brand-black/5 shadow-xl shadow-brand-black/5 space-y-3 sm:space-y-4">
+        <div className="flex justify-between items-center pb-3 sm:pb-4 border-b border-brand-black/5">
           <div className="space-y-0.5">
-            <span className="text-[9px] font-black text-brand-red uppercase tracking-widest">
+            <span className="text-[8px] sm:text-[9px] font-black text-brand-red uppercase tracking-widest">
               Resumo
             </span>
-            <h4 className="font-black uppercase tracking-tighter text-sm">
+            <h4 className="font-black uppercase tracking-tighter text-xs sm:text-sm">
               {selectedProduct?.name}
             </h4>
           </div>
           <div className="text-right">
-            <span className="text-xl font-black tracking-tighter text-brand-black">
+            <span className="text-lg sm:text-xl font-black tracking-tighter text-brand-black">
               {selectedProduct?.price}
             </span>
           </div>
         </div>
 
         {pixData ? (
-          <div className="space-y-6 text-center py-4 bg-gray-50/50 border border-gray-100 rounded-[2.5rem] p-6 shadow-inner relative overflow-hidden">
+          <div className="space-y-4 sm:space-y-6 text-center py-3 sm:py-4 bg-gray-50/50 border border-gray-100 rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-6 shadow-inner relative overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-35 pointer-events-none" />
             
-            <div className="relative z-10 space-y-5">
-              <div className="mx-auto w-16 h-16 bg-gradient-to-tr from-emerald-500/10 to-emerald-500/20 rounded-2xl flex items-center justify-center shadow-md">
-                <CheckCircle2 className="w-8 h-8 text-emerald-500 animate-pulse" />
+            <div className="relative z-10 space-y-4 sm:space-y-5">
+              <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-tr from-emerald-500/10 to-emerald-500/20 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-md">
+                <CheckCircle2 className="w-6 h-6 sm:w-8 sm:h-8 text-emerald-500 animate-pulse" />
               </div>
               
               <div className="space-y-1">
-                <h3 className="text-xl font-black uppercase tracking-tighter text-brand-black">
+                <h3 className="text-lg sm:text-xl font-black uppercase tracking-tighter text-brand-black">
                   Reserva Realizada!
                 </h3>
-                <div className="mx-auto w-12 h-1 bg-gradient-to-r from-brand-red to-brand-orange rounded-full" />
+                <div className="mx-auto w-10 sm:w-12 h-1 bg-gradient-to-r from-brand-red to-brand-orange rounded-full" />
               </div>
 
-              <p className="text-[11px] text-gray-500 max-w-[280px] mx-auto leading-relaxed font-medium">
+              <p className="text-[10px] sm:text-[11px] text-gray-500 max-w-[240px] sm:max-w-[280px] mx-auto leading-relaxed font-medium">
                 Pague com Pix para confirmar a assinatura premium e o envio do acessório. O QR code expira em 30 minutos.
               </p>
 
-              <div className="relative py-2">
-                <div className="absolute left-[-25px] top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white border-r border-gray-100" />
-                <div className="absolute right-[-25px] top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white border-l border-gray-100" />
+              <div className="relative py-1.5 sm:py-2 overflow-hidden">
                 <div className="border-t-2 border-dashed border-gray-200 w-full" />
               </div>
 
-              <div className="relative mx-auto p-4 bg-white border border-brand-black/5 rounded-[2rem] w-[210px] h-[210px] flex flex-col items-center justify-center shadow-xl group transition-transform duration-300 hover:scale-[1.02]">
-                <div className="absolute -inset-0.5 bg-gradient-to-tr from-brand-red/10 to-brand-orange/10 rounded-[2.2rem] blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative mx-auto p-3 sm:p-4 bg-white border border-brand-black/5 rounded-2xl sm:rounded-[2rem] w-[160px] h-[160px] sm:w-[210px] sm:h-[210px] flex flex-col items-center justify-center shadow-xl group transition-transform duration-300 hover:scale-[1.02]">
+                <div className="absolute -inset-0.5 bg-gradient-to-tr from-brand-red/10 to-brand-orange/10 rounded-2xl sm:rounded-[2.2rem] blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 
                 {pixData.qrCodeBase64 ? (
                   <img
                     src={`data:image/jpeg;base64,${pixData.qrCodeBase64}`}
                     alt="PIX QR Code"
-                    className="relative z-10 w-full h-full object-contain rounded-2xl"
+                    className="relative z-10 w-full h-full object-contain rounded-xl sm:rounded-2xl"
                   />
                 ) : (
                   <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-brand-red border-t-transparent" />
                 )}
               </div>
 
-              <div className="space-y-4 px-2">
+              <div className="space-y-3 sm:space-y-4 px-0 sm:px-2">
                 <button
                   type="button"
                   onClick={() => {
                     navigator.clipboard.writeText(pixData.qrCode);
                     toast.success("Código PIX copiado!");
                   }}
-                  className="w-full h-14 rounded-2xl bg-brand-black text-white font-black uppercase tracking-widest text-[11px] shadow-xl hover:bg-brand-black/90 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group cursor-pointer"
+                  className="w-full h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-brand-black text-white font-black uppercase tracking-widest text-[10px] sm:text-[11px] shadow-xl hover:bg-brand-black/90 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group cursor-pointer"
                 >
-                  <Copy className="w-4 h-4 transition-transform group-hover:scale-110" />
+                  <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform group-hover:scale-110" />
                   Copiar Código Pix
                 </button>
                 
-                <div className="flex items-center justify-center gap-1.5 text-[9px] text-brand-green font-black uppercase tracking-widest bg-brand-green/5 py-2 px-3 rounded-full border border-brand-green/10 max-w-[280px] mx-auto animate-pulse">
+                <div className="flex items-center justify-center gap-1.5 text-[8px] sm:text-[9px] text-brand-green font-black uppercase tracking-widest bg-brand-green/5 py-2 px-2 sm:px-3 rounded-full border border-brand-green/10 mx-auto animate-pulse">
                   <div className="w-1.5 h-1.5 rounded-full bg-brand-green" />
                   Após pagar, o pedido aprova na hora!
                 </div>
@@ -1202,11 +1241,11 @@ export function PremiumFlow() {
             </div>
           </div>
         ) : (
-          <div className="relative mercado-pago-card-brick py-2">
+          <div className="relative mercado-pago-card-brick py-1 sm:py-2">
             {(!isBrickReady || isProcessingPayment) && (
-              <div className="absolute inset-0 z-20 flex min-h-[300px] flex-col items-center justify-center gap-4 rounded-2xl bg-white/95 backdrop-blur-sm">
-                <Loader2 className="h-8 w-8 animate-spin text-brand-red" />
-                <p className="text-[10px] font-black uppercase tracking-widest text-brand-red">
+              <div className="absolute inset-0 z-20 flex min-h-[250px] sm:min-h-[300px] flex-col items-center justify-center gap-3 sm:gap-4 rounded-xl sm:rounded-2xl bg-white/95 backdrop-blur-sm">
+                <Loader2 className="h-7 w-7 sm:h-8 sm:w-8 animate-spin text-brand-red" />
+                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-brand-red">
                   {isProcessingPayment ? "Processando Pagamento..." : "Carregando Checkout..."}
                 </p>
               </div>
@@ -1247,62 +1286,62 @@ export function PremiumFlow() {
         )}
       </div>
 
-      <p className="text-center text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+      <p className="text-center text-[8px] sm:text-[9px] font-bold text-gray-400 uppercase tracking-widest">
         Pagamento 100% criptografado e seguro
       </p>
     </div>
   );
 
   const renderConfirmation = () => (
-    <div className="w-full max-w-lg space-y-8 animate-in fade-in zoom-in-95 duration-700">
-      <div className="text-center space-y-4">
-        <div className="w-24 h-24 bg-brand-red/10 text-brand-red rounded-[2.5rem] flex items-center justify-center mx-auto mb-6 shadow-xl shadow-brand-green/10">
-          <Check size={48} strokeWidth={4} />
+    <div className="w-full max-w-lg space-y-6 sm:space-y-8 px-1 sm:px-0 animate-in fade-in zoom-in-95 duration-700">
+      <div className="text-center space-y-3 sm:space-y-4">
+        <div className="w-16 h-16 sm:w-24 sm:h-24 bg-brand-red/10 text-brand-red rounded-2xl sm:rounded-[2.5rem] flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-xl shadow-brand-green/10">
+          <Check className="w-8 h-8 sm:w-12 sm:h-12" strokeWidth={4} />
         </div>
-        <h2 className="text-4xl font-black uppercase tracking-tighter leading-none">
+        <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tighter leading-none">
           Experiência <br />
           <span className="text-brand-orange">Confirmada!</span>
         </h2>
-        <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">
+        <p className="text-gray-500 font-bold uppercase tracking-widest text-[9px] sm:text-[10px]">
           Seu acesso VIP foi liberado com sucesso
         </p>
       </div>
 
       {credentials && (
-        <div className="relative bg-gradient-to-br from-brand-black to-gray-900 text-white p-8 rounded-[2rem] shadow-2xl overflow-hidden">
-          <div className="absolute -right-12 -top-12 w-40 h-40 bg-brand-orange/20 blur-3xl rounded-full" />
-          <div className="absolute -left-12 -bottom-12 w-40 h-40 bg-brand-red/20 blur-3xl rounded-full" />
+        <div className="relative bg-gradient-to-br from-brand-black to-gray-900 text-white p-5 sm:p-8 rounded-2xl sm:rounded-[2rem] shadow-2xl overflow-hidden">
+          <div className="absolute -right-12 -top-12 w-32 sm:w-40 h-32 sm:h-40 bg-brand-orange/20 blur-3xl rounded-full" />
+          <div className="absolute -left-12 -bottom-12 w-32 sm:w-40 h-32 sm:h-40 bg-brand-red/20 blur-3xl rounded-full" />
 
-          <div className="relative z-10 space-y-6">
-            <div className="flex items-center gap-4 border-b border-white/10 pb-4">
-              <div className="w-12 h-12 bg-brand-red text-white rounded-xl flex items-center justify-center font-black text-xl shadow-lg shadow-brand-red/20">
-                <Star size={28} strokeWidth={4} />
+          <div className="relative z-10 space-y-4 sm:space-y-6">
+            <div className="flex items-center gap-3 sm:gap-4 border-b border-white/10 pb-3 sm:pb-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-brand-red text-white rounded-lg sm:rounded-xl flex items-center justify-center font-black text-xl shadow-lg shadow-brand-red/20">
+                <Star className="w-5 h-5 sm:w-7 sm:h-7" strokeWidth={4} />
               </div>
               <div>
-                <h5 className="font-black uppercase tracking-tighter text-lg text-brand-orange leading-none">
+                <h5 className="font-black uppercase tracking-tighter text-base sm:text-lg text-brand-orange leading-none">
                   {credentials.isUpgrade ? "Conta Atualizada" : "Acesso Premium"}
                 </h5>
-                <p className="text-[9px] text-gray-400 uppercase tracking-widest mt-1">
+                <p className="text-[8px] sm:text-[9px] text-gray-400 uppercase tracking-widest mt-1">
                   {credentials.isUpgrade ? "Perfil promovido com sucesso" : "Você já está logado"}
                 </p>
               </div>
             </div>
 
             <div className="space-y-3 font-mono">
-              <div className="bg-white/5 p-4 rounded-2xl border border-white/5 backdrop-blur-sm">
-                <span className="text-[9px] text-brand-orange uppercase block mb-1">
+              <div className="bg-white/5 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-white/5 backdrop-blur-sm">
+                <span className="text-[8px] sm:text-[9px] text-brand-orange uppercase block mb-1">
                   E-mail (Login)
                 </span>
-                <span className="font-bold tracking-widest text-sm">{credentials.login}</span>
+                <span className="font-bold tracking-widest text-xs sm:text-sm break-all">{credentials.login}</span>
               </div>
 
               {!credentials.isUpgrade && credentials.password && (
-                <div className="bg-white/5 p-4 rounded-2xl border border-white/5 backdrop-blur-sm relative overflow-hidden group">
-                  <span className="text-[9px] text-brand-orange uppercase block mb-1">
+                <div className="bg-white/5 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-white/5 backdrop-blur-sm relative overflow-hidden group">
+                  <span className="text-[8px] sm:text-[9px] text-brand-orange uppercase block mb-1">
                     Senha Gerada
                   </span>
-                  <span className="font-bold tracking-widest text-xl">{credentials.password}</span>
-                  <p className="text-[8px] text-brand-red uppercase mt-2 opacity-80">
+                  <span className="font-bold tracking-widest text-lg sm:text-xl">{credentials.password}</span>
+                  <p className="text-[7px] sm:text-[8px] text-brand-red uppercase mt-2 opacity-80">
                     Enviamos um email com os dados de acesso. Confira sua caixa de spam.
                   </p>
                 </div>
@@ -1312,32 +1351,32 @@ export function PremiumFlow() {
         </div>
       )}
 
-      <div className="bg-white rounded-[2rem] p-6 border border-brand-black/5 shadow-lg shadow-brand-black/5 space-y-4">
-        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 border-b border-brand-black/5 pb-3">
+      <div className="bg-white rounded-2xl sm:rounded-[2rem] p-4 sm:p-6 border border-brand-black/5 shadow-lg shadow-brand-black/5 space-y-3 sm:space-y-4">
+        <h4 className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 border-b border-brand-black/5 pb-3">
           Detalhes do Pedido
         </h4>
-        <div className="space-y-3">
+        <div className="space-y-2.5 sm:space-y-3">
           <div className="flex justify-between items-center">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-gray-400">
               Produto
             </span>
-            <span className="text-[10px] font-black uppercase tracking-tight truncate max-w-[150px]">
+            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-tight truncate max-w-[120px] sm:max-w-[150px]">
               {selectedProduct?.name}
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-gray-400">
               Entrega
             </span>
-            <span className="text-[10px] font-black uppercase tracking-tight">
+            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-tight">
               {deliveryMethod === "RESIDENTIAL" ? "Domicílio" : "Retirada"}
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-gray-400">
               Pedido ID
             </span>
-            <span className="text-[10px] font-black text-brand-orange tracking-widest">
+            <span className="text-[9px] sm:text-[10px] font-black text-brand-orange tracking-widest">
               #
               {credentials?.orderId
                 ? credentials.orderId.substring(0, 8).toUpperCase()
@@ -1351,7 +1390,7 @@ export function PremiumFlow() {
         onClick={() => {
           window.location.href = "/eventos";
         }}
-        className="w-full h-16 bg-brand-orange hover:bg-brand-orange/90 text-white font-black uppercase tracking-widest text-[11px] rounded-2xl shadow-xl shadow-brand-orange/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+        className="w-full h-14 sm:h-16 bg-brand-orange hover:bg-brand-orange/90 text-white font-black uppercase tracking-widest text-[10px] sm:text-[11px] rounded-xl sm:rounded-2xl shadow-xl shadow-brand-orange/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
       >
         Acessar Plataforma Agora
       </Button>
@@ -1359,22 +1398,22 @@ export function PremiumFlow() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col items-center py-12 px-6 sm:px-12 relative overflow-hidden font-sans">
+    <div className="min-h-screen flex flex-col items-center py-6 sm:py-12 px-4 sm:px-6 md:px-12 relative overflow-hidden font-sans">
       {step !== "WELCOME" && step !== "CONFIRMATION" && (
-        <div className="w-full max-w-lg mb-12 animate-in fade-in duration-1000">
-          <Progress value={progressValue} className="h-2 bg-brand-black/5" />
-          <div className="flex justify-between mt-3">
-            <span className="text-[9px] font-black text-gray-600 uppercase tracking-widest">
+        <div className="w-full max-w-lg mb-6 sm:mb-12 animate-in fade-in duration-1000">
+          <Progress value={progressValue} className="h-1.5 sm:h-2 bg-brand-black/5" />
+          <div className="flex justify-between mt-2 sm:mt-3">
+            <span className="text-[8px] sm:text-[9px] font-black text-gray-600 uppercase tracking-widest">
               Etapa de Solicitação
             </span>
-            <span className="text-[9px] font-black text-brand-red uppercase tracking-widest">
+            <span className="text-[8px] sm:text-[9px] font-black text-brand-red uppercase tracking-widest">
               {Math.round(progressValue)}%
             </span>
           </div>
         </div>
       )}
 
-      <div className="w-full flex-1 flex flex-col items-center pt-8 pb-12">
+      <div className="w-full flex-1 flex flex-col items-center pt-4 sm:pt-8 pb-8 sm:pb-12">
         {step === "WELCOME" && renderWelcome()}
         {step === "TERMS" && renderTerms()}
         {step === "CATEGORY" && renderCategory()}
@@ -1387,7 +1426,7 @@ export function PremiumFlow() {
         {step === "CONFIRMATION" && renderConfirmation()}
       </div>
 
-      <div className="mt-12 w-full max-w-lg flex flex-col items-center justify-between gap-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-t border-brand-black/5 pt-8">
+      <div className="mt-8 sm:mt-12 w-full max-w-lg flex flex-col items-center justify-between gap-3 sm:gap-4 text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest border-t border-brand-black/5 pt-6 sm:pt-8">
         <span>© MeetOff {currentYear}</span>
 
         <div className="flex gap-4 sm:gap-6 flex-wrap justify-center">
