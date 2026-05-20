@@ -194,32 +194,46 @@ export class MercadoPagoService {
     userEmail,
     planType,
     cardTokenId,
+    cardId,
     startDate,
+    endDate,
   }: {
     userId: string;
     userEmail: string;
     planType: 'USER' | 'PARTNER';
-    cardTokenId: string;
-    startDate: string;
+    cardTokenId?: string | null;
+    cardId?: string | null;
+    startDate?: string;
+    endDate?: string;
   }) {
     try {
       const planId = await this.getOrCreatePreapprovalPlanId(planType);
       const planData = await this.getPlanFromDb(planType);
 
-      const body = {
+      const body: any = {
         preapproval_plan_id: planId,
         payer_email: userEmail.trim().toLowerCase(),
-        card_token_id: cardTokenId,
         status: "authorized",
+        reason: planData.name,
         external_reference: userId,
         auto_recurring: {
           frequency: 1,
           frequency_type: "months",
           transaction_amount: planData.amount,
           currency_id: "BRL",
-          start_date: startDate,
         }
       };
+
+      if (startDate && endDate) {
+        body.auto_recurring.start_date = startDate;
+        body.auto_recurring.end_date = endDate;
+      }
+
+      if (cardTokenId) {
+        body.card_token_id = cardTokenId;
+      } else if (cardId) {
+        body.card_id = cardId;
+      }
 
       const response = await fetch("https://api.mercadopago.com/preapproval", {
         method: "POST",
@@ -266,6 +280,8 @@ export class MercadoPagoService {
     installments,
     identificationType,
     identificationNumber,
+    customerId,
+    cardId,
   }: {
     orderId: string;
     productName: string;
@@ -277,6 +293,8 @@ export class MercadoPagoService {
     installments?: number | string | null;
     identificationType?: string | null;
     identificationNumber?: string | null;
+    customerId?: string | null;
+    cardId?: string | null;
   }) {
     const paymentAmount = resolvePaymentAmount(amount);
     const payerEmail = resolvePayerEmail(userEmail);
@@ -284,7 +302,10 @@ export class MercadoPagoService {
     const body: any = {
       description: productName,
       payment_method_id: paymentMethodId,
-      payer: {
+      payer: customerId ? {
+        id: customerId,
+        type: "customer",
+      } : {
         email: payerEmail.trim().toLowerCase(),
       },
       transaction_amount: paymentAmount,
@@ -293,6 +314,8 @@ export class MercadoPagoService {
 
     if (cardTokenId) {
       body.token = cardTokenId;
+    } else if (cardId) {
+      body.card = { id: cardId };
     }
 
     if (installments !== undefined && installments !== null) {
@@ -305,7 +328,7 @@ export class MercadoPagoService {
       body.issuer_id = String(issuerId);
     }
 
-    if (identificationType && identificationNumber) {
+    if (!customerId && identificationType && identificationNumber) {
       body.payer.identification = {
         type: identificationType,
         number: identificationNumber,
@@ -499,6 +522,81 @@ export class MercadoPagoService {
       });
     } catch (error) {
       console.error("Error cancelling MP subscription:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Search for a customer by email or create a new one
+   */
+  static async getOrCreateCustomer(email: string): Promise<string> {
+    const cleanEmail = email.trim().toLowerCase();
+    try {
+      // 1. Search for customer
+      const searchResponse = await fetch(`https://api.mercadopago.com/v1/customers/search?email=${encodeURIComponent(cleanEmail)}`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+        },
+      });
+
+      if (searchResponse.ok) {
+        const searchData = await searchResponse.json();
+        if (searchData.results && searchData.results.length > 0) {
+          console.log(`[MP] Found existing customer ID: ${searchData.results[0].id} for email: ${cleanEmail}`);
+          return searchData.results[0].id;
+        }
+      }
+
+      // 2. Create customer if not found
+      console.log(`[MP] Customer not found. Creating new customer for email: ${cleanEmail}`);
+      const createResponse = await fetch("https://api.mercadopago.com/v1/customers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+        },
+        body: JSON.stringify({ email: cleanEmail }),
+      });
+
+      const createData = await createResponse.json();
+      if (!createResponse.ok) {
+        console.error("[MP] Error creating customer:", JSON.stringify(createData, null, 2));
+        throw new Error(createData.message || "Failed to create customer on Mercado Pago");
+      }
+
+      console.log(`[MP] Created new customer ID: ${createData.id} for email: ${cleanEmail}`);
+      return createData.id;
+    } catch (error) {
+      console.error("[MP] getOrCreateCustomer error:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Save a card token to a customer and return the saved card ID
+   */
+  static async saveCardToCustomer(customerId: string, cardTokenId: string): Promise<string> {
+    try {
+      const response = await fetch(`https://api.mercadopago.com/v1/customers/${customerId}/cards`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+        },
+        body: JSON.stringify({ token: cardTokenId }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        console.error(`[MP] Error saving card to customer ${customerId}:`, JSON.stringify(data, null, 2));
+        throw new Error(data.message || "Failed to save card to customer");
+      }
+
+      console.log(`[MP] Saved card ID: ${data.id} to customer: ${customerId}`);
+      return data.id;
+    } catch (error) {
+      console.error("[MP] saveCardToCustomer error:", error);
       throw error;
     }
   }
