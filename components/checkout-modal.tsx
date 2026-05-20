@@ -55,6 +55,7 @@ export function CheckoutModal({
         body: JSON.stringify({
           planType,
           cardTokenId: paymentData.token,
+          paymentMethodId: paymentData.payment_method_id,
         }),
       });
 

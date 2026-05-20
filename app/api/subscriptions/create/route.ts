@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Token inválido" }, { status: 401 });
     }
 
-    const { planType, cardTokenId } = await request.json();
+    const { planType, cardTokenId, paymentMethodId } = await request.json();
     
     if (!planType || (planType !== "USER" && planType !== "PARTNER")) {
       return NextResponse.json({ message: "Plano inválido" }, { status: 400 });
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
           amount,
           userEmail,
           cardTokenId,
-          paymentMethodId: "credit_card",
+          paymentMethodId: paymentMethodId || "credit_card",
         });
 
         if (payment.status !== "approved") {
