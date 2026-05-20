@@ -43,10 +43,9 @@ export async function POST(request: Request) {
 
     if (cardTokenId) {
       try {
-        const amount = planType === "USER" ? 15.00 : 25.00;
-        const productName = planType === "USER" 
-          ? "Assinatura Membro MeetOff (1º Mês)" 
-          : "Assinatura Parceiro MeetOff (1º Mês)";
+        const planData = await MercadoPagoService.getPlanFromDb(planType);
+        const amount = planData.amount;
+        const productName = `${planData.name} (1º Mês)`;
 
         // 1. Charge the first month immediately using the card token
         const payment = await MercadoPagoService.createProductPayment({

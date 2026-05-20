@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { MercadoPagoConfig, PreApproval } from "mercadopago";
 import { isPaymentTestMode, resolvePayerEmail, resolvePaymentAmount } from "@/lib/payments";
+import { sql } from "@/lib/db";
 
 if (!process.env.MERCADOPAGO_ACCESS_TOKEN) {
   console.warn("MERCADOPAGO_ACCESS_TOKEN is not defined in .env");
@@ -17,22 +18,50 @@ export const mpClient = new MercadoPagoConfig({
 export const SUBSCRIPTION_PLANS: Record<string, { name: string, amount: number, description: string }> = {
   USER: {
     name: "MeetOff Usuários",
-    amount: resolvePaymentAmount(170.3),
+    amount: 170.3,
     description: "Assinatura Mensal MeetOff para Usuários",
   },
   PARTNER: {
     name: "MeetOff Empresas/Parceiros",
-    amount: resolvePaymentAmount(232.7),
+    amount: 232.7,
     description: "Assinatura Mensal MeetOff para Empresas e Parceiros",
   },
 };
 
 export class MercadoPagoService {
   /**
+   * Fetch active subscription plan details dynamically from database
+   */
+  static async getPlanFromDb(planType: 'USER' | 'PARTNER'): Promise<{ name: string; amount: number; description: string }> {
+    try {
+      const planResults = await sql`
+        SELECT name, description, amount
+        FROM subscription_plans
+        WHERE id = ${planType}
+        LIMIT 1
+      `;
+      if (planResults.length > 0) {
+        return {
+          name: planResults[0].name,
+          amount: resolvePaymentAmount(Number(planResults[0].amount)),
+          description: planResults[0].description || "",
+        };
+      }
+    } catch (err) {
+      console.warn("[MP] Failed to query subscription_plans from database, falling back to static config:", err);
+    }
+    return {
+      name: SUBSCRIPTION_PLANS[planType].name,
+      amount: resolvePaymentAmount(SUBSCRIPTION_PLANS[planType].amount),
+      description: SUBSCRIPTION_PLANS[planType].description,
+    };
+  }
+
+  /**
    * Create a pre-approval (subscription) via redirect flow
    */
   static async createSubscription(userId: string, userEmail: string, planType: 'USER' | 'PARTNER') {
-    const planData = SUBSCRIPTION_PLANS[planType];
+    const planData = await this.getPlanFromDb(planType);
     const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://meet-off.vercel.app").replace(/\/$/, "");
 
     try {
@@ -99,7 +128,7 @@ export class MercadoPagoService {
    * This removes the need for manual configuration of plan IDs in env.
    */
   static async getOrCreatePreapprovalPlanId(planType: 'USER' | 'PARTNER'): Promise<string> {
-    const planData = SUBSCRIPTION_PLANS[planType];
+    const planData = await this.getPlanFromDb(planType);
     const token = process.env.MERCADOPAGO_ACCESS_TOKEN;
     const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://meet-off.vercel.app").replace(/\/$/, "");
 
@@ -113,15 +142,18 @@ export class MercadoPagoService {
 
       if (searchRes.ok) {
         const searchData = await searchRes.json();
-        const existingPlan = searchData.results?.find((plan: any) => plan.reason === planData.name);
+        const existingPlan = searchData.results?.find((plan: any) => 
+          plan.reason === planData.name &&
+          Number(plan.auto_recurring?.transaction_amount) === planData.amount
+        );
         if (existingPlan) {
-          console.log(`[MP] Found existing plan ID for ${planType}: ${existingPlan.id}`);
+          console.log(`[MP] Found existing plan ID for ${planType} (${planData.name} - R$ ${planData.amount}): ${existingPlan.id}`);
           return existingPlan.id;
         }
       }
 
       // 2. If not found, create a new one
-      console.log(`[MP] Creating new preapproval plan for ${planType}...`);
+      console.log(`[MP] Creating new preapproval plan for ${planType} (${planData.name} - R$ ${planData.amount})...`);
       const createRes = await fetch("https://api.mercadopago.com/preapproval_plan", {
         method: "POST",
         headers: {
@@ -172,7 +204,7 @@ export class MercadoPagoService {
   }) {
     try {
       const planId = await this.getOrCreatePreapprovalPlanId(planType);
-      const planData = SUBSCRIPTION_PLANS[planType];
+      const planData = await this.getPlanFromDb(planType);
 
       const body = {
         preapproval_plan_id: planId,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Check, Loader2, Heart, Building2, Crown, Star, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -38,14 +38,42 @@ export function SubscriptionPlans() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { user, refreshAuth } = useAuth();
 
+  const [plans, setPlans] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function loadPlans() {
+      try {
+        const res = await fetch("/api/subscription-plans");
+        if (res.ok) {
+          const data = await res.json();
+          setPlans(data);
+        }
+      } catch (err) {
+        console.error("Erro ao carregar planos:", err);
+      }
+    }
+    loadPlans();
+  }, []);
+
+  const userPlan = plans.find(p => p.id === "USER") || { name: "MeetOff Usuários", amount: 170.30, description: "" };
+  const partnerPlan = plans.find(p => p.id === "PARTNER") || { name: "MeetOff Empresas/Parceiros", amount: 232.70, description: "" };
+
+  const userFeatures = userPlan.description
+    ? userPlan.description.split(";").map((f: string) => f.trim()).filter((f: string) => f.length > 0)
+    : USER_PLAN_FEATURES;
+
+  const partnerFeatures = partnerPlan.description
+    ? partnerPlan.description.split(";").map((f: string) => f.trim()).filter((f: string) => f.length > 0)
+    : PARTNER_PLAN_FEATURES;
+
   const expiryDate = user?.subscriptionExpiry ? new Date(user.subscriptionExpiry) : new Date(0);
   const isSubscribed = user?.subscriptionStatus === 'active' || (user?.subscriptionStatus === 'canceled' && expiryDate > new Date());
   const isCanceledButValid = user?.subscriptionStatus === 'canceled' && expiryDate > new Date();
   const hasPremiumAccess = !!user?.hasPremiumAccessory;
 
   const isTestMode = isPaymentTestMode();
-  const userPlanAmount = resolvePaymentAmount(170.3);
-  const partnerPlanAmount = resolvePaymentAmount(232.7);
+  const userPlanAmount = resolvePaymentAmount(Number(userPlan.amount));
+  const partnerPlanAmount = resolvePaymentAmount(Number(partnerPlan.amount));
 
   const [checkoutConfig, setCheckoutConfig] = useState<{
     isOpen: boolean;
@@ -54,7 +82,7 @@ export function SubscriptionPlans() {
   }>({
     isOpen: false,
     planType: "USER",
-    amount: userPlanAmount
+    amount: 170.30
   });
 
   const handleSubscribeClick = (planType: "USER" | "PARTNER", amount: number) => {
@@ -228,7 +256,7 @@ export function SubscriptionPlans() {
               </span>
             </div>
             <h3 className="text-3xl font-black text-brand-black uppercase tracking-tighter">
-              Usuários
+              {userPlan.name.includes("MeetOff") ? userPlan.name.replace("MeetOff ", "") : userPlan.name}
             </h3>
             <p className="text-gray-500 font-bold uppercase text-[10px] tracking-widest mt-1">
               Mensalmente
@@ -236,7 +264,7 @@ export function SubscriptionPlans() {
           </div>
 
           <div className="flex-1 space-y-4 mb-10">
-            {USER_PLAN_FEATURES.map((feature, i) => (
+            {userFeatures.map((feature: string, i: number) => (
               <div key={i} className="flex items-start gap-3 group/item">
                 <div className="w-5 h-5 rounded-full bg-brand-green/10 flex items-center justify-center shrink-0 mt-0.5 transition-colors group-hover/item:bg-brand-green/20">
                   <Check className="w-3 h-3 text-brand-green" strokeWidth={4} />
@@ -281,7 +309,7 @@ export function SubscriptionPlans() {
               </span>
             </div>
             <h3 className="text-3xl font-black text-white uppercase tracking-tighter">
-              Empresas <span className="text-brand-green">&</span> Parceiros
+              {partnerPlan.name.includes("MeetOff") ? partnerPlan.name.replace("MeetOff ", "") : partnerPlan.name}
             </h3>
             <p className="text-gray-400 font-bold uppercase text-[10px] tracking-widest mt-1">
               Mensalmente
@@ -289,7 +317,7 @@ export function SubscriptionPlans() {
           </div>
 
           <div className="flex-1 space-y-4 mb-10">
-            {PARTNER_PLAN_FEATURES.map((feature, i) => (
+            {partnerFeatures.map((feature: string, i: number) => (
               <div key={i} className="flex items-start gap-3 group/item">
                 <div className="w-5 h-5 rounded-full bg-brand-green/20 flex items-center justify-center shrink-0 mt-0.5 transition-colors group-hover/item:bg-brand-green/40">
                   <Check className="w-3 h-3 text-brand-green" strokeWidth={4} />

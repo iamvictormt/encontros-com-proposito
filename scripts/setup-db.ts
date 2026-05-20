@@ -2,6 +2,7 @@ import { neon } from '@neondatabase/serverless';
 import * as dotenv from 'dotenv';
 
 dotenv.config({ path: '.env' });
+dotenv.config({ path: '.env.local' });
 
 async function setupDatabase() {
   if (!process.env.DATABASE_URL) {
@@ -276,6 +277,30 @@ async function setupDatabase() {
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
+    `;
+
+    // Subscription Plans table
+    await sql`
+      CREATE TABLE IF NOT EXISTS subscription_plans (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        description TEXT,
+        amount DECIMAL(10, 2) NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
+    // Seed default plans if not already present
+    await sql`
+      INSERT INTO subscription_plans (id, name, description, amount)
+      VALUES 
+        ('USER', 'MeetOff Usuários', 'Relacionamentos-Namoros-Encontros-Compromisso Sério;Participar de diversos grupo de whatsapp;Familias-Casais-Amizades;Cartão de membro virtual;Networking e Negócios;Acesso à lista de eventos online e presenciais;Parceiros de viagens-atividades;Produtos autorais exclusivos', 170.30),
+        ('PARTNER', 'MeetOff Empresas/Parceiros', 'Ponto de encontro;Ponto de referência;Administradores-de-comunidades-grupos-anfitriões-cupidos-afiliados;Cartões físicos para identificação de membros nos eventos;Empreendedor-empresários-influencers-criador de conteúdos;Criar eventos-passeios-viagens-excursões etc.;Placa de identificação para localização de membros;Profissionais certificados', 232.70)
+      ON CONFLICT (id) DO UPDATE 
+      SET name = EXCLUDED.name,
+          description = EXCLUDED.description,
+          amount = EXCLUDED.amount;
     `;
 
     console.log('Database setup completed successfully.');

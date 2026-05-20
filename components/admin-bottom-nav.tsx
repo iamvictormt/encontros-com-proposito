@@ -47,6 +47,7 @@ export function AdminBottomNav() {
     { href: "/administracao/verificacoes", label: "Verificações", icon: Users },
     { href: "/administracao/equipe", label: "Equipe", icon: Users },
     { href: "/administracao/relatorios", label: "Relatórios", icon: PieChart },
+    { href: "/administracao/assinaturas", label: "Planos", icon: CreditCard },
     { href: "/administracao/configuracoes", label: "Configurações", icon: Settings },
   ];
 

@@ -33,6 +33,7 @@ export const menuSections = [
       { icon: Users, label: "Equipe & Cargos", href: "/administracao/equipe" },
       { icon: CreditCard, label: "Cartões Físicos", href: "/administracao/solicitacoes-cartao" },
       { icon: PackageOpen, label: "Pedidos Premium", href: "/administracao/pedidos-premium" },
+      { icon: CreditCard, label: "Assinaturas & Planos", href: "/administracao/assinaturas" },
     ],
   },
   {
