@@ -51,15 +51,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Token inválido" }, { status: 401 });
     }
 
-    const { 
-      planType, 
-      cardTokenId, 
-      paymentMethodId,
-      issuerId,
-      installments,
-      payer
-    } = await request.json();
-    
+    const { planType, cardTokenId, paymentMethodId, issuerId, installments, payer } =
+      await request.json();
+
     if (!planType || (planType !== "USER" && planType !== "PARTNER")) {
       return NextResponse.json({ message: "Plano inválido" }, { status: 400 });
     }
@@ -108,24 +102,70 @@ export async function POST(request: Request) {
         const paymentStatus = payment.status; // "approved" or "in_process"
 
         if (paymentStatus !== "approved" && paymentStatus !== "in_process") {
-          console.warn(`[MP] Subscription payment rejected. Status: ${paymentStatus}, Detail: ${payment.status_detail}`);
+          console.warn(
+            `[MP] Subscription payment rejected. Status: ${paymentStatus}, Detail: ${payment.status_detail}`,
+          );
           const friendlyMessage = getFriendlyStatusDetailMessage(payment.status_detail || "");
           return NextResponse.json(
-            { 
+            {
               message: friendlyMessage,
               status: payment.status,
-              status_detail: payment.status_detail
-            }, 
-            { status: 402 }
+              status_detail: payment.status_detail,
+            },
+            { status: 402 },
           );
         }
 
-        const cardId = payment.card?.id;
-        console.log(`[MP] First payment processed successfully (${paymentStatus}). Saved card ID: ${cardId}`);
+        // Extract card ID - may be in different locations depending on MP response structure
+        let cardId: string | undefined;
+        let paymentDetails = payment;
+
+        if (payment.card?.id) {
+          cardId = payment.card.id;
+          console.log(`[MP] Card ID extracted from payment.card.id: ${cardId}`);
+        } else if (payment.card_id) {
+          cardId = payment.card_id;
+          console.log(`[MP] Card ID extracted from payment.card_id: ${cardId}`);
+        } else if (payment.id) {
+          // If card is not directly in response, fetch full payment details
+          console.log(
+            `[MP] Card not in initial response. Fetching full payment details for ID: ${payment.id}`,
+          );
+          try {
+            paymentDetails = await MercadoPagoService.getPayment(payment.id);
+            if (paymentDetails.card?.id) {
+              cardId = paymentDetails.card.id;
+              console.log(`[MP] Card ID extracted from fetched payment details: ${cardId}`);
+            } else if (paymentDetails.card_id) {
+              cardId = paymentDetails.card_id;
+              console.log(`[MP] Card ID extracted from fetched payment.card_id: ${cardId}`);
+            }
+          } catch (fetchError) {
+            console.warn("[MP] Failed to fetch full payment details:", fetchError);
+          }
+        }
 
         if (!cardId) {
-          throw new Error("Não foi possível salvar o cartão para as cobranças recorrentes futuras.");
+          console.warn(
+            `[MP] No card ID extracted. Will use cardTokenId for subscription fallback. Payment details:`,
+            JSON.stringify(
+              {
+                paymentId: payment.id,
+                paymentStatus: payment.status,
+                hasCard: !!payment.card,
+                hasCardId: !!payment.card_id,
+                card: payment.card,
+                card_id: payment.card_id,
+              },
+              null,
+              2,
+            ),
+          );
         }
+
+        console.log(
+          `[MP] First payment processed successfully (${paymentStatus}). Card ID: ${cardId || "none - using cardTokenId as fallback"}`,
+        );
 
         // 3. Create the subscription preapproval for future cycles starting in 30 days
         const startDate = new Date();
@@ -138,18 +178,23 @@ export async function POST(request: Request) {
           userId: payload.userId,
           userEmail,
           planType,
-          cardId,
+          cardId: cardId || undefined,
+          cardTokenId: !cardId ? cardTokenId : undefined, // Use card token as fallback if card ID not extracted
           startDate: startDate.toISOString(),
           endDate: endDate.toISOString(),
         });
 
+        if (!subscription) {
+          throw new Error("Não foi possível criar a assinatura para os meses seguintes.");
+        }
+
         if (subscription.status !== "authorized") {
           return NextResponse.json(
-            { 
+            {
               message: "A assinatura não pôde ser autorizada para os meses seguintes.",
-              status: subscription.status 
-            }, 
-            { status: 402 }
+              status: subscription.status,
+            },
+            { status: 402 },
           );
         }
 
@@ -167,28 +212,24 @@ export async function POST(request: Request) {
           WHERE id = ${payload.userId}
         `;
 
-        return NextResponse.json({ 
+        return NextResponse.json({
           id: subscription.id,
           status: subscriptionStatus,
         });
       } catch (subError: any) {
         console.error("Transparent subscription error:", subError);
         return NextResponse.json(
-          { 
+          {
             message: subError.message || "Erro ao processar assinatura com o cartão.",
-            details: subError.details || null
+            details: subError.details || null,
           },
-          { status: subError.status || 400 }
+          { status: subError.status || 400 },
         );
       }
     }
 
     const subscription = {
-      ...(await MercadoPagoService.createSubscription(
-        payload.userId,
-        userEmail,
-        planType
-      )),
+      ...(await MercadoPagoService.createSubscription(payload.userId, userEmail, planType)),
       status: "pending",
       next_payment_date: null,
     };
@@ -205,13 +246,16 @@ export async function POST(request: Request) {
       WHERE id = ${payload.userId}
     `;
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       init_point: subscription.init_point,
       id: subscription.id,
       status: subscriptionStatus,
     });
   } catch (error: any) {
     console.error("Subscription creation error:", error);
-    return NextResponse.json({ message: error.message || "Erro ao criar assinatura" }, { status: 500 });
+    return NextResponse.json(
+      { message: error.message || "Erro ao criar assinatura" },
+      { status: 500 },
+    );
   }
 }

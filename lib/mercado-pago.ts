@@ -15,7 +15,10 @@ export const mpClient = new MercadoPagoConfig({
   accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN || "TEST-PLACEHOLDER",
 });
 
-export const SUBSCRIPTION_PLANS: Record<string, { name: string, amount: number, description: string }> = {
+export const SUBSCRIPTION_PLANS: Record<
+  string,
+  { name: string; amount: number; description: string }
+> = {
   USER: {
     name: "MeetOff Usuários",
     amount: 170.3,
@@ -32,7 +35,9 @@ export class MercadoPagoService {
   /**
    * Fetch active subscription plan details dynamically from database
    */
-  static async getPlanFromDb(planType: 'USER' | 'PARTNER'): Promise<{ name: string; amount: number; description: string }> {
+  static async getPlanFromDb(
+    planType: "USER" | "PARTNER",
+  ): Promise<{ name: string; amount: number; description: string }> {
     try {
       const planResults = await sql`
         SELECT name, description, amount
@@ -48,7 +53,10 @@ export class MercadoPagoService {
         };
       }
     } catch (err) {
-      console.warn("[MP] Failed to query subscription_plans from database, falling back to static config:", err);
+      console.warn(
+        "[MP] Failed to query subscription_plans from database, falling back to static config:",
+        err,
+      );
     }
     return {
       name: SUBSCRIPTION_PLANS[planType].name,
@@ -60,9 +68,12 @@ export class MercadoPagoService {
   /**
    * Create a pre-approval (subscription) via redirect flow
    */
-  static async createSubscription(userId: string, userEmail: string, planType: 'USER' | 'PARTNER') {
+  static async createSubscription(userId: string, userEmail: string, planType: "USER" | "PARTNER") {
     const planData = await this.getPlanFromDb(planType);
-    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://meet-off.vercel.app").replace(/\/$/, "");
+    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://meet-off.vercel.app").replace(
+      /\/$/,
+      "",
+    );
 
     try {
       const body: any = {
@@ -75,7 +86,7 @@ export class MercadoPagoService {
           frequency_type: "months",
           transaction_amount: planData.amount,
           currency_id: "BRL",
-        }
+        },
       };
 
       // Removed preapproval_plan_id assignment to force a redirect flow (dynamic subscription).
@@ -87,9 +98,9 @@ export class MercadoPagoService {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`
+          Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
         },
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
       });
 
       const data = await response.json();
@@ -97,25 +108,27 @@ export class MercadoPagoService {
       if (!response.ok) {
         console.error("MP ERROR RESPONSE:", JSON.stringify(data, null, 2));
         let errorMessage = data.message || "Erro na API do Mercado Pago";
-        
+
         if (response.status === 500 && data.message === "Internal server error") {
-          errorMessage = "Erro interno do MP (500). Isso geralmente ocorre se você usar o email da sua conta Mercado Pago no checkout.";
+          errorMessage =
+            "Erro interno do MP (500). Isso geralmente ocorre se você usar o email da sua conta Mercado Pago no checkout.";
         }
 
         throw {
           message: errorMessage,
           status: response.status,
-          details: data
+          details: data,
         };
       }
 
-      const initPoint = (process.env.MERCADOPAGO_ACCESS_TOKEN?.startsWith("TEST-") && data.sandbox_init_point)
-        ? data.sandbox_init_point
-        : data.init_point;
+      const initPoint =
+        process.env.MERCADOPAGO_ACCESS_TOKEN?.startsWith("TEST-") && data.sandbox_init_point
+          ? data.sandbox_init_point
+          : data.init_point;
 
       return {
         init_point: initPoint,
-        id: data.id
+        id: data.id,
       };
     } catch (error: any) {
       console.error("Error creating subscription:", error);
@@ -127,38 +140,49 @@ export class MercadoPagoService {
    * Helper to retrieve an existing subscription plan or create one on the fly.
    * This removes the need for manual configuration of plan IDs in env.
    */
-  static async getOrCreatePreapprovalPlanId(planType: 'USER' | 'PARTNER'): Promise<string> {
+  static async getOrCreatePreapprovalPlanId(planType: "USER" | "PARTNER"): Promise<string> {
     const planData = await this.getPlanFromDb(planType);
     const token = process.env.MERCADOPAGO_ACCESS_TOKEN;
-    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://meet-off.vercel.app").replace(/\/$/, "");
+    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://meet-off.vercel.app").replace(
+      /\/$/,
+      "",
+    );
 
     try {
       // 1. Search for existing plan
-      const searchRes = await fetch("https://api.mercadopago.com/preapproval_plan/search?status=active", {
-        headers: {
-          "Authorization": `Bearer ${token}`,
+      const searchRes = await fetch(
+        "https://api.mercadopago.com/preapproval_plan/search?status=active",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
 
       if (searchRes.ok) {
         const searchData = await searchRes.json();
-        const existingPlan = searchData.results?.find((plan: any) => 
-          plan.reason === planData.name &&
-          Number(plan.auto_recurring?.transaction_amount) === planData.amount
+        const existingPlan = searchData.results?.find(
+          (plan: any) =>
+            plan.reason === planData.name &&
+            Number(plan.auto_recurring?.transaction_amount) === planData.amount,
         );
         if (existingPlan) {
-          console.log(`[MP] Found existing plan ID for ${planType} (${planData.name} - R$ ${planData.amount}): ${existingPlan.id}`);
+          console.log(
+            `[MP] Found existing plan ID for ${planType} (${planData.name} - R$ ${planData.amount}): ${existingPlan.id}`,
+          );
           return existingPlan.id;
         }
       }
 
       // 2. If not found, create a new one
-      console.log(`[MP] Creating new preapproval plan for ${planType} (${planData.name} - R$ ${planData.amount})...`);
+      console.log(
+        `[MP] Creating new preapproval plan for ${planType} (${planData.name} - R$ ${planData.amount})...`,
+      );
       const createRes = await fetch("https://api.mercadopago.com/preapproval_plan", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           reason: planData.name,
@@ -200,7 +224,7 @@ export class MercadoPagoService {
   }: {
     userId: string;
     userEmail: string;
-    planType: 'USER' | 'PARTNER';
+    planType: "USER" | "PARTNER";
     cardTokenId?: string | null;
     cardId?: string | null;
     startDate?: string;
@@ -221,7 +245,7 @@ export class MercadoPagoService {
           frequency_type: "months",
           transaction_amount: planData.amount,
           currency_id: "BRL",
-        }
+        },
       };
 
       if (startDate && endDate) {
@@ -239,7 +263,7 @@ export class MercadoPagoService {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+          Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
         },
         body: JSON.stringify(body),
       });
@@ -302,12 +326,14 @@ export class MercadoPagoService {
     const body: any = {
       description: productName,
       payment_method_id: paymentMethodId,
-      payer: customerId ? {
-        id: customerId,
-        type: "customer",
-      } : {
-        email: payerEmail.trim().toLowerCase(),
-      },
+      payer: customerId
+        ? {
+            id: customerId,
+            type: "customer",
+          }
+        : {
+            email: payerEmail.trim().toLowerCase(),
+          },
       transaction_amount: paymentAmount,
       external_reference: orderId,
     };
@@ -340,7 +366,7 @@ export class MercadoPagoService {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+          Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
           "X-Idempotency-Key": crypto.randomUUID(),
         },
         body: JSON.stringify(body),
@@ -360,6 +386,23 @@ export class MercadoPagoService {
           details: data,
         };
       }
+
+      console.log(
+        "[MP] Payment response structure:",
+        JSON.stringify(
+          {
+            id: data.id,
+            status: data.status,
+            card: data.card,
+            card_id: data.card_id,
+            cardholder: data.cardholder,
+            payment_method_id: data.payment_method_id,
+            payment_type_id: data.payment_type_id,
+          },
+          null,
+          2,
+        ),
+      );
 
       return data;
     } catch (error: any) {
@@ -381,7 +424,10 @@ export class MercadoPagoService {
   }) {
     const paymentAmount = resolvePaymentAmount(amount);
     const payerEmail = resolvePayerEmail(userEmail);
-    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://meet-off.vercel.app").replace(/\/$/, "");
+    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://meet-off.vercel.app").replace(
+      /\/$/,
+      "",
+    );
 
     const body: any = {
       items: [
@@ -391,7 +437,7 @@ export class MercadoPagoService {
           quantity: 1,
           unit_price: paymentAmount,
           currency_id: "BRL",
-        }
+        },
       ],
       payer: {
         email: payerEmail.trim().toLowerCase(),
@@ -409,7 +455,7 @@ export class MercadoPagoService {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+        Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
       },
       body: JSON.stringify(body),
     });
@@ -426,9 +472,10 @@ export class MercadoPagoService {
       };
     }
 
-    const initPoint = (process.env.MERCADOPAGO_ACCESS_TOKEN?.startsWith("TEST-") && data.sandbox_init_point)
-      ? data.sandbox_init_point
-      : data.init_point;
+    const initPoint =
+      process.env.MERCADOPAGO_ACCESS_TOKEN?.startsWith("TEST-") && data.sandbox_init_point
+        ? data.sandbox_init_point
+        : data.init_point;
 
     return {
       init_point: initPoint,
@@ -439,7 +486,7 @@ export class MercadoPagoService {
   static async getPayment(paymentId: string) {
     const response = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
       headers: {
-        "Authorization": `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+        Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
       },
     });
 
@@ -457,11 +504,14 @@ export class MercadoPagoService {
   }
 
   static async getAuthorizedPayment(authorizedPaymentId: string) {
-    const response = await fetch(`https://api.mercadopago.com/authorized_payments/${authorizedPaymentId}`, {
-      headers: {
-        "Authorization": `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+    const response = await fetch(
+      `https://api.mercadopago.com/authorized_payments/${authorizedPaymentId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+        },
       },
-    });
+    );
 
     const data = await response.json();
 
@@ -478,11 +528,14 @@ export class MercadoPagoService {
 
   static async searchAuthorizedPaymentsByPayment(paymentId: string) {
     const params = new URLSearchParams({ payment_id: paymentId });
-    const response = await fetch(`https://api.mercadopago.com/authorized_payments/search?${params.toString()}`, {
-      headers: {
-        "Authorization": `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+    const response = await fetch(
+      `https://api.mercadopago.com/authorized_payments/search?${params.toString()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+        },
       },
-    });
+    );
 
     const data = await response.json();
 
@@ -518,7 +571,7 @@ export class MercadoPagoService {
     try {
       return await preApproval.update({
         id: preApprovalId,
-        body: { status: "cancelled" }
+        body: { status: "cancelled" },
       });
     } catch (error) {
       console.error("Error cancelling MP subscription:", error);
@@ -533,17 +586,22 @@ export class MercadoPagoService {
     const cleanEmail = resolvePayerEmail(email).trim().toLowerCase();
     try {
       // 1. Search for customer
-      const searchResponse = await fetch(`https://api.mercadopago.com/v1/customers/search?email=${encodeURIComponent(cleanEmail)}`, {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+      const searchResponse = await fetch(
+        `https://api.mercadopago.com/v1/customers/search?email=${encodeURIComponent(cleanEmail)}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+          },
         },
-      });
+      );
 
       if (searchResponse.ok) {
         const searchData = await searchResponse.json();
         if (searchData.results && searchData.results.length > 0) {
-          console.log(`[MP] Found existing customer ID: ${searchData.results[0].id} for email: ${cleanEmail}`);
+          console.log(
+            `[MP] Found existing customer ID: ${searchData.results[0].id} for email: ${cleanEmail}`,
+          );
           return searchData.results[0].id;
         }
       }
@@ -554,7 +612,7 @@ export class MercadoPagoService {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+          Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
         },
         body: JSON.stringify({ email: cleanEmail }),
       });
@@ -582,14 +640,17 @@ export class MercadoPagoService {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+          Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
         },
         body: JSON.stringify({ token: cardTokenId }),
       });
 
       const data = await response.json();
       if (!response.ok) {
-        console.error(`[MP] Error saving card to customer ${customerId}:`, JSON.stringify(data, null, 2));
+        console.error(
+          `[MP] Error saving card to customer ${customerId}:`,
+          JSON.stringify(data, null, 2),
+        );
         throw new Error(data.message || "Failed to save card to customer");
       }
 
