@@ -416,6 +416,7 @@ export class MercadoPagoService {
         type: "credit_card",
         token: cardTokenId,
         installments: Math.max(1, Number(installments) || 1),
+        statement_descriptor: statementDescriptor || "MeetOff",
       },
     };
 
@@ -427,8 +428,7 @@ export class MercadoPagoService {
       processing_mode: "automatic",
       external_reference: orderId,
       total_amount: paymentAmount.toString(),
-      // statement_descriptor: shown on card statement to reduce chargebacks (required)
-      statement_descriptor: statementDescriptor || "MeetOff",
+      description: productName,
       payer: {
         email: resolvePayerEmail(userEmail).trim().toLowerCase(),
       },
@@ -436,6 +436,27 @@ export class MercadoPagoService {
         payments: [paymentBody],
       },
     };
+
+    // items: quantity, unit_price, title, category_id (recommended fields)
+    orderBody.items = [
+      {
+        title: productName,
+        unit_price: paymentAmount.toString(),
+        quantity: quantity ?? 1,
+        ...(categoryId ? { category_id: categoryId } : {}),
+      },
+    ];
+
+    // shipment address (recommended fields)
+    if (city || zipCode || state) {
+      orderBody.shipment = {
+        address: {
+          ...(city ? { city: city } : {}),
+          ...(zipCode ? { zip_code: zipCode } : {}),
+          ...(state ? { state: state } : {}),
+        },
+      };
+    }
 
     // Add payer identification if provided
     if (identificationType && identificationNumber) {
@@ -450,44 +471,6 @@ export class MercadoPagoService {
     }
     if (lastName) {
       orderBody.payer.last_name = lastName;
-    }
-
-    // additional_info: recommended fields to improve approval rate and reduce fraud
-    const additionalInfo: any = {};
-
-    if (productName || quantity != null) {
-      additionalInfo.items = [
-        {
-          id: orderId,
-          title: productName,
-          quantity: quantity ?? 1,
-          unit_price: paymentAmount,
-          currency_id: "BRL",
-          ...(categoryId ? { category_id: categoryId } : {}),
-        },
-      ];
-    }
-
-    if (firstName || lastName || registrationDate) {
-      additionalInfo.payer = {
-        ...(firstName ? { first_name: firstName } : {}),
-        ...(lastName ? { last_name: lastName } : {}),
-        ...(registrationDate ? { registration_date: registrationDate } : {}),
-      };
-    }
-
-    if (city || zipCode || state) {
-      additionalInfo.shipments = {
-        receiver_address: {
-          ...(city ? { city_name: city } : {}),
-          ...(zipCode ? { zip_code: zipCode } : {}),
-          ...(state ? { state_name: state } : {}),
-        },
-      };
-    }
-
-    if (Object.keys(additionalInfo).length > 0) {
-      orderBody.additional_info = additionalInfo;
     }
 
     try {
