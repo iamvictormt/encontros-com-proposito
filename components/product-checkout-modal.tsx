@@ -196,6 +196,11 @@ export function ProductCheckoutModal({
       return;
     }
 
+    if (!formData?.payment_method_id) {
+      toast.error("Método de pagamento não identificado. Tente novamente.");
+      return;
+    }
+
     try {
       setIsProcessing(true);
       const deviceId = typeof window !== "undefined" ? (window as any).MP_DEVICE_SESSION_ID || null : null;
@@ -229,8 +234,22 @@ export function ProductCheckoutModal({
         return;
       }
 
-      toast.success("Compra realizada com sucesso!");
-      onSuccess?.();
+      if (data.init_point) {
+        // Redirect flow — open Mercado Pago checkout page
+        window.location.href = data.init_point;
+        return;
+      }
+
+      // Payment approved
+      if (data.order?.payment_status === "APPROVED") {
+        toast.success("Compra realizada com sucesso!");
+        onSuccess?.();
+        onClose();
+        return;
+      }
+
+      // Fallback — should not happen but handle gracefully
+      toast.success("Pedido criado! Aguardando confirmação do pagamento.");
       onClose();
     } catch (error: any) {
       console.error("Product checkout submit error:", error);

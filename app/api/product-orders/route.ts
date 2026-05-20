@@ -74,6 +74,10 @@ export async function GET() {
       SELECT *
       FROM product_orders
       WHERE user_id = ${payload.userId}
+        AND NOT (
+          payment_status = 'PENDING'
+          AND created_at < NOW() - INTERVAL '1 hour'
+        )
       ORDER BY created_at DESC
     `;
 
@@ -215,12 +219,9 @@ export async function POST(request: Request) {
 
           const parsedError = parseMercadoPagoError(payError);
 
-          // Update order with failed status
+          // Delete the order since payment failed
           await sql`
-            UPDATE product_orders
-            SET payment_status = ${parsedError.status_detail ? 'REJECTED' : 'PENDING'},
-                mp_status_detail = ${parsedError.status_detail || null},
-                updated_at = CURRENT_TIMESTAMP
+            DELETE FROM product_orders
             WHERE id = ${order.id}
           `;
 
@@ -277,13 +278,9 @@ export async function POST(request: Request) {
             }
           }, { status: 200 });
         } else {
-          // Update order with failed status
+          // Payment not approved and not PIX — delete the order to avoid orphaned records
           await sql`
-            UPDATE product_orders
-            SET payment_status = ${paymentStatus},
-                mp_payment_id = ${payment.id},
-                mp_status_detail = ${payment.status_detail},
-                updated_at = CURRENT_TIMESTAMP
+            DELETE FROM product_orders
             WHERE id = ${order.id}
           `;
 

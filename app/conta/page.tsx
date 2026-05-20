@@ -76,7 +76,7 @@ export default function AccountPage() {
   const getProductOrderStatusInfo = (status: string) => {
     const config: Record<string, { label: string; color: string; bg: string }> = {
       APPROVED: { label: "Pago", color: "text-brand-green", bg: "bg-brand-green/10" },
-      PENDING: { label: "Confirmado", color: "text-brand-orange", bg: "bg-brand-orange/10" },
+      PENDING: { label: "Aguardando Pagamento", color: "text-brand-orange", bg: "bg-brand-orange/10" },
       REJECTED: { label: "Recusado", color: "text-red-600", bg: "bg-red-50" },
       CANCELLED: { label: "Cancelado", color: "text-red-600", bg: "bg-red-50" },
     };
@@ -389,6 +389,12 @@ export default function AccountPage() {
                       Pedidos da Loja
                     </h3>
                   </div>
+                  <Link
+                    href="/conta/pedidos"
+                    className="text-[9px] font-black uppercase tracking-widest text-brand-red hover:text-brand-red/80 transition-colors"
+                  >
+                    Ver todos →
+                  </Link>
                 </div>
 
                 {isProductOrdersLoading ? (
@@ -397,7 +403,7 @@ export default function AccountPage() {
                   </div>
                 ) : productOrders.length > 0 ? (
                   <div className="space-y-3">
-                    {productOrders.slice(0, 5).map((productOrder) => {
+                    {productOrders.slice(0, 3).map((productOrder) => {
                       const paymentStatus = getProductOrderStatusInfo(productOrder.payment_status);
                       return (
                         <div
