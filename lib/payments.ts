@@ -16,7 +16,7 @@ export function resolvePaymentAmount(amount: number) {
 }
 
 export function resolvePayerEmail(email: string) {
-  return isPaymentTestMode() ? "test_user_5936489190012169711@testuser.com" : email;
+  return isPaymentTestMode() ? "test_user_452052302339750539@testuser.com" : email;
 }
 
 export function getFriendlyPaymentErrorMessage(detail: string): string {
