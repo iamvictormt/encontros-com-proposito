@@ -420,6 +420,8 @@ export function PremiumFlow() {
 
     setIsProcessingPayment(true);
     try {
+      const deviceId = typeof window !== "undefined" ? (window as any).MP_DEVICE_SESSION_ID || null : null;
+
       const response = await fetch("/api/premium/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -438,6 +440,7 @@ export function PremiumFlow() {
           issuerId: paymentFormData.issuer_id || null,
           installments: paymentFormData.installments || 1,
           payer: paymentFormData.payer,
+          deviceId,
         }),
       });
 

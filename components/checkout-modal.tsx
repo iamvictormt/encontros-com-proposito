@@ -49,6 +49,8 @@ export function CheckoutModal({
     try {
       setIsProcessing(true);
 
+      const deviceId = typeof window !== "undefined" ? (window as any).MP_DEVICE_SESSION_ID || null : null;
+
       const res = await fetch("/api/subscriptions/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -59,6 +61,7 @@ export function CheckoutModal({
           issuerId: paymentData.issuer_id,
           installments: paymentData.installments,
           payer: paymentData.payer,
+          deviceId,
         }),
       });
 

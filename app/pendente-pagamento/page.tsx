@@ -57,6 +57,8 @@ export default function PendentePagamentoPage() {
     if (!order) return;
     setIsProcessing(true);
     try {
+      const deviceId = typeof window !== "undefined" ? (window as any).MP_DEVICE_SESSION_ID || null : null;
+
       const response = await fetch("/api/premium/pay", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -68,6 +70,7 @@ export default function PendentePagamentoPage() {
           issuerId: paymentData.issuer_id,
           installments: paymentData.installments,
           payer: paymentData.payer,
+          deviceId,
         }),
       });
 

@@ -151,6 +151,8 @@ export function ProductCheckoutModal({
 
     try {
       setIsProcessing(true);
+      const deviceId = typeof window !== "undefined" ? (window as any).MP_DEVICE_SESSION_ID || null : null;
+
       const response = await fetch("/api/product-orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -167,6 +169,7 @@ export function ProductCheckoutModal({
           issuerId: formData.issuer_id || null,
           installments: formData.installments || 1,
           payer: formData.payer,
+          deviceId,
         }),
       });
 

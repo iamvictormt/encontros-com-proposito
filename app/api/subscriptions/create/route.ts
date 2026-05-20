@@ -21,7 +21,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Token inválido" }, { status: 401 });
     }
 
-    const { planType, cardTokenId, paymentMethodId, issuerId, installments, payer } =
+    const { planType, cardTokenId, paymentMethodId, issuerId, installments, payer, deviceId } =
       await request.json();
 
     if (!planType || (planType !== "USER" && planType !== "PARTNER")) {
@@ -68,6 +68,7 @@ export async function POST(request: Request) {
           identificationNumber: payer?.identification?.number,
           firstName: payer?.first_name,
           lastName: payer?.last_name,
+          deviceId,
         });
 
         // Check order status

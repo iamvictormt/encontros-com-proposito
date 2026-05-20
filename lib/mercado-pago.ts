@@ -225,6 +225,7 @@ export class MercadoPagoService {
     cardId,
     startDate,
     endDate,
+    deviceId,
   }: {
     userId: string;
     userEmail: string;
@@ -233,6 +234,7 @@ export class MercadoPagoService {
     cardId?: string | null;
     startDate?: string;
     endDate?: string;
+    deviceId?: string | null;
   }) {
     try {
       const planId = await this.getOrCreatePreapprovalPlanId(planType);
@@ -273,6 +275,7 @@ export class MercadoPagoService {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+          ...(deviceId ? { "X-Meli-Session-Id": deviceId } : {}),
         },
         body: JSON.stringify(body),
       });
@@ -316,6 +319,7 @@ export class MercadoPagoService {
     identificationNumber,
     firstName,
     lastName,
+    deviceId,
   }: {
     orderId: string;
     productName: string;
@@ -329,6 +333,7 @@ export class MercadoPagoService {
     identificationNumber?: string | null;
     firstName?: string | null;
     lastName?: string | null;
+    deviceId?: string | null;
   }) {
     const paymentAmount = resolvePaymentAmount(amount);
     const payerEmail = resolvePayerEmail(userEmail);
@@ -440,6 +445,7 @@ export class MercadoPagoService {
           "Content-Type": "application/json",
           Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
           "X-Idempotency-Key": crypto.randomUUID(),
+          ...(deviceId ? { "X-Meli-Session-Id": deviceId } : {}),
         },
         body: JSON.stringify(orderBody),
       });
@@ -510,6 +516,7 @@ export class MercadoPagoService {
     cardId,
     firstName,
     lastName,
+    deviceId,
   }: {
     orderId: string;
     productName: string;
@@ -525,6 +532,7 @@ export class MercadoPagoService {
     cardId?: string | null;
     firstName?: string | null;
     lastName?: string | null;
+    deviceId?: string | null;
   }) {
     // If using card token ID, delegate to the new Orders API
     if (cardTokenId) {
@@ -542,6 +550,7 @@ export class MercadoPagoService {
           identificationNumber,
           firstName,
           lastName,
+          deviceId,
         });
 
         // Adapt Orders API response to legacy format for backward compatibility
@@ -636,6 +645,7 @@ export class MercadoPagoService {
           "Content-Type": "application/json",
           Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
           "X-Idempotency-Key": crypto.randomUUID(),
+          ...(deviceId ? { "X-Meli-Session-Id": deviceId } : {}),
         },
         body: JSON.stringify(body),
       });

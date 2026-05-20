@@ -40,6 +40,7 @@ export async function POST(request: Request) {
       issuerId,
       installments,
       payer,
+      deviceId,
     } = data;
 
     if (!paymentMethodId) {
@@ -177,6 +178,7 @@ export async function POST(request: Request) {
         identificationNumber: payer?.identification?.number,
         firstName: payer?.first_name,
         lastName: payer?.last_name,
+        deviceId,
       });
     } catch (payError: any) {
       console.error("Premium checkout payment error:", payError);

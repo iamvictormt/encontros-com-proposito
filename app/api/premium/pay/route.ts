@@ -27,7 +27,7 @@ export async function POST(request: Request) {
   try {
     await ensureColumns();
 
-    const { orderId, userId, cardTokenId, paymentMethodId, issuerId, installments, payer } =
+    const { orderId, userId, cardTokenId, paymentMethodId, issuerId, installments, payer, deviceId } =
       await request.json();
 
     if (!orderId || !cardTokenId || !paymentMethodId) {
@@ -88,6 +88,7 @@ export async function POST(request: Request) {
         identificationNumber: payer?.identification?.number,
         firstName: payer?.first_name,
         lastName: payer?.last_name,
+        deviceId,
       });
     } catch (payError: any) {
       console.error("Premium pay payment error:", payError);

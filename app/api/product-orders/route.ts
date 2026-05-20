@@ -113,6 +113,7 @@ export async function POST(request: Request) {
       issuerId,
       installments,
       payer,
+      deviceId,
     } = await request.json();
 
     if (!productId) {
@@ -201,6 +202,7 @@ export async function POST(request: Request) {
             identificationNumber: payer?.identification?.number,
             firstName: payer?.first_name,
             lastName: payer?.last_name,
+            deviceId,
           });
         } catch (payError: any) {
           console.error("Transparent checkout product payment error:", payError);
