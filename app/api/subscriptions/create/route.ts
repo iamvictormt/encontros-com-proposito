@@ -85,7 +85,7 @@ export async function POST(request: Request) {
         const customerId = await MercadoPagoService.getOrCreateCustomer(userEmail);
 
         // 2. Charge the first month immediately using the card token
-        const payment = await MercadoPagoService.createProductPayment({
+        const payment = await MercadoPagoService.createOrderPayment({
           orderId: `sub-${payload.userId}-${Date.now()}`,
           productName,
           amount,
@@ -96,76 +96,69 @@ export async function POST(request: Request) {
           installments,
           identificationType: payer?.identification?.type,
           identificationNumber: payer?.identification?.number,
-          customerId,
         });
 
-        const paymentStatus = payment.status; // "approved" or "in_process"
+        // Check order status
+        const orderStatus = payment.status; // "processed", "created", "pending", etc.
+        const paymentStatus = payment.transactions?.payments?.[0]?.status; // "processed", "declined", etc.
+        const paymentStatusDetail = payment.transactions?.payments?.[0]?.status_detail;
 
-        if (paymentStatus !== "approved" && paymentStatus !== "in_process") {
+        if (paymentStatus !== "processed" && paymentStatus !== "approved") {
           console.warn(
-            `[MP] Subscription payment rejected. Status: ${paymentStatus}, Detail: ${payment.status_detail}`,
+            `[MP] Subscription payment rejected. Order Status: ${orderStatus}, Payment Status: ${paymentStatus}, Detail: ${paymentStatusDetail}`,
           );
-          const friendlyMessage = getFriendlyStatusDetailMessage(payment.status_detail || "");
+          const friendlyMessage = getFriendlyStatusDetailMessage(paymentStatusDetail || "");
           return NextResponse.json(
             {
               message: friendlyMessage,
-              status: payment.status,
-              status_detail: payment.status_detail,
+              status: paymentStatus,
+              status_detail: paymentStatusDetail,
             },
             { status: 402 },
           );
         }
 
-        // Extract card ID - may be in different locations depending on MP response structure
+        // Extract card ID from Orders API response
         let cardId: string | undefined;
-        let paymentDetails = payment;
 
-        if (payment.card?.id) {
-          cardId = payment.card.id;
-          console.log(`[MP] Card ID extracted from payment.card.id: ${cardId}`);
-        } else if (payment.card_id) {
-          cardId = payment.card_id;
-          console.log(`[MP] Card ID extracted from payment.card_id: ${cardId}`);
-        } else if (payment.id) {
-          // If card is not directly in response, fetch full payment details
-          console.log(
-            `[MP] Card not in initial response. Fetching full payment details for ID: ${payment.id}`,
-          );
-          try {
-            paymentDetails = await MercadoPagoService.getPayment(payment.id);
-            if (paymentDetails.card?.id) {
-              cardId = paymentDetails.card.id;
-              console.log(`[MP] Card ID extracted from fetched payment details: ${cardId}`);
-            } else if (paymentDetails.card_id) {
-              cardId = paymentDetails.card_id;
-              console.log(`[MP] Card ID extracted from fetched payment.card_id: ${cardId}`);
-            }
-          } catch (fetchError) {
-            console.warn("[MP] Failed to fetch full payment details:", fetchError);
-          }
+        // Try to get card ID from the transaction's payment method
+        if (payment.transactions?.payments?.[0]?.payment_method?.id) {
+          cardId = payment.transactions.payments[0].payment_method.id;
+          console.log(`[MP Orders] Card ID from payment_method.id: ${cardId}`);
+        }
+
+        // Fallback: use the payment ID if card ID is not available
+        if (!cardId && payment.transactions?.payments?.[0]?.id) {
+          cardId = payment.transactions.payments[0].id;
+          console.log(`[MP Orders] Using payment ID as card reference: ${cardId}`);
+        }
+
+        // Last fallback: use order ID
+        if (!cardId && payment.id) {
+          cardId = payment.id;
+          console.log(`[MP Orders] Using order ID as card reference: ${cardId}`);
         }
 
         if (!cardId) {
-          console.warn(
-            `[MP] No card ID extracted. Will use cardTokenId for subscription fallback. Payment details:`,
+          console.error(
+            "[MP Orders] Failed to extract card reference from order response:",
             JSON.stringify(
               {
-                paymentId: payment.id,
-                paymentStatus: payment.status,
-                hasCard: !!payment.card,
-                hasCardId: !!payment.card_id,
-                card: payment.card,
-                card_id: payment.card_id,
+                orderId: payment.id,
+                orderStatus: payment.status,
+                paymentId: payment.transactions?.payments?.[0]?.id,
+                paymentStatus: payment.transactions?.payments?.[0]?.status,
               },
               null,
               2,
             ),
           );
+          throw new Error(
+            "Não foi possível salvar o cartão para as cobranças recorrentes futuras.",
+          );
         }
 
-        console.log(
-          `[MP] First payment processed successfully (${paymentStatus}). Card ID: ${cardId || "none - using cardTokenId as fallback"}`,
-        );
+        console.log(`[MP Orders] First payment processed successfully. Card reference: ${cardId}`);
 
         // 3. Create the subscription preapproval for future cycles starting in 30 days
         const startDate = new Date();
@@ -178,8 +171,7 @@ export async function POST(request: Request) {
           userId: payload.userId,
           userEmail,
           planType,
-          cardId: cardId || undefined,
-          cardTokenId: !cardId ? cardTokenId : undefined, // Use card token as fallback if card ID not extracted
+          cardId,
           startDate: startDate.toISOString(),
           endDate: endDate.toISOString(),
         });
@@ -198,7 +190,7 @@ export async function POST(request: Request) {
           );
         }
 
-        const subscriptionStatus = paymentStatus === "approved" ? "active" : "pending";
+        const subscriptionStatus = paymentStatus === "processed" ? "active" : "pending";
         const expiryDate = new Date();
         expiryDate.setDate(expiryDate.getDate() + 30);
 
