@@ -473,6 +473,15 @@ export class MercadoPagoService {
       orderBody.payer.last_name = lastName;
     }
 
+    // additional_info.payer.registration_date (recommended for fraud prevention)
+    if (registrationDate) {
+      orderBody.additional_info = {
+        payer: {
+          registration_date: registrationDate,
+        },
+      };
+    }
+
     try {
       console.log("[MP Orders] Creating order with:", JSON.stringify(orderBody, null, 2));
 

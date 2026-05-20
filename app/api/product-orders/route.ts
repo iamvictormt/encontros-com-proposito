@@ -149,7 +149,7 @@ export async function POST(request: Request) {
     }
 
     const userResults = await sql`
-      SELECT full_name, email
+      SELECT full_name, email, created_at
       FROM users
       WHERE id = ${payload.userId}
       LIMIT 1
@@ -200,14 +200,15 @@ export async function POST(request: Request) {
             installments,
             identificationType: payer?.identification?.type,
             identificationNumber: payer?.identification?.number,
-            firstName: payer?.first_name,
-            lastName: payer?.last_name,
+            firstName: payer?.first_name || user.full_name?.split(" ")[0] || null,
+            lastName: payer?.last_name || user.full_name?.split(" ").slice(1).join(" ") || null,
             deviceId,
             quantity: normalizedQuantity,
             categoryId: product.type === "Digital" ? "digital_goods" : "others",
             city: address?.city || null,
             zipCode: address?.cep || null,
             state: address?.state || null,
+            registrationDate: user.created_at ? new Date(user.created_at).toISOString() : null,
           });
         } catch (payError: any) {
           console.error("Transparent checkout product payment error:", payError);

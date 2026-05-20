@@ -30,7 +30,7 @@ export async function POST(request: Request) {
 
     // Get user email
     const userResults = await sql`
-      SELECT email, has_premium_accessory
+      SELECT email, has_premium_accessory, full_name, created_at
       FROM users
       WHERE id = ${payload.userId}
     `;
@@ -66,11 +66,12 @@ export async function POST(request: Request) {
           installments,
           identificationType: payer?.identification?.type,
           identificationNumber: payer?.identification?.number,
-          firstName: payer?.first_name,
-          lastName: payer?.last_name,
+          firstName: payer?.first_name || userResults[0].full_name?.split(" ")[0] || null,
+          lastName: payer?.last_name || userResults[0].full_name?.split(" ").slice(1).join(" ") || null,
           deviceId,
           quantity: 1,
           categoryId: "services",
+          registrationDate: userResults[0].created_at ? new Date(userResults[0].created_at).toISOString() : null,
         });
 
         // Check order status

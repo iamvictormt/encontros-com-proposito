@@ -62,7 +62,7 @@ export async function POST(request: Request) {
 
     const userResults = await sql`
       SELECT id, full_name, email, birth_date, is_admin, verification_status,
-             user_category, has_premium_accessory
+             user_category, has_premium_accessory, created_at
       FROM users WHERE id = ${resolvedUserId} LIMIT 1
     `;
 
@@ -86,14 +86,15 @@ export async function POST(request: Request) {
         installments,
         identificationType: payer?.identification?.type,
         identificationNumber: payer?.identification?.number,
-        firstName: payer?.first_name,
-        lastName: payer?.last_name,
+        firstName: payer?.first_name || dbUser.full_name?.split(" ")[0] || null,
+        lastName: payer?.last_name || dbUser.full_name?.split(" ").slice(1).join(" ") || null,
         deviceId,
         quantity: 1,
         categoryId: "fashion_accessories",
         city: order.address_city || null,
         zipCode: order.address_cep || null,
         state: order.address_state || null,
+        registrationDate: dbUser.created_at ? new Date(dbUser.created_at).toISOString() : null,
       });
     } catch (payError: any) {
       console.error("Premium pay payment error:", payError);
