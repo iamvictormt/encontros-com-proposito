@@ -43,17 +43,47 @@ export async function POST(request: Request) {
 
     if (cardTokenId) {
       try {
+        const amount = planType === "USER" ? 15.00 : 25.00;
+        const productName = planType === "USER" 
+          ? "Assinatura Membro MeetOff (1º Mês)" 
+          : "Assinatura Parceiro MeetOff (1º Mês)";
+
+        // 1. Charge the first month immediately using the card token
+        const payment = await MercadoPagoService.createProductPayment({
+          orderId: `sub-${payload.userId}-${Date.now()}`,
+          productName,
+          amount,
+          userEmail,
+          cardTokenId,
+          paymentMethodId: "credit_card",
+        });
+
+        if (payment.status !== "approved") {
+          return NextResponse.json(
+            { 
+              message: "Pagamento da assinatura recusado. Verifique os dados do cartão, limite e tente novamente.",
+              status: payment.status 
+            }, 
+            { status: 402 }
+          );
+        }
+
+        // 2. Schedule subscription auto-recurring to start in 30 days
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() + 30);
+
         const subscription = await MercadoPagoService.createTransparentSubscription({
           userId: payload.userId,
           userEmail,
           planType,
           cardTokenId,
+          startDate: startDate.toISOString(),
         });
 
         if (subscription.status !== "authorized") {
           return NextResponse.json(
             { 
-              message: "Assinatura não autorizada. Verifique se o cartão possui limite suficiente ou tente outro cartão.",
+              message: "Assinatura criada mas não pôde ser autorizada para os próximos meses.",
               status: subscription.status 
             }, 
             { status: 402 }

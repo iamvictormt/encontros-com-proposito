@@ -162,14 +162,17 @@ export class MercadoPagoService {
     userEmail,
     planType,
     cardTokenId,
+    startDate,
   }: {
     userId: string;
     userEmail: string;
     planType: 'USER' | 'PARTNER';
     cardTokenId: string;
+    startDate: string;
   }) {
     try {
       const planId = await this.getOrCreatePreapprovalPlanId(planType);
+      const planData = SUBSCRIPTION_PLANS[planType];
 
       const body = {
         preapproval_plan_id: planId,
@@ -177,6 +180,13 @@ export class MercadoPagoService {
         card_token_id: cardTokenId,
         status: "authorized",
         external_reference: userId,
+        auto_recurring: {
+          frequency: 1,
+          frequency_type: "months",
+          transaction_amount: planData.amount,
+          currency_id: "BRL",
+          start_date: startDate,
+        }
       };
 
       const response = await fetch("https://api.mercadopago.com/preapproval", {
