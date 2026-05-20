@@ -42,7 +42,7 @@ export async function POST(request: Request) {
       payer,
     } = data;
 
-    if (!cardTokenId || !paymentMethodId) {
+    if (!paymentMethodId) {
       return NextResponse.json({ message: "Dados de pagamento incompletos" }, { status: 400 });
     }
 
@@ -57,57 +57,33 @@ export async function POST(request: Request) {
     const sessionPayload = token ? await verifyJWT(token).catch(() => null) : null;
     const resolvedUserId = sessionPayload?.userId;
 
-    // We process the payment first, BEFORE creating the user!
-    const payment = await MercadoPagoService.createProductPayment({
-      orderId: crypto.randomUUID(), // Just a placeholder for MP
-      productName: `Acessório Premium MeetOff - ${model || accessoryType}`,
-      amount: finalAmount,
-      userEmail: payer?.email || normalizedEmail,
-      cardTokenId,
-      paymentMethodId,
-      issuerId,
-      installments,
-      identificationType: payer?.identification?.type,
-      identificationNumber: payer?.identification?.number,
-    });
-
-    const paymentStatus = mapPaymentStatus(payment.status);
-
-    if (paymentStatus !== "APPROVED") {
-      return NextResponse.json(
-        {
-          status: paymentStatus,
-          paymentId: payment.id,
-          message:
-            paymentStatus === "REJECTED"
-              ? "Pagamento recusado. Verifique os dados do cartão e tente novamente."
-              : "Pagamento não aprovado. Tente novamente.",
-        },
-        { status: 402 },
-      );
-    }
-
-    // PAYMENT IS APPROVED! Now we create or update the user.
     let finalUserId = resolvedUserId;
     let finalUser: any;
 
     if (finalUserId) {
-      // Update existing user (upgrade)
-      const updatedUser = await sql`
-        UPDATE users
-        SET full_name = ${nome},
-            birth_date = ${birthDate},
-            city = COALESCE(${cidade || null}, city),
-            user_category = 'PREMIUM',
-            has_premium_accessory = TRUE,
-            verification_status = 'APROVADO'
-        WHERE id = ${finalUserId}
-        RETURNING id, full_name, email, is_admin, verification_status, user_category,
-                  has_premium_accessory, birth_date
+      // Fetch existing user details
+      const userResults = await sql`
+        SELECT id, full_name, email, is_admin, verification_status, user_category,
+               has_premium_accessory, birth_date
+        FROM users WHERE id = ${finalUserId} LIMIT 1
       `;
-      finalUser = updatedUser[0];
+      if (userResults.length > 0) {
+        finalUser = userResults[0];
+      }
     } else {
-      // Create NEW user because payment succeeded
+      // Check if user already exists
+      const existingUser = await sql`
+        SELECT id FROM users WHERE email = ${normalizedEmail} LIMIT 1
+      `;
+
+      if (existingUser.length > 0) {
+        return NextResponse.json(
+          { message: "Já existe uma conta com este e-mail. Faça login antes de adquirir o acesso premium." },
+          { status: 400 }
+        );
+      }
+
+      // Create new user (initially FREE)
       const hashedPassword = await hashPassword(password || "MeetOff123!");
       const insertedUser = await sql`
         INSERT INTO users (
@@ -127,9 +103,9 @@ export async function POST(request: Request) {
           NULL,
           ${hashedPassword},
           ${birthDate},
-          'PREMIUM',
-          TRUE,
-          'APROVADO',
+          'FREE',
+          FALSE,
+          'PENDENTE',
           ${cidade || null}
         )
         RETURNING id, full_name, email, is_admin, verification_status, user_category,
@@ -139,13 +115,32 @@ export async function POST(request: Request) {
       finalUserId = finalUser.id;
     }
 
-    // Create the accessory order
+    if (!finalUser) {
+      return NextResponse.json({ message: "Usuário não encontrado" }, { status: 404 });
+    }
+
+    // Now, create the accessory order in PENDING status so we get a real order ID!
+    const tempOrderId = crypto.randomUUID();
     const orderResult = await sql`
+      INSERT INTO premium_accessory_orders (
+        id,
+        user_id,
+        accessory_type,
+        accessory_model,
+        delivery_method,
+        address_cep,
+        address_state,
+        address_city,
+        address_neighborhood,
+        address_street,
+        address_number,
+        address_complement,
         amount,
         payment_status,
         status,
         mp_payment_id
       ) VALUES (
+        ${tempOrderId},
         ${finalUserId},
         ${accessoryType || "GRAVATA"},
         ${model || null},
@@ -158,94 +153,194 @@ export async function POST(request: Request) {
         ${numero || null},
         ${complemento || null},
         ${baseAmount},
-        ${paymentStatus},
         'PENDING',
-        ${String(payment.id)}
+        'PENDING',
+        NULL
       )
       RETURNING id
     `;
     const newOrderId = orderResult[0].id;
 
-    // Create green card if not already created
-    const existingGreenCard = await sql`
-      SELECT id FROM cards
-      WHERE owner_id = ${finalUserId} AND type = 'GREEN'
-      LIMIT 1
-    `;
+    // Call Mercado Pago with the actual order ID!
+    const payment = await MercadoPagoService.createProductPayment({
+      orderId: newOrderId,
+      productName: `Acessório Premium MeetOff - ${model || accessoryType}`,
+      amount: finalAmount,
+      userEmail: payer?.email || normalizedEmail,
+      cardTokenId,
+      paymentMethodId,
+      issuerId,
+      installments,
+      identificationType: payer?.identification?.type,
+      identificationNumber: payer?.identification?.number,
+    });
 
-    if (finalUserId && existingGreenCard.length === 0 && finalUser.birth_date) {
-      await createGreenCard(finalUserId as string, finalUser.full_name as string, finalUser.birth_date as string);
-    }
+    const paymentStatus = mapPaymentStatus(payment.status);
 
-    // Also create physical card request for the address
-    const greenCard = await sql`
-      SELECT id FROM cards WHERE owner_id = ${finalUserId} AND type = 'GREEN' LIMIT 1
-    `;
+    if (paymentStatus === "APPROVED") {
+      // 1. Upgrade user
+      const updatedUser = await sql`
+        UPDATE users
+        SET full_name = ${nome},
+            birth_date = ${birthDate},
+            city = COALESCE(${cidade || null}, city),
+            user_category = 'PREMIUM',
+            has_premium_accessory = TRUE,
+            verification_status = 'APROVADO'
+        WHERE id = ${finalUserId}
+        RETURNING id, full_name, email, is_admin, verification_status, user_category,
+                  has_premium_accessory, birth_date
+      `;
+      finalUser = updatedUser[0] || finalUser;
 
-    if (greenCard.length > 0) {
-      const existingPhysicalRequest = await sql`
-        SELECT id FROM physical_card_requests
-        WHERE card_id = ${greenCard[0].id}
-          AND status IN ('PENDENTE', 'PAGO', 'EM_PRODUCAO', 'ENVIADO')
+      // 2. Update order to paid
+      await sql`
+        UPDATE premium_accessory_orders
+        SET payment_status = 'APPROVED',
+            status = 'PAGO',
+            mp_payment_id = ${String(payment.id)},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ${newOrderId}
+      `;
+
+      // 3. Create green card if not already created
+      const existingGreenCard = await sql`
+        SELECT id FROM cards
+        WHERE owner_id = ${finalUserId} AND type = 'GREEN'
         LIMIT 1
       `;
 
-      if (existingPhysicalRequest.length === 0) {
-        await sql`
-          INSERT INTO physical_card_requests (
-            user_id, card_id, full_name, cep, address, number,
-            complement, neighborhood, city, state, amount, status
-          ) VALUES (
-            ${finalUserId},
-            ${greenCard[0].id},
-            ${finalUser.full_name},
-            ${cep || "00000-000"},
-            ${endereco || (deliveryMethod === "PARTNER" ? "Retirada local MeetOff" : "Endereco a confirmar")},
-            ${numero || "S/N"},
-            ${complemento || null},
-            ${bairro || "A confirmar"},
-            ${cidade || "A confirmar"},
-            ${estado || "NA"},
-            ${resolvePaymentAmount(120.3)},
-            'EM_PRODUCAO'
-          )
-        `;
+      if (finalUserId && existingGreenCard.length === 0 && finalUser.birth_date) {
+        await createGreenCard(finalUserId as string, finalUser.full_name as string, finalUser.birth_date as string);
       }
+
+      // 4. Also create physical card request
+      const greenCard = await sql`
+        SELECT id FROM cards WHERE owner_id = ${finalUserId} AND type = 'GREEN' LIMIT 1
+      `;
+
+      if (greenCard.length > 0) {
+        const existingPhysicalRequest = await sql`
+          SELECT id FROM physical_card_requests
+          WHERE card_id = ${greenCard[0].id}
+            AND status IN ('PENDENTE', 'PAGO', 'EM_PRODUCAO', 'ENVIADO')
+          LIMIT 1
+        `;
+
+        if (existingPhysicalRequest.length === 0) {
+          await sql`
+            INSERT INTO physical_card_requests (
+              user_id, card_id, full_name, cep, address, number,
+              complement, neighborhood, city, state, amount, status
+            ) VALUES (
+              ${finalUserId},
+              ${greenCard[0].id},
+              ${finalUser.full_name},
+              ${cep || "00000-000"},
+              ${endereco || (deliveryMethod === "PARTNER" ? "Retirada local MeetOff" : "Endereco a confirmar")},
+              ${numero || "S/N"},
+              ${complemento || null},
+              ${bairro || "A confirmar"},
+              ${cidade || "A confirmar"},
+              ${estado || "NA"},
+              ${resolvePaymentAmount(120.3)},
+              'EM_PRODUCAO'
+            )
+          `;
+        }
+      }
+
+      // 5. Send welcome email
+      try {
+        await sendPremiumWelcomeEmail(normalizedEmail, password);
+      } catch (mailError) {
+        console.error("Error sending welcome email:", mailError);
+      }
+
+      // 6. Sign JWT
+      const newToken = await signJWT({
+        userId: finalUser.id,
+        email: finalUser.email || "",
+        isAdmin: finalUser.is_admin || false,
+        verificationStatus: finalUser.verification_status,
+        userCategory: finalUser.user_category,
+        hasPremiumAccessory: finalUser.has_premium_accessory,
+      });
+
+      const response = NextResponse.json({
+        status: "APPROVED",
+        paymentId: payment.id,
+        orderId: newOrderId,
+        message: "Pagamento aprovado! Bem-vindo ao MeetOff Premium.",
+      });
+
+      response.cookies.set("auth_token", newToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24,
+        path: "/",
+      });
+
+      return response;
+    } else if (paymentStatus === "PENDING" && paymentMethodId === "pix") {
+      // It's PIX payment!
+      await sql`
+        UPDATE premium_accessory_orders
+        SET mp_payment_id = ${String(payment.id)},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ${newOrderId}
+      `;
+
+      // Sign JWT with their current category (initially FREE)
+      const newToken = await signJWT({
+        userId: finalUser.id,
+        email: finalUser.email || "",
+        isAdmin: finalUser.is_admin || false,
+        verificationStatus: finalUser.verification_status,
+        userCategory: finalUser.user_category,
+        hasPremiumAccessory: finalUser.has_premium_accessory,
+      });
+
+      const transactionData = payment.point_of_interaction?.transaction_data;
+      const response = NextResponse.json({
+        status: "PENDING",
+        paymentId: payment.id,
+        orderId: newOrderId,
+        pix: {
+          qrCode: transactionData?.qr_code,
+          qrCodeBase64: transactionData?.qr_code_base64,
+        },
+        message: "Pedido reservado. Realize o pagamento Pix para ativar seu acesso.",
+      });
+
+      response.cookies.set("auth_token", newToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24,
+        path: "/",
+      });
+
+      return response;
+    } else {
+      // Revert/delete the pending order if card fails to avoid cluttering DB
+      await sql`
+        DELETE FROM premium_accessory_orders WHERE id = ${newOrderId}
+      `;
+
+      return NextResponse.json(
+        {
+          status: paymentStatus,
+          paymentId: payment.id,
+          message:
+            paymentStatus === "REJECTED"
+              ? "Pagamento recusado. Verifique os dados do cartão e tente novamente."
+              : "Pagamento não aprovado. Tente novamente.",
+        },
+        { status: 402 },
+      );
     }
-
-    // Send welcome email
-    try {
-      await sendPremiumWelcomeEmail(normalizedEmail, password);
-    } catch (mailError) {
-      console.error("Error sending welcome email:", mailError);
-    }
-
-    // Sign a new JWT with the PREMIUM status and set the auth cookie
-    const newToken = await signJWT({
-      userId: finalUser.id,
-      email: finalUser.email || "",
-      isAdmin: finalUser.is_admin || false,
-      verificationStatus: finalUser.verification_status,
-      userCategory: finalUser.user_category,
-      hasPremiumAccessory: finalUser.has_premium_accessory,
-    });
-
-    const response = NextResponse.json({
-      status: "APPROVED",
-      paymentId: payment.id,
-      orderId: newOrderId,
-      message: "Pagamento aprovado! Bem-vindo ao MeetOff Premium.",
-    });
-
-    response.cookies.set("auth_token", newToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24,
-      path: "/",
-    });
-
-    return response;
   } catch (error: any) {
     console.error("Premium checkout error:", error);
     return NextResponse.json(

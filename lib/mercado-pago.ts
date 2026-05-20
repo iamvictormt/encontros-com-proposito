@@ -14,18 +14,16 @@ export const mpClient = new MercadoPagoConfig({
   accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN || "TEST-PLACEHOLDER",
 });
 
-export const SUBSCRIPTION_PLANS: Record<string, { name: string, amount: number, description: string, planId?: string }> = {
+export const SUBSCRIPTION_PLANS: Record<string, { name: string, amount: number, description: string }> = {
   USER: {
     name: "MeetOff Usuários",
     amount: resolvePaymentAmount(170.3),
     description: "Assinatura Mensal MeetOff para Usuários",
-    planId: process.env.MP_USER_PLAN_ID
   },
   PARTNER: {
     name: "MeetOff Empresas/Parceiros",
     amount: resolvePaymentAmount(232.7),
     description: "Assinatura Mensal MeetOff para Empresas e Parceiros",
-    planId: process.env.MP_PARTNER_PLAN_ID
   },
 };
 
@@ -92,6 +90,215 @@ export class MercadoPagoService {
       };
     } catch (error: any) {
       console.error("Error creating subscription:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Helper to retrieve an existing subscription plan or create one on the fly.
+   * This removes the need for manual configuration of plan IDs in env.
+   */
+  static async getOrCreatePreapprovalPlanId(planType: 'USER' | 'PARTNER'): Promise<string> {
+    const planData = SUBSCRIPTION_PLANS[planType];
+    const token = process.env.MERCADOPAGO_ACCESS_TOKEN;
+    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://meet-off.vercel.app").replace(/\/$/, "");
+
+    try {
+      // 1. Search for existing plan
+      const searchRes = await fetch("https://api.mercadopago.com/preapproval_plan/search?status=active", {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      if (searchRes.ok) {
+        const searchData = await searchRes.json();
+        const existingPlan = searchData.results?.find((plan: any) => plan.reason === planData.name);
+        if (existingPlan) {
+          console.log(`[MP] Found existing plan ID for ${planType}: ${existingPlan.id}`);
+          return existingPlan.id;
+        }
+      }
+
+      // 2. If not found, create a new one
+      console.log(`[MP] Creating new preapproval plan for ${planType}...`);
+      const createRes = await fetch("https://api.mercadopago.com/preapproval_plan", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          reason: planData.name,
+          auto_recurring: {
+            frequency: 1,
+            frequency_type: "months",
+            transaction_amount: planData.amount,
+            currency_id: "BRL",
+          },
+          back_url: `${baseUrl}/conta`,
+        }),
+      });
+
+      const createData = await createRes.json();
+      if (!createRes.ok) {
+        console.error("[MP] Error creating preapproval plan:", JSON.stringify(createData, null, 2));
+        throw new Error(createData.message || "Failed to create preapproval plan on Mercado Pago");
+      }
+
+      console.log(`[MP] Created new plan ID for ${planType}: ${createData.id}`);
+      return createData.id;
+    } catch (err) {
+      console.error(`[MP] Failed to get or create plan for ${planType}:`, err);
+      throw err;
+    }
+  }
+
+  /**
+   * Create a transparent subscription (preapproval) using a card token
+   */
+  static async createTransparentSubscription({
+    userId,
+    userEmail,
+    planType,
+    cardTokenId,
+  }: {
+    userId: string;
+    userEmail: string;
+    planType: 'USER' | 'PARTNER';
+    cardTokenId: string;
+  }) {
+    try {
+      const planId = await this.getOrCreatePreapprovalPlanId(planType);
+
+      const body = {
+        preapproval_plan_id: planId,
+        payer_email: userEmail.trim().toLowerCase(),
+        card_token_id: cardTokenId,
+        status: "authorized",
+        external_reference: userId,
+      };
+
+      const response = await fetch("https://api.mercadopago.com/preapproval", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("MP SUBSCRIPTION ERROR RESPONSE:", JSON.stringify(data, null, 2));
+        let errorMessage = data.message || "Erro ao processar assinatura";
+        if (data.cause && Array.isArray(data.cause) && data.cause.length > 0) {
+          errorMessage = data.cause.map((c: any) => c.description).join(", ");
+        }
+        throw {
+          message: errorMessage,
+          status: response.status,
+          details: data,
+        };
+      }
+
+      return data;
+    } catch (error: any) {
+      console.error("Error creating transparent subscription:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Process a direct card payment (Checkout Transparente)
+   */
+  static async createProductPayment({
+    orderId,
+    productName,
+    amount,
+    userEmail,
+    cardTokenId,
+    paymentMethodId,
+    issuerId,
+    installments,
+    identificationType,
+    identificationNumber,
+  }: {
+    orderId: string;
+    productName: string;
+    amount: number;
+    userEmail: string;
+    cardTokenId?: string | null;
+    paymentMethodId: string;
+    issuerId?: string | number | null;
+    installments?: number | string | null;
+    identificationType?: string | null;
+    identificationNumber?: string | null;
+  }) {
+    const paymentAmount = resolvePaymentAmount(amount);
+    const payerEmail = resolvePayerEmail(userEmail);
+
+    const body: any = {
+      description: productName,
+      payment_method_id: paymentMethodId,
+      payer: {
+        email: payerEmail.trim().toLowerCase(),
+      },
+      transaction_amount: paymentAmount,
+      external_reference: orderId,
+    };
+
+    if (cardTokenId) {
+      body.token = cardTokenId;
+    }
+
+    if (installments !== undefined && installments !== null) {
+      body.installments = Number(installments);
+    } else {
+      body.installments = 1;
+    }
+
+    if (issuerId !== undefined && issuerId !== null && issuerId !== "") {
+      body.issuer_id = String(issuerId);
+    }
+
+    if (identificationType && identificationNumber) {
+      body.payer.identification = {
+        type: identificationType,
+        number: identificationNumber,
+      };
+    }
+
+    try {
+      const response = await fetch("https://api.mercadopago.com/v1/payments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+          "X-Idempotency-Key": crypto.randomUUID(),
+        },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("MP PAYMENT ERROR:", JSON.stringify(data, null, 2));
+        let errorMessage = data.message || "Erro ao processar pagamento";
+        if (data.cause && Array.isArray(data.cause) && data.cause.length > 0) {
+          errorMessage = data.cause.map((c: any) => c.description).join(", ");
+        }
+        throw {
+          message: errorMessage,
+          status: response.status,
+          details: data,
+        };
+      }
+
+      return data;
+    } catch (error: any) {
+      console.error("Error creating product payment:", error);
       throw error;
     }
   }

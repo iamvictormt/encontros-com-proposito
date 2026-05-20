@@ -41,6 +41,49 @@ export async function POST(request: Request) {
     }
     const userEmail = userResults[0].email;
 
+    if (cardTokenId) {
+      try {
+        const subscription = await MercadoPagoService.createTransparentSubscription({
+          userId: payload.userId,
+          userEmail,
+          planType,
+          cardTokenId,
+        });
+
+        if (subscription.status !== "authorized") {
+          return NextResponse.json(
+            { 
+              message: "Assinatura não autorizada. Verifique se o cartão possui limite suficiente ou tente outro cartão.",
+              status: subscription.status 
+            }, 
+            { status: 402 }
+          );
+        }
+
+        const subscriptionStatus = "active";
+
+        // Update user with active subscription
+        await sql`
+          UPDATE users 
+          SET subscription_plan = ${planType}, 
+              subscription_status = ${subscriptionStatus},
+              mp_preapproval_id = ${subscription.id}
+          WHERE id = ${payload.userId}
+        `;
+
+        return NextResponse.json({ 
+          id: subscription.id,
+          status: subscriptionStatus,
+        });
+      } catch (subError: any) {
+        console.error("Transparent subscription error:", subError);
+        return NextResponse.json(
+          { message: subError.message || "Erro ao processar assinatura com o cartão." },
+          { status: subError.status || 400 }
+        );
+      }
+    }
+
     const subscription = {
       ...(await MercadoPagoService.createSubscription(
         payload.userId,

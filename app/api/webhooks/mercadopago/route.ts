@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { sql } from "@/lib/db";
 import { MercadoPagoService } from "@/lib/mercado-pago";
+import { createGreenCard } from "@/lib/card-utils";
 
 function mapPaymentStatus(status: string) {
   if (status === "approved") return "APPROVED";
@@ -167,28 +168,114 @@ export async function POST(request: Request) {
             `;
           }
         } else {
-          // Se nao for pedido de produto, o orderId e na verdade o userId da Assinatura
-          if (paymentStatus === "APPROVED") {
-            const date = new Date();
-            date.setDate(date.getDate() + 30); // Adiciona 30 dias de acesso
-            const expiryDate = date.toISOString();
+          // Check if it's a premium accessory order
+          const currentAccessoryOrders = await sql`
+            SELECT id, user_id, payment_status, accessory_type, accessory_model, delivery_method,
+                   address_cep, address_state, address_city, address_neighborhood, address_street,
+                   address_number, address_complement, amount
+            FROM premium_accessory_orders
+            WHERE id = ${orderId}
+            LIMIT 1
+          `;
 
+          if (currentAccessoryOrders.length > 0) {
+            const accOrder = currentAccessoryOrders[0];
+            
             await sql`
-              UPDATE users
-              SET subscription_status = 'active',
-                  subscription_expiry = ${expiryDate}
+              UPDATE premium_accessory_orders
+              SET payment_status = ${paymentStatus},
+                  mp_payment_id = ${String(payment.id)},
+                  status = ${paymentStatus === "APPROVED" ? "PAGO" : "PENDENTE"},
+                  updated_at = CURRENT_TIMESTAMP
               WHERE id = ${orderId}
             `;
-          } else if (paymentStatus === "REJECTED" || paymentStatus === "CANCELLED") {
-            // Pagamento falhou, mantem ou reverte para pendente
-            await ensureUserSubscriptionPaymentColumns();
-            await sql`
-              UPDATE users
-              SET subscription_status = 'inactive',
-                  mp_subscription_payment_id = ${String(payment.id)},
-                  mp_subscription_status_detail = ${payment.status_detail || null}
-              WHERE id = ${orderId} AND subscription_status != 'canceled'
-            `;
+
+            if (paymentStatus === "APPROVED" && accOrder.payment_status !== "APPROVED") {
+              // Upgrade user
+              const updatedUsers = await sql`
+                UPDATE users
+                SET user_category = 'PREMIUM',
+                    has_premium_accessory = TRUE,
+                    verification_status = 'APROVADO'
+                WHERE id = ${accOrder.user_id}
+                RETURNING id, full_name, email, birth_date
+              `;
+
+              if (updatedUsers.length > 0) {
+                const finalUser = updatedUsers[0];
+
+                // Create green card
+                const existingGreenCard = await sql`
+                  SELECT id FROM cards
+                  WHERE owner_id = ${finalUser.id} AND type = 'GREEN'
+                  LIMIT 1
+                `;
+
+                let greenCardId = null;
+                if (existingGreenCard.length === 0 && finalUser.birth_date) {
+                  const newCard = await createGreenCard(finalUser.id, finalUser.full_name, finalUser.birth_date);
+                  greenCardId = newCard.id;
+                } else if (existingGreenCard.length > 0) {
+                  greenCardId = existingGreenCard[0].id;
+                }
+
+                // Create physical card request
+                if (greenCardId) {
+                  const existingPhysicalRequest = await sql`
+                    SELECT id FROM physical_card_requests
+                    WHERE card_id = ${greenCardId}
+                      AND status IN ('PENDENTE', 'PAGO', 'EM_PRODUCAO', 'ENVIADO')
+                    LIMIT 1
+                  `;
+
+                  if (existingPhysicalRequest.length === 0) {
+                    await sql`
+                      INSERT INTO physical_card_requests (
+                        user_id, card_id, full_name, cep, address, number,
+                        complement, neighborhood, city, state, amount, status
+                      ) VALUES (
+                        ${finalUser.id},
+                        ${greenCardId},
+                        ${finalUser.full_name},
+                        ${accOrder.address_cep || "00000-000"},
+                        ${accOrder.address_street || (accOrder.delivery_method === "PARTNER" ? "Retirada local MeetOff" : "Endereco a confirmar")},
+                        ${accOrder.address_number || "S/N"},
+                        ${accOrder.address_complement || null},
+                        ${accOrder.address_neighborhood || "A confirmar"},
+                        ${accOrder.address_city || "A confirmar"},
+                        ${accOrder.address_state || "NA"},
+                        ${accOrder.amount || 120.3},
+                        'EM_PRODUCAO'
+                      )
+                    `;
+                  }
+                }
+              }
+            }
+          } else {
+            // Se nao for pedido de acessorio, o orderId e na verdade o userId da Assinatura
+            if (paymentStatus === "APPROVED") {
+              const date = new Date();
+              date.setDate(date.getDate() + 30); // Adiciona 30 dias de acesso
+              const expiryDate = date.toISOString();
+
+              await sql`
+                UPDATE users
+                SET subscription_status = 'active',
+                    subscription_expiry = ${expiryDate}
+                WHERE id = ${orderId}
+              `;
+            } else if (paymentStatus === "REJECTED" || paymentStatus === "CANCELLED") {
+              // Pagamento falhou, mantem ou reverte para pendente
+              await ensureUserSubscriptionPaymentColumns();
+              await sql`
+                UPDATE users
+                SET subscription_status = 'inactive',
+                    mp_subscription_payment_id = ${String(payment.id)},
+                    mp_subscription_status_detail = ${payment.status_detail || null}
+                WHERE id = ${orderId} AND subscription_status != 'canceled'
+              `;
+            }
           }
         }
       } else {

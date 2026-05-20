@@ -13,31 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { CardRequestContentTable } from "@/components/card-request-content-table";
+import { CardRequestContentTable, type CardRequest } from "@/components/card-request-content-table";
 import { MemberCardPreviewModal } from "@/components/modals/member-card-preview-modal";
-
-interface CardRequest {
-  id: string;
-  user_id: string;
-  card_id: string;
-  full_name: string;
-  cep: string;
-  address: string;
-  number: string;
-  complement: string;
-  neighborhood: string;
-  city: string;
-  state: string;
-  status: string;
-  amount: number;
-  created_at: string;
-  user_email: string;
-  card_type: string;
-  card_name: string;
-  card_birth_date: string;
-  card_qr_code_token: string;
-  card_cvv: string;
-}
 
 export default function CardRequestsPage() {
   const [requests, setRequests] = useState<CardRequest[]>([]);

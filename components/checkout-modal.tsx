@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { CheckCircle2, CreditCard, LockKeyhole, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
+import { CardPayment, initMercadoPago } from "@mercadopago/sdk-react";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/use-auth";
@@ -21,11 +22,21 @@ export function CheckoutModal({
   onSuccess: () => void;
 }) {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isBrickReady, setIsBrickReady] = useState(false);
   const { user } = useAuth();
+
+  const publicKey = process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY;
+
+  useEffect(() => {
+    if (publicKey && isOpen) {
+      initMercadoPago(publicKey, { locale: "pt-BR" });
+    }
+  }, [publicKey, isOpen]);
 
   useEffect(() => {
     if (isOpen) {
       setIsProcessing(false);
+      setIsBrickReady(false);
     }
   }, [isOpen]);
 
@@ -34,24 +45,22 @@ export function CheckoutModal({
     [amount],
   );
 
-  const processSubscription = async () => {
+  const handlePaymentSubmit = async (paymentData: any) => {
     try {
       setIsProcessing(true);
 
       const res = await fetch("/api/subscriptions/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planType }),
+        body: JSON.stringify({
+          planType,
+          cardTokenId: paymentData.token,
+        }),
       });
 
       const data = await res.json();
 
-      if (res.ok && data.init_point) {
-        window.location.href = data.init_point;
-        return;
-      }
-
-      if (res.ok && (data.status === "active" || data.status === "pending")) {
+      if (res.ok && data.status === "active") {
         toast.success("Assinatura criada com sucesso.");
         onSuccess();
         onClose();
@@ -59,16 +68,11 @@ export function CheckoutModal({
       }
 
       toast.error(data.message || "Erro ao processar assinatura");
-      throw new Error(data.message || "Subscription failed");
     } catch (err) {
       console.error(err);
       toast.error("Erro na conexao com o servidor");
-      setIsProcessing(false);
-      return;
     } finally {
-      if (!isOpen) {
-        setIsProcessing(false);
-      }
+      setIsProcessing(false);
     }
   };
 
@@ -76,7 +80,7 @@ export function CheckoutModal({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="w-[96%] sm:max-w-[525px] max-h-[92vh] bg-white rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col">
         <div className="min-h-0 overflow-y-auto p-6 sm:p-8">
-          <DialogHeader className="text-center mb-8">
+          <DialogHeader className="text-center mb-6">
             <div className="mx-auto w-14 h-14 bg-brand-green/10 rounded-2xl flex items-center justify-center mb-4">
               <ShieldCheck className="w-7 h-7 text-brand-green" />
             </div>
@@ -92,33 +96,67 @@ export function CheckoutModal({
           </DialogHeader>
 
           <div className="mt-4">
-            {isProcessing ? (
-              <div className="flex flex-col items-center justify-center gap-4 py-6">
-                <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-brand-green border-t-transparent" />
-                <div className="space-y-1 text-center">
-                  <p className="text-xs font-black uppercase tracking-widest text-brand-green">
-                    Conectando ao Checkout
-                  </p>
-                  <p className="text-xs font-medium text-gray-500 max-w-[200px] leading-relaxed">
-                    Preparando ambiente seguro do Mercado Pago...
+            <div className="mb-4 flex items-center gap-3 rounded-2xl bg-brand-black/[0.03] border border-brand-black/5 p-4">
+              <LockKeyhole className="w-5 h-5 text-brand-green shrink-0" />
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-brand-black">
+                  Seus dados de cartão estão seguros
+                </p>
+                <p className="text-[10px] font-medium text-gray-500 mt-0.5">
+                  Os dados do cartão são criptografados e enviados diretamente ao Mercado Pago.
+                </p>
+              </div>
+            </div>
+
+            <div className="relative mercado-pago-card-brick py-2">
+              {(!isBrickReady || isProcessing) && (
+                <div className="absolute inset-0 z-20 flex min-h-[300px] flex-col items-center justify-center gap-4 rounded-2xl bg-white/95 backdrop-blur-sm">
+                  <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-brand-green border-t-transparent" />
+                  <p className="text-[10px] font-black uppercase tracking-widest text-brand-green">
+                    {isProcessing ? "Confirmando Assinatura..." : "Carregando checkout..."}
                   </p>
                 </div>
-              </div>
-            ) : (
-              <>
-                <button
-                  onClick={processSubscription}
-                  className="w-full h-14 rounded-2xl bg-brand-green text-white font-black uppercase tracking-widest text-[11px] shadow-xl shadow-brand-green/20 hover:bg-brand-green/90 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-                >
-                  <LockKeyhole className="w-4 h-4" />
-                  Pagar com Mercado Pago
-                </button>
-                
-                <p className="text-center text-[10px] text-gray-400 mt-4 px-4">
-                  Você será redirecionado para o ambiente seguro do Mercado Pago para concluir sua assinatura.
-                </p>
-              </>
-            )}
+              )}
+
+              {publicKey ? (
+                <CardPayment
+                  initialization={{
+                    amount,
+                    payer: { email: user?.email || undefined },
+                  }}
+                  customization={{
+                    paymentMethods: {
+                      maxInstallments: 1,
+                      types: { included: ["credit_card"] },
+                    },
+                    visual: {
+                      hideFormTitle: true,
+                      style: {
+                        theme: "default",
+                        customVariables: {
+                          baseColor: "#00E08F",
+                          borderRadiusMedium: "16px",
+                          formBackgroundColor: "#FFFFFF",
+                          inputBackgroundColor: "#FFFFFF",
+                        },
+                      },
+                    },
+                  }}
+                  onReady={() => setIsBrickReady(true)}
+                  onError={(error) => {
+                    console.error("MP Brick error:", error);
+                    toast.error("Não foi possível carregar o checkout.");
+                  }}
+                  onSubmit={handlePaymentSubmit}
+                />
+              ) : (
+                <div className="rounded-2xl bg-brand-red/5 border border-brand-red/10 p-6 text-center">
+                  <p className="text-xs font-bold text-brand-red uppercase tracking-widest">
+                    Chave pública do Mercado Pago não configurada.
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </DialogContent>

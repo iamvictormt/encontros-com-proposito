@@ -134,7 +134,7 @@ export function ProductModal({ isOpen, onClose, onSuccess, product, isReadOnly }
     setIsLoading(true);
 
     // Preparation for API
-    const finalImages = formData.images.filter(img => img !== "");
+    const finalImages = formData.images.filter((img: string) => img !== "");
     const body = {
       ...formData,
       image: finalImages[0] || "", // Keep image field for compatibility

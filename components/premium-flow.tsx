@@ -15,6 +15,7 @@ import {
   Users,
   Shield,
   Star,
+  CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,7 +26,7 @@ import { Logo } from "./logo";
 import Link from "next/link";
 import { toast } from "sonner";
 import { isPaymentTestMode, resolvePaymentAmount } from "@/lib/payments";
-import { CardPayment, initMercadoPago } from "@mercadopago/sdk-react";
+import { Payment, initMercadoPago } from "@mercadopago/sdk-react";
 import { Loader2 } from "lucide-react";
 
 const premiumAccessoryPrice = (price: string) => (isPaymentTestMode() ? "R$ 1,00" : price);
@@ -211,6 +212,7 @@ export function PremiumFlow() {
     userId?: string;
   } | null>(null);
   const [isBrickReady, setIsBrickReady] = useState(false);
+  const [pixData, setPixData] = useState<{ qrCode: string; qrCodeBase64: string } | null>(null);
 
   const publicKey = process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY;
 
@@ -412,7 +414,7 @@ export function PremiumFlow() {
     }
   };
 
-  const handlePaymentSubmit = async (paymentData: any) => {
+  const handlePaymentSubmit = async ({ selectedPaymentMethod, formData: paymentFormData }: any) => {
     if (!orderInfo) return;
 
     setIsProcessingPayment(true);
@@ -430,28 +432,34 @@ export function PremiumFlow() {
           password: credentials?.password,
 
           // Payment Data
-          cardTokenId: paymentData.token,
-          paymentMethodId: paymentData.payment_method_id,
-          issuerId: paymentData.issuer_id,
-          installments: paymentData.installments,
-          payer: paymentData.payer,
+          cardTokenId: paymentFormData.token || null,
+          paymentMethodId: paymentFormData.payment_method_id,
+          issuerId: paymentFormData.issuer_id || null,
+          installments: paymentFormData.installments || 1,
+          payer: paymentFormData.payer,
         }),
       });
 
       const data = await response.json();
 
-      if (response.ok && data.status === "APPROVED") {
-        // Store the orderId returned by the checkout endpoint for the confirmation screen
-        setCredentials((prev) => (prev ? { ...prev, orderId: data.orderId } : null));
+      if (response.ok) {
+        if (data.status === "APPROVED") {
+          // Store the orderId returned by the checkout endpoint for the confirmation screen
+          setCredentials((prev) => (prev ? { ...prev, orderId: data.orderId } : null));
 
-        toast.success("Pagamento aprovado! Bem-vindo ao MeetOff Premium!");
-        nextStep("CONFIRMATION");
-        return;
+          toast.success("Pagamento aprovado! Bem-vindo ao MeetOff Premium!");
+          nextStep("CONFIRMATION");
+          return;
+        } else if (data.status === "PENDING" && data.pix) {
+          setPixData(data.pix);
+          toast.success("Código PIX gerado! Pague para confirmar sua ativação.");
+          return;
+        }
       }
 
       // Payment not approved — stay on payment step and show the error
       toast.error(
-        data.message || "Pagamento recusado. Verifique os dados do cartão e tente novamente.",
+        data.message || "Pagamento recusado. Verifique os dados e tente novamente.",
       );
     } catch (error) {
       console.error(error);
@@ -1129,47 +1137,91 @@ export function PremiumFlow() {
           </div>
         </div>
 
-        <div className="relative mercado-pago-card-brick py-2">
-          {(!isBrickReady || isProcessingPayment) && (
-            <div className="absolute inset-0 z-20 flex min-h-[300px] flex-col items-center justify-center gap-4 rounded-2xl bg-white/95 backdrop-blur-sm">
-              <Loader2 className="h-8 w-8 animate-spin text-brand-red" />
-              <p className="text-[10px] font-black uppercase tracking-widest text-brand-red">
-                {isProcessingPayment ? "Processando Pagamento..." : "Carregando Checkout..."}
+        {pixData ? (
+          <div className="space-y-6 text-center py-4 bg-white p-6 rounded-[2rem] border border-brand-black/5">
+            <div className="mx-auto w-16 h-16 bg-brand-green/10 rounded-2xl flex items-center justify-center mb-2">
+              <CheckCircle2 className="w-8 h-8 text-brand-green animate-bounce" />
+            </div>
+            <h3 className="text-lg font-black uppercase tracking-tighter text-brand-black">
+              Reserva Realizada!
+            </h3>
+            <p className="text-xs text-gray-500 max-w-[280px] mx-auto leading-relaxed">
+              Pague com Pix para confirmar a assinatura premium e o envio do acessório. O QR code expira em 30 minutos.
+            </p>
+
+            <div className="mx-auto p-4 bg-brand-black/[0.02] border border-brand-black/5 rounded-[2rem] w-[200px] h-[200px] flex items-center justify-center shadow-inner">
+              {pixData.qrCodeBase64 ? (
+                <img
+                  src={`data:image/jpeg;base64,${pixData.qrCodeBase64}`}
+                  alt="PIX QR Code"
+                  className="w-full h-full object-contain rounded-2xl"
+                />
+              ) : (
+                <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-brand-red border-t-transparent" />
+              )}
+            </div>
+
+            <div className="space-y-3 px-4">
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(pixData.qrCode);
+                  toast.success("Código PIX copiado!");
+                }}
+                className="w-full h-14 rounded-2xl bg-brand-black text-white font-black uppercase tracking-widest text-[11px] shadow-xl hover:bg-brand-black/90 transition-all active:scale-[0.98]"
+              >
+                Copiar Código Pix
+              </button>
+              
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                Após o pagamento, sua conta será atualizada para Premium.
               </p>
             </div>
-          )}
+          </div>
+        ) : (
+          <div className="relative mercado-pago-card-brick py-2">
+            {(!isBrickReady || isProcessingPayment) && (
+              <div className="absolute inset-0 z-20 flex min-h-[300px] flex-col items-center justify-center gap-4 rounded-2xl bg-white/95 backdrop-blur-sm">
+                <Loader2 className="h-8 w-8 animate-spin text-brand-red" />
+                <p className="text-[10px] font-black uppercase tracking-widest text-brand-red">
+                  {isProcessingPayment ? "Processando Pagamento..." : "Carregando Checkout..."}
+                </p>
+              </div>
+            )}
 
-          {publicKey && (
-            <CardPayment
-              initialization={{
-                amount: orderInfo?.amount || 0,
-                payer: { email: formData.email },
-              }}
-              customization={{
-                paymentMethods: {
-                  maxInstallments: 1,
-                  types: { included: ["credit_card"] },
-                },
-                visual: {
-                  hideFormTitle: true,
-                  style: {
-                    theme: "default",
-                    customVariables: {
-                      baseColor: "#FF1D55",
-                      borderRadiusMedium: "20px",
+            {publicKey && (
+              <Payment
+                initialization={{
+                  amount: orderInfo?.amount || 0,
+                  payer: { email: formData.email },
+                }}
+                customization={{
+                  paymentMethods: {
+                    creditCard: "all",
+                    debitCard: "all",
+                    bankTransfer: ["pix"],
+                  },
+                  visual: {
+                    hideFormTitle: true,
+                    style: {
+                      theme: "default",
+                      customVariables: {
+                        baseColor: "#FF1D55",
+                        borderRadiusMedium: "20px",
+                      },
                     },
                   },
-                },
-              }}
-              onReady={() => setIsBrickReady(true)}
-              onError={(error) => {
-                console.error("MP Error:", error);
-                toast.error("Erro ao carregar o checkout.");
-              }}
-              onSubmit={handlePaymentSubmit}
-            />
-          )}
-        </div>
+                }}
+                onReady={() => setIsBrickReady(true)}
+                onError={(error) => {
+                  console.error("MP Error:", error);
+                  toast.error("Erro ao carregar o checkout.");
+                }}
+                onSubmit={handlePaymentSubmit}
+              />
+            )}
+          </div>
+        )}
       </div>
 
       <p className="text-center text-[9px] font-bold text-gray-400 uppercase tracking-widest">

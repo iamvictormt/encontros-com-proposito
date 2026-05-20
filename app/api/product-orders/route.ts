@@ -106,6 +106,13 @@ export async function POST(request: Request) {
       selectedSize,
       customerName,
       address,
+
+      // Payment details for Checkout Transparente
+      cardTokenId,
+      paymentMethodId,
+      issuerId,
+      installments,
+      payer,
     } = await request.json();
 
     if (!productId) {
@@ -176,6 +183,96 @@ export async function POST(request: Request) {
     `;
 
     const order = inserted[0];
+
+    if (paymentMethodId) {
+      try {
+        const payment = await MercadoPagoService.createProductPayment({
+          orderId: order.id,
+          productName: `${product.name} - MeetOff`,
+          amount: totalAmount,
+          userEmail: user.email,
+          cardTokenId,
+          paymentMethodId,
+          issuerId,
+          installments,
+          identificationType: payer?.identification?.type,
+          identificationNumber: payer?.identification?.number,
+        });
+
+        const paymentStatus = mapPaymentStatus(payment.status);
+
+        if (paymentStatus === "APPROVED") {
+          // If physical product, deduct stock
+          if (isPhysical) {
+            const newStock = Math.max(0, stock - normalizedQuantity);
+            await sql`
+              UPDATE products
+              SET stock = ${newStock}
+              WHERE id = ${product.id}
+            `;
+          }
+
+          const updated = await sql`
+            UPDATE product_orders
+            SET payment_status = 'APPROVED',
+                mp_payment_id = ${payment.id},
+                mp_status_detail = ${payment.status_detail},
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ${order.id}
+            RETURNING *
+          `;
+
+          return NextResponse.json({ order: updated[0] }, { status: 201 });
+        } else if (paymentStatus === "PENDING" && paymentMethodId === "pix") {
+          const updated = await sql`
+            UPDATE product_orders
+            SET payment_status = 'PENDING',
+                mp_payment_id = ${payment.id},
+                mp_status_detail = ${payment.status_detail},
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ${order.id}
+            RETURNING *
+          `;
+
+          const transactionData = payment.point_of_interaction?.transaction_data;
+          return NextResponse.json({
+            order: updated[0],
+            pix: {
+              qrCode: transactionData?.qr_code,
+              qrCodeBase64: transactionData?.qr_code_base64,
+            }
+          }, { status: 200 });
+        } else {
+          // Update order with failed status
+          await sql`
+            UPDATE product_orders
+            SET payment_status = ${paymentStatus},
+                mp_payment_id = ${payment.id},
+                mp_status_detail = ${payment.status_detail},
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ${order.id}
+          `;
+
+          return NextResponse.json(
+            {
+              message:
+                paymentStatus === "REJECTED"
+                  ? "Pagamento recusado. Verifique os dados do cartão e tente novamente."
+                  : "Pagamento não aprovado. Tente novamente.",
+              status: paymentStatus,
+            },
+            { status: 402 },
+          );
+        }
+      } catch (payError: any) {
+        console.error("Transparent checkout product payment error:", payError);
+        return NextResponse.json(
+          { message: payError.message || "Erro ao processar pagamento." },
+          { status: payError.status || 400 },
+        );
+      }
+    }
+
     const preference = await MercadoPagoService.createProductPreference({
       orderId: order.id,
       productName: `${product.name} - MeetOff`,

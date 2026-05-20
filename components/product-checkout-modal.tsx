@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { CheckCircle2, CreditCard, MapPin, Package, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
+import { Payment, initMercadoPago } from "@mercadopago/sdk-react";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -36,11 +37,13 @@ export function ProductCheckoutModal({
   onSuccess,
 }: ProductCheckoutModalProps) {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isBrickReady, setIsBrickReady] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [address, setAddress] = useState(emptyAddress);
   const [cepFetchedFields, setCepFetchedFields] = useState<string[]>([]);
   const [isFetchingCep, setIsFetchingCep] = useState(false);
   const [step, setStep] = useState<"DETAILS" | "PAYMENT">("DETAILS");
+  const [pixData, setPixData] = useState<{ qrCode: string; qrCodeBase64: string } | null>(null);
   const { user } = useAuth();
 
   const isPhysical = product?.type !== "Digital";
@@ -49,13 +52,23 @@ export function ProductCheckoutModal({
   const isTestMode = isPaymentTestMode();
   const payerEmail = resolvePayerEmail(user?.email || "");
 
+  const publicKey = process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY;
+
+  useEffect(() => {
+    if (publicKey && isOpen) {
+      initMercadoPago(publicKey, { locale: "pt-BR" });
+    }
+  }, [publicKey, isOpen]);
+
   useEffect(() => {
     if (isOpen) {
       setIsProcessing(false);
+      setIsBrickReady(false);
       setCustomerName(user?.fullName || "");
       setAddress(emptyAddress);
       setCepFetchedFields([]);
       setStep("DETAILS");
+      setPixData(null);
     }
   }, [isOpen, user?.fullName]);
 
@@ -131,7 +144,7 @@ export function ProductCheckoutModal({
     return true;
   };
 
-  const submitOrder = async () => {
+  const handlePaymentSubmit = async ({ selectedPaymentMethod, formData }: any) => {
     if (!validateCheckout()) {
       return;
     }
@@ -147,6 +160,13 @@ export function ProductCheckoutModal({
           selectedSize: selectedSize || null,
           customerName,
           address: isPhysical ? address : null,
+
+          // Payment details
+          cardTokenId: formData.token || null,
+          paymentMethodId: formData.payment_method_id,
+          issuerId: formData.issuer_id || null,
+          installments: formData.installments || 1,
+          payer: formData.payer,
         }),
       });
 
@@ -155,24 +175,20 @@ export function ProductCheckoutModal({
         throw new Error(data.message || "Erro ao processar compra");
       }
 
-      if (data.init_point) {
-        window.location.href = data.init_point;
+      if (data.pix) {
+        setPixData(data.pix);
         return;
       }
 
-      toast.success("Pedido criado! Aguardando confirmação do pagamento.");
+      toast.success("Compra realizada com sucesso!");
 
       onSuccess?.();
       onClose();
     } catch (error: any) {
       console.error("Product checkout submit error:", error);
       toast.error(error.message || "Erro ao processar compra");
-      setIsProcessing(false);
-      return;
     } finally {
-      if (!isOpen) {
-        setIsProcessing(false);
-      }
+      setIsProcessing(false);
     }
   };
 
@@ -318,36 +334,100 @@ export function ProductCheckoutModal({
                 Continuar para pagamento
               </button>
             </div>
-          ) : (
-          <div className="mt-4">
-            {isProcessing ? (
-              <div className="flex flex-col items-center justify-center gap-4 py-6">
-                <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-brand-red border-t-transparent" />
-                <div className="space-y-1 text-center">
-                  <p className="text-xs font-black uppercase tracking-widest text-brand-red">
-                    Conectando ao Checkout
-                  </p>
-                  <p className="text-xs font-medium text-gray-500 max-w-[200px] leading-relaxed">
-                    Preparando ambiente seguro do Mercado Pago...
-                  </p>
-                </div>
+          ) : pixData ? (
+            <div className="space-y-6 text-center py-4">
+              <div className="mx-auto w-16 h-16 bg-brand-green/10 rounded-2xl flex items-center justify-center mb-2">
+                <CheckCircle2 className="w-8 h-8 text-brand-green animate-bounce" />
               </div>
-            ) : (
-              <>
+              <h3 className="text-lg font-black uppercase tracking-tighter text-brand-black">
+                Pedido Reservado!
+              </h3>
+              <p className="text-xs text-gray-500 max-w-[280px] mx-auto leading-relaxed">
+                Pague com Pix para confirmar a sua compra. O QR code expira em 30 minutos.
+              </p>
+
+              <div className="mx-auto p-4 bg-brand-black/[0.02] border border-brand-black/5 rounded-[2rem] w-[200px] h-[200px] flex items-center justify-center shadow-inner">
+                {pixData.qrCodeBase64 ? (
+                  <img
+                    src={`data:image/jpeg;base64,${pixData.qrCodeBase64}`}
+                    alt="PIX QR Code"
+                    className="w-full h-full object-contain rounded-2xl"
+                  />
+                ) : (
+                  <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-brand-red border-t-transparent" />
+                )}
+              </div>
+
+              <div className="space-y-3 px-4">
                 <button
-                  onClick={submitOrder}
-                  className="w-full h-14 rounded-2xl bg-brand-red text-white font-black uppercase tracking-widest text-[11px] shadow-xl shadow-brand-red/20 hover:bg-brand-red/90 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(pixData.qrCode);
+                    toast.success("Código PIX copiado!");
+                  }}
+                  className="w-full h-14 rounded-2xl bg-brand-black text-white font-black uppercase tracking-widest text-[11px] shadow-xl hover:bg-brand-black/90 transition-all active:scale-[0.98]"
                 >
-                  <Package className="w-4 h-4" />
-                  Pagar com Mercado Pago
+                  Copiar Código Pix
                 </button>
                 
-                <p className="text-center text-[10px] text-gray-400 mt-4 px-4">
-                  Você será redirecionado para o ambiente seguro do Mercado Pago para concluir a compra.
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                  Após pagar, o pedido será aprovado automaticamente.
                 </p>
-              </>
-            )}
-          </div>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-4">
+              <div className="relative mercado-pago-card-brick py-2">
+                {(!isBrickReady || isProcessing) && (
+                  <div className="absolute inset-0 z-20 flex min-h-[300px] flex-col items-center justify-center gap-4 rounded-2xl bg-white/95 backdrop-blur-sm">
+                    <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-brand-red border-t-transparent" />
+                    <p className="text-[10px] font-black uppercase tracking-widest text-brand-red">
+                      {isProcessing ? "Confirmando Pagamento..." : "Carregando checkout..."}
+                    </p>
+                  </div>
+                )}
+
+                {publicKey ? (
+                  <Payment
+                    initialization={{
+                      amount,
+                      payer: { email: payerEmail || undefined },
+                    }}
+                    customization={{
+                      paymentMethods: {
+                        creditCard: "all",
+                        debitCard: "all",
+                        bankTransfer: ["pix"],
+                      },
+                      visual: {
+                        hideFormTitle: true,
+                        style: {
+                          theme: "default",
+                          customVariables: {
+                            baseColor: "#FF1D55",
+                            borderRadiusMedium: "16px",
+                            formBackgroundColor: "#FFFFFF",
+                            inputBackgroundColor: "#FFFFFF",
+                          },
+                        },
+                      },
+                    }}
+                    onReady={() => setIsBrickReady(true)}
+                    onError={(error) => {
+                      console.error("MP Brick error:", error);
+                      toast.error("Não foi possível carregar o checkout.");
+                    }}
+                    onSubmit={handlePaymentSubmit}
+                  />
+                ) : (
+                  <div className="rounded-2xl bg-brand-red/5 border border-brand-red/10 p-6 text-center">
+                    <p className="text-xs font-bold text-brand-red uppercase tracking-widest">
+                      Chave pública do Mercado Pago não configurada.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
           )}
         </div>
       </DialogContent>

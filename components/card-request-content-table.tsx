@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface CardRequest {
+export interface CardRequest {
   id: string;
   user_id: string;
   card_id: string;
@@ -27,6 +27,10 @@ interface CardRequest {
   created_at: string;
   user_email: string;
   card_type: string;
+  card_name: string;
+  card_birth_date: string;
+  card_qr_code_token: string;
+  card_cvv: string;
 }
 
 export function CardRequestContentTable({ 
