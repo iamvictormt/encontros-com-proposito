@@ -653,7 +653,7 @@ export function EventModal({ isOpen, onClose, onSuccess, event, isReadOnly }: Ev
                   <Button
                     type="button"
                     variant="ghost"
-                    className="h-10 text-[10px] font-black uppercase tracking-widest text-brand-green hover:bg-brand-green/5 rounded-xl"
+                    className="h-10 text-[10px] font-black uppercase tracking-widest text-brand-green hover:bg-brand-green/5 rounded-xl hover:text-brand-green/90 transition-colors"
                     onClick={() => setIsBrandModalOpen(true)}
                   >
                     <Plus className="w-3.5 h-3.5 mr-2" /> Nova Marca
