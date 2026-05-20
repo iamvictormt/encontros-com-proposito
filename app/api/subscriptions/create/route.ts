@@ -18,7 +18,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Token inválido" }, { status: 401 });
     }
 
-    const { planType, cardTokenId, paymentMethodId } = await request.json();
+    const { 
+      planType, 
+      cardTokenId, 
+      paymentMethodId,
+      issuerId,
+      installments,
+      payer
+    } = await request.json();
     
     if (!planType || (planType !== "USER" && planType !== "PARTNER")) {
       return NextResponse.json({ message: "Plano inválido" }, { status: 400 });
@@ -43,33 +50,8 @@ export async function POST(request: Request) {
 
     if (cardTokenId) {
       try {
-        const planData = await MercadoPagoService.getPlanFromDb(planType);
-        const amount = planData.amount;
-        const productName = `${planData.name} (1º Mês)`;
-
-        // 1. Charge the first month immediately using the card token
-        const payment = await MercadoPagoService.createProductPayment({
-          orderId: `sub-${payload.userId}-${Date.now()}`,
-          productName,
-          amount,
-          userEmail,
-          cardTokenId,
-          paymentMethodId: paymentMethodId || "credit_card",
-        });
-
-        if (payment.status !== "approved") {
-          return NextResponse.json(
-            { 
-              message: "Pagamento da assinatura recusado. Verifique os dados do cartão, limite e tente novamente.",
-              status: payment.status 
-            }, 
-            { status: 402 }
-          );
-        }
-
-        // 2. Schedule subscription auto-recurring to start in 30 days
         const startDate = new Date();
-        startDate.setDate(startDate.getDate() + 30);
+        startDate.setMinutes(startDate.getMinutes() - 2); // Avoid clock sync differences
 
         const subscription = await MercadoPagoService.createTransparentSubscription({
           userId: payload.userId,
@@ -82,7 +64,7 @@ export async function POST(request: Request) {
         if (subscription.status !== "authorized") {
           return NextResponse.json(
             { 
-              message: "Assinatura criada mas não pôde ser autorizada para os próximos meses.",
+              message: "A assinatura não pôde ser autorizada. Verifique os dados do cartão e tente novamente.",
               status: subscription.status 
             }, 
             { status: 402 }
@@ -90,12 +72,15 @@ export async function POST(request: Request) {
         }
 
         const subscriptionStatus = "active";
+        const expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + 30);
 
-        // Update user with active subscription
+        // Update user with subscription details
         await sql`
           UPDATE users 
           SET subscription_plan = ${planType}, 
               subscription_status = ${subscriptionStatus},
+              subscription_expiry = ${expiryDate.toISOString()},
               mp_preapproval_id = ${subscription.id}
           WHERE id = ${payload.userId}
         `;

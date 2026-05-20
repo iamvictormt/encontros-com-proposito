@@ -269,7 +269,17 @@ export async function POST(request: Request) {
       if (!orderChecked) {
         // Se nao for pedido de produto ou acessorio (ou se o orderId for na verdade o userId da Assinatura)
         // Mas precisamos ter certeza que e um UUID se for buscar na tabela de usuarios
-        if (orderId && isValidUUID(orderId)) {
+        let targetUserId = (orderId && isValidUUID(orderId)) ? orderId : null;
+
+        if (orderId && orderId.startsWith("sub-")) {
+          const parts = orderId.split("-");
+          const extractedUuid = parts.slice(1, 6).join("-");
+          if (isValidUUID(extractedUuid)) {
+            targetUserId = extractedUuid;
+          }
+        }
+
+        if (targetUserId) {
           if (paymentStatus === "APPROVED") {
             const date = new Date();
             date.setDate(date.getDate() + 30); // Adiciona 30 dias de acesso
@@ -279,7 +289,7 @@ export async function POST(request: Request) {
               UPDATE users
               SET subscription_status = 'active',
                   subscription_expiry = ${expiryDate}
-              WHERE id = ${orderId}
+              WHERE id = ${targetUserId}
             `;
           } else if (paymentStatus === "REJECTED" || paymentStatus === "CANCELLED") {
             // Pagamento falhou, mantem ou reverte para pendente
@@ -289,7 +299,7 @@ export async function POST(request: Request) {
               SET subscription_status = 'inactive',
                   mp_subscription_payment_id = ${String(payment.id)},
                   mp_subscription_status_detail = ${payment.status_detail || null}
-              WHERE id = ${orderId} AND subscription_status != 'canceled'
+              WHERE id = ${targetUserId} AND subscription_status != 'canceled'
             `;
           }
         } else {

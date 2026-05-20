@@ -56,13 +56,20 @@ export function CheckoutModal({
           planType,
           cardTokenId: paymentData.token,
           paymentMethodId: paymentData.payment_method_id,
+          issuerId: paymentData.issuer_id,
+          installments: paymentData.installments,
+          payer: paymentData.payer,
         }),
       });
 
       const data = await res.json();
 
-      if (res.ok && data.status === "active") {
-        toast.success("Assinatura criada com sucesso.");
+      if (res.ok && (data.status === "active" || data.status === "pending")) {
+        if (data.status === "pending") {
+          toast.success("Pagamento em análise pelo Mercado Pago. A assinatura será ativada assim que o pagamento for confirmado.");
+        } else {
+          toast.success("Assinatura criada com sucesso.");
+        }
         onSuccess();
         onClose();
         return;
